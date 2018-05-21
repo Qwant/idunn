@@ -1,20 +1,43 @@
 from apistar.test import TestClient
 from app import app
+import pytest
+import json
+import os
 
 
-def test_basic_query():
+@pytest.fixture(scope="module")
+def orsay_museum(es_client):
+    """
+    fill elasticsearch with one poi, the orsay museum
+    """
+    # we load the poi in 'munin_poi' even if in reality mimir load it in another index and alias in to 'munin_poi'
+    es_client.indices.create(index='munin_poi')
+    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'orsay_museum.json')
+    with open(filepath, "r") as f:
+        orsay_museum = json.load(f)
+        poi_id = orsay_museum['id']
+        es_client.index(index='munin_poi',
+                        body=orsay_museum,
+                        doc_type='poi',
+                        id=poi_id,
+                        refresh=True)
+        return poi_id
+
+
+def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
-        url='http://localhost/v1/poi/toto',
+        url=f'http://localhost/v1/poi/{orsay_museum}',
         params={'lang': 'fr'}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "toto",
-        "lang": "fr",
-        "name": "toto"
+        "id": "osm:node:2379542204",
+        "label": "Musée d'Orsay (Paris)",
+        "name": "Musée d'Orsay"
     }
+
 
 
 def test_schema():

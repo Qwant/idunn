@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "317114f25837ac52e0a87df50cfaa26170b45572d3afae49e8c76c4c49196b74"
+            "sha256": "9c9ff19ebcc239c41250e45fdb4725540316cbd0844131f05f44781c934e2359"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -9,9 +9,9 @@
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.13.0-39-generic",
+            "platform_release": "4.13.0-41-generic",
             "platform_system": "Linux",
-            "platform_version": "#44-Ubuntu SMP Thu Apr 5 14:25:01 UTC 2018",
+            "platform_version": "#46-Ubuntu SMP Wed May 2 13:38:30 UTC 2018",
             "python_full_version": "3.6.3",
             "python_version": "3.6",
             "sys_platform": "linux"
@@ -31,9 +31,9 @@
     "default": {
         "apistar": {
             "hashes": [
-                "sha256:be8697885459ae3fd4db462c4bbf8c69e47c3858a5883999ca886956914cf54a"
+                "sha256:5d7ea065df3167b523b5c389a33d397eab46922de04bb62a19eacd85fcd97286"
             ],
-            "version": "==0.5.20"
+            "version": "==0.5.22"
         },
         "certifi": {
             "hashes": [
@@ -143,6 +143,12 @@
             ],
             "markers": "python_version < '3.0'",
             "version": "==1.0.2"
+        },
+        "lovely-pytest-docker": {
+            "hashes": [
+                "sha256:238ed21dd56d070dfd23e78663ecdb8ff49a7c24f5fa1c370e4fb95476f5b1ae"
+            ],
+            "version": "==0.0.3"
         },
         "more-itertools": {
             "hashes": [

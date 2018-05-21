@@ -6,12 +6,17 @@ name = "pypi"
 
 
 [dev-packages]
+
 pytest = "*"
+lovely-pytest-docker = "*"
+
 
 [packages]
+
 apistar = "*"
 elasticsearch = "==2"
 
 
 [requires]
+
 python_version = "3.6"
