@@ -11,7 +11,7 @@ The API provides its OpenAPI schema with:
 
 The main endpoints are:
 
-* `/v1/poi/{poi_id}?lang={lang}` to get the detail of a POI.
+* `/v1/pois/{poi_id}?lang={lang}` to get the detail of a POI.
 
 
 ## Running
@@ -25,7 +25,7 @@ and then
 `ES_URL=<url_to_elasticsearch> pipenv run python app.py`
 
 you can query the API on 4000:
-`curl localhost:5000/v1/poi/toto?lang=fr`
+`curl localhost:5000/v1/pois/toto?lang=fr`
 
 ## Testing
 

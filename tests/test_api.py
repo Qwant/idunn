@@ -10,8 +10,10 @@ def orsay_museum(es_client):
     """
     fill elasticsearch with one poi, the orsay museum
     """
-    # we load the poi in 'munin_poi' even if in reality mimir load it in another index and alias in to 'munin_poi'
-    es_client.indices.create(index='munin_poi')
+    # we load the poi in 'munin_poi_specific' index and alias it to 'munin_poi' to have a architecture like mimir
+    index_name = 'munin_poi_specific'
+    es_client.indices.create(index=index_name)
+    es_client.indices.put_alias(name='munin_poi', index=index_name)
     filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'orsay_museum.json')
     with open(filepath, "r") as f:
         orsay_museum = json.load(f)
@@ -27,17 +29,27 @@ def orsay_museum(es_client):
 def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/poi/{orsay_museum}',
-        params={'lang': 'fr'}
+        url=f'http://localhost/v1/pois/{orsay_museum}',
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "osm:node:2379542204",
+        "id": "osm:way:63178753",
         "label": "Musée d'Orsay (Paris)",
         "name": "Musée d'Orsay"
     }
 
+
+def test_unknow_poi(orsay_museum):
+    client = TestClient(app)
+    response = client.get(
+        url=f'http://localhost/v1/pois/an_unknown_poi_id',
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "message": "poi 'an_unknown_poi_id' not found"
+    }
 
 
 def test_schema():
