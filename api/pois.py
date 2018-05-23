@@ -1,17 +1,18 @@
-from apistar.exceptions import NotFound, BadRequest
-from elasticsearch import Elasticsearch
 import os
 
+from apistar.exceptions import NotFound
+from elasticsearch import Elasticsearch
+from apistar_settings import Settings
 
-def fetch_es_poi(id) -> dict:
-    es_url = os.environ['ES_URL']  # TODO better configure this
+
+def fetch_es_poi(id, es_url) -> dict:
     es = Elasticsearch([es_url])
     es_pois = es.search(index='munin_poi',
-                       body={
-                           "filter": {
-                               "term": {"_id": id}
-                           }
-                       })
+                        body={
+                            "filter": {
+                                "term": {"_id": id}
+                            }
+                        })
 
     es_poi = es_pois.get('hits', {}).get('hits', [])
     if len(es_poi) == 0:
@@ -29,7 +30,7 @@ def make_response(es_poi, lang) -> dict:
     return poi
 
 
-def get_poi(id, lang=None):
-    es_poi = fetch_es_poi(id)
+def get_poi(id, settings: Settings, lang=None):
+    es_poi = fetch_es_poi(id, settings['ES_URL'])
 
     return make_response(es_poi, lang)

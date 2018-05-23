@@ -15,6 +15,7 @@ lovely-pytest-docker = "*"
 
 apistar = "*"
 elasticsearch = "==2"
+apistar-settings = "*"
 
 
 [requires]

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9c9ff19ebcc239c41250e45fdb4725540316cbd0844131f05f44781c934e2359"
+            "sha256": "e8580bcebc78c9ea06d812dafd3c1087be14348322ae611852affc79cdeee559"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -31,9 +31,16 @@
     "default": {
         "apistar": {
             "hashes": [
-                "sha256:5d7ea065df3167b523b5c389a33d397eab46922de04bb62a19eacd85fcd97286"
+                "sha256:de835d0c023bf8554c702b683993da8028f74bc0d7266859e8dd880548ef57ae"
             ],
-            "version": "==0.5.22"
+            "version": "==0.5.25"
+        },
+        "apistar-settings": {
+            "hashes": [
+                "sha256:7fde997f9b27f68e6c2c903475346dd1ca749c86be9684482c44cfbf15d9aed8",
+                "sha256:663e46b4a4a5490bcd9a81f1872dfe82eaca4d2724d8760b8868f7317966f26e"
+            ],
+            "version": "==0.2.0"
         },
         "certifi": {
             "hashes": [
@@ -129,6 +136,13 @@
         }
     },
     "develop": {
+        "atomicwrites": {
+            "hashes": [
+                "sha256:a24da68318b08ac9c9c45029f4a10371ab5b20e4226738e150e6e7c571630ae6",
+                "sha256:240831ea22da9ab882b551b31d4225591e5e447a68c5e188db5b89ca1d487585"
+            ],
+            "version": "==1.1.5"
+        },
         "attrs": {
             "hashes": [
                 "sha256:4b90b09eeeb9b88c35bc642cbac057e45a5fd85367b985bd2809c62b7b939265",
@@ -175,10 +189,10 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:829230122facf05a5f81a6d4dfe6454a04978ea3746853b2b84567ecf8e5c526",
-                "sha256:54713b26c97538db6ff0703a12b19aeaeb60b5e599de542e7fca0ec83b9038e8"
+                "sha256:c76e93f3145a44812955e8d46cdd302d8a45fbfc7bf22be24fe231f9d8d8853a",
+                "sha256:39555d023af3200d004d09e51b4dd9fdd828baa863cded3fd6ba2f29f757ae2d"
             ],
-            "version": "==3.5.1"
+            "version": "==3.6.0"
         },
         "six": {
             "hashes": [
