@@ -1,8 +1,9 @@
 import os
 import yaml
 from typing import Any
-from apistar import Component
 from inspect import Parameter
+
+from apistar import Component
 
 
 def _load_yaml_file(file):
