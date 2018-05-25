@@ -1,6 +1,7 @@
 import pytest
-import os
 from elasticsearch import Elasticsearch
+from app import app
+from idunn.utils.settings import SettingsComponent
 
 
 @pytest.fixture(scope='session')
@@ -11,8 +12,10 @@ def es(docker_services):
 
     url = f'http://{docker_services.docker_ip}:{port}'
 
-    os.environ['ES_URL'] = url
-
+    # we override the settings to set the ES_URL
+    for c in app.injector.components:
+        if isinstance(c, SettingsComponent):
+            c._settings['ES_URL'] = url
     return url
 
 
