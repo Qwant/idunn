@@ -1,6 +1,6 @@
 from apistar import App, Include
-from api.urls import api_urls
-from utils.settings import SettingsComponent
+from idunn.utils.settings import SettingsComponent, Settings
+from idunn.api.urls import api_urls
 
 
 routes = [

@@ -1,6 +1,8 @@
 import os
-import apistar_settings
 import yaml
+from typing import Any
+from apistar import Component
+from inspect import Parameter
 
 
 def _load_yaml_file(file):
@@ -8,7 +10,16 @@ def _load_yaml_file(file):
         return yaml.load(default)
 
 
-class SettingsComponent(apistar_settings.SettingsComponent):
+class Settings(dict):
+    """The type of settings dictionaries.
+    Annotate your handler parameters with this to have a settings
+    dictionary injected into those handlers.
+
+    This is heavily inspired from https://github.com/Bogdanp/apistar_settings
+    """
+
+
+class SettingsComponent(Component):
     """
     APIStar component to load settings
 
@@ -20,21 +31,21 @@ class SettingsComponent(apistar_settings.SettingsComponent):
     """
 
     def __init__(self, project_name) -> None:
-        self.settings = {}
+        self._settings = Settings()
         self._load_default_config()
 
         self._load_specific_config(project_name)
 
         self._load_from_env_var(project_name)
 
-        print(f"config: {self.settings}")
+        print(f"config: {self._settings}")
 
     def _load_default_config(self):
         """
         load the default config from a default_settings.yaml in the same directory
         """
         default_config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'default_settings.yaml')
-        self.settings.update(_load_yaml_file(default_config_path))
+        self._settings.update(_load_yaml_file(default_config_path))
 
     def _load_specific_config(self, project_name):
         """
@@ -42,10 +53,8 @@ class SettingsComponent(apistar_settings.SettingsComponent):
         with the env var {project}_CONFIG_FILE (eg. IDUNN_CONFIG_FILE for the IDUNN project)
         """
         path = os.environ.get(f'{project_name}_CONFIG_FILE')
-        if not path:
-            return
-        config_path = path
-        self.settings.update(_load_yaml_file(config_path))
+        if path:
+            self._settings.update(_load_yaml_file(path))
 
     def _load_from_env_var(self, project_name):
         """
@@ -53,7 +62,21 @@ class SettingsComponent(apistar_settings.SettingsComponent):
         The env var need to be defined as {project}_{var_name}
         eg. IDUNN_ES to override the "ES" settings in the IDUNN project.
         """
-        for k in self.settings.keys():
-            ovverided_value = os.environ.get(f'{project_name}_{k}')
-            if ovverided_value:
-                self.settings[k] = ovverided_value
+        for k in self._settings.keys():
+            ovveriden_value = os.environ.get(f'{project_name}_{k}')
+            if ovveriden_value:
+                self._settings[k] = ovveriden_value
+
+    def can_handle_parameter(self, parameter: Parameter) -> bool:
+        # Micro-optimization given that we know that this component
+        # only ever injects values of type Settings.
+        return parameter.annotation is Settings
+
+    def resolve(self) -> Settings:
+        return self._settings
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._settings, name)
+
+    def __getitem__(self, name: str) -> Any:
+        return self._settings[name]

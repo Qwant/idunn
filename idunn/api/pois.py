@@ -1,8 +1,7 @@
-import os
-
 from apistar.exceptions import NotFound
 from elasticsearch import Elasticsearch
-from apistar_settings import Settings
+
+from idunn.utils.settings import Settings
 
 
 def fetch_es_poi(id, es_url) -> dict:
