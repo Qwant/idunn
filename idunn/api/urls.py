@@ -1,5 +1,4 @@
 from apistar import Route
-
 from .pois import get_poi
 
 
