@@ -9,11 +9,9 @@ routes = [
     Include('/v1', name='v1', routes=api_urls),
 ]
 
-settings = SettingsComponent('IDUNN')
-
 components = [
-    settings,
-    ElasticSearchComponent(settings)
+    SettingsComponent('IDUNN'),
+    ElasticSearchComponent()
 ]
 
 app = App(routes=routes, schema_url='/schema', components=components)
