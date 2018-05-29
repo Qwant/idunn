@@ -1,11 +1,8 @@
 from apistar.exceptions import NotFound
 from elasticsearch import Elasticsearch
 
-from idunn.utils.settings import Settings
 
-
-def fetch_es_poi(id, es_url) -> dict:
-    es = Elasticsearch([es_url])
+def fetch_es_poi(id, es) -> dict:
     es_pois = es.search(index='munin_poi',
                         body={
                             "filter": {
@@ -29,7 +26,7 @@ def make_response(es_poi, lang) -> dict:
     return poi
 
 
-def get_poi(id, settings: Settings, lang=None):
-    es_poi = fetch_es_poi(id, settings['ES_URL'])
+def get_poi(id, es: Elasticsearch, lang=None):
+    es_poi = fetch_es_poi(id, es)
 
     return make_response(es_poi, lang)

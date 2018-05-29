@@ -1,5 +1,7 @@
 from apistar import App, Include
-from idunn.utils.settings import SettingsComponent, Settings
+
+from idunn.utils.settings import SettingsComponent
+from idunn.utils.es_wrapper import ElasticSearchComponent
 from idunn.api.urls import api_urls
 
 
@@ -9,6 +11,7 @@ routes = [
 
 components = [
     SettingsComponent('IDUNN'),
+    ElasticSearchComponent()
 ]
 
 app = App(routes=routes, schema_url='/schema', components=components)
