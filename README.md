@@ -42,9 +42,6 @@ To run the tests you need the dev dependencies:
 `pipenv install --dev`
 
 Then you can run pytest:
-`pipenv run pytest tests`
-
-You can also trigger running of doctests:
 `pipenv run pytest`
 
 Note: this will require docker to be able to spawn an ES cluster.
