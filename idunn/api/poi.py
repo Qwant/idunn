@@ -8,7 +8,12 @@ BLOCKS_ORDER = [
 ]
 
 def build_blocks(es_poi, lang):
-    return [c.from_es(es_poi, lang) for c in BLOCKS_ORDER]
+    blocks = []
+    for c in BLOCKS_ORDER:
+        block = c.from_es(es_poi, lang)
+        if block is not None:
+            blocks.append(block)
+    return blocks
 
 def get_name(properties, lang):
     """Return the POI name from the properties field of the elastic response
@@ -73,7 +78,7 @@ class POI(types.Type):
     subclass_name = validators.String(allow_null=True)
     geometry = validators.Object(allow_null=True)
     address = validators.Object(allow_null=True)
-    blocks = validators.Array(items=BLOCKS_ORDER)
+    blocks = validators.Array()
 
     @classmethod
     def load_poi(cls, es_poi, lang):

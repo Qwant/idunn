@@ -1,0 +1,337 @@
+{
+	"id": "osm:way:55984117",
+	"label": "Église Notre-Dame-des-Blancs-Manteaux (Paris)",
+	"name": "Église Notre-Dame-des-Blancs-Manteaux",
+	"coord": {
+		"lon": 2.3577366716253647,
+		"lat": 48.858955519212905
+	},
+	"administrative_regions": [
+		{
+			"id": "admin:osm:relation:2172741",
+			"insee": "7510414",
+			"level": 10,
+			"label": "Quartier Saint-Gervais (75004), Paris 4e Arrondissement, Paris, Île-de-France, France",
+			"name": "Quartier Saint-Gervais",
+			"zip_codes": [
+				"75004"
+			],
+			"weight": 0.0,
+			"coord": {
+				"lon": 2.358322202416201,
+				"lat": 48.85585528780307
+			},
+			"admin_type": "Unknown",
+			"zone_type": "suburb"
+		},
+		{
+			"id": "admin:osm:relation:9597",
+			"insee": "75104",
+			"level": 9,
+			"label": "Paris 4e Arrondissement (75004), Paris, Île-de-France, France",
+			"name": "Paris 4e Arrondissement",
+			"zip_codes": [
+				"75004"
+			],
+			"weight": 0.0,
+			"coord": {
+				"lon": 2.3556193,
+				"lat": 48.8562021
+			},
+			"admin_type": "Unknown",
+			"zone_type": "city_district"
+		},
+		{
+			"id": "admin:osm:relation:8649",
+			"insee": "11",
+			"level": 4,
+			"label": "Île-de-France, France",
+			"name": "Île-de-France",
+			"zip_codes": [],
+			"weight": 0.08250229135889316,
+			"coord": {
+				"lon": 2.3514992,
+				"lat": 48.8566101
+			},
+			"admin_type": "Unknown",
+			"zone_type": "state"
+		},
+		{
+			"id": "admin:osm:relation:7444",
+			"insee": "75056",
+			"level": 8,
+			"label": "Paris (75000-75116), Île-de-France, France",
+			"name": "Paris",
+			"zip_codes": [
+				"75000",
+				"75001",
+				"75002",
+				"75003",
+				"75004",
+				"75005",
+				"75006",
+				"75007",
+				"75008",
+				"75009",
+				"75010",
+				"75011",
+				"75012",
+				"75013",
+				"75014",
+				"75015",
+				"75016",
+				"75017",
+				"75018",
+				"75019",
+				"75020",
+				"75116"
+			],
+			"weight": 0.015618298409952111,
+			"coord": {
+				"lon": 2.3514992,
+				"lat": 48.8566101
+			},
+			"admin_type": "City",
+			"zone_type": "city"
+		},
+		{
+			"id": "admin:osm:relation:71525",
+			"insee": "75",
+			"level": 6,
+			"label": "Paris, Île-de-France, France",
+			"name": "Paris",
+			"zip_codes": [],
+			"weight": 0.0,
+			"coord": {
+				"lon": 2.3514992,
+				"lat": 48.8566101
+			},
+			"admin_type": "Unknown",
+			"zone_type": "state_district"
+		},
+		{
+			"id": "admin:osm:relation:2202162",
+			"insee": "",
+			"level": 2,
+			"label": "France",
+			"name": "France",
+			"zip_codes": [],
+			"weight": 0.0,
+			"coord": {
+				"lon": 2.3514992,
+				"lat": 48.8566101
+			},
+			"admin_type": "Unknown",
+			"zone_type": "country"
+		}
+	],
+	"weight": 0.0,
+	"zip_codes": [],
+	"poi_type": {
+		"id": "place_of_worship",
+		"name": "place_of_worship"
+	},
+	"properties": [
+		{
+			"key": "name:latin",
+			"value": "Église Notre-Dame-des-Blancs-Manteaux"
+		},
+		{
+			"key": "amenity",
+			"value": "place_of_worship"
+		},
+		{
+			"key": "website",
+			"value": "http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html"
+		},
+		{
+			"key": "fax",
+			"value": "+33 1 42 72 01 02"
+		},
+		{
+			"key": "wikidata",
+			"value": "Q1581988"
+		},
+		{
+			"key": "denomination",
+			"value": "catholic"
+		},
+		{
+			"key": "phone",
+			"value": "+33 1 42 72 09 37"
+		},
+		{
+			"key": "source",
+			"value": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+		},
+		{
+			"key": "ref:FR:CEF",
+			"value": "75104_02"
+		},
+		{
+			"key": "name_int",
+			"value": "Église Notre-Dame-des-Blancs-Manteaux"
+		},
+		{
+			"key": "wikipedia",
+			"value": "fr:Église Notre-Dame-des-Blancs-Manteaux"
+		},
+		{
+			"key": "building",
+			"value": "church"
+		},
+		{
+			"key": "religion",
+			"value": "christian"
+		},
+		{
+			"key": "email",
+			"value": "nd.blancs.manteaux@free.fr"
+		},
+		{
+			"key": "name",
+			"value": "Église Notre-Dame-des-Blancs-Manteaux"
+		},
+		{
+			"key": "poi_subclass",
+			"value": "place_of_worship"
+		},
+		{
+			"key": "poi_class",
+			"value": "place_of_worship"
+		}
+	],
+	"address": {
+		"type": "street",
+		"id": "4574400",
+		"street_name": "Rue Aubriot",
+		"administrative_regions": [
+			{
+				"id": "admin:osm:relation:2172741",
+				"insee": "7510414",
+				"level": 10,
+				"label": "Quartier Saint-Gervais (75004), Paris 4e Arrondissement, Paris, Île-de-France, France",
+				"name": "Quartier Saint-Gervais",
+				"zip_codes": [
+					"75004"
+				],
+				"weight": 4.1035248571018216e-05,
+				"coord": {
+					"lon": 2.358322202416201,
+					"lat": 48.85585528780307
+				},
+				"admin_type": "Unknown",
+				"zone_type": "suburb"
+			},
+			{
+				"id": "admin:osm:relation:9597",
+				"insee": "75104",
+				"level": 9,
+				"label": "Paris 4e Arrondissement (75004), Paris, Île-de-France, France",
+				"name": "Paris 4e Arrondissement",
+				"zip_codes": [
+					"75004"
+				],
+				"weight": 0.00012805827571300512,
+				"coord": {
+					"lon": 2.3556193,
+					"lat": 48.8562021
+				},
+				"admin_type": "Unknown",
+				"zone_type": "city_district"
+			},
+			{
+				"id": "admin:osm:relation:8649",
+				"insee": "11",
+				"level": 4,
+				"label": "Île-de-France, France",
+				"name": "Île-de-France",
+				"zip_codes": [],
+				"weight": 0.08254246087132787,
+				"coord": {
+					"lon": 2.3514992,
+					"lat": 48.8566101
+				},
+				"admin_type": "Unknown",
+				"zone_type": "state"
+			},
+			{
+				"id": "admin:osm:relation:7444",
+				"insee": "75056",
+				"level": 8,
+				"label": "Paris (75000-75116), Île-de-France, France",
+				"name": "Paris",
+				"zip_codes": [
+					"75000",
+					"75001",
+					"75002",
+					"75003",
+					"75004",
+					"75005",
+					"75006",
+					"75007",
+					"75008",
+					"75009",
+					"75010",
+					"75011",
+					"75012",
+					"75013",
+					"75014",
+					"75015",
+					"75016",
+					"75017",
+					"75018",
+					"75019",
+					"75020",
+					"75116"
+				],
+				"weight": 0.004979426212820409,
+				"coord": {
+					"lon": 2.3514992,
+					"lat": 48.8566101
+				},
+				"admin_type": "City",
+				"zone_type": "city"
+			},
+			{
+				"id": "admin:osm:relation:71525",
+				"insee": "75",
+				"level": 6,
+				"label": "Paris, Île-de-France, France",
+				"name": "Paris",
+				"zip_codes": [],
+				"weight": 0.004979415162807348,
+				"coord": {
+					"lon": 2.3514992,
+					"lat": 48.8566101
+				},
+				"admin_type": "Unknown",
+				"zone_type": "state_district"
+			},
+			{
+				"id": "admin:osm:relation:2202162",
+				"insee": "",
+				"level": 2,
+				"label": "France",
+				"name": "France",
+				"zip_codes": [],
+				"weight": 1.0,
+				"coord": {
+					"lon": 2.3514992,
+					"lat": 48.8566101
+				},
+				"admin_type": "Unknown",
+				"zone_type": "country"
+			}
+		],
+		"label": "Rue Aubriot (Paris)",
+		"weight": 0.004979426212820409,
+		"coord": {
+			"lon": 2.3573771,
+			"lat": 48.8588243
+		},
+		"zip_codes": [
+			"75004"
+		]
+	}
+}

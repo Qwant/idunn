@@ -31,9 +31,9 @@
     "default": {
         "apistar": {
             "hashes": [
-                "sha256:abf119973b2b36533f10e9d7ad5f17791b7639b841625610f159274edd5bc918"
+                "sha256:e4bc851cbc32b17672767d1223c26e205f9c9bac63aadf2216a905863c456daf"
             ],
-            "version": "==0.5.27"
+            "version": "==0.5.29"
         },
         "certifi": {
             "hashes": [
