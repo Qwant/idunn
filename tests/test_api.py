@@ -26,6 +26,19 @@ def orsay_museum(es_client):
         return poi_id
 
 
+@pytest.fixture(scope="module")
+def blancs_manteaux(es_client):
+    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'blancs_manteaux.json')
+    with open(filepath, "r") as f:
+        blancs_manteaux = json.load(f)
+        poi_id = blancs_manteaux['id']
+        es_client.index(index='munin_poi',
+                        body=blancs_manteaux,
+                        doc_type='poi',
+                        id=poi_id,
+                        refresh=True)
+        return poi_id
+
 def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
@@ -65,6 +78,25 @@ def test_lang(orsay_museum):
     assert resp['blocks'][0]['type'] == 'opening_hours'
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
+
+def test_block_null(blancs_manteaux):
+    client = TestClient(app)
+    response = client.get(
+        url=f'http://localhost/v1/pois/{blancs_manteaux}?lang=it',
+    )
+
+    assert response.status_code == 200
+
+    resp = response.json()
+
+    assert resp['id'] == 'osm:way:55984117'
+    assert resp['name'] == "Église Notre-Dame-des-Blancs-Manteaux"
+    assert resp['local_name'] == "Église Notre-Dame-des-Blancs-Manteaux"
+    assert resp['class_name'] == 'place_of_worship'
+    assert resp['subclass_name'] == 'place_of_worship'
+    assert resp['address']['label'] == 'Rue Aubriot (Paris)'
+    assert resp['blocks'][0]['type'] == 'phone'
+    assert resp['blocks'][0]['url'] == 'tel:+33 1 42 72 09 37'
 
 
 def test_unknow_poi(orsay_museum):

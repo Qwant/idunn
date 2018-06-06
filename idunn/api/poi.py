@@ -8,7 +8,12 @@ BLOCKS_ORDER = [
 ]
 
 def build_blocks(es_poi, lang):
-    return [c.from_es(es_poi, lang) for c in BLOCKS_ORDER if c.from_es(es_poi, lang)]
+    blocks = []
+    for c in BLOCKS_ORDER:
+        block = c.from_es(es_poi, lang)
+        if block is not None:
+            blocks.append(block)
+    return blocks
 
 def get_name(properties, lang):
     """Return the POI name from the properties field of the elastic response
