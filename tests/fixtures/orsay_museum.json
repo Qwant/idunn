@@ -253,6 +253,10 @@
   "id": "osm:way:63178753",
   "label": "Musée d'Orsay (Paris)",
   "name": "Musée d'Orsay",
+  "coord": {
+	"lon": 2.3250037768187326,
+	"lat": 48.86618482685007
+  },
   "poi_types": [
     {
       "id": "museum",

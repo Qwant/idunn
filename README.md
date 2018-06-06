@@ -24,7 +24,7 @@ To run the api you need to do:
 and then
 `IDUNN_ES_URL=<url_to_elasticsearch> pipenv run python app.py`
 
-you can query the API on 4000:
+you can query the API on 5000:
 `curl localhost:5000/v1/pois/toto?lang=fr`
 
 ### Configuration
@@ -42,7 +42,7 @@ To run the tests you need the dev dependencies:
 `pipenv install --dev`
 
 Then you can run pytest:
-`pipenv run pytest tests`
+`pipenv run pytest`
 
 Note: this will require docker to be able to spawn an ES cluster.
 
