@@ -4,6 +4,20 @@ import pytest
 import json
 import os
 
+def load_poi(file_name, es_client):
+    """
+    Load a json file in the elasticsearch and returns the corresponding POI id
+    """
+    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', file_name)
+    with open(filepath, "r") as f:
+        poi = json.load(f)
+        poi_id = poi['id']
+        es_client.index(index='munin_poi',
+                        body=poi,
+                        doc_type='poi',
+                        id=poi_id,
+                        refresh=True)
+        return poi_id
 
 @pytest.fixture(scope="module")
 def orsay_museum(es_client):
@@ -14,30 +28,14 @@ def orsay_museum(es_client):
     index_name = 'munin_poi_specific'
     es_client.indices.create(index=index_name)
     es_client.indices.put_alias(name='munin_poi', index=index_name)
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'orsay_museum.json')
-    with open(filepath, "r") as f:
-        orsay_museum = json.load(f)
-        poi_id = orsay_museum['id']
-        es_client.index(index='munin_poi',
-                        body=orsay_museum,
-                        doc_type='poi',
-                        id=poi_id,
-                        refresh=True)
-        return poi_id
-
+    return load_poi('orsay_museum.json', es_client)
 
 @pytest.fixture(scope="module")
 def blancs_manteaux(es_client):
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'blancs_manteaux.json')
-    with open(filepath, "r") as f:
-        blancs_manteaux = json.load(f)
-        poi_id = blancs_manteaux['id']
-        es_client.index(index='munin_poi',
-                        body=blancs_manteaux,
-                        doc_type='poi',
-                        id=poi_id,
-                        refresh=True)
-        return poi_id
+    """
+    fill elasticsearch with one poi, the church des blancs manteaux
+    """
+    return load_poi('blancs_manteaux.json', es_client)
 
 def test_basic_query(orsay_museum):
     client = TestClient(app)
@@ -80,9 +78,13 @@ def test_lang(orsay_museum):
     assert resp['blocks'][0]['is_24_7'] == False
 
 def test_block_null(blancs_manteaux):
+    """
+    The query corresponding to POI id 'osm:way:55984117' doesn't contain any 'opening_hour' block (the block is null).
+    We check the API answer is ok (status_code == 200) with the correct fields.
+    """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{blancs_manteaux}?lang=it',
+        url=f'http://localhost/v1/pois/{blancs_manteaux}',
     )
 
     assert response.status_code == 200
