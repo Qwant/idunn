@@ -4,8 +4,11 @@ import pytest
 import json
 import os
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def init_indices(es_client):
+    """
+    Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir does
+    """
     index_name = 'munin_poi_specific'
     es_client.indices.create(index=index_name)
     es_client.indices.put_alias(name='munin_poi', index=index_name)
@@ -30,7 +33,6 @@ def orsay_museum(es_client):
     """
     fill elasticsearch with one poi, the orsay museum
     """
-    # we load the poi in 'munin_poi_specific' index and alias it to 'munin_poi' to have a architecture like mimir
     return load_poi('orsay_museum.json', es_client)
 
 @pytest.fixture(scope="module")

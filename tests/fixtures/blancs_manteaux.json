@@ -16,7 +16,7 @@
 			"zip_codes": [
 				"75004"
 			],
-			"weight": 0,
+			"weight": 0.0,
 			"coord": {
 				"lon": 2.358322202416201,
 				"lat": 48.85585528780307
@@ -33,7 +33,7 @@
 			"zip_codes": [
 				"75004"
 			],
-			"weight": 0,
+			"weight": 0.0,
 			"coord": {
 				"lon": 2.3556193,
 				"lat": 48.8562021
@@ -101,7 +101,7 @@
 			"label": "Paris, Île-de-France, France",
 			"name": "Paris",
 			"zip_codes": [],
-			"weight": 0,
+			"weight": 0.0,
 			"coord": {
 				"lon": 2.3514992,
 				"lat": 48.8566101
@@ -116,7 +116,7 @@
 			"label": "France",
 			"name": "France",
 			"zip_codes": [],
-			"weight": 0,
+			"weight": 0.0,
 			"coord": {
 				"lon": 2.3514992,
 				"lat": 48.8566101
@@ -125,7 +125,7 @@
 			"zone_type": "country"
 		}
 	],
-	"weight": 0,
+	"weight": 0.0,
 	"zip_codes": [],
 	"poi_type": {
 		"id": "place_of_worship",
@@ -315,7 +315,7 @@
 				"label": "France",
 				"name": "France",
 				"zip_codes": [],
-				"weight": 1,
+				"weight": 1.0,
 				"coord": {
 					"lon": 2.3514992,
 					"lat": 48.8566101
