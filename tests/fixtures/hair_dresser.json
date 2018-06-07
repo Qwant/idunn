@@ -1,0 +1,51 @@
+{
+	"id": "osm:node:5461745280",
+	"label": "Bajran Hair Dressing Saloon",
+	"name": "Bajran Hair Dressing Saloon",
+	"coord": {
+		"lon": 83.95267133301125,
+		"lat": 28.191708179817088
+	},
+	"administrative_regions": [
+
+	],
+	"weight": 0,
+	"zip_codes": [
+
+	],
+	"poi_type": {
+		"id": "hairdresser",
+		"name": "hairdresser"
+	},
+	"properties": [
+		{
+			"key": "shop",
+			"value": "hairdresser"
+		},
+		{
+			"key": "contact:phone",
+			"value": "9804173250"
+		},
+		{
+			"key": "name:latin",
+			"value": "Bajran Hair Dressing Saloon"
+		},
+		{
+			"key": "name",
+			"value": "Bajran Hair Dressing Saloon"
+		},
+		{
+			"key": "name_int",
+			"value": "Bajran Hair Dressing Saloon"
+		},
+		{
+			"key": "poi_subclass",
+			"value": "hairdresser"
+		},
+		{
+			"key": "poi_class",
+			"value": "hairdresser"
+		}
+	],
+	"address": null
+}

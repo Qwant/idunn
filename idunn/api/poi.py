@@ -84,6 +84,7 @@ class POI(types.Type):
     def load_poi(cls, es_poi, lang):
 
         properties = es_poi.get('properties', {})
+        address = es_poi.get('address') or {}
 
         return cls(
             id=es_poi['id'],
@@ -93,7 +94,7 @@ class POI(types.Type):
             subclass_name=properties.get('poi_subclass'),
             geometry=get_geom(es_poi),
             address= {
-                'label': es_poi.get('address').get('label')
+                'label': address.get('label')
             },
             blocks=build_blocks(es_poi, lang)
         )
