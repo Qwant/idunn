@@ -11,7 +11,9 @@ The API provides its OpenAPI schema with:
 
 The main endpoints are:
 
-* `/v1/pois/{poi_id}?lang={lang}` to get the detail of a POI.
+* `/v1/pois/{poi_id}?lang={lang}` to get the details of a POI.
+
+* `/v1/status` to get the status of the API and associated ES cluster.
 
 
 ## Running

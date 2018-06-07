@@ -10,9 +10,13 @@ def get_status(es: Elasticsearch):
     except ConnectionError as err:
         logging.error('Failed to connect to ES: %s', err)
         cluster_health = {}
+        es_reachable = False
+    else:
+        es_reachable = True
 
     return {
         'es': {
+            'reachable': es_reachable,
             'running': cluster_health.get('status') in ES_RUNNING_STATUS
         }
     }
