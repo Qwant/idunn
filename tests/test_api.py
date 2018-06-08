@@ -31,16 +31,23 @@ def load_poi(file_name, es_client):
 @pytest.fixture(scope="module")
 def orsay_museum(es_client):
     """
-    fill elasticsearch with one poi, the orsay museum
+    fill elasticsearch with the orsay museum
     """
     return load_poi('orsay_museum.json', es_client)
 
 @pytest.fixture(scope="module")
 def blancs_manteaux(es_client):
     """
-    fill elasticsearch with one poi, the church des blancs manteaux
+    fill elasticsearch with the church des blancs manteaux
     """
     return load_poi('blancs_manteaux.json', es_client)
+
+@pytest.fixture(scope="module")
+def louvre_museum(es_client):
+    """
+    fill elasticsearch with the louvre museum (with the tag 'contact:phone')
+    """
+    return load_poi('louvre_museum.json', es_client)
 
 def test_basic_query(orsay_museum):
     client = TestClient(app)
@@ -81,6 +88,28 @@ def test_lang(orsay_museum):
     assert resp['blocks'][0]['type'] == 'opening_hours'
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
+
+def test_contact_phone(louvre_museum):
+    """
+    The louvre museum has the tag 'contact:phone'
+    We test this tag is correct here
+    """
+    client = TestClient(app)
+    response = client.get(
+        url=f'http://localhost/v1/pois/{louvre_museum}',
+    )
+
+    assert response.status_code == 200
+
+    resp = response.json()
+
+    assert resp['id'] == 'osm:relation:7515426'
+    assert resp['name'] == "Musée du Louvre"
+    assert resp['local_name'] == "Musée du Louvre"
+    assert resp['class_name'] == 'museum'
+    assert resp['subclass_name'] == 'museum'
+    assert resp['blocks'][1]['type'] == 'phone'
+    assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
 
 def test_block_null(blancs_manteaux):
     """
