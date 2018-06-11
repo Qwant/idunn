@@ -1,10 +1,11 @@
 from apistar import types, validators
-from idunn.blocks.phone import PhoneBlock
-from idunn.blocks.opening_hour import OpeningHourBlock
+from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock
+from idunn.blocks.base import BlocksValidator
 
 BLOCKS_ORDER = [
     OpeningHourBlock,
-    PhoneBlock
+    PhoneBlock,
+    InformationBlock
 ]
 
 def build_blocks(es_poi, lang):
@@ -70,6 +71,7 @@ def get_geom(es_poi):
             }
     return geom
 
+
 class POI(types.Type):
     id = validators.String(allow_null=True)
     name = validators.String(allow_null=True)
@@ -78,11 +80,10 @@ class POI(types.Type):
     subclass_name = validators.String(allow_null=True)
     geometry = validators.Object(allow_null=True)
     address = validators.Object(allow_null=True)
-    blocks = validators.Array()
+    blocks = BlocksValidator(allowed_blocks=BLOCKS_ORDER)
 
     @classmethod
     def load_poi(cls, es_poi, lang):
-
         properties = es_poi.get('properties', {})
         address = es_poi.get('address') or {}
 

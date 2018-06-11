@@ -1,3 +1,6 @@
 
 ES_URL: http://localhost:9200/
 
+WIKI_USER_AGENT: 'Idunn'
+DEFAULT_LANGUAGE: 'en'
+

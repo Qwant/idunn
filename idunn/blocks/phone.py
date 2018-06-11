@@ -1,7 +1,11 @@
 from apistar import types, validators
 
-class PhoneBlock(types.Type):
-    type = validators.String(default='phone')
+from .base import BaseBlock
+
+
+class PhoneBlock(BaseBlock):
+    BLOCK_TYPE = 'phone'
+
     url = validators.String()
     international_format = validators.String()
     local_format = validators.String()

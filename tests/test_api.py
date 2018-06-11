@@ -4,6 +4,8 @@ import pytest
 import json
 import os
 
+from .utils import mock_wikipedia_with_404
+
 @pytest.fixture(scope="session")
 def init_indices(es_client):
     """
@@ -49,10 +51,12 @@ def louvre_museum(es_client):
     """
     return load_poi('louvre_museum.json', es_client)
 
+
+@mock_wikipedia_with_404
 def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{orsay_museum}',
+        url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
     )
 
     assert response.status_code == 200
@@ -69,6 +73,7 @@ def test_basic_query(orsay_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
+@mock_wikipedia_with_404
 def test_lang(orsay_museum):
     client = TestClient(app)
     response = client.get(
@@ -89,6 +94,7 @@ def test_lang(orsay_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
+@mock_wikipedia_with_404
 def test_contact_phone(louvre_museum):
     """
     The louvre museum has the tag 'contact:phone'
@@ -104,13 +110,14 @@ def test_contact_phone(louvre_museum):
     resp = response.json()
 
     assert resp['id'] == 'osm:relation:7515426'
-    assert resp['name'] == "Musée du Louvre"
+    assert resp['name'] == "Louvre Museum"
     assert resp['local_name'] == "Musée du Louvre"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
 
+@mock_wikipedia_with_404
 def test_block_null(blancs_manteaux):
     """
     The query corresponding to POI id 'osm:way:55984117' doesn't contain any 'opening_hour' block (the block is null).
@@ -118,7 +125,7 @@ def test_block_null(blancs_manteaux):
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{blancs_manteaux}',
+        url=f'http://localhost/v1/pois/{blancs_manteaux}?lang=fr',
     )
 
     assert response.status_code == 200
@@ -147,11 +154,8 @@ def test_unknow_poi(orsay_museum):
     }
 
 
-# Because of the list of block classes, the schema request bugs
-# TODO: test schema when the bug will be solved
-#
-# def test_schema():
-#    client = TestClient(app)
-#    response = client.get(url='http://localhost/schema')
-#
-#    assert response.status_code == 200  # for the moment we check just that the schema is not empty
+def test_schema():
+    client = TestClient(app)
+    response = client.get(url='http://localhost/schema')
+
+    assert response.status_code == 200  # for the moment we check just that the schema is not empty
