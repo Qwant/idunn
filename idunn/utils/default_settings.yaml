@@ -1,6 +1,6 @@
 
 ES_URL: http://localhost:9200/
 
-WIKI_USER_AGENT: 'Idunn'
-DEFAULT_LANGUAGE: 'en'
+WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
 
+DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request

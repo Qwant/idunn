@@ -13,9 +13,7 @@ def handle_requests_error(f):
         except HTTPError:
             logging.info("Got HTTP error in {}".format(f.__name__), exc_info=True)
         except RequestException:
-            logging.error(
-                "Got Request exception in {}".format(f.__name__), exc_info=True
-            )
+            logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
     return wrapper
 
 
@@ -28,8 +26,10 @@ class WikipediaSession:
     @property
     def session(self):
         if self._session is None:
+            from app import settings
+            user_agent = settings['WIKI_USER_AGENT']
             self._session = requests.Session()
-            self._session.headers.update({"User-Agent": "Idunn"})
+            self._session.headers.update({"User-Agent": user_agent})
         return self._session
 
     @handle_requests_error
@@ -88,6 +88,7 @@ class WikipediaBlock(BaseBlock):
             wiki_split = wikipedia_value.split(":", maxsplit=1)
             if len(wiki_split) == 2:
                 wiki_lang, wiki_title = wiki_split
+                wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
                     wiki_title = cls._wiki_session.get_title_in_language(
                         title=wiki_title, source_lang=wiki_lang, dest_lang=lang
@@ -97,9 +98,9 @@ class WikipediaBlock(BaseBlock):
             wiki_summary = cls._wiki_session.get_summary(wiki_title, lang=lang)
             if wiki_summary:
                 return cls(
-                    url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page"),
-                    title=wiki_summary.get("displaytitle"),
-                    description=wiki_summary.get("extract"),
+                    url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),
+                    title=wiki_summary.get("displaytitle", ""),
+                    description=wiki_summary.get("extract", ""),
                 )
 
 

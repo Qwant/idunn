@@ -1,12 +1,17 @@
 from apistar import types, validators
 
 class BaseBlock(types.Type):
-    type = validators.String()
-
     BLOCK_TYPE = '' # To override in each subclass
+
+    type = validators.String()
 
     def __init__(self, *args, **kwargs):
         if not args:
+            if not self.BLOCK_TYPE:
+                raise Exception(
+                    'Missing BLOCK_TYPE in class %s',
+                    self.__class__.__name__
+                )
             kwargs['type'] = self.BLOCK_TYPE
         super().__init__(*args, **kwargs)
 
