@@ -1,6 +1,6 @@
 import logging
 import requests
-from requests.exceptions import HTTPError, RequestException
+from requests.exceptions import HTTPError, RequestException, Timeout
 from apistar import validators
 
 from .base import BaseBlock, BlocksValidator
@@ -12,6 +12,8 @@ def handle_requests_error(f):
             return f(*args, **kwargs)
         except HTTPError:
             logging.info("Got HTTP error in {}".format(f.__name__), exc_info=True)
+        except Timeout:
+            logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
         except RequestException:
             logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
     return wrapper
@@ -19,6 +21,7 @@ def handle_requests_error(f):
 
 class WikipediaSession:
     _session = None
+    timeout = 1. # seconds
 
     api_v1_base_pattern = "https://{lang}.wikipedia.org/api/rest_v1"
     api_php_base_pattern = "https://{lang}.wikipedia.org/w/api.php"
@@ -37,7 +40,7 @@ class WikipediaSession:
         url = "{base_url}/page/summary/{title}".format(
             base_url=self.api_v1_base_pattern.format(lang=lang), title=title
         )
-        resp = self.session.get(url=url, params={"redirect": True})
+        resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
         resp.raise_for_status()
         return resp.json()
 
@@ -54,6 +57,7 @@ class WikipediaSession:
                 "formatversion": 2,
                 "format": "json",
             },
+            timeout=self.timeout,
         )
         resp.raise_for_status()
         resp_data = resp.json()
