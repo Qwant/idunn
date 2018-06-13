@@ -3,9 +3,19 @@ from app import app
 import pytest
 import json
 import os
+import re
 import responses
 
-from .utils import mock_wikipedia_with_404
+
+# In this module all requests to external services
+# are mocked with RequestsMock
+@pytest.fixture(scope="module", autouse=True)
+def mock_external_requests():
+    with responses.RequestsMock() as rsps:
+        rsps.add('GET',
+                 re.compile('^https://.*\.wikipedia.org/'),
+                 status=404)
+        yield
 
 @pytest.fixture(scope="session")
 def init_indices(es_client):
@@ -53,7 +63,6 @@ def louvre_museum(es_client):
     return load_poi('louvre_museum.json', es_client)
 
 
-@mock_wikipedia_with_404
 def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
@@ -74,7 +83,6 @@ def test_basic_query(orsay_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
-@mock_wikipedia_with_404
 def test_lang(orsay_museum):
     client = TestClient(app)
     response = client.get(
@@ -95,7 +103,6 @@ def test_lang(orsay_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
-@mock_wikipedia_with_404
 def test_contact_phone(louvre_museum):
     """
     The louvre museum has the tag 'contact:phone'
@@ -118,91 +125,6 @@ def test_contact_phone(louvre_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
 
-
-@responses.activate
-def test_wikipedia_another_language(louvre_museum):
-    """
-    The louvre museum has the tag 'wikipedia' with value 'fr:Musée du Louvre'
-    We check that wikipedia block is built using data from the wikipedia page
-    in another language.
-    """
-    responses.add(
-        responses.GET,
-        'https://fr.wikipedia.org/w/api.php',
-        json={
-            "query":{
-                "pages": [{
-                    "pageid": 69682,
-                    "ns": 0,
-                    "title":"Musée du Louvre",
-                    "langlinks":[{"lang":"es","title":"Museo del Louvre"}]
-                }]
-            }
-        }
-    )
-
-    responses.add(
-        responses.GET,
-        'https://es.wikipedia.org/api/rest_v1/page/summary/Museo%20del%20Louvre',
-        json={ # This is a subset of the real response
-            "type": "standard",
-            "title": "Museo del Louvre",
-            "displaytitle": "Museo del Louvre",
-            "content_urls":{
-                "desktop": {
-                    "page": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
-                    "revisions": "https://es.wikipedia.org/wiki/Museo_del_Louvre?action=history",
-                    "edit": "https://es.wikipedia.org/wiki/Museo_del_Louvre?action=edit",
-                    "talk": "https://es.wikipedia.org/wiki/Discusión:Museo_del_Louvre"
-                },
-                "mobile": {
-                    "page": "https://es.m.wikipedia.org/wiki/Museo_del_Louvre",
-                    "revisions": "https://es.m.wikipedia.org/wiki/Special:History/Museo_del_Louvre",
-                    "edit": "https://es.m.wikipedia.org/wiki/Museo_del_Louvre?action=edit",
-                    "talk": "https://es.m.wikipedia.org/wiki/Discusión:Museo_del_Louvre"
-                },
-            },
-            "api_urls": {
-                "summary": "https://es.wikipedia.org/api/rest_v1/page/summary/Museo_del_Louvre",
-                "metadata": "https://es.wikipedia.org/api/rest_v1/page/metadata/Museo_del_Louvre",
-                "references": "https://es.wikipedia.org/api/rest_v1/page/references/Museo_del_Louvre",
-                "media": "https://es.wikipedia.org/api/rest_v1/page/media/Museo_del_Louvre",
-                "edit_html": "https://es.wikipedia.org/api/rest_v1/page/html/Museo_del_Louvre",
-                "talk_page_html": "https://es.wikipedia.org/api/rest_v1/page/html/Discusión:Museo_del_Louvre"
-            },
-            "extract": "El Museo del Louvre es el museo nacional de Francia ...",
-            "extract_html": "<p>El <b>Museo del Louvre</b> es el museo nacional de Francia consagrado...</p>"
-        }
-    )
-
-    client = TestClient(app)
-    response = client.get(
-        url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
-    )
-
-    assert response.status_code == 200
-
-    resp = response.json()
-
-    assert resp['id'] == 'osm:relation:7515426'
-    assert resp['name'] == "Museo del Louvre"
-    assert resp['local_name'] == "Musée du Louvre"
-    assert resp['class_name'] == 'museum'
-    assert resp['subclass_name'] == 'museum'
-    assert resp['blocks'][2] == {
-        'type': 'information',
-        'blocks': [
-            {
-                'type': 'wikipedia',
-                'url': 'https://es.wikipedia.org/wiki/Museo_del_Louvre',
-                'title': 'Museo del Louvre',
-                'description': 'El Museo del Louvre es el museo nacional de Francia ...'
-            }
-        ]
-    }
-
-
-@mock_wikipedia_with_404
 def test_block_null(blancs_manteaux):
     """
     The query corresponding to POI id 'osm:way:55984117' doesn't contain any 'opening_hour' block (the block is null).

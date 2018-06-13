@@ -23,8 +23,8 @@ class WikipediaSession:
     _session = None
     timeout = 1. # seconds
 
-    api_v1_base_pattern = "https://{lang}.wikipedia.org/api/rest_v1"
-    api_php_base_pattern = "https://{lang}.wikipedia.org/w/api.php"
+    API_V1_BASE_PATTERN = "https://{lang}.wikipedia.org/api/rest_v1"
+    API_PHP_BASE_PATTERN = "https://{lang}.wikipedia.org/w/api.php"
 
     @property
     def session(self):
@@ -38,7 +38,7 @@ class WikipediaSession:
     @handle_requests_error
     def get_summary(self, title, lang):
         url = "{base_url}/page/summary/{title}".format(
-            base_url=self.api_v1_base_pattern.format(lang=lang), title=title
+            base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
         resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
         resp.raise_for_status()
@@ -46,7 +46,7 @@ class WikipediaSession:
 
     @handle_requests_error
     def get_title_in_language(self, title, source_lang, dest_lang):
-        url = self.api_php_base_pattern.format(lang=source_lang)
+        url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
         resp = self.session.get(
             url=url,
             params={
