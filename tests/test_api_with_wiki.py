@@ -75,7 +75,7 @@ def test_wikipedia_another_language(louvre_museum):
     assert resp['local_name'] == "Musée du Louvre"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
-    assert resp['blocks'][2] == {
+    assert resp['blocks'][1] == {
         'type': 'information',
         'blocks': [
             {
