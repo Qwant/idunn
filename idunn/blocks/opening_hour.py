@@ -1,4 +1,5 @@
 import re
+import logging
 import datetime
 import babel.dates
 from datetime import datetime
@@ -61,8 +62,10 @@ class OpeningHourBlock(BaseBlock):
             clean_oh = hoh.OHParser.sanitize(raw)
             oh = hoh.OHParser(clean_oh)
         except ParseError:
+            logging.info("Failed to parse OSM opening_hour field", exc_info=True)
             return None
         except SpanOverMidnight:
+            logging.info("OSM opening_hour field cannot span over midnight", exc_info=True)
             return None
 
         status = 'close'
