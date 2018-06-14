@@ -1,6 +1,9 @@
-from idunn.api.poi import POI
 from apistar.exceptions import NotFound
 from elasticsearch import Elasticsearch
+
+from idunn.api.poi import POI
+from idunn.utils.settings import Settings
+
 
 def fetch_es_poi(id, es) -> dict:
     es_pois = es.search(index='munin_poi',
@@ -20,7 +23,11 @@ def fetch_es_poi(id, es) -> dict:
     result['properties'] = properties
     return result
 
-def get_poi(id, es: Elasticsearch, lang=None) -> POI:
+def get_poi(id, es: Elasticsearch, settings: Settings, lang=None) -> POI:
+    if not lang:
+        lang = settings['DEFAULT_LANGUAGE']
+    lang = lang.lower()
+
     es_poi = fetch_es_poi(id, es)
     poi = POI.load_poi(es_poi, lang)
     return poi

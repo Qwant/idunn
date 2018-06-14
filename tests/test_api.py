@@ -3,6 +3,19 @@ from app import app
 import pytest
 import json
 import os
+import re
+import responses
+
+
+# In this module all requests to external services
+# are mocked with RequestsMock
+@pytest.fixture(scope="module", autouse=True)
+def mock_external_requests():
+    with responses.RequestsMock() as rsps:
+        rsps.add('GET',
+                 re.compile('^https://.*\.wikipedia.org/'),
+                 status=404)
+        yield
 
 @pytest.fixture(scope="session")
 def init_indices(es_client):
@@ -49,10 +62,11 @@ def louvre_museum(es_client):
     """
     return load_poi('louvre_museum.json', es_client)
 
+
 def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{orsay_museum}',
+        url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
     )
 
     assert response.status_code == 200
@@ -104,7 +118,7 @@ def test_contact_phone(louvre_museum):
     resp = response.json()
 
     assert resp['id'] == 'osm:relation:7515426'
-    assert resp['name'] == "Musée du Louvre"
+    assert resp['name'] == "Louvre Museum"
     assert resp['local_name'] == "Musée du Louvre"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
@@ -118,7 +132,7 @@ def test_block_null(blancs_manteaux):
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{blancs_manteaux}',
+        url=f'http://localhost/v1/pois/{blancs_manteaux}?lang=fr',
     )
 
     assert response.status_code == 200
@@ -138,7 +152,7 @@ def test_block_null(blancs_manteaux):
 def test_unknow_poi(orsay_museum):
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/an_unknown_poi_id',
+        url='http://localhost/v1/pois/an_unknown_poi_id',
     )
 
     assert response.status_code == 404
@@ -147,11 +161,8 @@ def test_unknow_poi(orsay_museum):
     }
 
 
-# Because of the list of block classes, the schema request bugs
-# TODO: test schema when the bug will be solved
-#
-# def test_schema():
-#    client = TestClient(app)
-#    response = client.get(url='http://localhost/schema')
-#
-#    assert response.status_code == 200  # for the moment we check just that the schema is not empty
+def test_schema():
+    client = TestClient(app)
+    response = client.get(url='http://localhost/schema')
+
+    assert response.status_code == 200  # for the moment we check just that the schema is not empty

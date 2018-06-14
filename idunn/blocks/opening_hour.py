@@ -1,9 +1,11 @@
-import re
-import datetime
-from apistar import types, validators
+from apistar import validators
 
-class OpeningHourBlock(types.Type):
-    type = validators.String(default='opening_hours')
+from .base import BaseBlock
+
+
+class OpeningHourBlock(BaseBlock):
+    BLOCK_TYPE = 'opening_hours'
+
     status = validators.String()
     next_transition_time = validators.String()
     seconds_before_next_transition = validators.Integer()

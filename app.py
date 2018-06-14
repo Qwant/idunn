@@ -9,8 +9,9 @@ routes = [
     Include('/v1', name='v1', routes=api_urls),
 ]
 
+settings = SettingsComponent('IDUNN')
 components = [
-    SettingsComponent('IDUNN'),
+    settings,
     ElasticSearchComponent()
 ]
 
