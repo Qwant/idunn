@@ -6,6 +6,7 @@ name = "pypi"
 [dev-packages]
 pytest = "*"
 lovely-pytest-docker = "*"
+freezegun = "*"
 ipython = "*"
 responses = "*"
 
@@ -13,6 +14,9 @@ responses = "*"
 apistar = "==0.5.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = "==2.*"
+osm-humanized-opening-hours = "*"
+tzwhere = "*"
+babel = "*"
 
 [requires]
 python_version = "3.6"

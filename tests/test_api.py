@@ -1,4 +1,5 @@
 from apistar.test import TestClient
+from freezegun import freeze_time
 from app import app
 import pytest
 import json
@@ -62,6 +63,12 @@ def louvre_museum(es_client):
     """
     return load_poi('louvre_museum.json', es_client)
 
+@pytest.fixture(scope="module")
+def tutti_frutti(es_client):
+    """
+    fill elasticsearch with a POI in moscow to test the opening_hour block
+    """
+    return load_poi('tutti_frutti_moscow.json', es_client)
 
 def test_basic_query(orsay_museum):
     client = TestClient(app)
@@ -122,8 +129,8 @@ def test_contact_phone(louvre_museum):
     assert resp['local_name'] == "Musée du Louvre"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
-    assert resp['blocks'][1]['type'] == 'phone'
-    assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
+    assert resp['blocks'][0]['type'] == 'phone'
+    assert resp['blocks'][0]['url'] == 'tel:+33 1 40 20 52 29'
 
 def test_block_null(blancs_manteaux):
     """
@@ -160,6 +167,36 @@ def test_unknow_poi(orsay_museum):
         "message": "poi 'an_unknown_poi_id' not found"
     }
 
+def test_opening_hour(tutti_frutti):
+    """
+    We test the opening_hour block for a POI in a different timezone (moscow).
+    """
+    client = TestClient(app)
+    freezer = freeze_time("2018-06-14 9:30:00")
+    freezer.start()
+    response = client.get(
+        url=f'http://localhost/v1/pois/{tutti_frutti}',
+    )
+    assert response.status_code == 200
+    resp = response.json()
+
+    assert resp['id'] == 'osm:node:3071876661'
+    assert resp['name'] == "Tutti Frutti"
+    assert resp['local_name'] == "Tutti Frutti"
+    assert resp['class_name'] == 'cafe'
+    assert resp['subclass_name'] == 'cafe'
+    assert resp['blocks'][1]['type'] == 'phone'
+
+    assert resp['blocks'][0] == {
+	"type": "opening_hours",
+	"status": "open",
+	"next_transition_time": "2018-06-14T22:00:00+00:00",
+	"seconds_before_next_transition": 45000,
+	"is_24_7": False,
+	"raw": "Mo-Su 10:00-22:00",
+	"days": []
+    }
+    freezer.stop()
 
 def test_schema():
     client = TestClient(app)
