@@ -31,9 +31,9 @@
     "default": {
         "apistar": {
             "hashes": [
-                "sha256:7e643a250c182871d7ef14aa3c4947b7fc4e24e048182f2eb786bb5a0968d712"
+                "sha256:c2718479d41fca848b6cf4d9ee0dfbc643f0480ae2144541ee8717a7bcba58b7"
             ],
-            "version": "==0.5.36"
+            "version": "==0.5.37"
         },
         "babel": {
             "hashes": [
@@ -98,10 +98,10 @@
         },
         "osm-humanized-opening-hours": {
             "hashes": [
-                "sha256:88c9a8d399cc9006688b451addfa5357a1aaacbe62d6acb1e70e543f405a1970",
-                "sha256:f75728e7a04dce81c5789d64a81e4a44937dabe9c41431fc2166e9e7e6588e67"
+                "sha256:327e1db0f87bb8242901b977236e6572dc75746547f6196f1bf4d442796dbe72",
+                "sha256:0bf6eac962fda54e73260d400ece72d84b857150f6bf6b839b514075b3641120"
             ],
-            "version": "==0.6.1"
+            "version": "==0.6.2"
         },
         "pytz": {
             "hashes": [
@@ -131,10 +131,10 @@
         },
         "requests": {
             "hashes": [
-                "sha256:421cfc8d9dde7d6aff68196420afd86b88c65d77d8da9cf83f4ecad785d7b9d6",
-                "sha256:cc408268d0e21589bcc2b2c248e42932b8c4d112f499c12c92e99e2178a6134c"
+                "sha256:63b52e3c866428a224f97cab011de738c36aec0185aa91cfacd418b5d58911d1",
+                "sha256:ec22d826a36ed72a7358ff3fe56cbd4ba69dd7a6718ffd450ff0e9df7a47ce6a"
             ],
-            "version": "==2.19.0"
+            "version": "==2.19.1"
         },
         "shapely": {
             "hashes": [
@@ -353,10 +353,10 @@
         },
         "requests": {
             "hashes": [
-                "sha256:421cfc8d9dde7d6aff68196420afd86b88c65d77d8da9cf83f4ecad785d7b9d6",
-                "sha256:cc408268d0e21589bcc2b2c248e42932b8c4d112f499c12c92e99e2178a6134c"
+                "sha256:63b52e3c866428a224f97cab011de738c36aec0185aa91cfacd418b5d58911d1",
+                "sha256:ec22d826a36ed72a7358ff3fe56cbd4ba69dd7a6718ffd450ff0e9df7a47ce6a"
             ],
-            "version": "==2.19.0"
+            "version": "==2.19.1"
         },
         "responses": {
             "hashes": [

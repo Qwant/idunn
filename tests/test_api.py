@@ -129,8 +129,8 @@ def test_contact_phone(louvre_museum):
     assert resp['local_name'] == "Musée du Louvre"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
-    assert resp['blocks'][0]['type'] == 'phone'
-    assert resp['blocks'][0]['url'] == 'tel:+33 1 40 20 52 29'
+    assert resp['blocks'][1]['type'] == 'phone'
+    assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
 
 def test_block_null(blancs_manteaux):
     """
