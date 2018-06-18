@@ -44,7 +44,7 @@ class OpeningHourBlock(BaseBlock):
     BLOCK_TYPE = 'opening_hours'
 
     status = validators.String()
-    next_transition_time = validators.String()
+    next_transition_datetime = validators.String()
     seconds_before_next_transition = validators.Integer()
     is_24_7 = validators.Boolean()
     raw = validators.String()
@@ -68,14 +68,15 @@ class OpeningHourBlock(BaseBlock):
             return None
 
         status = 'close'
-        next_transition_time = ''
+        next_transition_datetime = ''
         time_before_next = 0
         poi_tz = get_tz(es_poi)
         if poi_tz is not None:
             poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)
             if poi_dt is not None:
-                next_transition = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
-                next_transition_time = next_transition.isoformat()
+                nt = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
+                next_transition = poi_tz.localize(nt.replace(tzinfo=None))
+                next_transition_datetime = next_transition.isoformat()
                 delta = next_transition - poi_dt
                 time_before_next = int(delta.total_seconds())
                 if oh.is_open(poi_dt):
@@ -83,7 +84,7 @@ class OpeningHourBlock(BaseBlock):
 
         return cls(
             status=status,
-            next_transition_time=next_transition_time,
+            next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
             is_24_7=is247,
             raw=raw,
