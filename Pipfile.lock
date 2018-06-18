@@ -31,9 +31,9 @@
     "default": {
         "apistar": {
             "hashes": [
-                "sha256:c2718479d41fca848b6cf4d9ee0dfbc643f0480ae2144541ee8717a7bcba58b7"
+                "sha256:95941142b88d849710117bfeb96ca69e7c991182c479ca1559640e72e327f675"
             ],
-            "version": "==0.5.37"
+            "version": "==0.5.39"
         },
         "babel": {
             "hashes": [

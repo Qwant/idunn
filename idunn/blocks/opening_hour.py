@@ -1,7 +1,6 @@
 import re
 import logging
 import datetime
-import babel.dates
 from datetime import datetime
 from pytz import country_timezones, timezone, UTC
 
