@@ -63,8 +63,9 @@ class OpeningHourBlock(BaseBlock):
         except ParseError:
             logging.info("Failed to parse OSM opening_hour field", exc_info=True)
             return None
-        except SpanOverMidnight: # In the current hoh version, opening hours are not allowed to span over midnight
+        except SpanOverMidnight: # In the current hoh version (branch 'new-parsing' of the repo) opening hours are not allowed to span over midnight
                                  # However in the coming version this feature will be supported
+                                 # TODO: remove this catch when this will be released
             logging.info("OSM opening_hour field cannot span over midnight", exc_info=True)
             return None
 
