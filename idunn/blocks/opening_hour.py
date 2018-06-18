@@ -43,7 +43,7 @@ def get_tz(es_poi):
 class OpeningHourBlock(BaseBlock):
     BLOCK_TYPE = 'opening_hours'
 
-    status = validators.String()
+    status = validators.String(enum=['open', 'closed'])
     next_transition_datetime = validators.String()
     seconds_before_next_transition = validators.Integer()
     is_24_7 = validators.Boolean()
@@ -74,7 +74,7 @@ class OpeningHourBlock(BaseBlock):
             logging.info("OSM opening_hour field cannot span over midnight", exc_info=True)
             return None
 
-        status = 'close'
+        status = 'closed'
         next_transition_datetime = ''
         time_before_next = 0
         poi_tz = get_tz(es_poi)

@@ -58,13 +58,13 @@ def test_opening_hour_open():
 @freeze_time("2018-06-14 21:30:00", tz_offset=0)
 def test_opening_hour_close():
     """
-    The POI should already be close since it's 21h30 UTC while
+    The POI should already be closed since it's 21h30 UTC while
     the POI closes at 22h00 in UTC+3.
     """
     oh_block = get_moscow_poi("Mo-Su 10:00-22:00")
 
     assert oh_block == OpeningHourBlock(
-        status='close',
+        status='closed',
         next_transition_datetime='2018-06-15T10:00:00+03:00',
         seconds_before_next_transition=34200,
         is_24_7=False,
@@ -76,12 +76,12 @@ def test_opening_hour_close():
 def test_opening_hour_next_year():
     """
     The POI is open only in Jan and Feb, and we are in Jun.
-    So it's close, and it will be open the 2019/01/01.
+    So it's closed, and it will be open the 2019/01/01.
     """
     oh_block = get_moscow_poi("Jan-Feb 10:00-20:00")
 
     assert oh_block == OpeningHourBlock(
-        status='close',
+        status='closed',
         next_transition_datetime='2019-01-01T10:00:00+03:00',
         seconds_before_next_transition=17314200,
         is_24_7=False,
