@@ -48,7 +48,7 @@ def test_opening_hour_open():
 
     assert oh_block == OpeningHourBlock(
         status='open',
-        next_transition_datetime='2018-06-14T22:00:00+03:00', # given in UTC datetime format
+        next_transition_datetime='2018-06-14T22:00:00+03:00',
         seconds_before_next_transition=37800,
         is_24_7=False,
         raw='Mo-Su 10:00-22:00',
