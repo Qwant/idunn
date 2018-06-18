@@ -10,16 +10,15 @@ def test_opening_hour():
     information.
     """
     client = TestClient(app)
-    with freeze_time("2018-06-14 9:30:00", tz_offset=1):
+    with freeze_time("2018-06-14 8:30:00", tz_offset=0):
         """
-        We freeze time at 9h30 Paris
-        (ie. 8h30 UTC, 11h30 Moscow)
+        We freeze time at 8h30 UTC (ie. 11h30 Moscow)
         The POI located in Moscow should be open since
-        the local time is 11h30.
+        it opens at 10h00 and the local time is 11h30.
 
-        We create a fake OpeningHourBlock from a
+        Below we create a fake OpeningHourBlock from a
         raw json extracted from a POI located in
-        Moscow city.
+        Moscow city that opens at 10h00.
         """
         oh_block = OpeningHourBlock.from_es(
             {
@@ -41,7 +40,7 @@ def test_opening_hour():
         assert oh_block == OpeningHourBlock(
             status='open',
             next_transition_datetime='2018-06-14T22:00:00+03:00',
-            seconds_before_next_transition=34200,
+            seconds_before_next_transition=37800,
             is_24_7=False,
             raw='Mo-Su 10:00-22:00',
             days=[]
