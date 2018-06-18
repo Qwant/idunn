@@ -63,7 +63,8 @@ class OpeningHourBlock(BaseBlock):
         except ParseError:
             logging.info("Failed to parse OSM opening_hour field", exc_info=True)
             return None
-        except SpanOverMidnight:
+        except SpanOverMidnight: # In the current hoh version, opening hours are not allowed to span over midnight
+                                 # However in the coming version this feature will be supported
             logging.info("OSM opening_hour field cannot span over midnight", exc_info=True)
             return None
 
@@ -73,14 +74,18 @@ class OpeningHourBlock(BaseBlock):
         poi_tz = get_tz(es_poi)
         if poi_tz is not None:
             poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)
-            if poi_dt is not None:
-                nt = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
-                next_transition = poi_tz.localize(nt.replace(tzinfo=None))
-                next_transition_datetime = next_transition.isoformat()
-                delta = next_transition - poi_dt
-                time_before_next = int(delta.total_seconds())
-                if oh.is_open(poi_dt):
-                    status = 'open'
+            # The current version of the hoh lib doesn't allow to use the next_change() function
+            # with an offset aware datetime.
+            # This is why we replace the timezone info until this problem is fixed in the library.
+            nt = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
+            # Then we localize the next_change transition datetime in the local POI timezone.
+            next_transition = poi_tz.localize(nt.replace(tzinfo=None))
+
+            next_transition_datetime = next_transition.isoformat()
+            delta = next_transition - poi_dt
+            time_before_next = int(delta.total_seconds())
+            if oh.is_open(poi_dt):
+                status = 'open'
 
         return cls(
             status=status,
