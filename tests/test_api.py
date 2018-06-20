@@ -62,7 +62,6 @@ def louvre_museum(es_client):
     """
     return load_poi('louvre_museum.json', es_client)
 
-
 def test_basic_query(orsay_museum):
     client = TestClient(app)
     response = client.get(
@@ -159,7 +158,6 @@ def test_unknow_poi(orsay_museum):
     assert response.json() == {
         "message": "poi 'an_unknown_poi_id' not found"
     }
-
 
 def test_schema():
     client = TestClient(app)
