@@ -164,3 +164,40 @@ def test_schema():
     response = client.get(url='http://localhost/schema')
 
     assert response.status_code == 200  # for the moment we check just that the schema is not empty
+
+def test_services_and_information(orsay_museum):
+    client = TestClient(app)
+    response = client.get(
+        url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
+    )
+
+    assert response.status_code == 200
+
+    resp = response.json()
+
+    assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
+	{
+	    "type": "accessibility",
+	    "wheelchair": "true",
+	    "tactile_paving": "false",
+	    "toilets_wheelchair": "false"
+	},
+	{
+	    "type": "internet_access",
+	    "wifi": True
+	},
+	{
+	    "type": "brewery",
+	    "beers": [
+		{
+		    "name": "Tripel Karmeliet"
+		},
+		{
+		    "name": "Delirium"
+		},
+                {
+                    "name": "Chouffe"
+                }
+	    ]
+	}
+    ]
