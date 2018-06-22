@@ -1,0 +1,183 @@
+{
+  "address": {
+    "city": "Paris",
+    "citycode": "75056",
+    "housenumber": "62B",
+    "id": "addr:2.326285;48.859635",
+    "label": "62B Rue de Lille (Paris)",
+    "name": "62B Rue de Lille",
+    "postcode": "75007",
+    "street": "Rue de Lille",
+    "type": "house"
+  },
+  "city": "Paris",
+  "citycode": "75056",
+  "id": "osm:way:7777777",
+  "label": "Fake All (Paris)",
+  "name": "Fake All",
+  "coord": {
+	"lon": 2.3250037768187326,
+	"lat": 48.86618482685007
+  },
+  "poi_types": [
+    {
+      "id": "museum",
+      "name": "museum"
+    }
+  ],
+  "postcode": null,
+  "properties": [
+    {
+      "key": "name:it",
+      "value": "Museo d'Orsay"
+    },
+    {
+      "key": "name:ja",
+      "value": "オルセー美術館"
+    },
+    {
+      "key": "website",
+      "value": "http://www.musee-orsay.fr"
+    },
+    {
+      "key": "wikidata",
+      "value": "Q23402"
+    },
+    {
+      "key": "wikipedia",
+      "value": "fr:Musée d'Orsay"
+    },
+    {
+      "key": "name:en",
+      "value": "Musee d'Orsay"
+    },
+    {
+      "key": "name:latin",
+      "value": "Musée d'Orsay"
+    },
+    {
+      "key": "building:use",
+      "value": "museum"
+    },
+    {
+      "key": "description:fr",
+      "value": "Collections : Art français et européen de 1848 à 1914"
+    },
+    {
+      "key": "tourism:visitors",
+      "value": "3500000"
+    },
+    {
+      "key": "name:ko",
+      "value": "오르세 미술관"
+    },
+    {
+      "key": "name:zh",
+      "value": "奧賽博物館"
+    },
+    {
+      "key": "name_int",
+      "value": "Musee d'Orsay"
+    },
+    {
+      "key": "addr:postcode",
+      "value": "75007"
+    },
+    {
+      "key": "name",
+      "value": "Fake All"
+    },
+    {
+      "key": "height",
+      "value": "35"
+    },
+    {
+      "key": "name:es",
+      "value": "Fako Allo"
+    },
+    {
+      "key": "wheelchair",
+      "value": "yes"
+    },
+    {
+      "key": "name:ru",
+      "value": "Музей Орсе"
+    },
+    {
+      "key": "tourism",
+      "value": "museum"
+    },
+    {
+      "key": "name:fr",
+      "value": "Musée d'Orsay"
+    },
+    {
+      "key": "name:pl",
+      "value": "Muzeum Orsay"
+    },
+	{
+	  "key": "contact:email",
+	  "value": "contact@example.com"
+	},
+	{
+	  "key": "brewery",
+	  "value": "Kilkenny;Guinness"
+	},
+	{
+	  "wifi": "yes"
+	},
+    {
+      "key": "phone",
+      "value": "+33140494814"
+    },
+    {
+      "key": "building",
+      "value": "train_station"
+    },
+    {
+      "key": "addr:housenumber",
+      "value": "1"
+    },
+    {
+      "key": "importance",
+      "value": "international"
+    },
+    {
+      "key": "old_name",
+      "value": "Gare d'Orsay"
+    },
+    {
+      "key": "addr:street",
+      "value": "Rue de la Légion d'Honneur"
+    },
+    {
+      "key": "opening_hours",
+      "value": "Tu-Su 09:30-18:00; Th 09:30-21:45"
+    },
+    {
+      "key": "poi_subclass",
+      "value": "museum"
+    },
+    {
+      "key": "poi_class",
+      "value": "museum"
+    },
+	{
+	  "key": "wifi",
+	  "value": "yes"
+	},
+	{
+	  "key": "contact:website",
+	  "value": "http://testing.test"
+	},
+	{
+	  "key": "wheelchair",
+	  "value": "yes"
+	},
+	{
+	  "key": "mail",
+	  "value": "mailto:contact@example.com"
+	}
+  ],
+  "type": "poi"
+}

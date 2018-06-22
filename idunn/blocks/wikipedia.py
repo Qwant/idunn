@@ -70,6 +70,7 @@ class WikipediaSession:
                 return lang_links[0].get("title")
 
         return None
+
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"
 
