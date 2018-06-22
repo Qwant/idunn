@@ -28,14 +28,6 @@
   "postcode": null,
   "properties": [
     {
-      "key": "name:it",
-      "value": "Museo d'Orsay"
-    },
-    {
-      "key": "name:ja",
-      "value": "オルセー美術館"
-    },
-    {
       "key": "website",
       "value": "http://www.musee-orsay.fr"
     },
@@ -48,36 +40,12 @@
       "value": "fr:Musée d'Orsay"
     },
     {
-      "key": "name:en",
-      "value": "Musee d'Orsay"
-    },
-    {
-      "key": "name:latin",
-      "value": "Musée d'Orsay"
-    },
-    {
-      "key": "building:use",
-      "value": "museum"
-    },
-    {
       "key": "description:fr",
       "value": "Collections : Art français et européen de 1848 à 1914"
     },
     {
       "key": "tourism:visitors",
       "value": "3500000"
-    },
-    {
-      "key": "name:ko",
-      "value": "오르세 미술관"
-    },
-    {
-      "key": "name:zh",
-      "value": "奧賽博物館"
-    },
-    {
-      "key": "name_int",
-      "value": "Musee d'Orsay"
     },
     {
       "key": "addr:postcode",
@@ -88,10 +56,6 @@
       "value": "Fake All"
     },
     {
-      "key": "height",
-      "value": "35"
-    },
-    {
       "key": "name:es",
       "value": "Fako Allo"
     },
@@ -100,20 +64,12 @@
       "value": "yes"
     },
     {
-      "key": "name:ru",
-      "value": "Музей Орсе"
-    },
-    {
       "key": "tourism",
       "value": "museum"
     },
     {
       "key": "name:fr",
       "value": "Musée d'Orsay"
-    },
-    {
-      "key": "name:pl",
-      "value": "Muzeum Orsay"
     },
 	{
 	  "key": "contact:email",
@@ -133,18 +89,6 @@
     {
       "key": "building",
       "value": "train_station"
-    },
-    {
-      "key": "addr:housenumber",
-      "value": "1"
-    },
-    {
-      "key": "importance",
-      "value": "international"
-    },
-    {
-      "key": "old_name",
-      "value": "Gare d'Orsay"
     },
     {
       "key": "addr:street",

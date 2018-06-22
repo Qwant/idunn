@@ -389,26 +389,26 @@
       "key": "poi_class",
       "value": "museum"
     },
-	{
-	  "key": "brewery",
-	  "value": "Tripel Karmeliet;Delirium;Chouffe"
-	},
-	{
-	  "key": "wifi",
-	  "value": "yes"
-	},
-	{
-	  "key": "contact:website",
-	  "value": "http://testing.test"
-	},
-	{
-	  "key": "wheelchair",
-	  "value": "yes"
-	},
-	{
-	  "key": "mail",
-	  "value": "mailto:contact@example.com"
-	}
+    {
+      "key": "brewery",
+      "value": "Tripel Karmeliet;Delirium;Chouffe"
+    },
+    {
+      "key": "wifi",
+      "value": "yes"
+    },
+    {
+      "key": "contact:website",
+      "value": "http://testing.test"
+    },
+    {
+      "key": "wheelchair",
+      "value": "yes"
+    },
+    {
+      "key": "mail",
+      "value": "mailto:contact@example.com"
+    }
   ],
   "type": "poi"
 }
