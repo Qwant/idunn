@@ -71,17 +71,17 @@
       "key": "name:fr",
       "value": "Musée d'Orsay"
     },
-	{
-	  "key": "contact:email",
-	  "value": "contact@example.com"
-	},
-	{
-	  "key": "brewery",
-	  "value": "Kilkenny;Guinness"
-	},
-	{
-	  "wifi": "yes"
-	},
+    {
+      "key": "contact:email",
+      "value": "contact@example.com"
+    },
+    {
+      "key": "brewery",
+      "value": "Kilkenny;Guinness"
+    },
+    {
+      "wifi": "yes"
+    },
     {
       "key": "phone",
       "value": "+33140494814"
@@ -106,22 +106,22 @@
       "key": "poi_class",
       "value": "museum"
     },
-	{
-	  "key": "wifi",
-	  "value": "yes"
-	},
-	{
-	  "key": "contact:website",
-	  "value": "http://testing.test"
-	},
-	{
-	  "key": "wheelchair",
-	  "value": "yes"
-	},
-	{
-	  "key": "mail",
-	  "value": "mailto:contact@example.com"
-	}
+    {
+      "key": "wifi",
+      "value": "yes"
+    },
+    {
+      "key": "contact:website",
+      "value": "http://testing.test"
+    },
+    {
+      "key": "wheelchair",
+      "value": "yes"
+    },
+    {
+      "key": "mail",
+      "value": "mailto:contact@example.com"
+    }
   ],
   "type": "poi"
 }
