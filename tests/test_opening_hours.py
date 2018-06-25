@@ -43,7 +43,6 @@ def test_opening_hour_open():
     it opens at 10h00 every day and the local time
     is 11h30.
     """
-    client = TestClient(app)
     oh_block = get_moscow_poi("Mo-Su 10:00-22:00")
 
     assert oh_block == OpeningHourBlock(

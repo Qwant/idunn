@@ -1,11 +1,13 @@
 from apistar import types, validators
-from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock
+from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
 from idunn.blocks.base import BlocksValidator
 
 BLOCKS_ORDER = [
     OpeningHourBlock,
     PhoneBlock,
-    InformationBlock
+    InformationBlock,
+    WebSiteBlock,
+    ContactBlock
 ]
 
 def build_blocks(es_poi, lang):
