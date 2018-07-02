@@ -70,6 +70,7 @@ def test_basic_query(orsay_museum):
     )
 
     assert response.status_code == 200
+    assert response.headers.get('Access-Control-Allow-Origin') == '*'
 
     resp = response.json()
 
