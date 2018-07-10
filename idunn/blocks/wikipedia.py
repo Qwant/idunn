@@ -3,11 +3,14 @@ import requests
 from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
+import pybreaker
+
+wiki_breaker = pybreaker.CircuitBreaker(fail_max=15, reset_timeout=120)
 
 def handle_requests_error(f):
     def wrapper(*args, **kwargs):
         try:
-            return f(*args, **kwargs)
+            return wiki_breaker.call(f,*args, **kwargs)
         except HTTPError:
             logging.info("Got HTTP error in {}".format(f.__name__), exc_info=True)
         except Timeout:
@@ -91,12 +94,18 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang, wiki_title = wiki_split
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
-                    wiki_title = cls._wiki_session.get_title_in_language(
-                        title=wiki_title, source_lang=wiki_lang, dest_lang=lang
-                    )
+                    try:
+                        wiki_title = cls._wiki_session.get_title_in_language(
+                            title=wiki_title, source_lang=wiki_lang, dest_lang=lang
+                        )
+                    except pybreaker.CircuitBreakerError:
+                        return None
 
         if wiki_title:
-            wiki_summary = cls._wiki_session.get_summary(wiki_title, lang=lang)
+            try:
+                wiki_summary = cls._wiki_session.get_summary(wiki_title, lang=lang)
+            except pybreaker.CircuitBreakerError:
+                return None
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),

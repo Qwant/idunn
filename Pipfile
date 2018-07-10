@@ -17,6 +17,7 @@ requests = "==2.*"
 osm-humanized-opening-hours = "*"
 tzwhere = "*"
 babel = "*"
+pybreaker = "*"
 
 [requires]
 python_version = "3.6"
