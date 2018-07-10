@@ -1,13 +1,14 @@
 from apistar.test import TestClient
 from freezegun import freeze_time
-from app import app, settings
 import pytest
 import os
 import re
 import json
-from .test_api import load_poi
 import responses
-from .test_api import orsay_museum
+
+from app import app, settings
+from .test_api import load_poi, orsay_museum
+
 
 @pytest.fixture(scope="session")
 def basket_ball_wiki_es(wiki_client, init_indices):

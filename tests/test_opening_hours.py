@@ -1,6 +1,5 @@
-from app import app
 from freezegun import freeze_time
-from apistar.test import TestClient
+from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
 
 """
@@ -46,12 +45,56 @@ def test_opening_hour_open():
     oh_block = get_moscow_poi("Mo-Su 10:00-22:00")
 
     assert oh_block == OpeningHourBlock(
+        type='opening_hours',
         status='open',
         next_transition_datetime='2018-06-14T22:00:00+03:00',
         seconds_before_next_transition=37800,
         is_24_7=False,
         raw='Mo-Su 10:00-22:00',
-        days=[]
+        days=[
+            {
+                "dayofweek": 1,
+                "local_date": "2018-06-11",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+            {
+                "dayofweek": 2,
+                "local_date": "2018-06-12",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+            {
+                "dayofweek": 3,
+                "local_date": "2018-06-13",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+            {
+                "dayofweek": 4,
+                "local_date": "2018-06-14",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+            {
+                "dayofweek": 5,
+                "local_date": "2018-06-15",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+            {
+                "dayofweek": 6,
+                "local_date": "2018-06-16",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+            {
+                "dayofweek": 7,
+                "local_date": "2018-06-17",
+                "status": "open",
+                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+            },
+        ]
     )
 
 @freeze_time("2018-06-14 21:30:00", tz_offset=0)
@@ -62,14 +105,14 @@ def test_opening_hour_close():
     """
     oh_block = get_moscow_poi("Mo-Su 10:00-22:00")
 
-    assert oh_block == OpeningHourBlock(
-        status='closed',
-        next_transition_datetime='2018-06-15T10:00:00+03:00',
-        seconds_before_next_transition=34200,
-        is_24_7=False,
-        raw='Mo-Su 10:00-22:00',
-        days=[]
-    )
+    assert oh_block.status == 'closed'
+    assert oh_block.next_transition_datetime == '2018-06-15T10:00:00+03:00'
+    assert oh_block.seconds_before_next_transition == 34200
+    assert oh_block.is_24_7 ==  False
+    assert oh_block.raw == 'Mo-Su 10:00-22:00'
+    assert len(oh_block.days) == 7
+    assert all(d.status == 'open' for d in oh_block.days)
+
 
 @freeze_time("2018-06-14 21:30:00", tz_offset=0)
 def test_opening_hour_next_year():
@@ -79,11 +122,91 @@ def test_opening_hour_next_year():
     """
     oh_block = get_moscow_poi("Jan-Feb 10:00-20:00")
 
-    assert oh_block == OpeningHourBlock(
+    assert dict(oh_block) == dict(
+        type='opening_hours',
         status='closed',
         next_transition_datetime='2019-01-01T10:00:00+03:00',
         seconds_before_next_transition=17314200,
         is_24_7=False,
         raw='Jan-Feb 10:00-20:00',
-        days=[]
+        days=ANY
+    )
+    assert len(oh_block.days) == 7
+    assert all(d.status == 'closed' for d in oh_block.days)
+
+
+@freeze_time("2018-06-14T23:00:00+03:00")
+def test_opening_hour_open_until_midnight():
+    oh_block = get_moscow_poi("Mo-Su 09:00-00:00")
+    assert oh_block == dict(
+        type='opening_hours',
+        status='open',
+        next_transition_datetime='2018-06-15T00:00:00+03:00',
+        seconds_before_next_transition=3600,
+        is_24_7=False,
+        raw='Mo-Su 09:00-24:00',
+        days=ANY
+    )
+    assert len(oh_block.days) == 7
+    assert all(d.status == 'open' for d in oh_block.days)
+    assert all(d.opening_hours == [dict(
+        beginning='09:00',
+        end='00:00'
+    )] for d in oh_block.days)
+
+
+@freeze_time("2018-06-15T21:00:00+03:00")
+def test_opening_hour_days_cycle():
+    oh_block = get_moscow_poi("We-Mo 11:00-19:00")
+    assert oh_block == dict(
+        type='opening_hours',
+        status='closed',
+        next_transition_datetime='2018-06-16T11:00:00+03:00',
+        seconds_before_next_transition=50400,
+        is_24_7=False,
+        raw='We-Mo 11:00-19:00',
+        days=[
+            {
+                "dayofweek": 1,
+                "local_date": "2018-06-11",
+                "status": "open",
+                "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
+            },
+            {
+                "dayofweek": 2,
+                "local_date": "2018-06-12",
+                "status": "closed",
+                "opening_hours": []
+            },
+            {
+                "dayofweek": 3,
+                "local_date": "2018-06-13",
+                "status": "open",
+                "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
+            },
+            {
+                "dayofweek": 4,
+                "local_date": "2018-06-14",
+                "status": "open",
+                "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
+            },
+            {
+                "dayofweek": 5,
+                "local_date": "2018-06-15",
+                "status": "open",
+                "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
+            },
+            {
+                "dayofweek": 6,
+                "local_date": "2018-06-16",
+                "status": "open",
+                "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
+            },
+            {
+                "dayofweek": 7,
+                "local_date": "2018-06-17",
+                "status": "open",
+                "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
+            },
+        ]
     )

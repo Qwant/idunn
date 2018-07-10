@@ -10,7 +10,18 @@ def test_internet_access_block():
         },
         lang='en'
     )
+    assert web_block is None
 
+
+def test_internet_access_block_ok():
+    web_block = InternetAccessBlock.from_es(
+        {
+            "properties": {
+                "internet_access": "wlan"
+            }
+        },
+        lang='en'
+    )
     assert web_block == InternetAccessBlock(
-        wifi=False
+        wifi=True
     )

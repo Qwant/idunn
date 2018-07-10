@@ -1,22 +1,9 @@
 from apistar.test import TestClient
-from freezegun import freeze_time
 from app import app
 import pytest
 import json
 import os
-import re
-import responses
 
-
-# In this module all requests to external services
-# are mocked with RequestsMock
-@pytest.fixture(scope="module", autouse=True)
-def mock_external_requests():
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-        rsps.add('GET',
-                 re.compile('^https://.*\.wikipedia.org/'),
-                 status=404)
-        yield
 
 def load_poi(file_name, mimir_client):
     """
@@ -177,8 +164,8 @@ def test_services_and_information(orsay_museum):
 	{
 	    "type": "accessibility",
 	    "wheelchair": "true",
-	    "tactile_paving": "false",
-	    "toilets_wheelchair": "false"
+	    "tactile_paving": "unknown",
+	    "toilets_wheelchair": "unknown"
 	},
 	{
 	    "type": "internet_access",

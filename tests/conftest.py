@@ -1,8 +1,9 @@
 import pytest
+import responses
+import re
 from elasticsearch import Elasticsearch
-from app import app, settings
-from idunn.utils.settings import SettingsComponent
-from idunn.blocks.wikipedia import HTTPError40X
+
+from app import settings
 
 
 @pytest.fixture(scope='session')
@@ -63,3 +64,11 @@ def init_indices(mimir_client, wiki_client):
             }
         }
     )
+
+@pytest.fixture(scope="module", autouse=True)
+def mock_external_requests():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add('GET',
+                 re.compile('^https://.*\.wikipedia.org/'),
+                 status=404)
+        yield
