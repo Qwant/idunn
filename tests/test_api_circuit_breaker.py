@@ -11,6 +11,12 @@ from .test_full import fake_all_blocks
 
 @pytest.fixture(scope="module", autouse=True)
 def breaker_test():
+    """
+    We define here settings specific to tests
+    for the circuit_breaker in order to avoid
+    any waste of time with real timeout and
+    failmax
+    """
     WikipediaBreaker.init_breaker()
     wiki_breaker = WikipediaBreaker.get_breaker()
     wiki_breaker.fail_max = 3
@@ -50,6 +56,10 @@ def test_circuit_breaker_500(fake_all_blocks, breaker_test):
         resp = response.json()
         assert all(b['type'] != "wikipedia" for b in resp['blocks'])
 
+        """
+        After the timeout the circuit should be half-open.
+        So one more external call should be done.
+        """
         sleep(3)
 
         for i in range(10):

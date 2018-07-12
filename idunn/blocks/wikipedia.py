@@ -15,9 +15,9 @@ class WikipediaBreaker:
     def init_breaker(cls):
         from app import settings
         cls._breaker = pybreaker.CircuitBreaker(
-                fail_max=settings['CIRCUIT_FAILMAX'],
-                reset_timeout=settings['CIRCUIT_TIMEOUT'],
-                exclude=[HTTPError40X])
+                fail_max = settings['MAXFAIL'],
+                reset_timeout = settings['TIMEOUT'],
+                exclude = [HTTPError40X])
 
     @classmethod
     def get_breaker(cls):
