@@ -4,110 +4,88 @@ import re
 from freezegun import freeze_time
 from app import app
 from apistar.test import TestClient
-from idunn.blocks.wikipedia import wiki_breaker
+from idunn.blocks.wikipedia import WikipediaBreaker
+from time import sleep
 
 from .test_full import fake_all_blocks
 
-@pytest.fixture(scope="module", autouse=False)
-def mock_wiki_requests():
-    with responses.RequestsMock() as rsps:
-        rsps.add('GET',
-                 re.compile('^https://.*\.wikipedia.org/'),
-                 status=500)
-        yield rsps
+@pytest.fixture(scope="module", autouse=True)
+def breaker_test():
+    WikipediaBreaker.init_breaker()
+    wiki_breaker = WikipediaBreaker.get_breaker()
+    wiki_breaker.fail_max = 3
+    wiki_breaker.reset_timeout = 1
+    return wiki_breaker
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_circuit_breaker(fake_all_blocks, mock_wiki_requests):
+def test_circuit_breaker_500(fake_all_blocks, breaker_test):
     """
+    Test when the external service returns a
+    HTTPError 500.
     Test that all possible blocks are correct even
     if the circuit is open.
-    We mock 20 calls to wikipedia while the max number
-    of failure is 15, so we test that after 15 calls
-    the circuit is open (ie there are no more than 15
-    calls).
     """
-
     client = TestClient(app)
-    wiki_breaker.close()
-    for i in range(20):
-        response = client.get(
-            url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
-        )
-    assert wiki_breaker.fail_counter == len(mock_wiki_requests.calls)
+    with responses.RequestsMock() as rsps:
+        rsps.add('GET',
+             re.compile('^https://.*\.wikipedia.org/'),
+             status=500)
+        """
+        We mock 40 calls to wikipedia while the max number
+        of failure is 30, so we test that after 30 calls
+        the circuit is open (i.e there are no more than 30
+        calls sent).
+        """
+        breaker_test.close()
 
-    assert response.status_code == 200
-    resp = response.json()
+        for i in range(10):
+            response = client.get(
+                url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+            )
 
-    assert resp == {
-        "id": "osm:way:7777777",
-        "name": "Fako Allo",
-        "local_name": "Fake All",
-        "class_name": "museum",
-        "subclass_name": "museum",
-        "geometry": {
-            "coordinates": [
-                2.3250037768187326,
-                48.86618482685007
-            ],
-            "type": "Point"
-        },
-        "address": {
-            "label": "62B Rue de Lille (Paris)"
-        },
-        "blocks": [
-            {
-                "type": "opening_hours",
-                "status": "open",
-                "next_transition_datetime": "2018-06-14T18:00:00+02:00",
-                "seconds_before_next_transition": 27000,
-                "is_24_7": False,
-                "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-                "days": []
-            },
-            {
-                "type": "phone",
-                "url": "tel:+33140494814",
-                "international_format": "+33140494814",
-                "local_format": "+33140494814"
-            },
-            {
-                "type": "information",
-                "blocks": [
-                    {
-                        "type": "services_and_information",
-                        "blocks": [
-                            {
-                                "type": "accessibility",
-                                "wheelchair": "true",
-                                "tactile_paving": "false",
-                                "toilets_wheelchair": "false"
-                            },
-                            {
-                                "type": "internet_access",
-                                "wifi": True
-                            },
-                            {
-                                "type": "brewery",
-                                "beers": [
-                                    {
-                                        "name": "Kilkenny"
-                                    },
-                                    {
-                                        "name": "Guinness"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "type": "website",
-                "url": "http://testing.test"
-            },
-            {
-                "type": "contact",
-                "url": "mailto:contact@example.com",
-            },
-        ]
-    }
+        assert response.status_code == 200
+
+        assert 'open' == breaker_test.current_state
+        assert len(rsps.calls) == 3
+
+        resp = response.json()
+        assert all(b['type'] != "wikipedia" for b in resp['blocks'])
+
+        sleep(3)
+
+        for i in range(10):
+            response = client.get(
+                url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+            )
+        assert len(rsps.calls) == 4
+
+def test_circuit_breaker_404(fake_all_blocks, breaker_test):
+    """
+    Same test as 'test_circuit_breaker_500' except
+    that the external service returns this time an
+    HTTPError 404.
+    The circuit doesn't open on 404.
+    Consequently we should observe the same number
+    of calls.
+    """
+    client = TestClient(app)
+    with responses.RequestsMock() as rsps:
+        rsps.add('GET',
+                re.compile('^https://.*\.wikipedia.org/'),
+                status=404)
+        """
+        Even after more requests than the max number of
+        failures of the circuit breaker the circuit should
+        remained closed since the 404 is an exlude exception
+        """
+        breaker_test.close()
+
+        for i in range(4):
+            response = client.get(
+               url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+            )
+
+        assert 'closed' == breaker_test.current_state
+        assert len(rsps.calls) == 4
+
+        resp = response.json()
+        assert all(b['type'] != "wikipedia" for b in resp['blocks'])

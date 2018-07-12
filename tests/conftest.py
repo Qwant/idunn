@@ -2,6 +2,7 @@ import pytest
 from elasticsearch import Elasticsearch
 from app import app
 from idunn.utils.settings import SettingsComponent
+from idunn.blocks.wikipedia import HTTPError40X
 
 
 @pytest.fixture(scope='session')
