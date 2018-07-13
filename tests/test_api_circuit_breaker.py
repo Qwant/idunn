@@ -17,7 +17,6 @@ def breaker_test():
     any waste of time with real timeout and
     failmax
     """
-    WikipediaBreaker.init_breaker()
     wiki_breaker = WikipediaBreaker.get_breaker()
     wiki_breaker.fail_max = 3
     wiki_breaker.reset_timeout = 1
