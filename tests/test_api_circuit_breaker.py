@@ -36,9 +36,9 @@ def test_circuit_breaker_500(fake_all_blocks, breaker_test):
              re.compile('^https://.*\.wikipedia.org/'),
              status=500)
         """
-        We mock 40 calls to wikipedia while the max number
-        of failure is 30, so we test that after 30 calls
-        the circuit is open (i.e there are no more than 30
+        We mock 10 calls to wikipedia while the max number
+        of failure is 3, so we test that after 3 calls
+        the circuit is open (i.e there are no more than 3
         calls sent).
         """
         breaker_test.close()
@@ -58,9 +58,9 @@ def test_circuit_breaker_500(fake_all_blocks, breaker_test):
 
         """
         After the timeout the circuit should be half-open.
-        So one more external call should be done.
+        So one more external call should be done and only one.
         """
-        sleep(3)
+        sleep(1)
 
         for i in range(10):
             response = client.get(
@@ -85,7 +85,7 @@ def test_circuit_breaker_404(fake_all_blocks, breaker_test):
         """
         Even after more requests than the max number of
         failures of the circuit breaker the circuit should
-        remained closed since the 404 is an exlude exception
+        remained closed since the 404 is an exclude exception
         """
         breaker_test.close()
 

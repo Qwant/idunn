@@ -5,6 +5,6 @@ WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
 
 DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
 
-TIMEOUT: 120
+WIKI_API_CIRCUIT_TIMEOUT: 120
 
-MAXFAIL: 50
+WIKI_API_CIRCUIT_MAXFAIL: 50

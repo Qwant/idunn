@@ -15,8 +15,8 @@ class WikipediaBreaker:
     def init_breaker(cls):
         from app import settings
         cls._breaker = pybreaker.CircuitBreaker(
-                fail_max = settings['MAXFAIL'],
-                reset_timeout = settings['TIMEOUT'],
+                fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
+                reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
                 exclude = [HTTPError40X])
 
     @classmethod
@@ -28,10 +28,9 @@ class WikipediaBreaker:
     @classmethod
     def handle_requests_error(cls, f):
         def wrapper(*args, **kwargs):
-            if cls._breaker is None:
-                cls.init_breaker()
+            breaker = cls.get_breaker()
             try:
-                return cls._breaker(f)(*args, **kwargs)
+                return breaker(f)(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
                 logging.info("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
@@ -65,7 +64,7 @@ class WikipediaSession:
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
         resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
-        if resp.status_code in range(400, 500):
+        if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
         return resp.json()
@@ -85,7 +84,7 @@ class WikipediaSession:
             },
             timeout=self.timeout,
         )
-        if resp.status_code in range(400, 500):
+        if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
         resp_data = resp.json()
