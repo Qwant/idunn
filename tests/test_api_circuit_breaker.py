@@ -9,7 +9,7 @@ from time import sleep
 
 from .test_full import fake_all_blocks
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture()
 def breaker_test():
     """
     We define here settings specific to tests
@@ -20,6 +20,7 @@ def breaker_test():
     wiki_breaker = WikipediaBreaker.get_breaker()
     wiki_breaker.fail_max = 3
     wiki_breaker.reset_timeout = 1
+    wiki_breaker.close()
     return wiki_breaker
 
 def test_circuit_breaker_500(fake_all_blocks, breaker_test):
@@ -40,8 +41,6 @@ def test_circuit_breaker_500(fake_all_blocks, breaker_test):
         the circuit is open (i.e there are no more than 3
         calls sent).
         """
-        breaker_test.close()
-
         for i in range(10):
             response = client.get(
                 url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
@@ -86,8 +85,6 @@ def test_circuit_breaker_404(fake_all_blocks, breaker_test):
         failures of the circuit breaker the circuit should
         remained closed since the 404 is an exclude exception
         """
-        breaker_test.close()
-
         for i in range(4):
             response = client.get(
                url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
