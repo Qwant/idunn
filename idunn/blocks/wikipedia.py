@@ -3,18 +3,43 @@ import requests
 from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
+import pybreaker
 
-def handle_requests_error(f):
-    def wrapper(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except HTTPError:
-            logging.info("Got HTTP error in {}".format(f.__name__), exc_info=True)
-        except Timeout:
-            logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
-        except RequestException:
-            logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
-    return wrapper
+class HTTPError40X(HTTPError):
+    pass
+
+class WikipediaBreaker:
+    _breaker = None
+
+    @classmethod
+    def init_breaker(cls):
+        from app import settings
+        cls._breaker = pybreaker.CircuitBreaker(
+                fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
+                reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
+                exclude = [HTTPError40X])
+
+    @classmethod
+    def get_breaker(cls):
+        if cls._breaker is None:
+            cls.init_breaker()
+        return cls._breaker
+
+    @classmethod
+    def handle_requests_error(cls, f):
+        def wrapper(*args, **kwargs):
+            breaker = cls.get_breaker()
+            try:
+                return breaker(f)(*args, **kwargs)
+            except pybreaker.CircuitBreakerError:
+                logging.info("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
+            except HTTPError:
+                logging.info("Got HTTP error in {}".format(f.__name__), exc_info=True)
+            except Timeout:
+                logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
+            except RequestException:
+                logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
+        return wrapper
 
 
 class WikipediaSession:
@@ -33,16 +58,18 @@ class WikipediaSession:
             self._session.headers.update({"User-Agent": user_agent})
         return self._session
 
-    @handle_requests_error
+    @WikipediaBreaker.handle_requests_error
     def get_summary(self, title, lang):
         url = "{base_url}/page/summary/{title}".format(
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
         resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
+        if 400 <= resp.status_code < 500:
+            raise HTTPError40X
         resp.raise_for_status()
         return resp.json()
 
-    @handle_requests_error
+    @WikipediaBreaker.handle_requests_error
     def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
         resp = self.session.get(
@@ -57,6 +84,8 @@ class WikipediaSession:
             },
             timeout=self.timeout,
         )
+        if 400 <= resp.status_code < 500:
+            raise HTTPError40X
         resp.raise_for_status()
         resp_data = resp.json()
         resp_pages = resp_data.get("query", {}).get("pages", [])
