@@ -12,20 +12,11 @@ import responses
 # are mocked with RequestsMock
 @pytest.fixture(scope="module", autouse=True)
 def mock_external_requests():
-    with responses.RequestsMock() as rsps:
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
                  re.compile('^https://.*\.wikipedia.org/'),
                  status=404)
         yield
-
-@pytest.fixture(scope="session")
-def init_indices(es_client):
-    """
-    Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir does
-    """
-    index_name = 'munin_poi_specific'
-    es_client.indices.create(index=index_name)
-    es_client.indices.put_alias(name='munin_poi', index=index_name)
 
 def load_poi(file_name, es_client):
     """
@@ -42,22 +33,22 @@ def load_poi(file_name, es_client):
                         refresh=True)
         return poi_id
 
-@pytest.fixture(scope="module")
-def orsay_museum(es_client):
+@pytest.fixture(scope="session")
+def orsay_museum(es_client, init_indices):
     """
     fill elasticsearch with the orsay museum
     """
     return load_poi('orsay_museum.json', es_client)
 
-@pytest.fixture(scope="module")
-def blancs_manteaux(es_client):
+@pytest.fixture(scope="session")
+def blancs_manteaux(es_client, init_indices):
     """
     fill elasticsearch with the church des blancs manteaux
     """
     return load_poi('blancs_manteaux.json', es_client)
 
-@pytest.fixture(scope="module")
-def louvre_museum(es_client):
+@pytest.fixture(scope="session")
+def louvre_museum(init_indices, es_client):
     """
     fill elasticsearch with the louvre museum (with the tag 'contact:phone')
     """

@@ -5,3 +5,8 @@ services:
     image: elasticsearch:2-alpine
     ports:
     - "9200"
+
+  wiki_es:
+    image: elasticsearch:2-alpine
+    ports:
+        - "9201:9200"

@@ -1,6 +1,8 @@
 
 ES_URL: http://localhost:9200/
 
+WIKI_ES: http://localhost:9200/
+
 WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
 
 DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
@@ -8,3 +10,5 @@ DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
 WIKI_API_CIRCUIT_TIMEOUT: 120
 
 WIKI_API_CIRCUIT_MAXFAIL: 50
+
+ES_WIKI_LANG: "de,en,es,fr,it"

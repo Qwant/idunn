@@ -24,7 +24,7 @@ To run the api you need to do:
 `pipenv install`
 
 and then
-`IDUNN_ES_URL=<url_to_elasticsearch> pipenv run python app.py`
+`IDUNN_ES_URL=<url_to_elasticsearch> IDUNN_ES_WIKI_LANG=<comma_separated_languages> IDUNN_WIKI_ES=<url_to_WIKI_ES> pipenv run python app.py`
 
 you can query the API on 5000:
 `curl localhost:5000/v1/pois/toto?lang=fr`
