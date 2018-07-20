@@ -106,14 +106,10 @@ class Wikidata:
     _es_lang = None
 
     @classmethod
-    def init_lang(cls):
-        from app import settings
-        cls._es_lang = settings['ES_WIKI_LANG'].split(',')
-
-    @classmethod
     def get_wiki_index(cls, lang):
         if cls._es_lang is None:
-            cls.init_lang()
+            from app import settings
+            cls._es_lang = settings['ES_WIKI_LANG'].split(',')
         if lang in cls._es_lang:
             return "wikidata_{}".format(lang)
         return None
@@ -143,7 +139,11 @@ class Wikidata:
             return None
 
         wiki = resp[0]['_source']
-        return (wiki.get("url"), wiki.get("title"), wiki.get("content"))
+        return (
+            wiki.get("url"),
+            wiki.get("title"),
+            wiki.get("content")
+        )
 
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"
@@ -157,9 +157,9 @@ class WikipediaBlock(BaseBlock):
     @classmethod
     def from_es(cls, es_poi, lang):
         """
-        If wikidata id is present, then we fetch our WIKI_ES,
-        else if the request lang is not in the lang white list,
-        then we fetch the wikipedia API.
+        If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
+        then we try to fetch our "WIKI_ES",
+        else then we fetch the wikipedia API.
         """
         wikidata_id = es_poi.get("properties", {}).get("wikidata")
         if wikidata_id is not None:
