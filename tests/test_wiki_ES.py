@@ -7,6 +7,7 @@ import re
 import json
 from .test_api import load_poi
 import responses
+from .test_api import orsay_museum
 
 @pytest.fixture(scope="session")
 def basket_ball_wiki_es(wiki_client, init_indices):
@@ -31,17 +32,22 @@ def basket_ball(mimir_client):
     """
     return load_poi('basket_ball.json', mimir_client)
 
+@pytest.fixture(scope="function")
+def undefine_wiki_es():
+    from idunn.blocks.wikipedia import WikidataConnector
+    WikidataConnector._wiki_es = None
+    wiki_es_ip = settings['WIKI_ES'] # temporary variable to store the ip of WIKI_ES to reset it after the test
+    settings._settings['WIKI_ES'] = None
+    yield
+    settings._settings['WIKI_ES'] = wiki_es_ip # put back the correct ip for next tests
+
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_undefined_WIKI_ES(basket_ball):
+def test_undefined_WIKI_ES(basket_ball, undefine_wiki_es):
     """
     Check that when the WIKI_ES variable is not set
     a Wikipedia call is observed
     """
-    from idunn.blocks.wikipedia import WikidataConnector
     client = TestClient(app)
-    WikidataConnector._wiki_es = None
-    wiki_es_ip = settings['WIKI_ES'] # temporary variable to store the ip of WIKI_ES to reset it after the test
-    settings._settings['WIKI_ES'] = None
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
              re.compile('^https://.*\.wikipedia.org/'),
@@ -54,10 +60,9 @@ def test_undefined_WIKI_ES(basket_ball):
             )
 
         assert len(rsps.calls) == 10
-    settings._settings['WIKI_ES'] = wiki_es_ip # put back the correct ip for next tests
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_POI_not_in_WIKI_ES(basket_ball, basket_ball_wiki_es):
+def test_POI_not_in_WIKI_ES(orsay_museum, basket_ball_wiki_es):
     """
     Test that when the POI requested is not in WIKI_ES
     no call to Wikipedia is observed
@@ -69,13 +74,56 @@ def test_POI_not_in_WIKI_ES(basket_ball, basket_ball_wiki_es):
              status=200)
 
         response = client.get(
-                url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
+                url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
         )
 
         assert response.status_code == 200
 
+        """
+        First we check that no call to Wikipedia have been done
+        """
         assert len(rsps.calls) == 0
 
+        """
+        Then we check the answer is correct anyway
+        """
+        resp = response.json()
+
+        assert resp['id'] == 'osm:way:63178753'
+        assert resp['name'] == "Musée d'Orsay"
+        assert resp['local_name'] == "Musée d'Orsay"
+        assert resp['class_name'] == 'museum'
+        assert resp['subclass_name'] == 'museum'
+        assert resp['address']['label'] == '62B Rue de Lille (Paris)'
+        assert resp['blocks'][0]['type'] == 'opening_hours'
+        assert resp['blocks'][1]['type'] == 'phone'
+        assert resp['blocks'][0]['is_24_7'] == False
+        assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
+            {
+                "type": "accessibility",
+                "wheelchair": "true",
+                "tactile_paving": "false",
+                "toilets_wheelchair": "false"
+            },
+            {
+                "type": "internet_access",
+                "wifi": True
+            },
+            {
+                "type": "brewery",
+                "beers": [
+                    {
+                        "name": "Tripel Karmeliet"
+                    },
+                    {
+                        "name": "Delirium"
+                    },
+                    {
+                        "name": "Chouffe"
+                    }
+                ]
+            }
+        ]
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_no_lang_WIKI_ES(basket_ball, basket_ball_wiki_es):
