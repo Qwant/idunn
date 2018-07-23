@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  elasticsearch:
+  mimir_es:
     image: elasticsearch:2-alpine
     ports:
     - "9200"
@@ -9,4 +9,4 @@ services:
   wiki_es:
     image: elasticsearch:2-alpine
     ports:
-        - "9201:9200"
+        - "9200"

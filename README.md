@@ -24,7 +24,7 @@ To run the api you need to do:
 `pipenv install`
 
 and then
-`IDUNN_ES_URL=<url_to_elasticsearch> IDUNN_ES_WIKI_LANG=<comma_separated_languages> IDUNN_WIKI_ES=<url_to_WIKI_ES> pipenv run python app.py`
+`IDUNN_MIMIR_ES=<url_to_elasticsearch> IDUNN_WIKI_ES=<url_to_WIKI_ES> pipenv run python app.py`
 
 you can query the API on 5000:
 `curl localhost:5000/v1/pois/toto?lang=fr`
@@ -36,7 +36,7 @@ The configuration can be given from different ways:
  2. a yaml settings file can be given with an env var IDUNN_CONFIG_FILE
     (the default settings is still loaded and overriden)
  3. specific variable can be overriden with env var. They need to be given like "IDUNN_{var_name}={value}"
-    eg IDUNN_ES_URL=...
+    eg IDUNN_MIMIR_ES=...
 
 ## Testing
 

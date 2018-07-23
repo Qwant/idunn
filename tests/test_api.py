@@ -18,7 +18,7 @@ def mock_external_requests():
                  status=404)
         yield
 
-def load_poi(file_name, es_client):
+def load_poi(file_name, mimir_client):
     """
     Load a json file in the elasticsearch and returns the corresponding POI id
     """
@@ -26,7 +26,7 @@ def load_poi(file_name, es_client):
     with open(filepath, "r") as f:
         poi = json.load(f)
         poi_id = poi['id']
-        es_client.index(index='munin_poi',
+        mimir_client.index(index='munin_poi',
                         body=poi,
                         doc_type='poi',
                         id=poi_id,
@@ -34,25 +34,25 @@ def load_poi(file_name, es_client):
         return poi_id
 
 @pytest.fixture(scope="session")
-def orsay_museum(es_client, init_indices):
+def orsay_museum(mimir_client, init_indices):
     """
     fill elasticsearch with the orsay museum
     """
-    return load_poi('orsay_museum.json', es_client)
+    return load_poi('orsay_museum.json', mimir_client)
 
 @pytest.fixture(scope="session")
-def blancs_manteaux(es_client, init_indices):
+def blancs_manteaux(mimir_client, init_indices):
     """
     fill elasticsearch with the church des blancs manteaux
     """
-    return load_poi('blancs_manteaux.json', es_client)
+    return load_poi('blancs_manteaux.json', mimir_client)
 
 @pytest.fixture(scope="session")
-def louvre_museum(init_indices, es_client):
+def louvre_museum(init_indices, mimir_client):
     """
     fill elasticsearch with the louvre museum (with the tag 'contact:phone')
     """
-    return load_poi('louvre_museum.json', es_client)
+    return load_poi('louvre_museum.json', mimir_client)
 
 def test_basic_query(orsay_museum):
     client = TestClient(app)

@@ -6,8 +6,6 @@ from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
 from elasticsearch import Elasticsearch
 
-class HTTPError40X(HTTPError):
-    pass
 
 class WikipediaBreaker:
     _breaker = None
@@ -42,6 +40,9 @@ class WikipediaBreaker:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
         return wrapper
 
+
+class HTTPError40X(HTTPError):
+    pass
 
 class WikipediaSession:
     _session = None
@@ -101,7 +102,11 @@ class WikipediaSession:
 
         return None
 
-class Wikidata:
+
+class WikiUndefinedException(Exception):
+    pass
+
+class WikidataConnector:
     _wiki_es = None
     _es_lang = None
 
@@ -115,16 +120,20 @@ class Wikidata:
         return None
 
     @classmethod
-    def get_wiki_es(cls):
+    def init_wiki_es(cls):
         if cls._wiki_es is None:
             from app import settings
-            cls._wiki_es = Elasticsearch(settings['WIKI_ES'])
-        return cls._wiki_es
+            wiki_es = settings.get('WIKI_ES')
+            if wiki_es is None:
+                raise WikiUndefinedException
+            else:
+                cls._wiki_es = Elasticsearch(wiki_es)
 
     @classmethod
     def get_wiki_info(cls, wikidata_id, lang, wiki_index):
+        cls.init_wiki_es()
 
-        resp = cls.get_wiki_es().search(
+        resp = cls._wiki_es.search(
             index=wiki_index,
             body={
                 "filter": {
@@ -158,22 +167,31 @@ class WikipediaBlock(BaseBlock):
     def from_es(cls, es_poi, lang):
         """
         If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
-        then we try to fetch our "WIKI_ES",
+        then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
         else then we fetch the wikipedia API.
         """
         wikidata_id = es_poi.get("properties", {}).get("wikidata")
         if wikidata_id is not None:
-            wiki_index = Wikidata.get_wiki_index(lang)
+            wiki_index = WikidataConnector.get_wiki_index(lang)
             if wiki_index is not None:
-                wiki_poi_info = Wikidata.get_wiki_info(wikidata_id, lang, wiki_index)
-                if wiki_poi_info is not None:
-                    return cls(
-                        url=wiki_poi_info[0],
-                        title=wiki_poi_info[1][0],
-                        description=wiki_poi_info[2],
-                    )
-                else:
-                    return None
+                try:
+                    wiki_poi_info = WikidataConnector.get_wiki_info(wikidata_id, lang, wiki_index)
+                    if wiki_poi_info is not None:
+                        return cls(
+                            url=wiki_poi_info[0],
+                            title=wiki_poi_info[1][0],
+                            description=wiki_poi_info[2],
+                        )
+                    else:
+                        """
+                        if the lang is in ES_WIKI_LANG and
+                        the WIKI_ES contains no information,
+                        then there is no need to call the
+                        Wikipedia API, i.e we return None
+                        """
+                        return None
+                except WikiUndefinedException:
+                    logging.warning("WIKI_ES variable has not been set: call to Wikipedia")
 
         wikipedia_value = es_poi.get("properties", {}).get("wikipedia")
         wiki_title = None

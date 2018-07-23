@@ -1,6 +1,6 @@
 from apistar.test import TestClient
 from freezegun import freeze_time
-from app import app
+from app import app, settings
 import pytest
 import os
 import re
@@ -9,7 +9,7 @@ from .test_api import load_poi
 import responses
 
 @pytest.fixture(scope="session")
-def basket_ball_wiki_es(wiki_es_client, init_indices):
+def basket_ball_wiki_es(wiki_client, init_indices):
     """
     fill the elasticsearch WIKI_ES with a POI of basket ball
     """
@@ -17,7 +17,7 @@ def basket_ball_wiki_es(wiki_es_client, init_indices):
     with open(filepath, "r") as f:
         poi = json.load(f)
         poi_id = poi['id']
-        wiki_es_client.index(index='wikidata_fr',
+        wiki_client.index(index='wikidata_fr',
                         body=poi,
                         doc_type='wikipedia',
                         id=poi_id,
@@ -25,11 +25,79 @@ def basket_ball_wiki_es(wiki_es_client, init_indices):
         return poi_id
 
 @pytest.fixture(scope="session")
-def basket_ball(es_client):
+def basket_ball(mimir_client):
     """
     fill elasticsearch with a fake POI of basket ball
     """
-    return load_poi('basket_ball.json', es_client)
+    return load_poi('basket_ball.json', mimir_client)
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_undefined_WIKI_ES(basket_ball):
+    """
+    Check that when the WIKI_ES variable is not set
+    a Wikipedia call is observed
+    """
+    from idunn.blocks.wikipedia import WikidataConnector
+    client = TestClient(app)
+    WikidataConnector._wiki_es = None
+    wiki_es_ip = settings['WIKI_ES'] # temporary variable to store the ip of WIKI_ES to reset it after the test
+    settings._settings['WIKI_ES'] = None
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add('GET',
+             re.compile('^https://.*\.wikipedia.org/'),
+             status=200,
+             json={"test": "test"})
+
+        for i in range(10):
+            response = client.get(
+                url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
+            )
+
+        assert len(rsps.calls) == 10
+    settings._settings['WIKI_ES'] = wiki_es_ip # put back the correct ip for next tests
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_POI_not_in_WIKI_ES(basket_ball, basket_ball_wiki_es):
+    """
+    Test that when the POI requested is not in WIKI_ES
+    no call to Wikipedia is observed
+    """
+    client = TestClient(app)
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add('GET',
+             re.compile('^https://.*\.wikipedia.org/'),
+             status=200)
+
+        response = client.get(
+                url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
+        )
+
+        assert response.status_code == 200
+
+        assert len(rsps.calls) == 0
+
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_no_lang_WIKI_ES(basket_ball, basket_ball_wiki_es):
+    """
+    Test that when we don't have the lang available in the index
+    we call Wikipedia API
+    """
+    client = TestClient(app)
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add('GET',
+             re.compile('^https://.*\.wikipedia.org/'),
+             status=200,
+             json={"test": "test"})
+
+        """
+        We make a request in russian language ("ru")
+        """
+        response = client.get(
+            url=f'http://localhost/v1/pois/{basket_ball}?lang=ru',
+        )
+
+        assert len(rsps.calls) == 1
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_basket_ball(basket_ball, basket_ball_wiki_es):

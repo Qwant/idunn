@@ -1,7 +1,7 @@
 
-ES_URL: http://localhost:9200/
+MIMIR_ES: http://localhost:9200/
 
-WIKI_ES: http://localhost:9200/
+WIKI_ES:
 
 WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
 
@@ -11,4 +11,4 @@ WIKI_API_CIRCUIT_TIMEOUT: 120
 
 WIKI_API_CIRCUIT_MAXFAIL: 50
 
-ES_WIKI_LANG: "de,en,es,fr,it"
+ES_WIKI_LANG: "de,en,es,fr,it" # the (comma separated) list of languages existing in the WIKI_ES
