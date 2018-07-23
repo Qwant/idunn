@@ -148,11 +148,8 @@ class WikidataConnector:
             return None
 
         wiki = resp[0]['_source']
-        return (
-            wiki.get("url"),
-            wiki.get("title"),
-            wiki.get("content")
-        )
+
+        return wiki
 
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"
@@ -178,9 +175,9 @@ class WikipediaBlock(BaseBlock):
                     wiki_poi_info = WikidataConnector.get_wiki_info(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
-                            url=wiki_poi_info[0],
-                            title=wiki_poi_info[1][0],
-                            description=wiki_poi_info[2],
+                            url=wiki_poi_info.get("url"),
+                            title=wiki_poi_info.get("title")[0],
+                            description=wiki_poi_info.get("content"),
                         )
                     else:
                         """
