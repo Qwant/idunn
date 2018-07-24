@@ -84,36 +84,38 @@ class OpeningHourBlock(BaseBlock):
             return None
 
         poi_tz = get_tz(es_poi)
-        if poi_tz is not None:
-            poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)
-            # The current version of the hoh lib doesn't allow to use the next_change() function
-            # with an offset aware datetime.
-            # This is why we replace the timezone info until this problem is fixed in the library.
-            nt = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
-
-            # Then we localize the next_change transition datetime in the local POI timezone.
-            next_transition = poi_tz.localize(nt.replace(tzinfo=None))
-            next_transition = cls.round_dt_to_minute(next_transition)
-
-            next_transition_datetime = next_transition.isoformat()
-            delta = next_transition - poi_dt
-            time_before_next = int(delta.total_seconds())
-
-            if oh.is_open(poi_dt):
-                status = 'open'
-            else:
-                status = 'closed'
-
-            return cls(
-                status=status,
-                next_transition_datetime=next_transition_datetime,
-                seconds_before_next_transition=time_before_next,
-                is_24_7=is247,
-                raw=oh.sanitized_field,
-                days=cls.get_days(oh, dt=poi_dt)
-            )
-        else:
+        if poi_tz is None:
+            logging.info("No timezone found for poi %s", es_poi.get('id'))
             return None
+
+        poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)
+        # The current version of the hoh lib doesn't allow to use the next_change() function
+        # with an offset aware datetime.
+        # This is why we replace the timezone info until this problem is fixed in the library.
+        nt = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
+
+        # Then we localize the next_change transition datetime in the local POI timezone.
+        next_transition = poi_tz.localize(nt.replace(tzinfo=None))
+        next_transition = cls.round_dt_to_minute(next_transition)
+
+        next_transition_datetime = next_transition.isoformat()
+        delta = next_transition - poi_dt
+        time_before_next = int(delta.total_seconds())
+
+        if oh.is_open(poi_dt):
+            status = 'open'
+        else:
+            status = 'closed'
+
+        return cls(
+            status=status,
+            next_transition_datetime=next_transition_datetime,
+            seconds_before_next_transition=time_before_next,
+            is_24_7=is247,
+            raw=oh.sanitized_field,
+            days=cls.get_days(oh, dt=poi_dt)
+        )
+
 
     @staticmethod
     def round_dt_to_minute(dt):
