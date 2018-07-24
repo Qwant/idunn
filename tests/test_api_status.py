@@ -6,7 +6,7 @@ from elasticsearch.exceptions import ConnectionError
 from app import app
 
 
-def test_v1_status_ok(es):
+def test_v1_status_ok(mimir_es):
     client = TestClient(app)
     response = client.get("http://localhost/v1/status")
 
@@ -15,7 +15,7 @@ def test_v1_status_ok(es):
 
 
 @patch.object(ClusterClient, "health", new=lambda *args: {"status": "red"})
-def test_v1_status_es_red(es):
+def test_v1_status_es_red(mimir_es):
     client = TestClient(app)
     response = client.get("http://localhost/v1/status")
 
@@ -24,7 +24,7 @@ def test_v1_status_es_red(es):
 
 
 @patch.object(ClusterClient, "health")
-def test_v1_status_es_unreachable(mock_es_health, es):
+def test_v1_status_es_unreachable(mock_es_health, mimir_es):
     mock_es_health.side_effect = ConnectionError
 
     client = TestClient(app)

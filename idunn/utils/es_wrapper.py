@@ -19,4 +19,4 @@ class ElasticSearchComponent(Component):
         return self._es
 
     def _make_client(self, settings) -> Elasticsearch:
-        self._es = Elasticsearch(settings['ES_URL'])
+        self._es = Elasticsearch(settings['MIMIR_ES'])
