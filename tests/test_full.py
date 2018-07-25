@@ -1,9 +1,10 @@
+import pytest
 from apistar.test import TestClient
 from freezegun import freeze_time
+
 from app import app
-import pytest
-import json
 from .test_api import load_poi
+
 
 @pytest.fixture(scope="module")
 def fake_all_blocks(mimir_client):
@@ -12,6 +13,7 @@ def fake_all_blocks(mimir_client):
     in order that Idunn returns all possible blocks.
     """
     return load_poi('fake_all_blocks.json', mimir_client)
+
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_full(fake_all_blocks):
@@ -47,11 +49,72 @@ def test_full(fake_all_blocks):
             {
                 "type": "opening_hours",
                 "status": "open",
-                "next_transition_datetime": "2018-06-14T18:00:00+02:00",
-                "seconds_before_next_transition": 27000,
+                "next_transition_datetime": "2018-06-14T21:45:00+02:00",
+                "seconds_before_next_transition": 40500,
                 "is_24_7": False,
                 "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-                "days": []
+                "days": [
+                    {
+                        "dayofweek": 1,
+                        "local_date": "2018-06-11",
+                        "status": "closed",
+                        "opening_hours": []
+                    },
+                    {
+                        "dayofweek": 2,
+                        "local_date": "2018-06-12",
+                        "status": "open",
+                        "opening_hours": [{
+                            'beginning': '09:30',
+                            'end': '18:00'
+                        }]
+                    },
+                    {
+                        "dayofweek": 3,
+                        "local_date": "2018-06-13",
+                        "status": "open",
+                        "opening_hours": [{
+                            'beginning': '09:30',
+                            'end': '18:00'
+                        }]
+                    },
+                    {
+                        "dayofweek": 4,
+                        "local_date": "2018-06-14",
+                        "status": "open",
+                        "opening_hours": [{
+                            'beginning': '09:30',
+                            'end': '21:45'
+                        }]
+                    },
+                    {
+                        "dayofweek": 5,
+                        "local_date": "2018-06-15",
+                        "status": "open",
+                        "opening_hours": [{
+                            'beginning': '09:30',
+                            'end': '18:00'
+                        }]
+                    },
+                    {
+                        "dayofweek": 6,
+                        "local_date": "2018-06-16",
+                        "status": "open",
+                        "opening_hours": [{
+                            'beginning': '09:30',
+                            'end': '18:00'
+                        }]
+                    },
+                    {
+                        "dayofweek": 7,
+                        "local_date": "2018-06-17",
+                        "status": "open",
+                        "opening_hours": [{
+                            'beginning': '09:30',
+                            'end': '18:00'
+                        }]
+                    },
+                ]
             },
             {
                 "type": "phone",
@@ -63,19 +126,13 @@ def test_full(fake_all_blocks):
                 "type": "information",
                 "blocks": [
                     {
-                        "type": "wikipedia",
-                        "url": "https://es.wikipedia.org/wiki/Museo_de_Orsay",
-                        "title": "Museo de Orsay",
-                        "description": "El Museo de Orsay es una pinacoteca ubicada en París (Francia), que se dedica a las artes plásticas del siglo XIX y, más en concreto, del periodo 1848-1914. Ocupa el antiguo edificio de la estación ferroviaria de Orsay y alberga la mayor colección de obras impresionistas del mundo, con obras maestras de la pintura y de la escultura como Almuerzo sobre la hierba y Olympia de Édouard Manet, una prueba de la estatua La pequeña bailarina de catorce años de Degas, Baile en el Moulin de la Galette de Renoir, varias obras esenciales de Courbet e incluso cinco cuadros de la Serie des Catedrales de Rouen de Monet. Cronológicamente, este museo cubre la historia del arte entre los maestros antiguos y el arte moderno y contemporáneo."
-                    },
-                    {
                         "type": "services_and_information",
                         "blocks": [
                             {
                                 "type": "accessibility",
                                 "wheelchair": "true",
-                                "tactile_paving": "false",
-                                "toilets_wheelchair": "false"
+                                "tactile_paving": "unknown",
+                                "toilets_wheelchair": "unknown"
                             },
                             {
                                 "type": "internet_access",

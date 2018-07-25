@@ -1,24 +1,31 @@
 [[source]]
+
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
+
 [dev-packages]
+
 pytest = "*"
 lovely-pytest-docker = "*"
 freezegun = "*"
 ipython = "*"
 responses = "*"
 
+
 [packages]
+
 apistar = "==0.5.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = "==2.*"
-osm-humanized-opening-hours = "*"
 tzwhere = "*"
 babel = "*"
 pybreaker = "*"
+osm-humanized-opening-hours = "==0.6.2"
+lark-parser = "<0.6"
+
 
 [requires]
-python_version = "3.6"
 
+python_version = "3.6"

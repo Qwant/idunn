@@ -5,16 +5,29 @@ def test_accessibility_block():
     web_block = AccessibilityBlock.from_es(
         {
             "properties": {
-                'wheelchair': 'yes',
-                'tactile_paving': 'incorrect',
-                'toilets_wheelchair': 'no'
+                'wheelchair': 'limited',
+                'tactile_paving': 'yes',
+                'toilets:wheelchair': 'no'
             }
         },
         lang='en'
     )
 
     assert web_block == AccessibilityBlock(
-        wheelchair='true',
-        tactile_paving='limited',
+        wheelchair='limited',
+        tactile_paving='true',
         toilets_wheelchair='false'
     )
+
+
+def test_accessibility_unknown():
+    web_block = AccessibilityBlock.from_es(
+        {
+            "properties": {
+                'wheelchair': 'toto',
+                'tactile_paving': 'unknown',
+            }
+        },
+        lang='en'
+    )
+    assert web_block is None
