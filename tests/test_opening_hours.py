@@ -37,12 +37,12 @@ def get_moscow_poi(opening_hours):
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)
 def test_opening_hour_open():
     """
-    We freeze time at 8h30 UTC (ie. 11h30 Moscow)
+    We freeze time at 8:30 UTC (ie. 11:30 in Moscow)
     The POI located in Moscow should be open since
-    it opens at 10h00 every day and the local time
-    is 11h30.
+    it opens at 10:00 every day and the local time
+    is 11:30.
     """
-    oh_block = get_moscow_poi("Mo-Su 10:00-22:00")
+    oh_block = get_moscow_poi("Mo-Sa 10:00-22:00; Su 10:00-14:00, 18:00-22:00")
 
     assert oh_block == OpeningHourBlock(
         type='opening_hours',
@@ -50,7 +50,7 @@ def test_opening_hour_open():
         next_transition_datetime='2018-06-14T22:00:00+03:00',
         seconds_before_next_transition=37800,
         is_24_7=False,
-        raw='Mo-Su 10:00-22:00',
+        raw='Mo-Sa 10:00-22:00; Su 10:00-14:00,18:00-22:00',
         days=[
             {
                 "dayofweek": 1,
@@ -92,7 +92,10 @@ def test_opening_hour_open():
                 "dayofweek": 7,
                 "local_date": "2018-06-17",
                 "status": "open",
-                "opening_hours": [{"beginning": "10:00", "end": "22:00"}]
+                "opening_hours": [
+                    {"beginning": "10:00", "end": "14:00"},
+                    {"beginning": "18:00", "end": "22:00"},
+                ]
             },
         ]
     )
@@ -157,6 +160,10 @@ def test_opening_hour_open_until_midnight():
 
 @freeze_time("2018-06-15T21:00:00+03:00")
 def test_opening_hour_days_cycle():
+    """
+    Opening_hours values where a day range ends with Monday,
+    to test if the "cycle" is parsed correctly.
+    """
     oh_block = get_moscow_poi("We-Mo 11:00-19:00")
     assert oh_block == dict(
         type='opening_hours',
