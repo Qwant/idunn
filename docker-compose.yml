@@ -1,13 +1,37 @@
-version: '3'
+version: '3.3'
+
+networks:
+  bridge:
+    external:
+      name: bridge
+  default:
+    attachable: true
+    driver: overlay
+  traefik:
+    external:
+      name: product-maps-master_traefik
 
 services:
   idunn:
-    build: .
+    image: qwantresearch/idunn@sha256:d5f0d5431b34ab03b6cef7afc7a3634359ba5922d91209cdbd86bf5a5fff3653
     command: "--workers=4"
+    deploy:
+      labels:
+        traefik.docker.network: "product-maps-master_traefik"
+        traefik.frontend.rule: "Host:idunn.maps.qwant.plive"
+        traefik.port: "5000"
+      placement:
+        constraints:
+          - node.labels.type == node1
     environment:
-     - IDUNN_MIMIR_ES=
-     - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
-     - IDUNN_LOG_JSON=1
+      - IDUNN_LOG_JSON=1
+      - IDUNN_MIMIR_ES=http://es:9200
+      - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
+      - IDUNN_WIKI_ES=http://10.100.33.34:9200
+    networks:
+      - bridge
+      - default
+      - traefik
 
   idunn-redis:
     image: redis:4

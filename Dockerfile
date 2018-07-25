@@ -1,4 +1,4 @@
-FROM python:3.6-slim
+FROM python:3.6-slim@sha256:8aa59c33d0d5b4aa21d2b29c9ca62f1a71d02e4ddaa0193fc749f100dbd7c4d9
 
 # Installing packages
 RUN pip install pipenv gunicorn==19.8.1 meinheld==0.6.1
