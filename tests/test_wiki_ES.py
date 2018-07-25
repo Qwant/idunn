@@ -27,7 +27,7 @@ def basket_ball_wiki_es(wiki_client, init_indices):
         return poi_id
 
 @pytest.fixture(scope="session")
-def basket_ball(mimir_client):
+def basket_ball(mimir_client, init_indices):
     """
     fill elasticsearch with a fake POI of basket ball
     """
@@ -103,8 +103,8 @@ def test_POI_not_in_WIKI_ES(orsay_museum, basket_ball_wiki_es):
             {
                 "type": "accessibility",
                 "wheelchair": "true",
-                "tactile_paving": "false",
-                "toilets_wheelchair": "false"
+                "tactile_paving": "unknown",
+                "toilets_wheelchair": "unknown"
             },
             {
                 "type": "internet_access",
