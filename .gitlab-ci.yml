@@ -1,0 +1,50 @@
+before_script:
+  - source ci/bootstrap.sh
+
+.values:
+  - &docker_host            "tcp://10.103.9.1:2375"
+  - &environment            "PAR-RESEARCH-MAPS/$CI_COMMIT_REF_SLUG"
+  - &pbf                    "http://download.geofabrik.de/europe/liechtenstein-180723.osm.pbf"
+  - &product_ref_slug "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
+
+.script:
+  - &docker_build   docker-compose build --pull
+  - &docker_login   docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY <<< $CI_REGISTRY_PASSWORD
+  - &docker_push    docker-compose push
+  - &docker_deploy  docker stack deploy --compose-file docker-compose.yml --with-registry-auth "$STACK"
+
+.docker: &docker
+  image: registry.qwant.ninja/product/maps/kartotherian_docker/docker:34471
+  tags:
+  - light-docker
+
+.action: &action
+  allow_failure: true
+  when: manual
+
+deploy services:
+  <<: [*docker, *action]
+  stage: deploy
+  environment:
+    name: *environment
+    on_stop: "stop services"
+    url: "http://10.103.9.1:8585"
+  variables: &deploy_variables
+    DOCKER_HOST: *docker_host
+    STACK: *product_ref_slug
+  script:
+  - *docker_login
+  - *docker_deploy
+
+stop services:
+  <<: [*docker, *action]
+  stage: deploy
+  environment:
+    action: "stop"
+    name: *environment
+  variables:
+    <<: *deploy_variables
+    GIT_STRATEGY: none
+  before_script: []
+  script:
+  - docker stack rm "$STACK"
