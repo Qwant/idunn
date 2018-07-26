@@ -130,8 +130,7 @@ def test_full(fake_all_blocks):
                         "blocks": [
                             {
                                 "type": "accessibility",
-                                "wheelchair": "true",
-                                "tactile_paving": "unknown",
+                                "wheelchair": "yes",
                                 "toilets_wheelchair": "unknown"
                             },
                             {

@@ -21,6 +21,21 @@ def load_poi(file_name, mimir_client):
         return poi_id
 
 @pytest.fixture(scope="session")
+def patisserie_peron(mimir_client, init_indices):
+    """
+    fill elasticsearch with a patisserie without the
+    tags 'wheelchair' and 'toilets:wheelchair' defined
+    """
+    return load_poi('patisserie_peron.json', mimir_client)
+
+@pytest.fixture(scope="session")
+def cinema_multiplexe(mimir_client, init_indices):
+    """
+    fill elasticsearch with a cinema_multiplexe 
+    """
+    return load_poi('cinema_multiplexe.json', mimir_client)
+
+@pytest.fixture(scope="session")
 def orsay_museum(mimir_client, init_indices):
     """
     fill elasticsearch with the orsay museum
@@ -163,8 +178,7 @@ def test_services_and_information(orsay_museum):
     assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
 	{
 	    "type": "accessibility",
-	    "wheelchair": "true",
-	    "tactile_paving": "unknown",
+	    "wheelchair": "yes",
 	    "toilets_wheelchair": "unknown"
 	},
 	{
