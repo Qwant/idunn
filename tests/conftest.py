@@ -37,10 +37,25 @@ def wiki_es(docker_services):
     settings._settings['ES_WIKI_LANG'] = 'fr'
     return url
 
-
 @pytest.fixture(scope='session')
 def wiki_client(wiki_es):
     return Elasticsearch([wiki_es])
+
+@pytest.fixture(scope='session')
+def wiki_es_ko(docker_services):
+    docker_services.start('wiki_es')
+    port = docker_services.wait_for_service("wiki_es", 9200)
+
+    url = "1.1.1.1:1234"
+
+    settings._settings['WIKI_ES'] = "1.1.1.1:1234"
+    settings._settings['ES_WIKI_LANG'] = 'fr'
+    return url
+
+@pytest.fixture(scope='session')
+def wiki_client_ko(wiki_es):
+    return Elasticsearch([wiki_es])
+
 
 @pytest.fixture(scope="session")
 def init_indices(mimir_client, wiki_client):

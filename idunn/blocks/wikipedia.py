@@ -4,8 +4,8 @@ from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
-from elasticsearch import Elasticsearch
 from redis import ConnectionPool, ConnectionError, TimeoutError
+from elasticsearch import Elasticsearch, ElasticsearchException, RequestError, ConnectionTimeout, ConnectionError
 
 from redis_rate_limit import RateLimiter, TooManyRequests
 
@@ -197,16 +197,20 @@ class WikidataConnector:
     def get_wiki_info(cls, wikidata_id, lang, wiki_index):
         cls.init_wiki_es()
 
-        resp = cls._wiki_es.search(
-            index=wiki_index,
-            body={
-                "filter": {
-                    "term": {
-                        "wikibase_item": wikidata_id
+        try:
+            resp = cls._wiki_es.search(
+                index=wiki_index,
+                body={
+                    "filter": {
+                        "term": {
+                            "wikibase_item": wikidata_id
+                        }
                     }
                 }
-            }
-        ).get('hits', {}).get('hits', [])
+            ).get('hits', {}).get('hits', [])
+        except ConnectionError:
+            logging.warning("Wiki ES not available: exception raised in {}".format(f.__name__), exc_info=True)
+            return None
 
         if len(resp) == 0:
             return None

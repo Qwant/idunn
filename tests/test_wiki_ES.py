@@ -43,6 +43,72 @@ def undefine_wiki_es():
     settings._settings['WIKI_ES'] = wiki_es_ip # put back the correct ip for next tests
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_WIKI_ES_KO(wiki_client_ko, orsay_museum):
+    """
+    Check that when the WIKI_ES variable is set AND
+    the WIKI_ES service not available the wikipedia block
+    is not in the answer
+    """
+    client = TestClient(app)
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add('GET',
+             re.compile('^https://.*\.wikipedia.org/'),
+             status=200,
+             json={"test": "test"})
+
+        for i in range(10):
+            response = client.get(
+                url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
+            )
+
+        assert len(rsps.calls) == 0
+
+        resp = response.json()
+
+        assert resp['id'] == 'osm:way:63178753'
+        assert resp['name'] == "Musée d'Orsay"
+        assert resp['local_name'] == "Musée d'Orsay"
+        assert resp['class_name'] == 'museum'
+        assert resp['subclass_name'] == 'museum'
+        assert resp['address']['label'] == '62B Rue de Lille (Paris)'
+        assert resp['blocks'][0]['type'] == 'opening_hours'
+        assert resp['blocks'][1]['type'] == 'phone'
+        assert resp['blocks'][0]['is_24_7'] == False
+        assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
+            {
+                "type": "accessibility",
+                "wheelchair": "true",
+                "tactile_paving": "unknown",
+                "toilets_wheelchair": "unknown"
+            },
+            {
+                "type": "internet_access",
+                "wifi": True
+            },
+            {
+                "type": "brewery",
+                "beers": [
+                    {
+                        "name": "Tripel Karmeliet"
+                    },
+                    {
+                        "name": "Delirium"
+                    },
+                    {
+                        "name": "Chouffe"
+                    }
+                ]
+            }
+        ]
+
+        """
+        We check that there is no Wikipedia block
+        in the answer
+        """
+        assert all(b['type'] != "wikipedia" for b in resp['blocks'])
+
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_undefined_WIKI_ES(basket_ball, undefine_wiki_es):
     """
     Check that when the WIKI_ES variable is not set
@@ -124,6 +190,7 @@ def test_POI_not_in_WIKI_ES(orsay_museum, basket_ball_wiki_es):
                 ]
             }
         ]
+
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_no_lang_WIKI_ES(basket_ball, basket_ball_wiki_es):
