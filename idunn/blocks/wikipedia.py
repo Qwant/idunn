@@ -5,7 +5,7 @@ from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
 from elasticsearch import Elasticsearch
-from redis import ConnectionPool
+from redis import ConnectionPool, ConnectionError, TimeoutError
 
 from redis_rate_limit import RateLimiter, TooManyRequests
 
@@ -15,6 +15,7 @@ class HTTPError40X(HTTPError):
 class WikipediaLimiter:
     _limiter = None
     _redis_url = None
+    _redis_db = None
 
     @classmethod
     def init_limiter(cls):
@@ -31,19 +32,23 @@ class WikipediaLimiter:
             url = cls._redis_url.split(":")[0]
             port = cls._redis_url.split(":")[1]
 
+            cls._redis_db = settings['WIKI_API_REDIS_DB']
+
             cls._limiter = RateLimiter(
                 resource='WikipediaAPI',
                 max_requests=settings['WIKI_API_RL_MAX_CALLS'],
                 expire=settings['WIKI_API_RL_PERIOD'],
-                redis_pool=ConnectionPool(host=url, port=port, db=0)
+                redis_pool=ConnectionPool(host=url, port=port, db=cls._redis_db, socket_timeout=1)
             )
+        else:
+            cls._limiter = False
 
     @classmethod
     def request(cls, f):
         def wrapper(*args, **kwargs):
             if cls._limiter is None:
                 cls.init_limiter()
-            if cls._redis_url is not None:
+            if cls._limiter is not False:
                 """
                 We use the RateLimiter since
                 the redis service url has been provided
@@ -94,6 +99,11 @@ class WikipediaBreaker:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
                 logging.info("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+            except ConnectionError:
+                logging.info("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+            except TimeoutError:
+                logging.info("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+
         return wrapper
 
 class WikipediaSession:

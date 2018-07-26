@@ -18,3 +18,5 @@ WIKI_API_RL_MAX_CALLS: 100 # Max number of external calls allowed by the rate li
 WIKI_API_RL_PERIOD: 1 # Duration (in seconds) of the period where no more than the max number of external calls are expected
 
 WIKI_API_REDIS_URL: # URL of the Redis service used by the rate limiter of the Wikipedia API calls
+
+WIKI_API_REDIS_DB: 0
