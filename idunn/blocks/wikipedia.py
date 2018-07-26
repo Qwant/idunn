@@ -209,7 +209,7 @@ class WikidataConnector:
                 }
             ).get('hits', {}).get('hits', [])
         except ConnectionError:
-            logging.warning("Wiki ES not available: exception raised in {}".format(f.__name__), exc_info=True)
+            logging.warning("Wiki ES not available: connection exception raised", exc_info=True)
             return None
 
         if len(resp) == 0:
