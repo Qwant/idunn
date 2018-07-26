@@ -5,7 +5,7 @@ before_script:
   - &docker_host            "tcp://10.103.9.1:2375"
   - &environment            "PAR-RESEARCH-MAPS/$CI_COMMIT_REF_SLUG"
   - &pbf                    "http://download.geofabrik.de/europe/liechtenstein-180723.osm.pbf"
-  - &project_path_ref_slug  "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG"
+  - &product_ref_slug "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
 
 .script:
   - &docker_build   docker-compose build --pull
@@ -31,7 +31,7 @@ deploy services:
     url: "http://10.103.9.1:8585"
   variables: &deploy_variables
     DOCKER_HOST: *docker_host
-    STACK: *project_path_ref_slug
+    STACK: *product_ref_slug
   script:
   - *docker_login
   - *docker_deploy
