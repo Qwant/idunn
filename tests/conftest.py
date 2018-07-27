@@ -25,36 +25,50 @@ def mimir_es(docker_services):
 def mimir_client(mimir_es):
     return Elasticsearch([mimir_es])
 
+
 @pytest.fixture(scope='session')
 def wiki_es(docker_services):
     """Ensure that ES is up and responsive."""
     docker_services.start('wiki_es')
     port = docker_services.wait_for_service("wiki_es", 9200)
 
-    url = f'http://{docker_services.docker_ip}:{port}'
+    temp_wiki_es = settings._settings['WIKI_ES']
+    temp_es_wiki_lang = settings._settings['ES_WIKI_LANG']
 
+    url = f'http://{docker_services.docker_ip}:{port}'
     settings._settings['WIKI_ES'] = url
     settings._settings['ES_WIKI_LANG'] = 'fr'
+
     return url
+
+    settings._settings['WIKI_ES'] = temp_wiki_es
+    settings._settings['ES_WIKI_LANG'] = temp_es_wiki_lang
 
 @pytest.fixture(scope='session')
 def wiki_client(wiki_es):
     return Elasticsearch([wiki_es])
+
 
 @pytest.fixture(scope='session')
 def wiki_es_ko(docker_services):
     docker_services.start('wiki_es')
     port = docker_services.wait_for_service("wiki_es", 9200)
 
-    url = "1.1.1.1:1234"
+    temp_wiki_es = settings._settings['WIKI_ES']
+    temp_es_wiki_lang = settings._settings['ES_WIKI_LANG']
 
-    settings._settings['WIKI_ES'] = "1.1.1.1:1234"
+    url = "something.invalid:1234"
+    settings._settings['WIKI_ES'] = url
     settings._settings['ES_WIKI_LANG'] = 'fr'
+
     return url
 
+    settings._settings['WIKI_ES'] = temp_wiki_es
+    settings._settings['ES_WIKI_LANG'] = temp_es_wiki_lang
+
 @pytest.fixture(scope='session')
-def wiki_client_ko(wiki_es):
-    return Elasticsearch([wiki_es])
+def wiki_client_ko(wiki_es_ko):
+    return Elasticsearch([wiki_es_ko])
 
 
 @pytest.fixture(scope="session")
@@ -82,6 +96,7 @@ def init_indices(mimir_client, wiki_client):
             }
         }
     )
+
 
 @pytest.fixture(scope="module", autouse=True)
 def mock_external_requests():
