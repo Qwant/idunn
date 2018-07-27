@@ -20,3 +20,5 @@ WIKI_API_RL_PERIOD: 1 # Duration (in seconds) of the period where no more than t
 WIKI_API_REDIS_URL: # URL of the Redis service used by the rate limiter of the Wikipedia API calls
 
 WIKI_API_REDIS_DB: 0
+
+WIKI_REDIS_TIMEOUT: 1

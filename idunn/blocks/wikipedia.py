@@ -15,52 +15,56 @@ class HTTPError40X(HTTPError):
 class WikipediaLimiter:
     _limiter = None
     _redis_url = None
-    _redis_db = None
 
     @classmethod
-    def init_limiter(cls):
-        from app import settings
+    def get_limiter(cls):
+        if cls._limiter is None:
+            from app import settings
 
-        cls._redis_url = settings['WIKI_API_REDIS_URL']
+            cls._redis_url = settings['WIKI_API_REDIS_URL']
 
-        if cls._redis_url is not None:
-            """
-            If a redis url has been provided to Idunn,
-            then we use the corresponding redis
-            service in the rate limiter.
-            """
-            url = cls._redis_url.split(":")[0]
-            port = cls._redis_url.split(":")[1]
+            if cls._redis_url is not None:
+                """
+                If a redis url has been provided to Idunn,
+                then we use the corresponding redis
+                service in the rate limiter.
+                """
+                url = cls._redis_url.split(":")[0]
+                port = cls._redis_url.split(":")[1]
 
-            cls._redis_db = settings['WIKI_API_REDIS_DB']
+                max_calls= settings['WIKI_API_RL_MAX_CALLS']
+                redis_period = settings['WIKI_API_RL_PERIOD']
+                redis_db = settings['WIKI_API_REDIS_DB']
+                redis_timeout = settings['WIKI_REDIS_TIMEOUT']
 
-            cls._limiter = RateLimiter(
-                resource='WikipediaAPI',
-                max_requests=settings['WIKI_API_RL_MAX_CALLS'],
-                expire=settings['WIKI_API_RL_PERIOD'],
-                redis_pool=ConnectionPool(host=url, port=port, db=cls._redis_db, socket_timeout=1)
-            )
-        else:
-            cls._limiter = False
+                cls._limiter = RateLimiter(
+                    resource='WikipediaAPI',
+                    max_requests=max_calls,
+                    expire=redis_period,
+                    redis_pool=ConnectionPool(host=url, port=port, db=redis_db, socket_timeout=redis_timeout)
+                )
+            else:
+                logging.info("No Redis URL has been provided: rate limiter not started", exc_info=True)
+                cls._limiter = False
+        return cls._limiter
 
     @classmethod
     def request(cls, f):
         def wrapper(*args, **kwargs):
-            if cls._limiter is None:
-                cls.init_limiter()
-            if cls._limiter is not False:
+            limiter = cls.get_limiter()
+
+            if limiter is not False:
                 """
                 We use the RateLimiter since
                 the redis service url has been provided
                 """
-                with cls._limiter.limit(client="Idunn"):
+                with limiter.limit(client="Idunn"):
                     return f(*args, **kwargs)
-            else:
-                """
-                No redis service has been set, so we
-                bypass the "redis-based" rate limiter
-                """
-                return f(*args, **kwargs)
+            """
+            No redis service has been set, so we
+            bypass the "redis-based" rate limiter
+            """
+            return f(*args, **kwargs)
         return wrapper
 
 class WikipediaBreaker:
