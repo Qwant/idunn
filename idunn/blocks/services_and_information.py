@@ -24,12 +24,6 @@ class AccessibilityBlock(BaseBlock):
         raw_wheelchair = properties.get("wheelchair")
         raw_toilets_wheelchair = properties.get("toilets:wheelchair")
 
-        if all(
-            s is None
-            for s in (raw_wheelchair, raw_toilets_wheelchair)
-        ):
-            return None
-
         if raw_wheelchair in ("yes", "designated"):
             wheelchair = cls.STATUS_OK
         elif raw_wheelchair == "limited":

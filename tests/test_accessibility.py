@@ -55,8 +55,9 @@ def test_undefined_wheelchairs(patisserie_peron):
 
 def test_wheelchair(cinema_multiplexe):
     """
-    Test that when wheelchair is defined but not toilets_wheelchair
-    we still have a correct block
+    Test that Idunn returns the correct block when
+    both wheelchair and toilets_wheelchair tags
+    are defined
     """
     client = TestClient(app)
     response = client.get(
