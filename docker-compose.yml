@@ -3,13 +3,14 @@ version: '3'
 services:
   idunn:
     image: qwantresearch/idunn
-#    deploy:
-#      placement:
-#        constraints:
-#          - node.labels.type == node1
+    deploy:
+      labels:
+        - "traefik.port=5000"
+        - "traefik.frontend.rule=Host:idunn.maps.qwant.loc"
+      placement:
+        constraints:
+          - node.labels.type == node1
     environment:
       - IDUNN_MIMIR_ES=http://es:9200
-    ports:
-      - "5000:5000"
     expose:
       - 5000
