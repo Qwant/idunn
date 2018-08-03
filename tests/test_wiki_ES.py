@@ -108,8 +108,7 @@ def test_WIKI_ES_KO(wiki_client_ko, orsay_museum):
         assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
             {
                 "type": "accessibility",
-                "wheelchair": "true",
-                "tactile_paving": "unknown",
+                "wheelchair": "yes",
                 "toilets_wheelchair": "unknown"
             },
             {

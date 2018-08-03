@@ -7,6 +7,7 @@ from idunn.utils.settings import SettingsComponent
 from idunn.blocks.wikipedia import HTTPError40X
 from idunn.blocks.wikipedia import WikipediaLimiter
 import time
+from .utils import override_settings
 
 
 @pytest.fixture(scope='session')
@@ -14,12 +15,11 @@ def mimir_es(docker_services):
     """Ensure that ES is up and responsive."""
     docker_services.start('mimir_es')
     port = docker_services.wait_for_service("mimir_es", 9200)
-
     url = f'http://{docker_services.docker_ip}:{port}'
 
     # we override the settings to set the MIMIR_ES
-    settings._settings['MIMIR_ES'] = url
-    return url
+    with override_settings({'MIMIR_ES': url}):
+        yield url
 
 @pytest.fixture(scope='session')
 def mimir_client(mimir_es):
@@ -31,18 +31,10 @@ def wiki_es(docker_services):
     """Ensure that ES is up and responsive."""
     docker_services.start('wiki_es')
     port = docker_services.wait_for_service("wiki_es", 9200)
-
-    temp_wiki_es = settings._settings['WIKI_ES']
-    temp_es_wiki_lang = settings._settings['ES_WIKI_LANG']
-
     url = f'http://{docker_services.docker_ip}:{port}'
-    settings._settings['WIKI_ES'] = url
-    settings._settings['ES_WIKI_LANG'] = 'fr'
 
-    return url
-
-    settings._settings['WIKI_ES'] = temp_wiki_es
-    settings._settings['ES_WIKI_LANG'] = temp_es_wiki_lang
+    with override_settings({'WIKI_ES': url, 'ES_WIKI_LANG': 'fr'}):
+        yield url
 
 @pytest.fixture(scope='session')
 def wiki_client(wiki_es):
@@ -53,18 +45,10 @@ def wiki_client(wiki_es):
 def wiki_es_ko(docker_services):
     docker_services.start('wiki_es')
     port = docker_services.wait_for_service("wiki_es", 9200)
-
-    temp_wiki_es = settings._settings['WIKI_ES']
-    temp_es_wiki_lang = settings._settings['ES_WIKI_LANG']
-
     url = "something.invalid:1234"
-    settings._settings['WIKI_ES'] = url
-    settings._settings['ES_WIKI_LANG'] = 'fr'
 
-    return url
-
-    settings._settings['WIKI_ES'] = temp_wiki_es
-    settings._settings['ES_WIKI_LANG'] = temp_es_wiki_lang
+    with override_settings({'WIKI_ES': url, 'ES_WIKI_LANG': 'fr'}):
+        yield url
 
 @pytest.fixture(scope='session')
 def wiki_client_ko(wiki_es_ko):
