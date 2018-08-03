@@ -28,25 +28,19 @@ class WikipediaLimiter:
                 then we use the corresponding redis
                 service in the rate limiter.
                 """
-                ip, separator, port = redis_url.rpartition(':')
-                try:
-                    assert ip
-                    assert port
+                ip, port = redis_url.split(":")
 
-                    max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
-                    redis_period = int(settings['WIKI_API_RL_PERIOD'])
-                    redis_db = settings['WIKI_API_REDIS_DB']
-                    redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
+                max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
+                redis_period = int(settings['WIKI_API_RL_PERIOD'])
+                redis_db = settings['WIKI_API_REDIS_DB']
+                redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
 
-                    cls._limiter = RateLimiter(
-                        resource='WikipediaAPI',
-                        max_requests=max_calls,
-                        expire=redis_period,
-                        redis_pool=ConnectionPool(host=ip, port=port, db=redis_db, socket_timeout=redis_timeout)
-                    )
-                except AssertionError:
-                    cls._limiter = False
-                    logging.info("Redis URL provided is not valid", exc_info=True)
+                cls._limiter = RateLimiter(
+                    resource='WikipediaAPI',
+                    max_requests=max_calls,
+                    expire=redis_period,
+                    redis_pool=ConnectionPool(host=ip, port=port, db=redis_db, socket_timeout=redis_timeout)
+                )
             else:
                 logging.info("No Redis URL has been provided: rate limiter not started", exc_info=True)
                 cls._limiter = False
