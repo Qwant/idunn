@@ -14,35 +14,39 @@ class HTTPError40X(HTTPError):
 
 class WikipediaLimiter:
     _limiter = None
-    _redis_url = None
 
     @classmethod
     def get_limiter(cls):
         if cls._limiter is None:
             from app import settings
 
-            cls._redis_url = settings['WIKI_API_REDIS_URL']
+            redis_url = settings['WIKI_API_REDIS_URL']
 
-            if cls._redis_url is not None:
+            if redis_url is not None:
                 """
                 If a redis url has been provided to Idunn,
                 then we use the corresponding redis
                 service in the rate limiter.
                 """
-                url = cls._redis_url.split(":")[0]
-                port = cls._redis_url.split(":")[1]
+                ip, separator, port = redis_url.rpartition(':')
+                try:
+                    assert ip
+                    assert port
 
-                max_calls= settings['WIKI_API_RL_MAX_CALLS']
-                redis_period = settings['WIKI_API_RL_PERIOD']
-                redis_db = settings['WIKI_API_REDIS_DB']
-                redis_timeout = settings['WIKI_REDIS_TIMEOUT']
+                    max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
+                    redis_period = int(settings['WIKI_API_RL_PERIOD'])
+                    redis_db = settings['WIKI_API_REDIS_DB']
+                    redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
 
-                cls._limiter = RateLimiter(
-                    resource='WikipediaAPI',
-                    max_requests=max_calls,
-                    expire=redis_period,
-                    redis_pool=ConnectionPool(host=url, port=port, db=redis_db, socket_timeout=redis_timeout)
-                )
+                    cls._limiter = RateLimiter(
+                        resource='WikipediaAPI',
+                        max_requests=max_calls,
+                        expire=redis_period,
+                        redis_pool=ConnectionPool(host=ip, port=port, db=redis_db, socket_timeout=redis_timeout)
+                    )
+                except AssertionError:
+                    cls._limiter = False
+                    logging.info("Redis URL provided is not valid", exc_info=True)
             else:
                 logging.info("No Redis URL has been provided: rate limiter not started", exc_info=True)
                 cls._limiter = False
