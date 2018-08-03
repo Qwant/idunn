@@ -5,7 +5,65 @@ from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
 from elasticsearch import Elasticsearch
+from redis import ConnectionPool, ConnectionError, TimeoutError
 
+from redis_rate_limit import RateLimiter, TooManyRequests
+
+class HTTPError40X(HTTPError):
+    pass
+
+class WikipediaLimiter:
+    _limiter = None
+
+    @classmethod
+    def get_limiter(cls):
+        if cls._limiter is None:
+            from app import settings
+
+            redis_url = settings['WIKI_API_REDIS_URL']
+
+            if redis_url is not None:
+                """
+                If a redis url has been provided to Idunn,
+                then we use the corresponding redis
+                service in the rate limiter.
+                """
+                ip, port = redis_url.split(":")
+
+                max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
+                redis_period = int(settings['WIKI_API_RL_PERIOD'])
+                redis_db = settings['WIKI_API_REDIS_DB']
+                redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
+
+                cls._limiter = RateLimiter(
+                    resource='WikipediaAPI',
+                    max_requests=max_calls,
+                    expire=redis_period,
+                    redis_pool=ConnectionPool(host=ip, port=port, db=redis_db, socket_timeout=redis_timeout)
+                )
+            else:
+                logging.info("No Redis URL has been provided: rate limiter not started", exc_info=True)
+                cls._limiter = False
+        return cls._limiter
+
+    @classmethod
+    def request(cls, f):
+        def wrapper(*args, **kwargs):
+            limiter = cls.get_limiter()
+
+            if limiter is not False:
+                """
+                We use the RateLimiter since
+                the redis service url has been provided
+                """
+                with limiter.limit(client="Idunn"):
+                    return f(*args, **kwargs)
+            """
+            No redis service has been set, so we
+            bypass the "redis-based" rate limiter
+            """
+            return f(*args, **kwargs)
+        return wrapper
 
 class WikipediaBreaker:
     _breaker = None
@@ -16,7 +74,8 @@ class WikipediaBreaker:
         cls._breaker = pybreaker.CircuitBreaker(
                 fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
                 reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
-                exclude = [HTTPError40X])
+                exclude = [HTTPError40X]
+        )
 
     @classmethod
     def get_breaker(cls):
@@ -27,9 +86,11 @@ class WikipediaBreaker:
     @classmethod
     def handle_requests_error(cls, f):
         def wrapper(*args, **kwargs):
+
             breaker = cls.get_breaker()
+
             try:
-                return breaker(f)(*args, **kwargs)
+                return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
                 logging.info("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
@@ -38,11 +99,14 @@ class WikipediaBreaker:
                 logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
+            except TooManyRequests:
+                logging.info("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+            except ConnectionError:
+                logging.info("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+            except TimeoutError:
+                logging.info("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+
         return wrapper
-
-
-class HTTPError40X(HTTPError):
-    pass
 
 class WikipediaSession:
     _session = None
@@ -188,7 +252,7 @@ class WikipediaBlock(BaseBlock):
                         """
                         return None
                 except WikiUndefinedException:
-                    logging.warning("WIKI_ES variable has not been set: call to Wikipedia")
+                    logging.info("WIKI_ES variable has not been set: call to Wikipedia")
 
         wikipedia_value = es_poi.get("properties", {}).get("wikipedia")
         wiki_title = None

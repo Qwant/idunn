@@ -2,8 +2,11 @@ import pytest
 import responses
 import re
 from elasticsearch import Elasticsearch
-
-from app import settings
+from app import app, settings
+from idunn.utils.settings import SettingsComponent
+from idunn.blocks.wikipedia import HTTPError40X
+from idunn.blocks.wikipedia import WikipediaLimiter
+import time
 
 
 @pytest.fixture(scope='session')
@@ -72,3 +75,13 @@ def mock_external_requests():
                  re.compile('^https://.*\.wikipedia.org/'),
                  status=404)
         yield
+
+@pytest.fixture(scope='session')
+def redis(docker_services):
+    """Ensure that Redis is up and responsive."""
+    docker_services.start('wiki_redis')
+    port = docker_services.port_for("wiki_redis", 6379)
+
+    url = f'{docker_services.docker_ip}:{port}'
+
+    return url
