@@ -5,15 +5,14 @@ from .base import BaseBlock, BlocksValidator
 class AccessibilityBlock(BaseBlock):
     BLOCK_TYPE = "accessibility"
 
-    STATUS_OK = "true"
-    STATUS_KO = "false"
-    STATUS_LIMITED = "limited"
+    STATUS_OK = "yes"
+    STATUS_KO = "no"
+    STATUS_LIMITED = "partial"
     STATUS_UNKNOWN = "unknown"
 
     wheelchair = validators.String(
         enum=[STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]
     )
-    tactile_paving = validators.String(enum=[STATUS_OK, STATUS_KO, STATUS_UNKNOWN])
     toilets_wheelchair = validators.String(
         enum=[STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]
     )
@@ -23,7 +22,6 @@ class AccessibilityBlock(BaseBlock):
         properties = es_poi.get("properties", {})
 
         raw_wheelchair = properties.get("wheelchair")
-        raw_tactile_paving = properties.get("tactile_paving")
         raw_toilets_wheelchair = properties.get("toilets:wheelchair")
 
         if raw_wheelchair in ("yes", "designated"):
@@ -34,13 +32,6 @@ class AccessibilityBlock(BaseBlock):
             wheelchair = cls.STATUS_KO
         else:
             wheelchair = cls.STATUS_UNKNOWN
-
-        if raw_tactile_paving == "yes":
-            tactile_paving = cls.STATUS_OK
-        elif raw_tactile_paving == "no":
-            tactile_paving = cls.STATUS_KO
-        else:
-            tactile_paving = cls.STATUS_UNKNOWN
 
         if raw_toilets_wheelchair == "yes":
             toilets_wheelchair = cls.STATUS_OK
@@ -53,13 +44,12 @@ class AccessibilityBlock(BaseBlock):
 
         if all(
             s == cls.STATUS_UNKNOWN
-            for s in (wheelchair, tactile_paving, toilets_wheelchair)
+            for s in (wheelchair, toilets_wheelchair)
         ):
             return None
 
         return cls(
             wheelchair=wheelchair,
-            tactile_paving=tactile_paving,
             toilets_wheelchair=toilets_wheelchair,
         )
 

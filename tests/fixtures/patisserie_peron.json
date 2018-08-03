@@ -1,0 +1,43 @@
+{
+	"id": "osm:node:738042332",
+	"label": "Boulangerie Patisserie Peron (Brest)",
+	"name": "Boulangerie Patisserie Peron",
+	"coord": {
+		"lon": -4.514629883321191,
+		"lat": 48.38264473507255
+	},
+	"weight": 0,
+	"zip_codes": [
+		"29200"
+	],
+	"poi_type": {
+		"id": "bakery",
+		"name": "bakery"
+	},
+	"properties": [
+		{
+			"key": "name_int",
+			"value": "Boulangerie Patisserie Peron"
+		},
+		{
+			"key": "shop",
+			"value": "bakery"
+		},
+		{
+			"key": "name",
+			"value": "Boulangerie Patisserie Peron"
+		},
+		{
+			"key": "name:latin",
+			"value": "Boulangerie Patisserie Peron"
+		},
+		{
+			"key": "poi_subclass",
+			"value": "bakery"
+		},
+		{
+			"key": "poi_class",
+			"value": "bakery"
+		}
+	]
+}

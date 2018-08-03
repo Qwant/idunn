@@ -102,8 +102,7 @@ def test_POI_not_in_WIKI_ES(orsay_museum, basket_ball_wiki_es):
         assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
             {
                 "type": "accessibility",
-                "wheelchair": "true",
-                "tactile_paving": "unknown",
+                "wheelchair": "yes",
                 "toilets_wheelchair": "unknown"
             },
             {
