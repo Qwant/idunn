@@ -2,7 +2,7 @@ version: '3'
 
 services:
   idunn:
-    image: qwantresearch/idunn
+    image: qwantresearch/idunn@sha256:3778386a02174eafacadc24e87a589476142fcb16dcd1e03eb02bd1112bc0bf1
     deploy:
       labels:
         - "traefik.port=5000"
