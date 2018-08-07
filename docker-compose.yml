@@ -7,9 +7,6 @@ services:
       labels:
         - "traefik.port=5000"
         - "traefik.frontend.rule=Host:idunn.maps.qwant.loc"
-      placement:
-        constraints:
-          - node.labels.type == node1
     environment:
       - IDUNN_MIMIR_ES=http://es:9200
     expose:
