@@ -7,7 +7,18 @@ services:
       labels:
         - "traefik.port=5000"
         - "traefik.frontend.rule=Host:idunn.maps.qwant.loc"
+        - "traefik.docker.network=product-maps-master_traefik"
     environment:
       - IDUNN_MIMIR_ES=http://es:9200
+    networks:
+      - default
+      - traefik
     expose:
       - 5000
+
+networks:
+  default:
+    driver: overlay
+  traefik:
+    external:
+      name: product-maps-master_traefik
