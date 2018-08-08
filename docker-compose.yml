@@ -2,12 +2,23 @@ version: '3'
 
 services:
   idunn:
-    image: qwantresearch/idunn@sha256:3778386a02174eafacadc24e87a589476142fcb16dcd1e03eb02bd1112bc0bf1
+    image: qwantresearch/idunn@sha256:eaa72889f2c075a49dcae39be31c1511ee7339ec7d222f626d5170e08509ceb4
     deploy:
       labels:
         - "traefik.port=5000"
         - "traefik.frontend.rule=Host:idunn.maps.qwant.loc"
+        - "traefik.docker.network=product-maps-master_traefik"
     environment:
       - IDUNN_MIMIR_ES=http://es:9200
+    networks:
+      - default
+      - traefik
     expose:
       - 5000
+
+networks:
+  default:
+    driver: overlay
+  traefik:
+    external:
+      name: product-maps-master_traefik
