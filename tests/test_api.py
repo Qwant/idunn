@@ -31,7 +31,7 @@ def patisserie_peron(mimir_client, init_indices):
 @pytest.fixture(scope="session")
 def cinema_multiplexe(mimir_client, init_indices):
     """
-    fill elasticsearch with a cinema_multiplexe 
+    fill elasticsearch with a cinema_multiplexe
     """
     return load_poi('cinema_multiplexe.json', mimir_client)
 

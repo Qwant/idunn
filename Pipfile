@@ -26,6 +26,7 @@ osm-humanized-opening-hours = "==0.6.2"
 redis = "*"
 python-redis-rate-limit = "*"
 lark-parser = "<0.6"
+PyMemoize = "*"
 
 
 [requires]

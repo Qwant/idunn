@@ -4,10 +4,14 @@ from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
-from redis import ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
+from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
 
+from memoize import Memoizer
+import memoize.redis
+
 from redis_rate_limit import RateLimiter, TooManyRequests
+
 
 class HTTPError40X(HTTPError):
     pass
@@ -117,6 +121,44 @@ class WikipediaBreaker:
                 logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
 
         return wrapper
+
+class WikipediaCache:
+    _cache = None
+
+    @classmethod
+    def init_cache(cls):
+        from app import settings
+
+        redis_url = settings['WIKI_API_REDIS_URL']
+
+        if redis_url is not None:
+            ip, port = redis_url.split(":")
+            redis_db = settings['WIKI_CACHE_REDIS_DB']
+            redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
+
+            redis_pool = ConnectionPool(
+                host=ip,
+                port=port,
+                db=redis_db,
+                socket_timeout=redis_timeout
+            )
+
+            redis_store = memoize.redis.wrap(
+                Redis(connection_pool=redis_pool)
+            )
+            cls._cache = memoize.Memoizer(redis_store)
+        else:
+            logging.info("No Redis URL has been set for caching", exc_info=True)
+            cls._cache = False
+
+    @classmethod
+    def cache_it(cls, f):
+        def with_cache(*args, **kwargs):
+            if cls._cache is not False:
+                return cls._cache(f)(*args, **kwargs)
+            return f(*args, **kwargs)
+        return with_cache
+
 
 class WikipediaSession:
     _session = None
@@ -248,6 +290,9 @@ class WikipediaBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
+        if WikipediaCache._cache is None:
+            WikipediaCache.init_cache()
+
         """
         If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
         then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
@@ -258,7 +303,7 @@ class WikipediaBlock(BaseBlock):
             wiki_index = WikidataConnector.get_wiki_index(lang)
             if wiki_index is not None:
                 try:
-                    wiki_poi_info = WikidataConnector.get_wiki_info(wikidata_id, lang, wiki_index)
+                    wiki_poi_info = WikipediaCache.cache_it(WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -285,12 +330,14 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang, wiki_title = wiki_split
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
-                    wiki_title = cls._wiki_session.get_title_in_language(
-                        title=wiki_title, source_lang=wiki_lang, dest_lang=lang
+                    wiki_title = WikipediaCache.cache_it(cls._wiki_session.get_title_in_language)(
+                        title=wiki_title,
+                        source_lang=wiki_lang,
+                        dest_lang=lang
                     )
 
         if wiki_title:
-            wiki_summary = cls._wiki_session.get_summary(wiki_title, lang=lang)
+            wiki_summary = WikipediaCache.cache_it(cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),

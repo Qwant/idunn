@@ -25,4 +25,6 @@ WIKI_API_REDIS_URL: # URL of the Redis service used by the rate limiter of the W
 
 WIKI_API_REDIS_DB: 0
 
+WIKI_CACHE_REDIS_DB: 1
+
 WIKI_REDIS_TIMEOUT: 1
