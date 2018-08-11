@@ -153,6 +153,8 @@ class WikipediaCache:
 
     @classmethod
     def cache_it(cls, f):
+        if WikipediaCache._cache is None:
+            WikipediaCache.init_cache()
         def with_cache(*args, **kwargs):
             if cls._cache is not False:
                 return cls._cache(f)(*args, **kwargs)
@@ -290,9 +292,6 @@ class WikipediaBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        if WikipediaCache._cache is None:
-            WikipediaCache.init_cache()
-
         """
         If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
         then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
