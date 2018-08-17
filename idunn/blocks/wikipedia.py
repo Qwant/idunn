@@ -187,11 +187,19 @@ class WikidataConnector:
     def init_wiki_es(cls):
         if cls._wiki_es is None:
             from app import settings
+
             wiki_es = settings.get('WIKI_ES')
+            wiki_es_max_retries = settings.get('WIKI_ES_MAX_RETRIES')
+            wiki_es_timeout = settings.get('WIKI_ES_TIMEOUT')
+
             if wiki_es is None:
                 raise WikiUndefinedException
             else:
-                cls._wiki_es = Elasticsearch(wiki_es)
+                cls._wiki_es = Elasticsearch(
+                        wiki_es,
+                        max_retries=wiki_es_max_retries,
+                        request_timeout=wiki_es_timeout
+                )
 
     @classmethod
     def get_wiki_info(cls, wikidata_id, lang, wiki_index):
