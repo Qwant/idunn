@@ -6,6 +6,7 @@ from freezegun import freeze_time
 from app import app, settings
 from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaLimiter
+from .utils import override_settings
 
 from .test_api import louvre_museum
 
@@ -17,18 +18,10 @@ def limiter_test_normal(redis):
     We define low max calls limits to avoid
     too large number of requests made
     """
-    temp_period = settings._settings['WIKI_API_RL_PERIOD']
-    temp_maxcalls = settings._settings['WIKI_API_RL_MAX_CALLS']
-
-    settings._settings['WIKI_API_RL_PERIOD'] = 5
-    # 2 wiki calls are made per request, so 6 max_calls mean 3 max wiki calls
-    settings._settings['WIKI_API_RL_MAX_CALLS'] = 6
-    settings._settings['WIKI_API_REDIS_URL'] = redis
-    WikipediaLimiter._limiter = None
-    yield
-    settings._settings['WIKI_API_RL_PERIOD'] = temp_period
-    settings._settings['WIKI_API_RL_MAX_CALLS'] = temp_maxcalls
-    settings._settings['WIKI_API_REDIS_URL'] = None
+    with override_settings({'WIKI_API_RL_PERIOD': 5, 'WIKI_API_RL_MAX_CALLS': 6, 'WIKI_API_REDIS_URL': redis}):
+        # To force settings overriding we need to set to None the limiter
+        WikipediaLimiter._limiter = None
+        yield
     WikipediaLimiter._limiter = None
 
 @pytest.fixture(scope="function")
@@ -39,10 +32,9 @@ def limiter_test_interruption(redis):
     allowed by the fixture 'limiter_test_normal'
     So we need another specific fixture.
     """
-    settings._settings['WIKI_API_REDIS_URL'] = redis
-    WikipediaLimiter._limiter = None
-    yield
-    settings._settings['WIKI_API_REDIS_URL'] = None
+    with override_settings({'WIKI_API_REDIS_URL': redis}):
+        WikipediaLimiter._limiter = None
+        yield
     WikipediaLimiter._limiter = None
 
 @pytest.fixture(scope='module', autouse=True)

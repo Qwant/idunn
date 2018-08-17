@@ -4,8 +4,8 @@ from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
-from elasticsearch import Elasticsearch
-from redis import ConnectionPool, ConnectionError, TimeoutError
+from redis import ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError
+from elasticsearch import Elasticsearch, ConnectionError
 
 from redis_rate_limit import RateLimiter, TooManyRequests
 
@@ -101,7 +101,7 @@ class WikipediaBreaker:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
                 logging.info("Got TooManyRequests{}".format(f.__name__), exc_info=True)
-            except ConnectionError:
+            except RedisConnectionError:
                 logging.info("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
                 logging.info("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
@@ -187,26 +187,38 @@ class WikidataConnector:
     def init_wiki_es(cls):
         if cls._wiki_es is None:
             from app import settings
+
             wiki_es = settings.get('WIKI_ES')
+            wiki_es_max_retries = settings.get('WIKI_ES_MAX_RETRIES')
+            wiki_es_timeout = settings.get('WIKI_ES_TIMEOUT')
+
             if wiki_es is None:
                 raise WikiUndefinedException
             else:
-                cls._wiki_es = Elasticsearch(wiki_es)
+                cls._wiki_es = Elasticsearch(
+                        wiki_es,
+                        max_retries=wiki_es_max_retries,
+                        timeout=wiki_es_timeout
+                )
 
     @classmethod
     def get_wiki_info(cls, wikidata_id, lang, wiki_index):
         cls.init_wiki_es()
 
-        resp = cls._wiki_es.search(
-            index=wiki_index,
-            body={
-                "filter": {
-                    "term": {
-                        "wikibase_item": wikidata_id
+        try:
+            resp = cls._wiki_es.search(
+                index=wiki_index,
+                body={
+                    "filter": {
+                        "term": {
+                            "wikibase_item": wikidata_id
+                        }
                     }
                 }
-            }
-        ).get('hits', {}).get('hits', [])
+            ).get('hits', {}).get('hits', [])
+        except ConnectionError:
+            logging.warning("Wiki ES not available: connection exception raised", exc_info=True)
+            return None
 
         if len(resp) == 0:
             return None
