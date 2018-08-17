@@ -198,7 +198,7 @@ class WikidataConnector:
                 cls._wiki_es = Elasticsearch(
                         wiki_es,
                         max_retries=wiki_es_max_retries,
-                        request_timeout=wiki_es_timeout
+                        timeout=wiki_es_timeout
                 )
 
     @classmethod
