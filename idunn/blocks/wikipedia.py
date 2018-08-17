@@ -5,7 +5,7 @@ from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
 from redis import ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError
-from elasticsearch import Elasticsearch, ElasticsearchException, RequestError, ConnectionTimeout, ConnectionError
+from elasticsearch import Elasticsearch, ConnectionError
 
 from redis_rate_limit import RateLimiter, TooManyRequests
 
