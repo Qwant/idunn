@@ -124,6 +124,7 @@ class WikipediaBreaker:
 
 class WikipediaCache:
     _cache = None
+    _timeout = None
 
     @classmethod
     def init_cache(cls):
@@ -147,6 +148,7 @@ class WikipediaCache:
                 Redis(connection_pool=redis_pool)
             )
             cls._cache = memoize.Memoizer(redis_store)
+            cls._timeout = int(settings['WIKI_CACHE_TIMEOUT']) * 3600 # seconds
         else:
             logging.info("No Redis URL has been set for caching", exc_info=True)
             cls._cache = False
@@ -157,7 +159,7 @@ class WikipediaCache:
             WikipediaCache.init_cache()
         def with_cache(*args, **kwargs):
             if cls._cache is not False:
-                return cls._cache(f)(*args, **kwargs)
+                return cls._cache(f,max_age=cls._timeout)(*args, **kwargs)
             return f(*args, **kwargs)
         return with_cache
 
