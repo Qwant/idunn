@@ -34,7 +34,7 @@ def get_tz(es_poi):
         lon = coord.get('lon')
         lat = coord.get('lat')
         if lon is not None and lat is not None:
-            return timezone(tz.tzNameAt(lat, lon))
+            return timezone(tz.tzNameAt(lat, lon, forceTZ=True))
     return None
 
 
