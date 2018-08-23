@@ -4,7 +4,7 @@ from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
 import pybreaker
-from redis import ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError
+from redis import ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
 
 from redis_rate_limit import RateLimiter, TooManyRequests
@@ -105,6 +105,9 @@ class WikipediaBreaker:
                 logging.info("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
                 logging.info("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+            except RedisError:
+                WikipediaLimiter.limiter = False
+                logging.info("Got a RedisError in {}".format(f.__name__), exc_info=True)
 
         return wrapper
 
