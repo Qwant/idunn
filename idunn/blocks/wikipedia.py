@@ -114,7 +114,7 @@ class WikipediaBreaker:
                 logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
             except RedisError:
                 WikipediaLimiter.limiter = False
-                logging.info("Got a RedisError in {}".format(f.__name__), exc_info=True)
+                logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
 
         return wrapper
 
