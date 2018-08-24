@@ -42,7 +42,7 @@ class WikipediaLimiter:
                     redis_pool=ConnectionPool(host=ip, port=port, db=redis_db, socket_timeout=redis_timeout)
                 )
             else:
-                logging.info("No Redis URL has been provided: rate limiter not started", exc_info=True)
+                logging.warning("No Redis URL has been provided: rate limiter not started", exc_info=True)
                 cls._limiter = False
         return cls._limiter
 
@@ -65,6 +65,12 @@ class WikipediaLimiter:
             return f(*args, **kwargs)
         return wrapper
 
+class LogListener(pybreaker.CircuitBreakerListener):
+
+    def state_change(self, cb, old_state, new_state):
+        msg = "State Change: CB: {0}, From: {1} to New State: {2}".format(cb.name, old_state, new_state)
+        logging.warning(msg)
+
 class WikipediaBreaker:
     _breaker = None
 
@@ -74,7 +80,8 @@ class WikipediaBreaker:
         cls._breaker = pybreaker.CircuitBreaker(
                 fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
                 reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
-                exclude = [HTTPError40X]
+                exclude = [HTTPError40X],
+                listeners=[LogListener()]
         )
 
     @classmethod
@@ -92,22 +99,22 @@ class WikipediaBreaker:
             try:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
-                logging.info("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
+                logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
-                logging.info("Got HTTP error in {}".format(f.__name__), exc_info=True)
+                logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
             except Timeout:
                 logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
-                logging.info("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+                logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
-                logging.info("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+                logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
-                logging.info("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+                logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
             except RedisError:
                 WikipediaLimiter.limiter = False
-                logging.info("Got a RedisError in {}".format(f.__name__), exc_info=True)
+                logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
 
         return wrapper
 
