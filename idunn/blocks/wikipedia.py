@@ -56,8 +56,12 @@ class WikipediaLimiter:
                 We use the RateLimiter since
                 the redis service url has been provided
                 """
-                with limiter.limit(client="Idunn"):
-                    return f(*args, **kwargs)
+                try:
+                    with limiter.limit(client="Idunn"):
+                        return f(*args, **kwargs)
+                except RedisError:
+                    logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
+                    return None
             """
             No redis service has been set, so we
             bypass the "redis-based" rate limiter
@@ -112,9 +116,6 @@ class WikipediaBreaker:
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
                 logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
-            except RedisError:
-                WikipediaLimiter.limiter = False
-                logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
 
         return wrapper
 
