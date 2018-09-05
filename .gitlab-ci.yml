@@ -19,7 +19,7 @@ before_script:
   - light-docker
 
 .action: &action
-  allow_failure: false
+  allow_failure: true
   when: manual
 
 deploy services:
