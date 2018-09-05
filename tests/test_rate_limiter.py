@@ -9,6 +9,9 @@ from idunn.blocks.wikipedia import WikipediaLimiter
 from .utils import override_settings
 
 from .test_api import louvre_museum
+from redis import RedisError
+from redis_rate_limit import RateLimiter
+from functools import wraps
 
 
 @pytest.fixture(scope="function")
@@ -90,6 +93,39 @@ def mock_wikipedia(redis):
         )
         yield rsps
 
+def test_rate_limiter_redisError(louvre_museum, limiter_test_normal, mock_wikipedia, monkeypatch):
+    """
+    Test that Idunn stops returning the wikipedia block
+    when not enough space remains on the disk for the redis
+    database used by the limiter.
+    """
+    with monkeypatch.context() as m:
+
+        @wraps(RateLimiter.limit)
+        def fake_limit(*args, **kwargs):
+            """
+            Raises a RedisError to simulate a lack of
+            space on the disk
+            """
+            raise RedisError
+
+        """
+        We substitute the limit function
+        by ouf fake_limit
+        """
+        m.setattr(RateLimiter, "limit", fake_limit)
+
+        client = TestClient(app)
+        response = client.get(
+           url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+        )
+
+        assert response.status_code == 200
+        resp = response.json()
+        """
+        No wikipedia block should be in the answer
+        """
+        assert any(b['type'] != "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
 def test_rate_limiter_with_redis(louvre_museum, limiter_test_normal, mock_wikipedia):
     """
