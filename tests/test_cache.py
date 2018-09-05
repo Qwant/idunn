@@ -20,10 +20,10 @@ def cache_test_normal(redis):
     test of the Wikipedia/Wikidata cache
     """
     settings._settings['WIKI_API_REDIS_URL'] = redis
-    WikipediaCache._cache = None
+    WikipediaCache._connection = None
     yield
     settings._settings['WIKI_API_REDIS_URL'] = None
-    WikipediaCache._cache = None
+    WikipediaCache._connection = None
 
 
 def test_wikipedia_cache(louvre_museum, cache_test_normal, mock_wikipedia):

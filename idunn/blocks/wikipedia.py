@@ -7,11 +7,34 @@ import pybreaker
 from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
 
-from memoize import Memoizer
-import memoize.redis
-
 from redis_rate_limit import RateLimiter, TooManyRequests
+import json
 
+GET_WIKI_INFO = "get_wiki_info"
+GET_TITLE_IN_LANGUAGE = "get_title_in_language"
+GET_SUMMARY = "get_summary"
+
+class RedisConnection(object):
+    """
+    A simple object to store and return
+    a Redis connection pool.
+    """
+    def __init__(self, host=None, port=None, db=None, timeout=None):
+        self.host = host if host else 'localhost'
+        self.port = port if port else 6379
+        self.db = db if db else 0
+        self.timeout = timeout if timeout else 1
+
+    def pool(self):
+        try:
+            Redis(host=self.host, port=self.port).ping()
+        except RedisConnectionError as e:
+            raise RedisNoConnException("Failed to create the connection to redis", (self.host,self.port))
+
+        return ConnectionPool(host=self.host, port=self.port, db=self.db, socket_timeout=self.timeout)
+
+class RedisNoConnException(Exception):
+    pass
 
 class HTTPError40X(HTTPError):
     pass
@@ -32,18 +55,19 @@ class WikipediaLimiter:
                 then we use the corresponding redis
                 service in the rate limiter.
                 """
-                ip, port = redis_url.split(":")
-
                 max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
                 redis_period = int(settings['WIKI_API_RL_PERIOD'])
+
+                ip, port = redis_url.split(":")
                 redis_db = settings['WIKI_API_REDIS_DB']
                 redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
+                pool = RedisConnection(host=ip, port=port, db=redis_db, timeout=redis_timeout).pool()
 
                 cls._limiter = RateLimiter(
                     resource='WikipediaAPI',
                     max_requests=max_calls,
                     expire=redis_period,
-                    redis_pool=ConnectionPool(host=ip, port=port, db=redis_db, socket_timeout=redis_timeout)
+                    redis_pool=pool
                 )
             else:
                 logging.warning("No Redis URL has been provided: rate limiter not started", exc_info=True)
@@ -112,6 +136,8 @@ class WikipediaBreaker:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
                 logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+            except RedisNoConnException:
+                logging.warning("Got redis RedisNoConnException{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
@@ -123,8 +149,8 @@ class WikipediaBreaker:
         return wrapper
 
 class WikipediaCache:
-    _cache = None
-    _timeout = None
+    _expire = None
+    _connection = None
 
     @classmethod
     def init_cache(cls):
@@ -133,34 +159,55 @@ class WikipediaCache:
         redis_url = settings['WIKI_API_REDIS_URL']
 
         if redis_url is not None:
+            cls._expire = int(settings['WIKI_CACHE_TIMEOUT']) * 3600 # seconds
+
             ip, port = redis_url.split(":")
             redis_db = settings['WIKI_CACHE_REDIS_DB']
             redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
 
-            redis_pool = ConnectionPool(
-                host=ip,
-                port=port,
-                db=redis_db,
-                socket_timeout=redis_timeout
-            )
-
-            redis_store = memoize.redis.wrap(
-                Redis(connection_pool=redis_pool)
-            )
-            cls._cache = memoize.Memoizer(redis_store)
-            cls._timeout = int(settings['WIKI_CACHE_TIMEOUT']) * 3600 # seconds
+            try:
+                cls._connection = Redis(
+                    connection_pool=RedisConnection(host=ip, port=port, db=redis_db, timeout=redis_timeout).pool()
+                )
+            except RedisNoConnException:
+                logging.warning("No Redis instance available for caching", exc_info=True)
+                cls._connection = False
         else:
-            logging.info("No Redis URL has been set for caching", exc_info=True)
-            cls._cache = False
+            logging.warning("No Redis URL has been set for caching", exc_info=True)
+            cls._connection = False
 
     @classmethod
-    def cache_it(cls, f):
-        if WikipediaCache._cache is None:
+    def cache_it(cls, prefix, f):
+        """
+        Takes function f and put its result in a redis cache.
+        It requires a prefix string to identify the name
+        of the function cached.
+        """
+        if WikipediaCache._connection is None:
             WikipediaCache.init_cache()
+
         def with_cache(*args, **kwargs):
-            if cls._cache is not False:
-                return cls._cache(f,max_age=cls._timeout)(*args, **kwargs)
+            """
+            If the redis is up we use the cache,
+            otherwise we bypass it
+            """
+            if cls._connection is not False:
+                """
+                The key is the function name (prefix)
+                along with the args.
+                """
+                args_list = [arg for ak in zip(args, kwargs.values()) for arg in ak]
+                key = prefix + ''.join(args_list)
+
+                if cls._connection.exists(key):
+                    result = json.loads(cls._connection.get(key).decode('utf-8'))
+                else:
+                    result = f(*args, **kwargs)
+                    json_result = json.dumps(result)
+                    cls._connection.set(key, json_result, ex=cls._expire)
+                return result
             return f(*args, **kwargs)
+
         return with_cache
 
 
@@ -304,7 +351,7 @@ class WikipediaBlock(BaseBlock):
             wiki_index = WikidataConnector.get_wiki_index(lang)
             if wiki_index is not None:
                 try:
-                    wiki_poi_info = WikipediaCache.cache_it(WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
+                    wiki_poi_info = WikipediaCache.cache_it(GET_WIKI_INFO, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -331,14 +378,14 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang, wiki_title = wiki_split
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
-                    wiki_title = WikipediaCache.cache_it(cls._wiki_session.get_title_in_language)(
+                    wiki_title = WikipediaCache.cache_it(GET_TITLE_IN_LANGUAGE, cls._wiki_session.get_title_in_language)(
                         title=wiki_title,
                         source_lang=wiki_lang,
                         dest_lang=lang
                     )
 
         if wiki_title:
-            wiki_summary = WikipediaCache.cache_it(cls._wiki_session.get_summary)(wiki_title, lang=lang)
+            wiki_summary = WikipediaCache.cache_it(GET_SUMMARY, cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),
