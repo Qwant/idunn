@@ -125,6 +125,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball, basket_ball_wiki_es, mon
                 response = client.get(
                     url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
                 )
+                resp = response.json()
+                assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block
 
             assert len(rsps.calls) == 0 # Wikipedia API has never been called
-            assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block

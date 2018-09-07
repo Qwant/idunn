@@ -14,28 +14,6 @@ GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
 GET_SUMMARY = "get_summary"
 
-class RedisConnection(object):
-    """
-    A simple object to store and return
-    a Redis connection pool.
-    """
-    def __init__(self, host=None, port=None, db=None, timeout=None):
-        self.host = host if host else 'localhost'
-        self.port = port if port else 6379
-        self.db = db if db else 0
-        self.timeout = timeout if timeout else 1
-
-    def pool(self):
-        try:
-            Redis(host=self.host, port=self.port).ping()
-        except RedisConnectionError as e:
-            raise RedisNoConnException("Failed to create the connection to redis", (self.host,self.port))
-
-        return ConnectionPool(host=self.host, port=self.port, db=self.db, socket_timeout=self.timeout)
-
-class RedisNoConnException(Exception):
-    pass
-
 class HTTPError40X(HTTPError):
     pass
 
@@ -58,10 +36,15 @@ class WikipediaLimiter:
                 max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
                 redis_period = int(settings['WIKI_API_RL_PERIOD'])
 
-                ip, port = redis_url.split(":")
+                redis_url = "redis://" + redis_url
                 redis_db = settings['WIKI_API_REDIS_DB']
                 redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
-                pool = RedisConnection(host=ip, port=port, db=redis_db, timeout=redis_timeout).pool()
+
+                try:
+                    pool = ConnectionPool.from_url(redis_url, db=redis_db, socket_timeout=redis_timeout)
+                except RedisError:
+                    logging.warning("No Redis instance available for limiter", exc_info=True)
+                    cls._limiter = False
 
                 cls._limiter = RateLimiter(
                     resource='WikipediaAPI',
@@ -136,8 +119,6 @@ class WikipediaBreaker:
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
                 logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
-            except RedisNoConnException:
-                logging.warning("Got redis RedisNoConnException{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
@@ -159,25 +140,26 @@ class WikipediaCache:
         redis_url = settings['WIKI_API_REDIS_URL']
 
         if redis_url is not None:
-            cls._expire = int(settings['WIKI_CACHE_TIMEOUT']) * 3600 # seconds
-
-            ip, port = redis_url.split(":")
+            cls._expire = int(settings['WIKI_CACHE_TIMEOUT']) # seconds
             redis_db = settings['WIKI_CACHE_REDIS_DB']
             redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
+            redis_url = "redis://" + redis_url
 
             try:
-                cls._connection = Redis(
-                    connection_pool=RedisConnection(host=ip, port=port, db=redis_db, timeout=redis_timeout).pool()
-                )
-            except RedisNoConnException:
+                pool = ConnectionPool.from_url(redis_url, db=redis_db, socket_timeout=redis_timeout)
+            except RedisError:
                 logging.warning("No Redis instance available for caching", exc_info=True)
                 cls._connection = False
+
+            cls._connection = Redis(
+                connection_pool=pool
+            )
         else:
             logging.warning("No Redis URL has been set for caching", exc_info=True)
             cls._connection = False
 
     @classmethod
-    def cache_it(cls, prefix, f):
+    def cache_it(cls, key, f):
         """
         Takes function f and put its result in a redis cache.
         It requires a prefix string to identify the name
@@ -192,12 +174,6 @@ class WikipediaCache:
             otherwise we bypass it
             """
             if cls._connection is not False:
-                """
-                The key is the function name (prefix)
-                along with the args.
-                """
-                args_list = [arg for ak in zip(args, kwargs.values()) for arg in ak]
-                key = prefix + ''.join(args_list)
 
                 if cls._connection.exists(key):
                     result = json.loads(cls._connection.get(key).decode('utf-8'))
@@ -351,7 +327,8 @@ class WikipediaBlock(BaseBlock):
             wiki_index = WikidataConnector.get_wiki_index(lang)
             if wiki_index is not None:
                 try:
-                    wiki_poi_info = WikipediaCache.cache_it(GET_WIKI_INFO, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
+                    key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
+                    wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -378,14 +355,16 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang, wiki_title = wiki_split
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
-                    wiki_title = WikipediaCache.cache_it(GET_TITLE_IN_LANGUAGE, cls._wiki_session.get_title_in_language)(
+                    key = GET_TITLE_IN_LANGUAGE + "_" + wiki_title + "_" + wiki_lang + "_" + lang
+                    wiki_title = WikipediaCache.cache_it(key, cls._wiki_session.get_title_in_language)(
                         title=wiki_title,
                         source_lang=wiki_lang,
                         dest_lang=lang
                     )
 
         if wiki_title:
-            wiki_summary = WikipediaCache.cache_it(GET_SUMMARY, cls._wiki_session.get_summary)(wiki_title, lang=lang)
+            key = GET_SUMMARY + "_" + wiki_title + "_" + lang
+            wiki_summary = WikipediaCache.cache_it(key, cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),
