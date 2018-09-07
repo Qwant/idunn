@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cf17389dd48c3dcb04b5117ed6ce2c4fb422b2f4412b26199b0bb93bf8282f54"
+            "sha256": "d251523b0256566ba64657be94d26235e692abc1766a11388decbfdd03df8992"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -34,6 +34,13 @@
                 "sha256:774c0b4fc5926123ccdb37e889d3c652b418e49e09b4b6acbc32538889b9bdf8"
             ],
             "version": "==0.5.41"
+        },
+        "apistar-prometheus": {
+            "hashes": [
+                "sha256:8cde790821451e7b8b1bf23ad20ab33c6d654941e52cd574d94966c8530982fd",
+                "sha256:65a4e20b09ed6053822a13025c3399127b3fce750241bba807fd99fa71bab9a3"
+            ],
+            "version": "==0.6.0"
         },
         "babel": {
             "hashes": [
@@ -102,6 +109,12 @@
                 "sha256:0bf6eac962fda54e73260d400ece72d84b857150f6bf6b839b514075b3641120"
             ],
             "version": "==0.6.2"
+        },
+        "prometheus-client": {
+            "hashes": [
+                "sha256:17bc24c09431644f7c65d7bce9f4237252308070b6395d6d8e87767afe867e24"
+            ],
+            "version": "==0.3.1"
         },
         "pybreaker": {
             "hashes": [
