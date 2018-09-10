@@ -9,6 +9,9 @@ from idunn.blocks.wikipedia import WikipediaLimiter
 from .utils import override_settings
 
 from .test_api import louvre_museum
+from redis import RedisError
+from redis_rate_limit import RateLimiter
+from functools import wraps
 
 
 @pytest.fixture(scope="function")
@@ -32,7 +35,7 @@ def limiter_test_interruption(redis):
     allowed by the fixture 'limiter_test_normal'
     So we need another specific fixture.
     """
-    with override_settings({'WIKI_API_REDIS_URL': redis}):
+    with override_settings({'WIKI_API_RL_PERIOD': 5, 'WIKI_API_RL_MAX_CALLS': 100, 'WIKI_API_REDIS_URL': redis}):
         WikipediaLimiter._limiter = None
         yield
     WikipediaLimiter._limiter = None
@@ -90,7 +93,6 @@ def mock_wikipedia(redis):
         )
         yield rsps
 
-
 def test_rate_limiter_with_redis(louvre_museum, limiter_test_normal, mock_wikipedia):
     """
     Test that Idunn stops external requests when
@@ -139,7 +141,6 @@ def test_rate_limiter_without_redis(louvre_museum):
 
         assert len(rsps.calls) == 10
 
-
 def restart_wiki_redis(docker_services):
     """
     Because docker services ports are
@@ -157,6 +158,76 @@ def restart_wiki_redis(docker_services):
     url = f'{docker_services.docker_ip}:{port}'
     settings._settings['WIKI_API_REDIS_URL'] = url
     WikipediaLimiter._limiter = None
+
+def test_rate_limiter_with_redisError(louvre_museum, limiter_test_interruption, mock_wikipedia, monkeypatch):
+    """
+    Test that Idunn stops returning the wikipedia block
+    when not enough space remains on the disk for the redis
+    database used by the limiter.
+
+    Also when the redis service comes back, Idunn should returns
+    the wikipedia block again.
+    """
+
+    client = TestClient(app)
+
+    """
+    First we make a successful call
+    before "stopping" redis
+    """
+    response = client.get(
+       url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+    )
+
+    assert response.status_code == 200
+    resp = response.json()
+    """
+    Here the redis is on so the answer should contain the wikipedia block
+    """
+    assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
+
+    with monkeypatch.context() as m:
+
+        @wraps(RateLimiter.limit)
+        def fake_limit(*args, **kwargs):
+            """
+            Raises a RedisError to simulate a lack of
+            space on the disk
+            """
+            raise RedisError
+
+        """
+        Now we substitute the limit function
+        with our fake_limit
+        """
+        m.setattr(RateLimiter, "limit", fake_limit)
+
+        client = TestClient(app)
+        response = client.get(
+           url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+        )
+
+        assert response.status_code == 200
+        resp = response.json()
+        """
+        No wikipedia block should be in the answer
+        """
+        assert any(b['type'] != "wikipedia" for b in resp['blocks'][2].get('blocks'))
+
+    """
+    Now that the redis "came back", we are expecting
+    a correct answer from Idunn.
+    """
+    response = client.get(
+       url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+    )
+
+    assert response.status_code == 200
+    resp = response.json()
+    """
+    Here the redis is on so the answer should contain the wikipedia block
+    """
+    assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_rate_limiter_with_redis_interruption(louvre_museum, docker_services, redis, limiter_test_interruption):
