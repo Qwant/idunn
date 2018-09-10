@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  idunn:
+    build: .
+    command: "--workers=4"
+    environment:
+     - IDUNN_ES_URL=
+     - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
+
+  idunn-redis:
+    image: redis:4
