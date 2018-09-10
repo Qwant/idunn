@@ -3,7 +3,7 @@ MIMIR_ES: http://localhost:9200/
 
 WIKI_ES:
 
-WIKI_ES_TIMEOUT: 0.5
+WIKI_ES_TIMEOUT: 0.5 # seconds
 
 WIKI_ES_MAX_RETRIES: 0
 
@@ -11,7 +11,7 @@ WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
 
 DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
 
-WIKI_API_CIRCUIT_TIMEOUT: 120
+WIKI_API_CIRCUIT_TIMEOUT: 120 # seconds
 
 WIKI_API_CIRCUIT_MAXFAIL: 50
 
@@ -25,4 +25,8 @@ WIKI_API_REDIS_URL: # URL of the Redis service used by the rate limiter of the W
 
 WIKI_API_REDIS_DB: 0
 
-WIKI_REDIS_TIMEOUT: 1
+WIKI_CACHE_REDIS_DB: 1
+
+WIKI_REDIS_TIMEOUT: 1 # seconds
+
+WIKI_CACHE_TIMEOUT: 86400 # seconds
