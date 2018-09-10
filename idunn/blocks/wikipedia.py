@@ -174,9 +174,9 @@ class WikipediaCache:
             otherwise we bypass it
             """
             if cls._connection is not False:
-
-                if cls._connection.exists(key):
-                    result = json.loads(cls._connection.get(key).decode('utf-8'))
+                value_stored = cls._connection.get(key)
+                if value_stored is not None:
+                    result = json.loads(value_stored.decode('utf-8'))
                 else:
                     result = f(*args, **kwargs)
                     json_result = json.dumps(result)
