@@ -1,4 +1,3 @@
-from unittest.mock import patch
 from apistar import TestClient
 
 from app import app
