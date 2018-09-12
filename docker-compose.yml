@@ -20,9 +20,15 @@ services:
         traefik.docker.network: "product-maps-master_traefik"
         traefik.frontend.rule: "Host:idunn.maps.qwant.plive"
         traefik.port: "5000"
+      mode: replicated
       placement:
         constraints:
-          - node.labels.type == node1
+        - node.labels.type != node1
+        - node.labels.type != node4
+      replicas: 2
+      resources:
+        limits:
+          memory: 4g
     environment:
       - IDUNN_LOG_JSON=1
       - IDUNN_MIMIR_ES=http://es:9200
