@@ -15,6 +15,8 @@ The main endpoints are:
 
 * `/v1/status` to get the status of the API and associated ES cluster.
 
+* `/v1/metrics` to get some metrics on the API that give statistics on the number of requests received, the duration of requests... This endpoint can be scraped by Prometheus.
+
 
 ## Running
 
