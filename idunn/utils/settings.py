@@ -2,7 +2,7 @@ import os
 import yaml
 from typing import Any
 from inspect import Parameter
-
+import logging
 from apistar import Component
 
 
@@ -39,7 +39,7 @@ class SettingsComponent(Component):
 
         self._load_from_env_var(project_name)
 
-        print(f"config: {self._settings}")
+        logging.debug(f"config: {self._settings}")
 
     def _load_default_config(self):
         """

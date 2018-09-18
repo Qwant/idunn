@@ -28,6 +28,7 @@ python-redis-rate-limit = "*"
 lark-parser = "<0.6"
 prometheus-client = "*"
 apistar-prometheus = "*"
+python-json-logger = "*"
 
 
 [requires]
