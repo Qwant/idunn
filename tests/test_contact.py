@@ -1,5 +1,6 @@
 from app import app
 from idunn.blocks.contact import ContactBlock
+from idunn.utils.prometheus import PrometheusTracker
 
 def test_contact_block():
     web_block = ContactBlock.from_es(
@@ -8,7 +9,8 @@ def test_contact_block():
                 "contact:email": "info@pershinghall.com"
             }
         },
-        lang='en'
+        lang='en',
+        prom=PrometheusTracker()
     )
 
     assert web_block == ContactBlock(

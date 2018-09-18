@@ -1,5 +1,6 @@
 from app import app
 from idunn.blocks.services_and_information import InternetAccessBlock
+from idunn.utils.prometheus import PrometheusTracker
 
 def test_internet_access_block():
     web_block = InternetAccessBlock.from_es(
@@ -8,7 +9,8 @@ def test_internet_access_block():
                 "wifi": "no"
             }
         },
-        lang='en'
+        lang='en',
+        prom=PrometheusTracker()
     )
     assert web_block is None
 
@@ -20,7 +22,8 @@ def test_internet_access_block_ok():
                 "internet_access": "wlan"
             }
         },
-        lang='en'
+        lang='en',
+        prom=PrometheusTracker()
     )
     assert web_block == InternetAccessBlock(
         wifi=True

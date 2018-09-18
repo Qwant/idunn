@@ -10,10 +10,10 @@ BLOCKS_ORDER = [
     ContactBlock
 ]
 
-def build_blocks(es_poi, lang):
+def build_blocks(es_poi, lang, prom):
     blocks = []
     for c in BLOCKS_ORDER:
-        block = c.from_es(es_poi, lang)
+        block = c.from_es(es_poi, lang, prom)
         if block is not None:
             blocks.append(block)
     return blocks
@@ -85,7 +85,7 @@ class POI(types.Type):
     blocks = BlocksValidator(allowed_blocks=BLOCKS_ORDER)
 
     @classmethod
-    def load_poi(cls, es_poi, lang):
+    def load_poi(cls, es_poi, lang, prom):
         properties = es_poi.get('properties', {})
         address = es_poi.get('address') or {}
 
@@ -99,5 +99,5 @@ class POI(types.Type):
             address= {
                 'label': address.get('label')
             },
-            blocks=build_blocks(es_poi, lang)
+            blocks=build_blocks(es_poi, lang, prom)
         )

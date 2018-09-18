@@ -11,7 +11,7 @@ class ContactBlock(BaseBlock):
     url = validators.String()
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         mail = es_poi.get('properties', {}).get('email') or es_poi.get('properties', {}).get('contact:email')
         if mail is None:
             return None

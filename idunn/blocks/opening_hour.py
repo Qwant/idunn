@@ -59,7 +59,7 @@ class OpeningHourBlock(BaseBlock):
     days = validators.Array(items=DaysType)
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         raw = es_poi.get('properties', {}).get('opening_hours')
         if raw is None:
             return None

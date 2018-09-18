@@ -11,7 +11,7 @@ class PhoneBlock(BaseBlock):
     local_format = validators.String()
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         raw = es_poi.get('properties', {}).get('phone') or es_poi.get('properties', {}).get('contact:phone')
         if raw is None:
             return None

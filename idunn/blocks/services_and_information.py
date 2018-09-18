@@ -18,7 +18,7 @@ class AccessibilityBlock(BaseBlock):
     )
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         properties = es_poi.get("properties", {})
 
         raw_wheelchair = properties.get("wheelchair")
@@ -60,7 +60,7 @@ class InternetAccessBlock(BaseBlock):
     wifi = validators.Boolean()
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         properties = es_poi.get("properties", {})
         wifi = properties.get("wifi")
         internet_access = properties.get("internet_access")
@@ -83,7 +83,7 @@ class BreweryBlock(BaseBlock):
     beers = validators.Array(items=Beer)
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         brewery = es_poi.get("properties", {}).get("brewery")
 
         if brewery is None:
@@ -102,12 +102,12 @@ class ServicesAndInformationBlock(BaseBlock):
     )
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, es_poi, lang, prom):
         blocks = []
 
-        access_block = AccessibilityBlock.from_es(es_poi, lang)
-        internet_block = InternetAccessBlock.from_es(es_poi, lang)
-        brewery_block = BreweryBlock.from_es(es_poi, lang)
+        access_block = AccessibilityBlock.from_es(es_poi, lang, prom)
+        internet_block = InternetAccessBlock.from_es(es_poi, lang, prom)
+        brewery_block = BreweryBlock.from_es(es_poi, lang, prom)
 
         if access_block is not None:
             blocks.append(access_block)
