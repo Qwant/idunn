@@ -16,7 +16,7 @@ class BaseBlock(types.Type):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def from_es(cls, es_poi, lang, prom):
+    def from_es(cls, es_poi, lang):
         raise NotImplementedError
 
 

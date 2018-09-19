@@ -1,6 +1,5 @@
 from app import app
 from idunn.blocks.services_and_information import AccessibilityBlock
-from idunn.utils.prometheus import PrometheusTracker
 from .test_api import patisserie_peron, cinema_multiplexe
 from apistar.test import TestClient
 
@@ -12,8 +11,7 @@ def test_accessibility_block():
                 'toilets:wheelchair': 'no'
             }
         },
-        lang='en',
-        prom=PrometheusTracker()
+        lang='en'
     )
 
     assert web_block == AccessibilityBlock(
@@ -29,8 +27,7 @@ def test_accessibility_unknown():
                 'wheelchair': 'toto',
             }
         },
-        lang='en',
-        prom=PrometheusTracker()
+        lang='en'
     )
     assert web_block is None
 

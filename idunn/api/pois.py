@@ -3,7 +3,6 @@ from elasticsearch import Elasticsearch
 
 from idunn.api.poi import POI
 from idunn.utils.settings import Settings
-from idunn.utils.prometheus import PrometheusTracker
 
 
 def fetch_es_poi(id, es) -> dict:
@@ -24,11 +23,11 @@ def fetch_es_poi(id, es) -> dict:
     result['properties'] = properties
     return result
 
-def get_poi(id, es: Elasticsearch, prom: PrometheusTracker, settings: Settings, lang=None) -> POI:
+def get_poi(id, es: Elasticsearch, settings: Settings, lang=None) -> POI:
     if not lang:
         lang = settings['DEFAULT_LANGUAGE']
     lang = lang.lower()
 
     es_poi = fetch_es_poi(id, es)
-    poi = POI.load_poi(es_poi, lang, prom)
+    poi = POI.load_poi(es_poi, lang)
     return poi

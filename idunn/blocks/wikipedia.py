@@ -5,6 +5,7 @@ import pybreaker
 
 from apistar import validators
 from .base import BaseBlock, BlocksValidator
+from idunn.utils.prometheus import PrometheusTracker
 from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
@@ -101,13 +102,14 @@ class WikipediaBreaker:
                 exclude = [HTTPError40X],
                 listeners=[LogListener()]
         )
+        cls._prom_tracker = PrometheusTracker.get_tracker()
 
     @classmethod
     def update_status(cls):
         new_status = cls._breaker.current_state
         old_status = cls._status
-        if cls._prom is not None:
-            cls._prom.update_status(old_status, new_status)
+        if cls._prom_tracker is not None:
+            cls._prom_tracker.update_status(old_status, new_status)
         cls._status = new_status
 
     @classmethod
@@ -117,31 +119,28 @@ class WikipediaBreaker:
         return cls._breaker
 
     @classmethod
-    def handle_requests_error(cls, prom_tracker):
-        def wrap(f):
-            def wrapped_f(*args, **kwargs):
-                cls._prom = prom_tracker
-                breaker = cls.get_breaker()
-                try:
-                    return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
-                except pybreaker.CircuitBreakerError:
-                    cls._prom.breaker_exception()
-                    logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
-                except HTTPError:
-                    logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
-                except Timeout:
-                    logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
-                except RequestException:
-                    logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
-                except TooManyRequests:
-                    cls._prom.limiter_exception()
-                    logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
-                except RedisConnectionError:
-                    logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
-                except TimeoutError:
-                    logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
-            return wrapped_f
-        return wrap
+    def handle_requests_error(cls, f):
+        def wrapped_f(*args, **kwargs):
+            breaker = cls.get_breaker()
+            try:
+                return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
+            except pybreaker.CircuitBreakerError:
+                cls._prom_tracker.breaker_exception()
+                logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
+            except HTTPError:
+                logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
+            except Timeout:
+                logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
+            except RequestException:
+                logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
+            except TooManyRequests:
+                cls._prom_tracker.limiter_exception()
+                logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+            except RedisConnectionError:
+                logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+            except TimeoutError:
+                logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+        return wrapped_f
 
 class WikipediaCache:
     _expire = None
@@ -203,10 +202,15 @@ class WikipediaCache:
 
 class WikipediaSession:
     _session = None
+    _prom_tracker = None
     timeout = 1. # seconds
 
     API_V1_BASE_PATTERN = "https://{lang}.wikipedia.org/api/rest_v1"
     API_PHP_BASE_PATTERN = "https://{lang}.wikipedia.org/w/api.php"
+
+    def __init__(self):
+        if self._prom_tracker is None:
+            self._prom_tracker = PrometheusTracker.get_tracker()
 
     @property
     def session(self):
@@ -217,21 +221,23 @@ class WikipediaSession:
             self._session.headers.update({"User-Agent": user_agent})
         return self._session
 
-    def get_summary(self, title, lang, prom_tracker):
+    @WikipediaBreaker.handle_requests_error
+    def get_summary(self, title, lang):
         url = "{base_url}/page/summary/{title}".format(
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
-        prom_tracker.request_start("wiki_api")
+        self._prom_tracker.request_start("wiki_api")
         resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
-        prom_tracker.request_end("wiki_api")
+        self._prom_tracker.request_end("wiki_api")
         if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
         return resp.json()
 
-    def get_title_in_language(self, title, source_lang, dest_lang, prom_tracker):
+    @WikipediaBreaker.handle_requests_error
+    def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
-        prom_tracker.request_start("wiki_api")
+        self._prom_tracker.request_start("wiki_api")
         resp = self.session.get(
             url=url,
             params={
@@ -244,7 +250,7 @@ class WikipediaSession:
             },
             timeout=self.timeout,
         )
-        prom_tracker.request_end("wiki_api")
+        self._prom_tracker.request_end("wiki_api")
         if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
@@ -269,6 +275,7 @@ class WikiUndefinedException(Exception):
 class WikidataConnector:
     _wiki_es = None
     _es_lang = None
+    _prom_tracker = None
 
     @classmethod
     def get_wiki_index(cls, lang):
@@ -281,6 +288,8 @@ class WikidataConnector:
 
     @classmethod
     def init_wiki_es(cls):
+        if cls._prom_tracker is None:
+            cls._prom_tracker = PrometheusTracker.get_tracker()
         if cls._wiki_es is None:
             from app import settings
 
@@ -298,11 +307,11 @@ class WikidataConnector:
                 )
 
     @classmethod
-    def get_wiki_info(cls, wikidata_id, lang, wiki_index, prom_tracker):
+    def get_wiki_info(cls, wikidata_id, lang, wiki_index):
         cls.init_wiki_es()
 
         try:
-            prom_tracker.request_start("wiki_es")
+            cls._prom_tracker.request_start("wiki_es")
             resp = cls._wiki_es.search(
                 index=wiki_index,
                 body={
@@ -313,7 +322,7 @@ class WikidataConnector:
                     }
                 }
             ).get('hits', {}).get('hits', [])
-            prom_tracker.request_end("wiki_es")
+            cls._prom_tracker.request_end("wiki_es")
         except ConnectionError:
             logging.warning("Wiki ES not available: connection exception raised", exc_info=True)
             return None
@@ -335,7 +344,7 @@ class WikipediaBlock(BaseBlock):
     _wiki_session = WikipediaSession()
 
     @classmethod
-    def from_es(cls, es_poi, lang, prom):
+    def from_es(cls, es_poi, lang):
         """
         If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
         then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
@@ -347,7 +356,7 @@ class WikipediaBlock(BaseBlock):
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index, prom_tracker=prom)
+                    wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -375,16 +384,15 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
                     key = GET_TITLE_IN_LANGUAGE + "_" + wiki_title + "_" + wiki_lang + "_" + lang
-                    wiki_title = WikipediaCache.cache_it(key, WikipediaBreaker.handle_requests_error(prom)(cls._wiki_session.get_title_in_language))(
+                    wiki_title = WikipediaCache.cache_it(key, cls._wiki_session.get_title_in_language)(
                         title=wiki_title,
                         source_lang=wiki_lang,
-                        dest_lang=lang,
-                        prom_tracker=prom
+                        dest_lang=lang
                     )
 
         if wiki_title:
             key = GET_SUMMARY + "_" + wiki_title + "_" + lang
-            wiki_summary = WikipediaCache.cache_it(key, WikipediaBreaker.handle_requests_error(prom)(cls._wiki_session.get_summary))(wiki_title, lang=lang, prom_tracker=prom)
+            wiki_summary = WikipediaCache.cache_it(key, cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),

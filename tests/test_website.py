@@ -1,6 +1,5 @@
 from app import app
 from idunn.blocks.website import WebSiteBlock
-from idunn.utils.prometheus import PrometheusTracker
 
 def test_website_block():
     web_block = WebSiteBlock.from_es(
@@ -9,8 +8,7 @@ def test_website_block():
                 "contact:website": "http://www.pershinghall.com"
             }
         },
-        lang='en',
-        prom=PrometheusTracker()
+        lang='en'
     )
 
     assert web_block == WebSiteBlock(

@@ -4,7 +4,6 @@ from idunn.utils.settings import SettingsComponent
 from idunn.utils.es_wrapper import ElasticSearchComponent
 from idunn.utils.logging import init_logging, LogErrorHook
 from idunn.utils.cors import CORSHeaders
-from idunn.utils.prometheus import PrometheusTrackerComponent
 from idunn.api.urls import api_urls
 
 from apistar_prometheus import PrometheusComponent, PrometheusHooks
@@ -20,8 +19,7 @@ routes = [
 components = [
     settings,
     ElasticSearchComponent(),
-    PrometheusComponent(),
-    PrometheusTrackerComponent()
+    PrometheusComponent()
 ]
 
 event_hooks = [LogErrorHook(), CORSHeaders, PrometheusHooks()]

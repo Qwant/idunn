@@ -2,7 +2,6 @@ from apistar import Route
 
 from .pois import get_poi
 from .status import get_status
-
 from apistar_prometheus import expose_metrics
 
 api_urls = [

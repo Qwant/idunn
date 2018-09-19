@@ -9,11 +9,11 @@ class InformationBlock(BaseBlock):
     blocks = BlocksValidator(allowed_blocks=[WikipediaBlock, ServicesAndInformationBlock])
 
     @classmethod
-    def from_es(cls, es_poi, lang, prom):
+    def from_es(cls, es_poi, lang):
         blocks = []
 
-        wikipedia_block = WikipediaBlock.from_es(es_poi, lang, prom)
-        services_block = ServicesAndInformationBlock.from_es(es_poi, lang, prom)
+        wikipedia_block = WikipediaBlock.from_es(es_poi, lang)
+        services_block = ServicesAndInformationBlock.from_es(es_poi, lang)
 
         if wikipedia_block is not None:
             blocks.append(wikipedia_block)

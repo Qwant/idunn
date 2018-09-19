@@ -1,7 +1,6 @@
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
-from idunn.utils.prometheus import PrometheusTracker
 
 """
 In this module we test that the opening_hours block for
@@ -32,8 +31,7 @@ def get_moscow_poi(opening_hours):
                 "opening_hours": opening_hours
             }
         },
-        lang='en',
-        prom=PrometheusTracker()
+        lang='en'
     )
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)

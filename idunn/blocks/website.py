@@ -11,7 +11,7 @@ class WebSiteBlock(BaseBlock):
     url = validators.String()
 
     @classmethod
-    def from_es(cls, es_poi, lang, prom):
+    def from_es(cls, es_poi, lang):
         website = es_poi.get('properties', {}).get('contact:website') or es_poi.get('properties', {}).get('website')
         if website is None:
             return None
