@@ -2,31 +2,25 @@
 MIMIR_ES: http://localhost:9200/
 
 WIKI_ES:
-
 WIKI_ES_TIMEOUT: 0.5 # seconds
-
 WIKI_ES_MAX_RETRIES: 0
-
 WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
 
 DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
 
 WIKI_API_CIRCUIT_TIMEOUT: 120 # seconds
-
 WIKI_API_CIRCUIT_MAXFAIL: 50
 
 ES_WIKI_LANG: "de,en,es,fr,it" # the (comma separated) list of languages existing in the WIKI_ES
 
 WIKI_API_RL_MAX_CALLS: 100 # Max number of external calls allowed by the rate limiter
-
 WIKI_API_RL_PERIOD: 1 # Duration (in seconds) of the period where no more than the max number of external calls are expected
-
 WIKI_API_REDIS_URL: # URL of the Redis service used by the rate limiter of the Wikipedia API calls
-
 WIKI_API_REDIS_DB: 0
-
 WIKI_CACHE_REDIS_DB: 1
-
 WIKI_REDIS_TIMEOUT: 1 # seconds
-
 WIKI_CACHE_TIMEOUT: 86400 # seconds
+
+LOG_LEVEL_BY_MODULE: '{"": "info", "elasticsearch": "warning"}' # json config to set, for each module a log level
+LOG_FORMAT: '[%(asctime)s] [%(levelname)5s] [%(process)5s] [%(name)10s] %(message)s' # logging format. if the log are json, it list the default fields
+LOG_JSON: False  # To get flat logs or json logs

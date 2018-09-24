@@ -7,6 +7,7 @@ services:
     environment:
      - IDUNN_ES_URL=
      - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
+     - IDUNN_LOG_JSON=1
 
   idunn-redis:
     image: redis:4
