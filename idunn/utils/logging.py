@@ -30,9 +30,5 @@ def init_logging(settings: Settings):
     logging.getLogger().handlers = [logHandler]
 
 class LogErrorHook:
-    def on_response(self, response: http.Response, exc: Exception):
-        if exc is not None:
-            logging.getLogger('idunn.error').exception("handler returned an error")
-
     def on_error(self, response: http.Response):
         logging.getLogger('idunn.error').exception("An unhandled error was raised")
