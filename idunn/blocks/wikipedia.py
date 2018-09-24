@@ -85,12 +85,10 @@ class LogListener(pybreaker.CircuitBreakerListener):
 
     def state_change(self, cb, old_state, new_state):
         msg = "State Change: CB: {0}, From: {1} to New State: {2}".format(cb.name, old_state, new_state)
-        WikipediaBreaker.update_status()
         logging.warning(msg)
 
 class WikipediaBreaker:
     _breaker = None
-    _status = 'closed'
     _prom_tracker = None
 
     @classmethod
@@ -102,15 +100,7 @@ class WikipediaBreaker:
                 exclude = [HTTPError40X],
                 listeners=[LogListener()]
         )
-        cls._prom_tracker = PrometheusTracker.get_tracker()
-
-    @classmethod
-    def update_status(cls):
-        new_status = cls._breaker.current_state
-        old_status = cls._status
-        if cls._prom_tracker is not None:
-            cls._prom_tracker.update_status(old_status, new_status)
-        cls._status = new_status
+        cls._prom_tracker = PrometheusTracker()
 
     @classmethod
     def get_breaker(cls):
@@ -125,20 +115,25 @@ class WikipediaBreaker:
             try:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
-                cls._prom_tracker.breaker_exception()
+                cls._prom_tracker.breaker_error()
                 logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
+                cls._prom_tracker.breaker_exception("HTTPError")
                 logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
             except Timeout:
+                cls._prom_tracker.breaker_exception("RequestsTimeout")
                 logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
+                cls._prom_tracker.breaker_exception("RequestException")
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
                 cls._prom_tracker.limiter_exception()
                 logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
+                cls._prom_tracker.breaker_exception("RedisConnectionError")
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
+                cls._prom_tracker.breaker_exception("RedisTimeoutError")
                 logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
         return wrapped_f
 
@@ -210,7 +205,7 @@ class WikipediaSession:
 
     def __init__(self):
         if self._prom_tracker is None:
-            self._prom_tracker = PrometheusTracker.get_tracker()
+            self._prom_tracker = PrometheusTracker()
 
     @property
     def session(self):
@@ -226,9 +221,14 @@ class WikipediaSession:
         url = "{base_url}/page/summary/{title}".format(
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
-        self._prom_tracker.request_start("wiki_api")
-        resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
-        self._prom_tracker.request_end("wiki_api")
+
+        with self._prom_tracker.log_request_duration("wiki_api"):
+            resp = self.session.get(
+                url=url,
+                params={"redirect": True},
+                timeout=self.timeout
+            )
+
         if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
@@ -237,20 +237,21 @@ class WikipediaSession:
     @WikipediaBreaker.handle_requests_error
     def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
-        self._prom_tracker.request_start("wiki_api")
-        resp = self.session.get(
-            url=url,
-            params={
-                "action": "query",
-                "prop": "langlinks",
-                "titles": title,
-                "lllang": dest_lang,
-                "formatversion": 2,
-                "format": "json",
-            },
-            timeout=self.timeout,
-        )
-        self._prom_tracker.request_end("wiki_api")
+
+        with self._prom_tracker.log_request_duration("wiki_api"):
+            resp = self.session.get(
+                url=url,
+                params={
+                    "action": "query",
+                    "prop": "langlinks",
+                    "titles": title,
+                    "lllang": dest_lang,
+                    "formatversion": 2,
+                    "format": "json",
+                },
+                timeout=self.timeout,
+            )
+
         if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
@@ -289,7 +290,7 @@ class WikidataConnector:
     @classmethod
     def init_wiki_es(cls):
         if cls._prom_tracker is None:
-            cls._prom_tracker = PrometheusTracker.get_tracker()
+            cls._prom_tracker = PrometheusTracker()
         if cls._wiki_es is None:
             from app import settings
 
@@ -311,18 +312,17 @@ class WikidataConnector:
         cls.init_wiki_es()
 
         try:
-            cls._prom_tracker.request_start("wiki_es")
-            resp = cls._wiki_es.search(
-                index=wiki_index,
-                body={
-                    "filter": {
-                        "term": {
-                            "wikibase_item": wikidata_id
+            with cls._prom_tracker.log_request_duration("wiki_es"):
+                resp = cls._wiki_es.search(
+                    index=wiki_index,
+                    body={
+                        "filter": {
+                            "term": {
+                                "wikibase_item": wikidata_id
+                            }
                         }
                     }
-                }
-            ).get('hits', {}).get('hits', [])
-            cls._prom_tracker.request_end("wiki_es")
+                ).get('hits', {}).get('hits', [])
         except ConnectionError:
             logging.warning("Wiki ES not available: connection exception raised", exc_info=True)
             return None
