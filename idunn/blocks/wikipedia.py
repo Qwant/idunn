@@ -5,11 +5,11 @@ import pybreaker
 
 from apistar import validators
 from .base import BaseBlock, BlocksValidator
-from idunn.utils.prometheus import wiki_request_duration, breaker_error, exception, limiter_exception
 from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
 from redis_rate_limit import RateLimiter, TooManyRequests
+from idunn.utils import prometheus
 
 GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
@@ -113,25 +113,25 @@ class WikipediaBreaker:
             try:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
-                breaker_error()
+                prometheus.breaker_error()
                 logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
-                exception("HTTPError")
+                prometheus.exception("HTTPError")
                 logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
             except Timeout:
-                exception("RequestsTimeout")
+                prometheus.exception("RequestsTimeout")
                 logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
-                exception("RequestException")
+                prometheus.exception("RequestException")
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
-                limiter_exception()
+                prometheus.exception("TooManyRequests")
                 logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
-                exception("RedisConnectionError")
+                prometheus.exception("RedisConnectionError")
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
-                exception("RedisTimeoutError")
+                prometheus.exception("RedisTimeoutError")
                 logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
         return wrapped_f
 
@@ -215,7 +215,7 @@ class WikipediaSession:
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
 
-        with wiki_request_duration("wiki_api", "get_summary"):
+        with prometheus.wiki_request_duration("wiki_api", "get_summary"):
             resp = self.session.get(
                 url=url,
                 params={"redirect": True},
@@ -231,7 +231,7 @@ class WikipediaSession:
     def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
 
-        with wiki_request_duration("wiki_api", "get_title"):
+        with prometheus.wiki_request_duration("wiki_api", "get_title"):
             resp = self.session.get(
                 url=url,
                 params={
@@ -302,7 +302,7 @@ class WikidataConnector:
         cls.init_wiki_es()
 
         try:
-            with wiki_request_duration("wiki_es", "get_wiki_info"):
+            with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
                 resp = cls._wiki_es.search(
                     index=wiki_index,
                     body={
