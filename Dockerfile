@@ -12,6 +12,11 @@ RUN pipenv install --system --deploy
 # the sources are copied as late as possible since they are likely to change often
 ADD idunn /app/idunn
 
+# set the multiprocess mode for gunicorn
+ENV IDUNN_PROMETHEUS_MULTIPROC=1
+ENV prometheus_multiproc_dir=/app/idunn/prometheus_multiproc
+RUN mkdir /app/idunn/prometheus_multiproc
+
 EXPOSE 5000
 
 ADD gunicorn_logging.conf .

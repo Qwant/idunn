@@ -1,14 +1,15 @@
+import json
 import logging
 import requests
+import pybreaker
+
 from apistar import validators
 from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
-import pybreaker
 from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
-
 from redis_rate_limit import RateLimiter, TooManyRequests
-import json
+from idunn.utils import prometheus
 
 GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
@@ -107,28 +108,32 @@ class WikipediaBreaker:
 
     @classmethod
     def handle_requests_error(cls, f):
-        def wrapper(*args, **kwargs):
-
+        def wrapped_f(*args, **kwargs):
             breaker = cls.get_breaker()
-
             try:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
+                prometheus.exception("CircuitBreakerError")
                 logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
+                prometheus.exception("HTTPError")
                 logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
             except Timeout:
+                prometheus.exception("RequestsTimeout")
                 logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
+                prometheus.exception("RequestException")
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
+                prometheus.exception("TooManyRequests")
                 logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
+                prometheus.exception("RedisConnectionError")
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
+                prometheus.exception("RedisTimeoutError")
                 logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
-
-        return wrapper
+        return wrapped_f
 
 class WikipediaCache:
     _expire = None
@@ -209,7 +214,14 @@ class WikipediaSession:
         url = "{base_url}/page/summary/{title}".format(
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
-        resp = self.session.get(url=url, params={"redirect": True}, timeout=self.timeout)
+
+        with prometheus.wiki_request_duration("wiki_api", "get_summary"):
+            resp = self.session.get(
+                url=url,
+                params={"redirect": True},
+                timeout=self.timeout
+            )
+
         if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
@@ -218,18 +230,21 @@ class WikipediaSession:
     @WikipediaBreaker.handle_requests_error
     def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
-        resp = self.session.get(
-            url=url,
-            params={
-                "action": "query",
-                "prop": "langlinks",
-                "titles": title,
-                "lllang": dest_lang,
-                "formatversion": 2,
-                "format": "json",
-            },
-            timeout=self.timeout,
-        )
+
+        with prometheus.wiki_request_duration("wiki_api", "get_title"):
+            resp = self.session.get(
+                url=url,
+                params={
+                    "action": "query",
+                    "prop": "langlinks",
+                    "titles": title,
+                    "lllang": dest_lang,
+                    "formatversion": 2,
+                    "format": "json",
+                },
+                timeout=self.timeout,
+            )
+
         if 400 <= resp.status_code < 500:
             raise HTTPError40X
         resp.raise_for_status()
@@ -249,6 +264,7 @@ class WikipediaSession:
 
 class WikiUndefinedException(Exception):
     pass
+
 
 class WikidataConnector:
     _wiki_es = None
@@ -286,16 +302,17 @@ class WikidataConnector:
         cls.init_wiki_es()
 
         try:
-            resp = cls._wiki_es.search(
-                index=wiki_index,
-                body={
-                    "filter": {
-                        "term": {
-                            "wikibase_item": wikidata_id
+            with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
+                resp = cls._wiki_es.search(
+                    index=wiki_index,
+                    body={
+                        "filter": {
+                            "term": {
+                                "wikibase_item": wikidata_id
+                            }
                         }
                     }
-                }
-            ).get('hits', {}).get('hits', [])
+                ).get('hits', {}).get('hits', [])
         except ConnectionError:
             logging.warning("Wiki ES not available: connection exception raised", exc_info=True)
             return None
