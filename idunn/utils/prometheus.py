@@ -11,12 +11,12 @@ from prometheus_client import Counter, Gauge, Histogram
 IDUNN_WIKI_REQUEST_DURATION = Histogram(
     "idunn_wiki_request_duration_seconds",
     "Time spent processing a Wiki request.",
-    ["handler"],
+    ["target", "handler"],
 )
 
-IDUNN_WIKI_BREAKER_EXCEPTIONS_COUNT = Counter(
-    "idunn_breaker_exceptions_count",
-    "Number of exceptions caught by the breaker.",
+IDUNN_WIKI_EXCEPTIONS_COUNT = Counter(
+    "idunn_exceptions_count",
+    "Number of exceptions caught in Idunn.",
     ["exception_type"]
 )
 
@@ -32,19 +32,16 @@ IDUNN_WIKI_RATE_LIMITER_MAX_COUNT = Counter(
     []
 )
 
-class PrometheusTracker:
-    """ Just catch some primitives on the Prometheus metrics """
+@contextlib.contextmanager
+def wiki_request_duration(target, handler):
+    with IDUNN_WIKI_REQUEST_DURATION.labels(target, handler).time():
+        yield
 
-    @contextlib.contextmanager
-    def log_request_duration(self, handler):
-        with IDUNN_WIKI_REQUEST_DURATION.labels(handler).time():
-            yield
+def breaker_error():
+    IDUNN_WIKI_BREAKER_ERRORS_COUNT.inc()
 
-    def breaker_error(self):
-        IDUNN_WIKI_BREAKER_ERRORS_COUNT.inc()
+def exception(exception_type):
+    IDUNN_WIKI_EXCEPTIONS_COUNT.labels(exception_type).inc()
 
-    def breaker_exception(self, exception_type):
-        IDUNN_WIKI_BREAKER_EXCEPTIONS_COUNT.labels(exception_type).inc()
-
-    def limiter_exception(self):
-        IDUNN_WIKI_RATE_LIMITER_MAX_COUNT.inc()
+def limiter_exception():
+    IDUNN_WIKI_RATE_LIMITER_MAX_COUNT.inc()

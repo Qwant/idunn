@@ -5,7 +5,7 @@ import pybreaker
 
 from apistar import validators
 from .base import BaseBlock, BlocksValidator
-from idunn.utils.prometheus import PrometheusTracker
+from idunn.utils.prometheus import wiki_request_duration, breaker_error, exception, limiter_exception
 from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
@@ -89,7 +89,6 @@ class LogListener(pybreaker.CircuitBreakerListener):
 
 class WikipediaBreaker:
     _breaker = None
-    _prom_tracker = None
 
     @classmethod
     def init_breaker(cls):
@@ -100,7 +99,6 @@ class WikipediaBreaker:
                 exclude = [HTTPError40X],
                 listeners=[LogListener()]
         )
-        cls._prom_tracker = PrometheusTracker()
 
     @classmethod
     def get_breaker(cls):
@@ -115,25 +113,25 @@ class WikipediaBreaker:
             try:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
-                cls._prom_tracker.breaker_error()
+                breaker_error()
                 logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
-                cls._prom_tracker.breaker_exception("HTTPError")
+                exception("HTTPError")
                 logging.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
             except Timeout:
-                cls._prom_tracker.breaker_exception("RequestsTimeout")
+                exception("RequestsTimeout")
                 logging.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
-                cls._prom_tracker.breaker_exception("RequestException")
+                exception("RequestException")
                 logging.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
-                cls._prom_tracker.limiter_exception()
+                limiter_exception()
                 logging.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
-                cls._prom_tracker.breaker_exception("RedisConnectionError")
+                exception("RedisConnectionError")
                 logging.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
-                cls._prom_tracker.breaker_exception("RedisTimeoutError")
+                exception("RedisTimeoutError")
                 logging.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
         return wrapped_f
 
@@ -197,15 +195,10 @@ class WikipediaCache:
 
 class WikipediaSession:
     _session = None
-    _prom_tracker = None
     timeout = 1. # seconds
 
     API_V1_BASE_PATTERN = "https://{lang}.wikipedia.org/api/rest_v1"
     API_PHP_BASE_PATTERN = "https://{lang}.wikipedia.org/w/api.php"
-
-    def __init__(self):
-        if self._prom_tracker is None:
-            self._prom_tracker = PrometheusTracker()
 
     @property
     def session(self):
@@ -222,7 +215,7 @@ class WikipediaSession:
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
         )
 
-        with self._prom_tracker.log_request_duration("wiki_api"):
+        with wiki_request_duration("wiki_api", "get_summary"):
             resp = self.session.get(
                 url=url,
                 params={"redirect": True},
@@ -238,7 +231,7 @@ class WikipediaSession:
     def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
 
-        with self._prom_tracker.log_request_duration("wiki_api"):
+        with wiki_request_duration("wiki_api", "get_title"):
             resp = self.session.get(
                 url=url,
                 params={
@@ -276,7 +269,6 @@ class WikiUndefinedException(Exception):
 class WikidataConnector:
     _wiki_es = None
     _es_lang = None
-    _prom_tracker = None
 
     @classmethod
     def get_wiki_index(cls, lang):
@@ -289,8 +281,6 @@ class WikidataConnector:
 
     @classmethod
     def init_wiki_es(cls):
-        if cls._prom_tracker is None:
-            cls._prom_tracker = PrometheusTracker()
         if cls._wiki_es is None:
             from app import settings
 
@@ -312,7 +302,7 @@ class WikidataConnector:
         cls.init_wiki_es()
 
         try:
-            with cls._prom_tracker.log_request_duration("wiki_es"):
+            with wiki_request_duration("wiki_es", "get_wiki_info"):
                 resp = cls._wiki_es.search(
                     index=wiki_index,
                     body={
