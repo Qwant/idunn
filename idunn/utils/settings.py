@@ -39,7 +39,7 @@ class SettingsComponent(Component):
 
         self._load_from_env_var(project_name)
 
-        logging.debug(f"config: {self._settings}")
+        logging.getLogger(__name__).debug(f"config: {self._settings}")
 
     def _load_default_config(self):
         """
