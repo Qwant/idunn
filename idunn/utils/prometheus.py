@@ -16,14 +16,8 @@ IDUNN_WIKI_REQUEST_DURATION = Histogram(
 
 IDUNN_WIKI_EXCEPTIONS_COUNT = Counter(
     "idunn_wiki_exceptions_count",
-    "Number of exceptions caught in Idunn.",
+    "Number of exceptions caught in Idunn WikipediaBlock.",
     ["exception_type"]
-)
-
-IDUNN_WIKI_BREAKER_ERRORS_COUNT = Counter(
-    "idunn_breaker_errors_count",
-    "Number of errors caught by the breaker.",
-    []
 )
 
 
@@ -31,9 +25,6 @@ IDUNN_WIKI_BREAKER_ERRORS_COUNT = Counter(
 def wiki_request_duration(target, handler):
     with IDUNN_WIKI_REQUEST_DURATION.labels(target, handler).time():
         yield
-
-def breaker_error():
-    IDUNN_WIKI_BREAKER_ERRORS_COUNT.inc()
 
 def exception(exception_type):
     IDUNN_WIKI_EXCEPTIONS_COUNT.labels(exception_type).inc()

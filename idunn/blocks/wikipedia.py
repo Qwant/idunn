@@ -113,7 +113,7 @@ class WikipediaBreaker:
             try:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
-                prometheus.breaker_error()
+                prometheus.exception("CircuitBreakerError")
                 logging.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
                 prometheus.exception("HTTPError")
