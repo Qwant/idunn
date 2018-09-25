@@ -1,8 +1,10 @@
+import json
+import logging
+
 from .settings import Settings
 from pythonjsonlogger import jsonlogger
-import logging
-import json
 from apistar import http
+from idunn.utils import prometheus
 
 def init_logging(settings: Settings):
     """
@@ -15,7 +17,7 @@ def init_logging(settings: Settings):
     for module, lvl in json.loads(levels).items():
         log_level = lvl.upper()
         log_level = logging.getLevelName(log_level)
-        
+
         logger = logging.getLogger(module)
         logger.setLevel(log_level)
 
@@ -25,10 +27,11 @@ def init_logging(settings: Settings):
         logHandler.setFormatter(formatter)
     else:
         logHandler.setFormatter(logging.Formatter(log_format))
-    
+
     # we set this handler to the main logger
     logging.getLogger().handlers = [logHandler]
 
 class LogErrorHook:
     def on_error(self, response: http.Response):
+        prometheus.exception("unhandled_error")
         logging.getLogger('idunn.error').exception("An unhandled error was raised")
