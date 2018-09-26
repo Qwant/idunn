@@ -15,6 +15,8 @@ GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
 GET_SUMMARY = "get_summary"
 
+logger = logging.getLogger(__name__)
+
 class HTTPError40X(HTTPError):
     pass
 
@@ -44,7 +46,7 @@ class WikipediaLimiter:
                 try:
                     pool = ConnectionPool.from_url(redis_url, db=redis_db, socket_timeout=redis_timeout)
                 except RedisError:
-                    logging.getLogger(__name__).warning("No Redis instance available for limiter", exc_info=True)
+                    logger.warning("No Redis instance available for limiter", exc_info=True)
                     cls._limiter = False
 
                 cls._limiter = RateLimiter(
@@ -54,7 +56,7 @@ class WikipediaLimiter:
                     redis_pool=pool
                 )
             else:
-                logging.getLogger(__name__).warning("No Redis URL has been provided: rate limiter not started", exc_info=True)
+                logger.warning("No Redis URL has been provided: rate limiter not started", exc_info=True)
                 cls._limiter = False
         return cls._limiter
 
@@ -72,7 +74,7 @@ class WikipediaLimiter:
                     with limiter.limit(client="Idunn"):
                         return f(*args, **kwargs)
                 except RedisError:
-                    logging.getLogger(__name__).error("Got a RedisError in {}".format(f.__name__), exc_info=True)
+                    logger.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
                     return None
             """
             No redis service has been set, so we
@@ -85,7 +87,7 @@ class LogListener(pybreaker.CircuitBreakerListener):
 
     def state_change(self, cb, old_state, new_state):
         msg = "State Change: CB: {0}, From: {1} to New State: {2}".format(cb.name, old_state, new_state)
-        logging.getLogger(__name__).warning(msg)
+        logger.warning(msg)
 
 class WikipediaBreaker:
     _breaker = None
@@ -114,25 +116,25 @@ class WikipediaBreaker:
                 return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
             except pybreaker.CircuitBreakerError:
                 prometheus.exception("CircuitBreakerError")
-                logging.getLogger(__name__).error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
+                logger.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
             except HTTPError:
                 prometheus.exception("HTTPError")
-                logging.getLogger(__name__).warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
+                logger.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
             except Timeout:
                 prometheus.exception("RequestsTimeout")
-                logging.getLogger(__name__).warning("External API timed out in {}".format(f.__name__), exc_info=True)
+                logger.warning("External API timed out in {}".format(f.__name__), exc_info=True)
             except RequestException:
                 prometheus.exception("RequestException")
-                logging.getLogger(__name__).error("Got Request exception in {}".format(f.__name__), exc_info=True)
+                logger.error("Got Request exception in {}".format(f.__name__), exc_info=True)
             except TooManyRequests:
                 prometheus.exception("TooManyRequests")
-                logging.getLogger(__name__).warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+                logger.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
             except RedisConnectionError:
                 prometheus.exception("RedisConnectionError")
-                logging.getLogger(__name__).warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+                logger.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
             except TimeoutError:
                 prometheus.exception("RedisTimeoutError")
-                logging.getLogger(__name__).warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+                logger.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
         return wrapped_f
 
 class WikipediaCache:
@@ -154,14 +156,14 @@ class WikipediaCache:
             try:
                 pool = ConnectionPool.from_url(redis_url, db=redis_db, socket_timeout=redis_timeout)
             except RedisError:
-                logging.getLogger(__name__).warning("No Redis instance available for caching", exc_info=True)
+                logger.warning("No Redis instance available for caching", exc_info=True)
                 cls._connection = False
 
             cls._connection = Redis(
                 connection_pool=pool
             )
         else:
-            logging.getLogger(__name__).warning("No Redis URL has been set for caching", exc_info=True)
+            logger.warning("No Redis URL has been set for caching", exc_info=True)
             cls._connection = False
 
     @classmethod
@@ -252,7 +254,7 @@ class WikipediaSession:
         resp_pages = resp_data.get("query", {}).get("pages", [])
         if len(resp_pages) > 0:
             if len(resp_pages) > 1:
-                logging.getLogger(__name__).warning(
+                logger.warning(
                     "Got multiple pages in wikipedia langlinks response: %s", resp_data
                 )
             lang_links = resp_pages[0].get("langlinks", [])
@@ -314,7 +316,7 @@ class WikidataConnector:
                     }
                 ).get('hits', {}).get('hits', [])
         except ConnectionError:
-            logging.getLogger(__name__).warning("Wiki ES not available: connection exception raised", exc_info=True)
+            logger.warning("Wiki ES not available: connection exception raised", exc_info=True)
             return None
 
         if len(resp) == 0:
@@ -362,7 +364,7 @@ class WikipediaBlock(BaseBlock):
                         """
                         return None
                 except WikiUndefinedException:
-                    logging.getLogger(__name__).info("WIKI_ES variable has not been set: call to Wikipedia")
+                    logger.info("WIKI_ES variable has not been set: call to Wikipedia")
 
         wikipedia_value = es_poi.get("properties", {}).get("wikipedia")
         wiki_title = None
