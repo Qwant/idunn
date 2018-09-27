@@ -14,9 +14,15 @@ def get_status(es: Elasticsearch):
     else:
         es_reachable = True
 
+    es_cluster_health = cluster_health.get('status') in ES_RUNNING_STATUS
+
+    # the 'ready' is used as the readyness probe.
+    # for the moment idunn is ready if ES is reachable
+    ready = es_cluster_health
     return {
         'es': {
             'reachable': es_reachable,
-            'running': cluster_health.get('status') in ES_RUNNING_STATUS
-        }
+            'running': es_cluster_health
+        },
+        'ready': ready
     }
