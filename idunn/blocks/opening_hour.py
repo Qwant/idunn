@@ -8,6 +8,9 @@ from humanized_opening_hours.exceptions import ParseError, SpanOverMidnight
 from idunn.utils.opening_hours_lib import hoh
 from .base import BaseBlock
 
+
+logger = logging.getLogger(__name__)
+
 """
 We load the tz structure once when Idunn starts since it's a time consuming step
 """
@@ -70,7 +73,7 @@ class OpeningHourBlock(BaseBlock):
             # Another hack in hoh: apply specific rules in priority
             oh._tree.tree.children.sort(key=lambda x: len(x[0]))
         except ParseError:
-            logging.info("Failed to parse OSM opening_hour field", exc_info=True)
+            logger.info("Failed to parse OSM opening_hour field", exc_info=True)
             return None
         except SpanOverMidnight:
             """
@@ -80,12 +83,12 @@ class OpeningHourBlock(BaseBlock):
             this feature will be supported
             TODO: remove this catch when this will be released
             """
-            logging.info("OSM opening_hour field cannot span over midnight", exc_info=True)
+            logger.info("OSM opening_hour field cannot span over midnight", exc_info=True)
             return None
 
         poi_tz = get_tz(es_poi)
         if poi_tz is None:
-            logging.info("No timezone found for poi %s", es_poi.get('id'))
+            logger.info("No timezone found for poi %s", es_poi.get('id'))
             return None
 
         poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)
