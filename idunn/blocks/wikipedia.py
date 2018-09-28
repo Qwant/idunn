@@ -143,10 +143,8 @@ class WikipediaCache:
     def set_value(cls, key, json_result):
         try:
             cls._connection.set(key, json_result, ex=cls._expire)
-            return True
         except RedisError:
             logging.exception("Got a RedisError")
-            return False
 
     @classmethod
     def get_value(cls, key):
@@ -203,8 +201,7 @@ class WikipediaCache:
                     return json.loads(value_stored.decode('utf-8'))
                 result = f(*args, **kwargs)
                 json_result = json.dumps(result)
-                if not cls.set_value(key, json_result):
-                    return None
+                cls.set_value(key, json_result)
                 return result
             return f(*args, **kwargs)
         return with_cache
