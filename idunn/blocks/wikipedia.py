@@ -140,23 +140,22 @@ class WikipediaCache:
     _connection = None
 
     @classmethod
-    def set_value(cls, f, key, json_result):
+    def set_value(cls, key, json_result):
         try:
             cls._connection.set(key, json_result, ex=cls._expire)
             return True
         except RedisError:
-            logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
+            logging.exception("Got a RedisError")
             return False
 
     @classmethod
-    def get_value(cls, key, f):
+    def get_value(cls, key):
         try:
             value_stored = cls._connection.get(key)
             return value_stored
         except RedisError:
-            logging.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
+            logging.exception("Got a RedisError")
             return None
-
 
     @classmethod
     def init_cache(cls):
@@ -199,14 +198,13 @@ class WikipediaCache:
             otherwise we bypass it
             """
             if cls._connection is not False:
-                value_stored = cls.get_value(key, f)
+                value_stored = cls.get_value(key)
                 if value_stored is not None:
-                    result = json.loads(value_stored.decode('utf-8'))
-                else:
-                    result = f(*args, **kwargs)
-                    json_result = json.dumps(result)
-                    if not cls.set_value(f, key, json_result):
-                        return None
+                    return json.loads(value_stored.decode('utf-8'))
+                result = f(*args, **kwargs)
+                json_result = json.dumps(result)
+                if not cls.set_value(key, json_result):
+                    return None
                 return result
             return f(*args, **kwargs)
         return with_cache
