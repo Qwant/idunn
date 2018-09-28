@@ -144,6 +144,7 @@ class WikipediaCache:
         try:
             cls._connection.set(key, json_result, ex=cls._expire)
         except RedisError:
+            prometheus.exception("RedisError")
             logging.exception("Got a RedisError")
 
     @classmethod
@@ -152,6 +153,7 @@ class WikipediaCache:
             value_stored = cls._connection.get(key)
             return value_stored
         except RedisError:
+            prometheus.exception("RedisError")
             logging.exception("Got a RedisError")
             return None
 
