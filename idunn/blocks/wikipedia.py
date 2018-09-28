@@ -142,6 +142,24 @@ class WikipediaCache:
     _connection = None
 
     @classmethod
+    def set_value(cls, key, json_result):
+        try:
+            cls._connection.set(key, json_result, ex=cls._expire)
+        except RedisError:
+            prometheus.exception("RedisError")
+            logging.exception("Got a RedisError")
+
+    @classmethod
+    def get_value(cls, key):
+        try:
+            value_stored = cls._connection.get(key)
+            return value_stored
+        except RedisError:
+            prometheus.exception("RedisError")
+            logging.exception("Got a RedisError")
+            return None
+
+    @classmethod
     def init_cache(cls):
         from app import settings
 
@@ -182,16 +200,14 @@ class WikipediaCache:
             otherwise we bypass it
             """
             if cls._connection is not False:
-                value_stored = cls._connection.get(key)
+                value_stored = cls.get_value(key)
                 if value_stored is not None:
-                    result = json.loads(value_stored.decode('utf-8'))
-                else:
-                    result = f(*args, **kwargs)
-                    json_result = json.dumps(result)
-                    cls._connection.set(key, json_result, ex=cls._expire)
+                    return json.loads(value_stored.decode('utf-8'))
+                result = f(*args, **kwargs)
+                json_result = json.dumps(result)
+                cls.set_value(key, json_result)
                 return result
             return f(*args, **kwargs)
-
         return with_cache
 
 
