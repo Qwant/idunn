@@ -18,7 +18,7 @@ services:
     deploy:
       labels:
         traefik.docker.network: "product-maps-master_traefik"
-        traefik.frontend.rule: "Host:idunn.maps.qwant.plive"
+        traefik.frontend.rule: "Host:$CI_PIPELINE_ID.idunn.maps.qwant.plive"
         traefik.port: "5000"
       mode: replicated
       placement:
