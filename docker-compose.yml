@@ -14,9 +14,14 @@ networks:
 services:
   idunn:
     image: qwantresearch/idunn@sha256:d5f0d5431b34ab03b6cef7afc7a3634359ba5922d91209cdbd86bf5a5fff3653
+    labels: &ci_labels
+      com.qwant.ci.job_id: ${CI_JOB_ID}
+      com.qwant.ci.pipeline_id: ${CI_PIPELINE_ID}
+      com.qwant.ci.project_id: ${CI_PROJECT_ID}
     command: "--workers=4"
     deploy:
       labels:
+        <<: *ci_labels
         traefik.docker.network: "product-maps-master_traefik"
         traefik.frontend.rule: "Host:idunn.maps.qwant.plive"
         traefik.port: "5000"
