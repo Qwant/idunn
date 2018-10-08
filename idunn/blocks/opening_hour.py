@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, date
 from pytz import timezone, UTC
 from apistar import validators, types
 from tzwhere import tzwhere
-from humanized_opening_hours.exceptions import ParseError, SpanOverMidnight
+from humanized_opening_hours.exceptions import HOHError
 
 from idunn.utils.opening_hours_lib import hoh
 from .base import BaseBlock
@@ -70,21 +70,21 @@ class OpeningHourBlock(BaseBlock):
 
         try:
             oh = hoh.OHParser(raw)
-            # Another hack in hoh: apply specific rules in priority
-            oh._tree.tree.children.sort(key=lambda x: len(x[0]))
-        except ParseError:
+            # # Another hack in hoh: apply specific rules in priority
+            # oh._tree.tree.children.sort(key=lambda x: len(x[0]))
+        except HOHError:
             logger.info("Failed to parse OSM opening_hour field", exc_info=True)
             return None
-        except SpanOverMidnight:
-            """
-            In the current hoh version opening hours are not allowed to span over midnight
-            However in the coming version (branch 'new-parsing' of the hoh repo:
-            https://github.com/rezemika/humanized_opening_hours/tree/new-parsing)
-            this feature will be supported
-            TODO: remove this catch when this will be released
-            """
-            logger.info("OSM opening_hour field cannot span over midnight", exc_info=True)
-            return None
+        # except SpanOverMidnight:
+        #     """
+        #     In the current hoh version opening hours are not allowed to span over midnight
+        #     However in the coming version (branch 'new-parsing' of the hoh repo:
+        #     https://github.com/rezemika/humanized_opening_hours/tree/new-parsing)
+        #     this feature will be supported
+        #     TODO: remove this catch when this will be released
+        #     """
+        #     logger.info("OSM opening_hour field cannot span over midnight", exc_info=True)
+        #     return None
 
         poi_tz = get_tz(es_poi)
         if poi_tz is None:
@@ -95,7 +95,12 @@ class OpeningHourBlock(BaseBlock):
         # The current version of the hoh lib doesn't allow to use the next_change() function
         # with an offset aware datetime.
         # This is why we replace the timezone info until this problem is fixed in the library.
-        nt = oh.next_change(allow_recursion=False, moment=poi_dt.replace(tzinfo=None))
+        try:
+            nt = oh.next_change(dt=poi_dt.replace(tzinfo=None))
+        except HOHError:
+            logger.info("Failed to compute next transition for poi %s",
+                es_poi.get('id'), exc_info=True)
+
 
         # Then we localize the next_change transition datetime in the local POI timezone.
         next_transition = poi_tz.localize(nt.replace(tzinfo=None))
@@ -105,7 +110,7 @@ class OpeningHourBlock(BaseBlock):
         delta = next_transition - poi_dt
         time_before_next = int(delta.total_seconds())
 
-        if oh.is_open(poi_dt):
+        if oh.is_open(poi_dt.replace(tzinfo=None)):
             status = 'open'
         else:
             status = 'closed'
@@ -115,7 +120,7 @@ class OpeningHourBlock(BaseBlock):
             next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
             is_24_7=is247,
-            raw=oh.sanitized_field,
+            raw=oh.field,
             days=cls.get_days(oh, dt=poi_dt)
         )
 
@@ -138,16 +143,16 @@ class OpeningHourBlock(BaseBlock):
         for x in range(0,7):
             day = last_monday + timedelta(days=x)
             oh_day = oh_parser.get_day(day)
-            periods = oh_day.periods
+            periods = oh_day.opening_periods()
             day_value = {
                 'dayofweek': day.isoweekday(),
                 'local_date': day.isoformat(),
                 'status': 'open' if len(periods) > 0 else 'closed',
                 'opening_hours': []
             }
-            for p in periods:
-                beginning = cls.round_time_to_minute(p.beginning.time())
-                end = cls.round_time_to_minute(p.end.time())
+            for beginning_dt, end_dt in periods:
+                beginning = cls.round_time_to_minute(beginning_dt.time())
+                end = cls.round_time_to_minute(end_dt.time())
                 day_value['opening_hours'].append(
                     {
                         'beginning': beginning.strftime('%H:%M'),
