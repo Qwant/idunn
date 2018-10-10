@@ -157,6 +157,24 @@ def test_opening_hour_open_until_midnight():
         end='00:00'
     )] for d in oh_block.days)
 
+@freeze_time("2018-01-04T23:00:00+03:00")
+def test_opening_hour_open_until_2am():
+    oh_block = get_moscow_poi("Mo-Su 09:00-02:00")
+    assert oh_block == dict(
+        type='opening_hours',
+        status='open',
+        next_transition_datetime='2018-01-05T02:00:00+03:00',
+        seconds_before_next_transition=10800,
+        is_24_7=False,
+        raw='Mo-Su 09:00-02:00',
+        days=ANY
+    )
+    assert len(oh_block.days) == 7
+    assert all(d.status == 'open' for d in oh_block.days)
+    assert all(d.opening_hours == [dict(
+        beginning='09:00',
+        end='02:00'
+    )] for d in oh_block.days)
 
 @freeze_time("2018-06-15T21:00:00+03:00")
 def test_opening_hour_days_cycle():

@@ -3,9 +3,9 @@ from datetime import datetime, timedelta, date
 from pytz import timezone, UTC
 from apistar import validators, types
 from tzwhere import tzwhere
+import humanized_opening_hours as hoh
 from humanized_opening_hours.exceptions import HOHError
 
-from idunn.utils.opening_hours_lib import hoh
 from .base import BaseBlock
 
 
@@ -70,21 +70,9 @@ class OpeningHourBlock(BaseBlock):
 
         try:
             oh = hoh.OHParser(raw)
-            # # Another hack in hoh: apply specific rules in priority
-            # oh._tree.tree.children.sort(key=lambda x: len(x[0]))
         except HOHError:
             logger.info("Failed to parse OSM opening_hour field", exc_info=True)
             return None
-        # except SpanOverMidnight:
-        #     """
-        #     In the current hoh version opening hours are not allowed to span over midnight
-        #     However in the coming version (branch 'new-parsing' of the hoh repo:
-        #     https://github.com/rezemika/humanized_opening_hours/tree/new-parsing)
-        #     this feature will be supported
-        #     TODO: remove this catch when this will be released
-        #     """
-        #     logger.info("OSM opening_hour field cannot span over midnight", exc_info=True)
-        #     return None
 
         poi_tz = get_tz(es_poi)
         if poi_tz is None:
@@ -151,6 +139,8 @@ class OpeningHourBlock(BaseBlock):
                 'opening_hours': []
             }
             for beginning_dt, end_dt in periods:
+                if beginning_dt.date() < day:
+                    continue
                 beginning = cls.round_time_to_minute(beginning_dt.time())
                 end = cls.round_time_to_minute(end_dt.time())
                 day_value['opening_hours'].append(
