@@ -23,7 +23,7 @@ services:
       labels:
         <<: *ci_labels
         traefik.docker.network: "product-maps-master_traefik"
-        traefik.frontend.rule: "Host:idunn.maps.qwant.plive"
+        traefik.frontend.rule: "PathPrefixStrip:/maps/detail/"
         traefik.port: "5000"
       mode: replicated
       placement:
