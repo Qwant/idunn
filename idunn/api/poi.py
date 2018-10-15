@@ -1,6 +1,7 @@
 from apistar import types, validators
 from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
 from idunn.blocks.base import BlocksValidator
+from idunn.api.place import Place
 
 BLOCKS_ORDER = [
     OpeningHourBlock,
@@ -74,7 +75,9 @@ def get_geom(es_poi):
     return geom
 
 
-class POI(types.Type):
+class POI(Place):
+    PLACE_TYPE = 'poi'
+
     id = validators.String(allow_null=True)
     name = validators.String(allow_null=True)
     local_name = validators.String(allow_null=True)
@@ -84,6 +87,13 @@ class POI(types.Type):
     address = validators.Object(allow_null=True)
     blocks = BlocksValidator(allowed_blocks=BLOCKS_ORDER)
 
+    @classmethod
+    def load_place(cls, es_place, lang, settings):
+        return cls.load_poi(es_place, lang)
+
+    """
+    @deprecated method
+    """
     @classmethod
     def load_poi(cls, es_poi, lang):
         properties = es_poi.get('properties', {})

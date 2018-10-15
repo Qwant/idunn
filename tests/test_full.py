@@ -30,6 +30,7 @@ def test_full(fake_all_blocks):
     resp = response.json()
 
     assert resp == {
+        "type": "poi",
         "id": "osm:way:7777777",
         "name": "Fako Allo",
         "local_name": "Fake All",
