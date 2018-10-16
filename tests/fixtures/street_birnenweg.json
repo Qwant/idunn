@@ -1,0 +1,98 @@
+{
+	"administrative_regions": [
+		{
+			"admin_type": "Unknown",
+			"bbox": [
+				10.5540402,
+				53.7680103,
+				10.9687156,
+				53.9938868
+			],
+			"coord": {
+				"lat": 53.866444,
+				"lon": 10.684738
+			},
+			"id": "admin:osm:relation:27027",
+			"insee": "",
+			"label": "Lübeck, Schleswig-Holstein, Deutschland",
+			"level": 6,
+			"name": "Lübeck",
+			"weight": 0.0014823035372002204,
+			"zip_codes": [],
+			"zone_type": "state_district"
+		},
+		{
+			"admin_type": "Unknown",
+			"bbox": [
+				7.5211615,
+				53.3598106,
+				11.672386,
+				55.099161
+			],
+			"coord": {
+				"lat": 54.3216753,
+				"lon": 10.1371858
+			},
+			"id": "admin:osm:relation:51529",
+			"insee": "",
+			"label": "Schleswig-Holstein, Deutschland",
+			"level": 4,
+			"name": "Schleswig-Holstein",
+			"weight": 0.0017144237597725256,
+			"zip_codes": [],
+			"zone_type": "state"
+		},
+		{
+			"admin_type": "Unknown",
+			"bbox": [
+				5.8663153,
+				47.2701114,
+				15.0419319,
+				55.099161
+			],
+			"coord": {
+				"lat": 52.5170365,
+				"lon": 13.3888599
+			},
+			"id": "admin:osm:relation:51477",
+			"insee": "",
+			"label": "Deutschland",
+			"level": 2,
+			"name": "Deutschland",
+			"weight": 0.024579080066797,
+			"zip_codes": [],
+			"zone_type": "country"
+		},
+		{
+			"admin_type": "Unknown",
+			"bbox": [
+				10.6538195,
+				53.8456535,
+				10.6788151,
+				53.8727018
+			],
+			"coord": {
+				"lat": 53.8616281,
+				"lon": 10.6685108
+			},
+			"id": "admin:osm:relation:367854",
+			"insee": "",
+			"label": "Sankt Lorenz Süd, Lübeck, Schleswig-Holstein, Deutschland",
+			"level": 9,
+			"name": "Sankt Lorenz Süd",
+			"weight": 0.0,
+			"zip_codes": [],
+			"zone_type": "city_district"
+		}
+	],
+	"coord": {
+		"lat": 53.847809999999996,
+		"lon": 10.6646915
+	},
+	"id": "35460343",
+	"label": "9a Birnenweg",
+	"name": "9a Birnenweg",
+	"street_name": "9a Birnenweg",
+	"weight": 0.0,
+	"zip_codes": []
+}

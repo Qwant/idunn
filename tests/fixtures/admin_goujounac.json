@@ -1,0 +1,27 @@
+{
+	"admin_type": "City",
+	"bbox": [
+		1.1777833,
+		44.5547916,
+		1.2237663,
+		44.5978805
+	],
+	"boundary": {
+		"coordinates": [],
+		"type": "MultiPolygon"
+	},
+	"coord": {
+		"lat": 44.5756909,
+		"lon": 1.1957467
+	},
+	"id": "admin:osm:relation:123057",
+	"insee": "46126",
+	"label": "Goujounac (46250), Lot, Occitanie, France",
+	"level": 8,
+	"name": "Goujounac",
+	"weight": 1.5939645846544881e-06,
+	"zip_codes": [
+		"46250"
+	],
+	"zone_type": "city"
+}
