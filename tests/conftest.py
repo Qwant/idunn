@@ -60,18 +60,17 @@ def init_indices(mimir_client, wiki_client):
     """
     Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir does
     """
-    index_name = 'munin_poi_specific'
-    mimir_client.indices.create(index=index_name)
-    mimir_client.indices.put_alias(name='munin_poi', index=index_name)
+    mimir_client.indices.create(index='munin_poi')
+    mimir_client.indices.put_alias(name='munin', index='munin_poi')
 
-    mimir_client.indices.create(index='munin_addr_test')
-    mimir_client.indices.put_alias(name='munin_addr', index='munin_addr_test')
+    mimir_client.indices.create(index='munin_addr')
+    mimir_client.indices.put_alias(name='munin', index='munin_addr')
 
-    mimir_client.indices.create(index='munin_street_test')
-    mimir_client.indices.put_alias(name='munin_street', index='munin_street_test')
+    mimir_client.indices.create(index='munin_street')
+    mimir_client.indices.put_alias(name='munin', index='munin_street')
 
-    mimir_client.indices.create(index='munin_admin_test')
-    mimir_client.indices.put_alias(name='munin_admin', index='munin_admin_test')
+    mimir_client.indices.create(index='munin_admin')
+    mimir_client.indices.put_alias(name='munin', index='munin_admin')
 
     index_name = 'wikidata_fr'
     wiki_client.indices.create(

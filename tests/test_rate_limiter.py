@@ -8,11 +8,17 @@ from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaLimiter
 from .utils import override_settings
 
-from .test_api import louvre_museum
+from .test_api import load_poi
 from redis import RedisError
 from redis_rate_limit import RateLimiter
 from functools import wraps
 
+@pytest.fixture(autouse=True)
+def load_all(mimir_client, init_indices):
+    """
+    fill elasticsearch with all POI this module requires
+    """
+    load_poi('louvre_museum.json', mimir_client)
 
 @pytest.fixture(scope="function")
 def limiter_test_normal(redis):
@@ -93,7 +99,7 @@ def mock_wikipedia(redis):
         )
         yield rsps
 
-def test_rate_limiter_with_redis(louvre_museum, limiter_test_normal, mock_wikipedia):
+def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia):
     """
     Test that Idunn stops external requests when
     we are above the max rate
@@ -106,21 +112,21 @@ def test_rate_limiter_with_redis(louvre_museum, limiter_test_normal, mock_wikipe
 
     for i in range(3):
         response = client.get(
-           url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+           url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
         )
         resp = response.json()
         assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
     for i in range(2):
         response = client.get(
-            url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+            url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
         )
         resp = response.json()
         assert all(b['type'] != "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
     assert len(mock_wikipedia.calls) == 6
 
-def test_rate_limiter_without_redis(louvre_museum):
+def test_rate_limiter_without_redis():
     """
     Test that Idunn doesn't stop external requests when
     no redis has been set: 10 requests to Idunn should
@@ -136,7 +142,7 @@ def test_rate_limiter_without_redis(louvre_museum):
         )
         for i in range(10):
             response = client.get(
-               url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+               url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
             )
 
         assert len(rsps.calls) == 10
@@ -159,7 +165,7 @@ def restart_wiki_redis(docker_services):
     settings._settings['WIKI_API_REDIS_URL'] = url
     WikipediaLimiter._limiter = None
 
-def test_rate_limiter_with_redisError(louvre_museum, limiter_test_interruption, mock_wikipedia, monkeypatch):
+def test_rate_limiter_with_redisError(limiter_test_interruption, mock_wikipedia, monkeypatch):
     """
     Test that Idunn stops returning the wikipedia block
     when not enough space remains on the disk for the redis
@@ -176,7 +182,7 @@ def test_rate_limiter_with_redisError(louvre_museum, limiter_test_interruption, 
     before "stopping" redis
     """
     response = client.get(
-       url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+       url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
 
     assert response.status_code == 200
@@ -204,7 +210,7 @@ def test_rate_limiter_with_redisError(louvre_museum, limiter_test_interruption, 
 
         client = TestClient(app)
         response = client.get(
-           url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+           url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
         )
 
         assert response.status_code == 200
@@ -219,7 +225,7 @@ def test_rate_limiter_with_redisError(louvre_museum, limiter_test_interruption, 
     a correct answer from Idunn.
     """
     response = client.get(
-       url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+       url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
 
     assert response.status_code == 200
@@ -230,7 +236,7 @@ def test_rate_limiter_with_redisError(louvre_museum, limiter_test_interruption, 
     assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_rate_limiter_with_redis_interruption(louvre_museum, docker_services, redis, limiter_test_interruption):
+def test_rate_limiter_with_redis_interruption(docker_services, redis, limiter_test_interruption):
     """
     Test that Idunn isn't impacted by any Redis interruption:
     If Redis service stops then the wikipedia block should not be returned.
@@ -244,7 +250,7 @@ def test_rate_limiter_with_redis_interruption(louvre_museum, docker_services, re
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+        url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
     assert response.status_code == 200
     resp = response.json()
@@ -273,7 +279,7 @@ def test_rate_limiter_with_redis_interruption(louvre_museum, docker_services, re
     """
     docker_services._docker_compose.execute('stop', 'wiki_redis')
     response = client.get(
-        url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+        url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
     assert response.status_code == 200
     """
@@ -297,7 +303,7 @@ def test_rate_limiter_with_redis_interruption(louvre_museum, docker_services, re
     """
     restart_wiki_redis(docker_services)
     response = client.get(
-        url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+        url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
     assert response.status_code == 200
     resp = response.json()

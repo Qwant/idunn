@@ -1,7 +1,16 @@
+import pytest
 from app import app
 from idunn.blocks.services_and_information import AccessibilityBlock
-from .test_api import patisserie_peron, cinema_multiplexe
+from .test_api import load_poi
 from apistar.test import TestClient
+
+@pytest.fixture(autouse=True)
+def load_all(mimir_client, init_indices):
+    """
+    fill elasticsearch with all POI this module requires
+    """
+    load_poi('patisserie_peron.json', mimir_client)
+    load_poi('cinema_multiplexe.json', mimir_client)
 
 def test_accessibility_block():
     web_block = AccessibilityBlock.from_es(
@@ -31,14 +40,14 @@ def test_accessibility_unknown():
     )
     assert web_block is None
 
-def test_undefined_wheelchairs(patisserie_peron):
+def test_undefined_wheelchairs():
     """
     Test that when wheelchair and toilets_wheelchair are not
     defined there is no block 'accessibility'
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{patisserie_peron}?lang=fr',
+        url=f'http://localhost/v1/pois/osm:node:738042332?lang=fr',
     )
 
     assert response.status_code == 200
@@ -53,7 +62,7 @@ def test_undefined_wheelchairs(patisserie_peron):
     assert resp['subclass_name'] == 'bakery'
     assert resp['blocks'] == []
 
-def test_wheelchair(cinema_multiplexe):
+def test_wheelchair():
     """
     Test that Idunn returns the correct block when
     both wheelchair and toilets_wheelchair tags
@@ -61,7 +70,7 @@ def test_wheelchair(cinema_multiplexe):
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{cinema_multiplexe}?lang=fr',
+        url=f'http://localhost/v1/pois/osm:node:36153811?lang=fr',
     )
 
     assert response.status_code == 200

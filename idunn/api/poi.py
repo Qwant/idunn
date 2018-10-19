@@ -89,6 +89,8 @@ class POI(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings):
+        properties = {p.get('key'): p.get('value') for p in es_place.get('properties')}
+        es_place['properties'] = properties
         return cls.load_poi(es_place, lang)
 
     """

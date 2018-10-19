@@ -7,7 +7,15 @@ from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaBreaker
 from time import sleep
 
-from .test_full import fake_all_blocks
+from .test_api import load_poi
+
+@pytest.fixture(autouse=True)
+def fake_all_blocks(mimir_client):
+    """
+    fill elasticsearch with a fake POI that contains all information possible
+    in order that Idunn returns all possible blocks.
+    """
+    load_poi('fake_all_blocks.json', mimir_client)
 
 @pytest.fixture()
 def breaker_test():
@@ -23,7 +31,7 @@ def breaker_test():
     wiki_breaker.close()
     return wiki_breaker
 
-def test_circuit_breaker_500(fake_all_blocks, breaker_test):
+def test_circuit_breaker_500(breaker_test):
     """
     Test when the external service returns a
     HTTPError 500.
@@ -43,7 +51,7 @@ def test_circuit_breaker_500(fake_all_blocks, breaker_test):
         """
         for i in range(10):
             response = client.get(
-                url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+                url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
             )
 
         assert response.status_code == 200
@@ -62,11 +70,11 @@ def test_circuit_breaker_500(fake_all_blocks, breaker_test):
 
         for i in range(10):
             response = client.get(
-                url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+                url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
             )
         assert len(rsps.calls) == 4
 
-def test_circuit_breaker_404(fake_all_blocks, breaker_test):
+def test_circuit_breaker_404(breaker_test):
     """
     Same test as 'test_circuit_breaker_500' except
     that the external service returns this time an
@@ -87,7 +95,7 @@ def test_circuit_breaker_404(fake_all_blocks, breaker_test):
         """
         for i in range(4):
             response = client.get(
-               url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+               url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
             )
 
         assert 'closed' == breaker_test.current_state

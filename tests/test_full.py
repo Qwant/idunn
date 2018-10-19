@@ -6,23 +6,23 @@ from app import app
 from .test_api import load_poi
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(autouse=True)
 def fake_all_blocks(mimir_client):
     """
     fill elasticsearch with a fake POI that contains all information possible
     in order that Idunn returns all possible blocks.
     """
-    return load_poi('fake_all_blocks.json', mimir_client)
+    load_poi('fake_all_blocks.json', mimir_client)
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_full(fake_all_blocks):
+def test_full():
     """
     Exhaustive test that checks all possible blocks
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{fake_all_blocks}?lang=es',
+        url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
     )
 
     assert response.status_code == 200
