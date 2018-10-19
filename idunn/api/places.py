@@ -8,8 +8,6 @@ from idunn.api.place import Place, Admin, Street, Address
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 
-logger = logging.getLogger(__name__)
-
 def fetch_es_place(id, es, indices, type) -> list:
     if type is None:
         index_name = "munin"
