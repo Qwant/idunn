@@ -34,6 +34,8 @@ services:
       resources:
         limits:
           memory: 4g
+      restart_policy:
+        condition: on-failure
     environment:
       - IDUNN_LOG_JSON=1
       - IDUNN_MIMIR_ES=http://es:9200
