@@ -33,3 +33,12 @@ LOG_JSON: False  # To get flat logs or json logs
 #                    (ii) create an empty directory: <idunn-dir>/prometheus_multiproc
 #                    (iii) define the following env variable: prometheus_multiproc_dir pointing to the directory defined at (ii)
 PROMETHEUS_MULTIPROC: False
+
+# Since we give to Idunn the type of the place requested we want to
+# fetch the index corresponding to this type directly.
+# The indices names can be set below:
+PLACE_ADMIN_INDEX: "munin_admin"
+PLACE_STREET_INDEX: "munin_street"
+PLACE_ADDRESS_INDEX: "munin_addr"
+PLACE_POI_INDEX: "munin_poi"
+

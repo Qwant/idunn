@@ -3,7 +3,16 @@ from app import app
 import responses
 import pytest
 
-from .test_api import louvre_museum
+from .test_api import load_poi
+
+@pytest.fixture(autouse=True)
+def louvre_museum(mimir_client):
+    """
+    fill elasticsearch with a fake POI that contains all information possible
+    in order that Idunn returns all possible blocks.
+    """
+    load_poi('louvre_museum.json', mimir_client)
+
 
 @pytest.fixture(scope='module', autouse=True)
 def mock_wikipedia_response():
@@ -59,7 +68,7 @@ def mock_wikipedia_response():
         yield
 
 
-def test_wikipedia_another_language(louvre_museum):
+def test_wikipedia_another_language():
     """
     The louvre museum has the tag 'wikipedia' with value 'fr:Musée du Louvre'
     We check that wikipedia block is built using data from the wikipedia page
@@ -67,7 +76,7 @@ def test_wikipedia_another_language(louvre_museum):
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+        url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
 
     assert response.status_code == 200

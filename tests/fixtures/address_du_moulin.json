@@ -1,0 +1,116 @@
+{
+	"coord": {
+		"lat": 48.810273,
+		"lon": 5.108632
+	},
+	"house_number": "4",
+	"id": "addr:5.108632;48.810273",
+	"label": "4 Rue du Moulin (Val-d'Ornain)",
+	"name": "4 Rue du Moulin",
+	"street": {
+		"administrative_regions": [
+			{
+				"admin_type": "Unknown",
+				"bbox": [
+					4.888456,
+					48.4091029,
+					5.8542187,
+					49.6169111
+				],
+				"coord": {
+					"lat": 48.7736785,
+					"lon": 5.1621546
+				},
+				"id": "admin:osm:relation:7382",
+				"insee": "55",
+				"label": "Meuse, Grand Est, France",
+				"level": 6,
+				"name": "Meuse",
+				"weight": 0.00011065872911282556,
+				"zip_codes": [],
+				"zone_type": "state_district"
+			},
+			{
+				"admin_type": "Unknown",
+				"bbox": [
+					3.383639,
+					47.4203421,
+					8.2325219,
+					50.1693225
+				],
+				"coord": {
+					"lat": 48.584614,
+					"lon": 7.750712699999999
+				},
+				"id": "admin:osm:relation:3792876",
+				"insee": "44",
+				"label": "Grand Est, France",
+				"level": 4,
+				"name": "Grand Est",
+				"weight": 0.001891750579679328,
+				"zip_codes": [],
+				"zone_type": "state"
+			},
+			{
+				"admin_type": "Unknown",
+				"bbox": [
+					-5.4534286,
+					41.2632185,
+					9.8678344,
+					51.268318
+				],
+				"coord": {
+					"lat": 48.8566101,
+					"lon": 2.3514992
+				},
+				"id": "admin:osm:relation:2202162",
+				"insee": "",
+				"label": "France",
+				"level": 2,
+				"name": "France",
+				"weight": 0.015618298409952111,
+				"zip_codes": [],
+				"zone_type": "country"
+			},
+			{
+				"admin_type": "City",
+				"bbox": [
+					5.0401165,
+					48.7735352,
+					5.1377545,
+					48.8527669
+				],
+				"coord": {
+					"lat": 48.8018775,
+					"lon": 5.0698126
+				},
+				"id": "admin:osm:relation:2645341",
+				"insee": "55366",
+				"label": "Val-d'Ornain (55000), Meuse, Grand Est, France",
+				"level": 8,
+				"name": "Val-d'Ornain",
+				"weight": 6.877017509339014e-06,
+				"zip_codes": [
+					"55000"
+				],
+				"zone_type": "city"
+			}
+		],
+		"coord": {
+			"lat": 48.810273,
+			"lon": 5.108632
+		},
+		"id": "street:553660045D",
+		"label": "Rue du Moulin (Val-d'Ornain)",
+		"name": "Rue du Moulin",
+		"street_name": "Rue du Moulin",
+		"weight": 6.877017509339014e-06,
+		"zip_codes": [
+			"55000"
+		]
+	},
+	"weight": 6.877017509339014e-06,
+	"zip_codes": [
+		"55000"
+	]
+}

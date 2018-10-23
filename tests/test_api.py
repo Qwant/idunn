@@ -18,48 +18,21 @@ def load_poi(file_name, mimir_client):
                         doc_type='poi',
                         id=poi_id,
                         refresh=True)
-        return poi_id
 
-@pytest.fixture(scope="session")
-def patisserie_peron(mimir_client, init_indices):
+@pytest.fixture(autouse=True)
+def load_all(mimir_client, init_indices):
     """
-    fill elasticsearch with a patisserie without the
-    tags 'wheelchair' and 'toilets:wheelchair' defined
+    fill elasticsearch with all POI this module requires
     """
-    return load_poi('patisserie_peron.json', mimir_client)
+    load_poi('patisserie_peron.json', mimir_client)
+    load_poi('orsay_museum.json', mimir_client)
+    load_poi('blancs_manteaux.json', mimir_client)
+    load_poi('louvre_museum.json', mimir_client)
 
-@pytest.fixture(scope="session")
-def cinema_multiplexe(mimir_client, init_indices):
-    """
-    fill elasticsearch with a cinema_multiplexe
-    """
-    return load_poi('cinema_multiplexe.json', mimir_client)
-
-@pytest.fixture(scope="session")
-def orsay_museum(mimir_client, init_indices):
-    """
-    fill elasticsearch with the orsay museum
-    """
-    return load_poi('orsay_museum.json', mimir_client)
-
-@pytest.fixture(scope="session")
-def blancs_manteaux(mimir_client, init_indices):
-    """
-    fill elasticsearch with the church des blancs manteaux
-    """
-    return load_poi('blancs_manteaux.json', mimir_client)
-
-@pytest.fixture(scope="session")
-def louvre_museum(init_indices, mimir_client):
-    """
-    fill elasticsearch with the louvre museum (with the tag 'contact:phone')
-    """
-    return load_poi('louvre_museum.json', mimir_client)
-
-def test_basic_query(orsay_museum):
+def test_basic_query():
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
+        url=f'http://localhost/v1/pois/osm:way:63178753?lang=fr',
     )
 
     assert response.status_code == 200
@@ -77,10 +50,10 @@ def test_basic_query(orsay_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
-def test_lang(orsay_museum):
+def test_lang():
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{orsay_museum}?lang=it',
+        url=f'http://localhost/v1/pois/osm:way:63178753?lang=it',
     )
 
     assert response.status_code == 200
@@ -97,14 +70,14 @@ def test_lang(orsay_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
-def test_contact_phone(louvre_museum):
+def test_contact_phone():
     """
     The louvre museum has the tag 'contact:phone'
     We test this tag is correct here
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{louvre_museum}',
+        url=f'http://localhost/v1/pois/osm:relation:7515426',
     )
 
     assert response.status_code == 200
@@ -119,14 +92,14 @@ def test_contact_phone(louvre_museum):
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
 
-def test_block_null(blancs_manteaux):
+def test_block_null():
     """
     The query corresponding to POI id 'osm:way:55984117' doesn't contain any 'opening_hour' block (the block is null).
     We check the API answer is ok (status_code == 200) with the correct fields.
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{blancs_manteaux}?lang=fr',
+        url=f'http://localhost/v1/pois/osm:way:55984117?lang=fr',
     )
 
     assert response.status_code == 200
@@ -143,7 +116,7 @@ def test_block_null(blancs_manteaux):
     assert resp['blocks'][0]['url'] == 'tel:+33 1 42 72 09 37'
 
 
-def test_unknow_poi(orsay_museum):
+def test_unknow_poi():
     client = TestClient(app)
     response = client.get(
         url='http://localhost/v1/pois/an_unknown_poi_id',
@@ -160,7 +133,7 @@ def test_schema():
 
     assert response.status_code == 200  # for the moment we check just that the schema is not empty
 
-def test_services_and_information(orsay_museum):
+def test_services_and_information():
     """
     Test that the services_and_information block
     contains the 3 correct blocks (accessibility,
@@ -168,7 +141,7 @@ def test_services_and_information(orsay_museum):
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
+        url=f'http://localhost/v1/pois/osm:way:63178753?lang=fr',
     )
 
     assert response.status_code == 200

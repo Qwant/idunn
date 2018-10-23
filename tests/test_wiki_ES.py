@@ -7,8 +7,16 @@ import json
 import responses
 
 from app import app, settings
-from .test_api import load_poi, orsay_museum
+from .test_api import load_poi
 
+
+@pytest.fixture(autouse=True)
+def load_all(mimir_client, init_indices):
+    """
+    fill elasticsearch with all POI this module requires
+    """
+    load_poi('orsay_museum.json', mimir_client)
+    load_poi('basket_ball.json', mimir_client)
 
 @pytest.fixture(scope="session", autouse=True)
 def basket_ball_wiki_es(wiki_client, init_indices):
@@ -26,15 +34,8 @@ def basket_ball_wiki_es(wiki_client, init_indices):
                         refresh=True)
         return poi_id
 
-@pytest.fixture(scope="session")
-def basket_ball(mimir_client, init_indices):
-    """
-    fill elasticsearch with a fake POI of basket ball
-    """
-    return load_poi('basket_ball.json', mimir_client)
-
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_basket_ball(basket_ball):
+def test_basket_ball():
     """
     Check that the wikipedia block contains the correct
     information about a POI that is in the WIKI_ES.
@@ -46,7 +47,7 @@ def test_basket_ball(basket_ball):
              status=200)
 
         response = client.get(
-            url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
+            url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
         )
 
         assert response.status_code == 200
@@ -67,14 +68,14 @@ def test_basket_ball(basket_ball):
         """
         for i in range(10):
             response = client.get(
-                url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
+                url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
             )
 
         assert len(rsps.calls) == 0
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_WIKI_ES_KO(wiki_client_ko, orsay_museum):
+def test_WIKI_ES_KO(wiki_client_ko):
     """
     Check that when the WIKI_ES variable is set AND
     the WIKI_ES service not available the wikipedia block
@@ -89,7 +90,7 @@ def test_WIKI_ES_KO(wiki_client_ko, orsay_museum):
 
         for i in range(10):
             response = client.get(
-                url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
+                url=f'http://localhost/v1/pois/osm:way:63178753?lang=fr',
             )
 
         assert len(rsps.calls) == 0
@@ -147,7 +148,7 @@ def undefine_wiki_es():
     settings._settings['WIKI_ES'] = wiki_es_ip # put back the correct ip for next tests
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_undefined_WIKI_ES(basket_ball, undefine_wiki_es):
+def test_undefined_WIKI_ES(undefine_wiki_es):
     """
     Check that when the WIKI_ES variable is not set
     a Wikipedia call is observed
@@ -161,13 +162,13 @@ def test_undefined_WIKI_ES(basket_ball, undefine_wiki_es):
 
         for i in range(10):
             response = client.get(
-                url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
+                url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
             )
 
         assert len(rsps.calls) == 10
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_POI_not_in_WIKI_ES(orsay_museum):
+def test_POI_not_in_WIKI_ES():
     """
     Test that when the POI requested is not in WIKI_ES
     no call to Wikipedia is observed
@@ -179,7 +180,7 @@ def test_POI_not_in_WIKI_ES(orsay_museum):
              status=200)
 
         response = client.get(
-                url=f'http://localhost/v1/pois/{orsay_museum}?lang=fr',
+                url=f'http://localhost/v1/pois/osm:way:63178753?lang=fr',
         )
 
         assert response.status_code == 200
@@ -231,7 +232,7 @@ def test_POI_not_in_WIKI_ES(orsay_museum):
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_no_lang_WIKI_ES(basket_ball):
+def test_no_lang_WIKI_ES():
     """
     Test that when we don't have the lang available in the index
     we call Wikipedia API
@@ -247,7 +248,7 @@ def test_no_lang_WIKI_ES(basket_ball):
         We make a request in russian language ("ru")
         """
         response = client.get(
-            url=f'http://localhost/v1/pois/{basket_ball}?lang=ru',
+            url=f'http://localhost/v1/pois/osm:way:7777777?lang=ru',
         )
 
         assert len(rsps.calls) == 1

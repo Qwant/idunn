@@ -6,12 +6,19 @@ from freezegun import freeze_time
 from app import app, settings
 from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaCache
-from .test_wiki_ES import basket_ball_wiki_es, basket_ball
-from .test_api import louvre_museum
+from .test_wiki_ES import basket_ball_wiki_es
+from .test_api import load_poi
 from .test_rate_limiter import mock_wikipedia
 from functools import wraps
 import pytest
 
+@pytest.fixture(autouse=True)
+def load_all(mimir_client, init_indices):
+    """
+    fill elasticsearch with all POI this module requires
+    """
+    load_poi('basket_ball.json', mimir_client)
+    load_poi('louvre_museum.json', mimir_client)
 
 @pytest.fixture(scope="function")
 def cache_test_normal(redis):
@@ -26,7 +33,7 @@ def cache_test_normal(redis):
     WikipediaCache._connection = None
 
 
-def test_wikipedia_cache(louvre_museum, cache_test_normal, mock_wikipedia):
+def test_wikipedia_cache(cache_test_normal, mock_wikipedia):
     """
     Test that Idunn stops external requests when
     answers are in the cache
@@ -37,7 +44,7 @@ def test_wikipedia_cache(louvre_museum, cache_test_normal, mock_wikipedia):
     We make a first request for the louvre museum POI
     """
     response = client.get(
-       url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+       url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
     resp = response.json()
     """
@@ -53,7 +60,7 @@ def test_wikipedia_cache(louvre_museum, cache_test_normal, mock_wikipedia):
     made
     """
     response = client.get(
-       url=f'http://localhost/v1/pois/{louvre_museum}?lang=es',
+       url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
     )
     resp = response.json()
 
@@ -61,7 +68,7 @@ def test_wikipedia_cache(louvre_museum, cache_test_normal, mock_wikipedia):
     assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have a wikipedia block
 
 
-def test_wikidata_cache(cache_test_normal, basket_ball, basket_ball_wiki_es, monkeypatch):
+def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
     """
     We test the cache for the Wikidata ES
     """
@@ -78,7 +85,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball, basket_ball_wiki_es, mon
              status=200)
 
         response = client.get(
-            url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
+            url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
         )
 
         assert response.status_code == 200
@@ -123,7 +130,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball, basket_ball_wiki_es, mon
             """
             for i in range(10):
                 response = client.get(
-                    url=f'http://localhost/v1/pois/{basket_ball}?lang=fr',
+                    url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
                 )
                 resp = response.json()
                 assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block

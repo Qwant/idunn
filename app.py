@@ -1,6 +1,7 @@
 from apistar import App, Include
 
 from idunn.utils.settings import SettingsComponent
+from idunn.utils.index_names import IndexNamesSettingsComponent
 from idunn.utils.es_wrapper import ElasticSearchComponent
 from idunn.utils.logging import init_logging, LogErrorHook
 from idunn.utils.cors import CORSHeaders
@@ -18,6 +19,7 @@ routes = [
 components = [
     settings,
     ElasticSearchComponent(),
+    IndexNamesSettingsComponent(),
     PrometheusComponent()
 ]
 
