@@ -93,9 +93,6 @@ class POI(Place):
         es_place['properties'] = properties
         return cls.load_poi(es_place, lang)
 
-    """
-    @deprecated method
-    """
     @classmethod
     def load_poi(cls, es_poi, lang):
         properties = es_poi.get('properties', {})

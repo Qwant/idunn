@@ -186,3 +186,14 @@ def test_type_unknown():
     )
     assert response.status_code == 400
     assert response._content == b'{"message":"Wrong type parameter: type=globibulga"}'
+
+def test_wrong_type():
+    client = TestClient(app)
+
+    id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
+
+    response = client.get(
+        url=f'http://localhost/v1/places/{id_moulin}?lang=fr&type=poi',
+    )
+    assert response.status_code == 404
+    assert response._content == b'{"message":"place addr:5.108632;48.810273 not found with type=poi"}'

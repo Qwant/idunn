@@ -31,7 +31,7 @@ def fetch_es_place(id, es, indices, type) -> list:
 
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:
-        raise NotFound(detail={'message': f"place '{id}' not found with type='{type}'"})
+        raise NotFound(detail={'message': f"place {id} not found with type={type}"})
 
     return es_place
 
