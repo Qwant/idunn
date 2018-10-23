@@ -11,7 +11,7 @@ The API provides its OpenAPI schema with:
 
 The main endpoints are:
 
-* `/v1/places/{poi_id}?lang={lang}&type={type}` to get the details of a POI. The `type` parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`
+* `/v1/places/{place_id}?lang={lang}&type={type}` to get the details of a place (admin, street, address or POI). The `type` parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`
 
 * `/v1/pois/{poi_id}?lang={lang}` is the deprecated route to get the details of a POI.
 
