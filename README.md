@@ -11,7 +11,9 @@ The API provides its OpenAPI schema with:
 
 The main endpoints are:
 
-* `/v1/pois/{poi_id}?lang={lang}` to get the details of a POI.
+* `/v1/places/{poi_id}?lang={lang}&type={type}` to get the details of a POI. The `type` parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`
+
+* `/v1/pois/{poi_id}?lang={lang}` is the deprecated route to get the details of a POI.
 
 * `/v1/status` to get the status of the API and associated ES cluster.
 
@@ -29,7 +31,7 @@ and then
 `IDUNN_MIMIR_ES=<url_to_MIMIR_ES> IDUNN_WIKI_ES=<url_to_WIKI_ES> pipenv run python app.py`
 
 you can query the API on 5000:
-`curl localhost:5000/v1/pois/toto?lang=fr`
+`curl localhost:5000/v1/places/toto?lang=fr&type=poi`
 
 ### Configuration
 
