@@ -24,7 +24,6 @@ lark-parser = "<0.6"
 prometheus-client = "*"
 apistar-prometheus = "*"
 python-json-logger = "*"
-responses = "*"
 
 [requires]
 python_version = "3.6"
