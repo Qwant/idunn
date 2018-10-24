@@ -34,6 +34,9 @@ services:
       resources:
         limits:
           memory: 4g
+        reservations:
+          cpus: '2.11'
+          memory: 2.72g
       restart_policy:
         condition: on-failure
     environment:
@@ -48,3 +51,11 @@ services:
 
   idunn-redis:
     image: redis:4
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 10g
+        reservations:
+          cpus: '2.0'
+          memory: 7g
