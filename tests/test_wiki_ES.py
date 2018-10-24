@@ -58,7 +58,7 @@ def test_basket_ball():
             'type': 'wikipedia',
             'url': 'https://fr.wikipedia.org/wiki/Pleyber-Christ_Basket_Club',
             'title': 'Pleyber-Christ Basket Club',
-            'description': "Le Pleyber-Christ Basket Club est un club français de basket-ball dont la section senior féminine a accédé jusqu'au championnat professionnel de Ligue 2 (2e division nationale), performance remarquée pour un village de 3000 habitants. Le club est basé dans la ville de Pleyber-Christ. Il accueille aussi de jeunes joueuses depuis 2010 dans son centre de formation situé à Pleyber-Christ."
+            'description': "Le Pleyber-Christ Basket Club est un club français de basket-ball dont la section senior féminine a accédé jusqu'au championnat professionnel de Ligue 2 (2e division nationale), performance remarquée pour un village de 3000 habitants. Le club est basé dans la ville de Pleyber-Christ. Il accueille aussi de jeunes joueuses de..."
         }
 
         """

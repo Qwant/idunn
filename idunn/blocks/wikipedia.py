@@ -366,10 +366,12 @@ class WikipediaBlock(BaseBlock):
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
                     wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
+                        content = wiki_poi_info.get("content", "")
+                        desc = (content[:325] + '...') if len(content) > 325 else content
                         return cls(
                             url=wiki_poi_info.get("url"),
                             title=wiki_poi_info.get("title")[0],
-                            description=wiki_poi_info.get("content"),
+                            description=desc,
                         )
                     else:
                         """
@@ -402,8 +404,10 @@ class WikipediaBlock(BaseBlock):
             key = GET_SUMMARY + "_" + wiki_title + "_" + lang
             wiki_summary = WikipediaCache.cache_it(key, cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
+                extract = wiki_summary.get("extract", "")
+                desc = (extract[:325] + '...') if len(extract) > 325 else extract
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),
                     title=wiki_summary.get("displaytitle", ""),
-                    description=wiki_summary.get("extract", ""),
+                    description=desc,
                 )
