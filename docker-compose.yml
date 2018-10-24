@@ -47,4 +47,18 @@ services:
       - traefik
 
   idunn-redis:
-    image: redis:4
+    deploy:
+      labels: *ci_labels
+      replicas: &replicas 7
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2g
+    environment:
+      REDIS_ALIAS: "{{.Service.Name}}.{{.Task.Slot}}"
+      REDIS_DNS_LOOKUP_EXPECT: *replicas
+      REDIS_DNS_LOOKUP_NAME: tasks.idunn-redis
+    image: $CI_REGISTRY_IMAGE/idunn-redis:42437
+    labels: *ci_labels
+    restart_policy:
+      condition: on-failure

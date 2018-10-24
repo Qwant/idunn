@@ -22,6 +22,25 @@ before_script:
   allow_failure: true
   when: manual
 
+test:build: &build
+  stage: test
+  variables:
+    COMPOSE_FILE: "docker-compose.build.yml"
+    COMPOSE_PROJECT_NAME: *product_ref_slug
+  script:
+  - *docker_login
+  - *docker_build
+  tags:
+  - light
+
+push images:
+  <<: [*action, *build]
+  stage: deploy
+  script:
+  - *docker_login
+  - *docker_build
+  - *docker_push
+
 deploy services:
   <<: [*docker, *action]
   stage: deploy

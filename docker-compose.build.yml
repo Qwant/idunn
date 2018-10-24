@@ -1,0 +1,12 @@
+version: '3.2'
+
+services:
+
+  idunn-redis:
+    build:
+      args:
+      - http_proxy
+      - https_proxy
+      - no_proxy
+      context: redis
+    image: $CI_REGISTRY_IMAGE/idunn-redis:$CI_PIPELINE_ID
