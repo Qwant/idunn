@@ -94,7 +94,7 @@ def init_indices(mimir_client, wiki_client):
 def mock_external_requests():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
-                 re.compile('^https://.*\.wikipedia.org/'),
+                 re.compile(r'^https://.*\.wikipedia.org/'),
                  status=404)
         yield
 

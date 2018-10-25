@@ -43,7 +43,7 @@ def test_basket_ball():
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200)
 
         response = client.get(
@@ -84,7 +84,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200,
              json={"test": "test"})
 
@@ -156,7 +156,7 @@ def test_undefined_WIKI_ES(undefine_wiki_es):
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200,
              json={"test": "test"})
 
@@ -176,7 +176,7 @@ def test_POI_not_in_WIKI_ES():
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200)
 
         response = client.get(
@@ -240,7 +240,7 @@ def test_no_lang_WIKI_ES():
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200,
              json={"test": "test"})
 

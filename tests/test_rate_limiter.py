@@ -46,7 +46,7 @@ def limiter_test_interruption(redis):
         yield
     WikipediaLimiter._limiter = None
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='function')
 def mock_wikipedia(redis):
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
@@ -136,7 +136,7 @@ def test_rate_limiter_without_redis():
 
     with responses.RequestsMock() as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200,
              json={"test": "test"}
         )
@@ -236,7 +236,7 @@ def test_rate_limiter_with_redisError(limiter_test_interruption, mock_wikipedia,
     assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_rate_limiter_with_redis_interruption(docker_services, redis, limiter_test_interruption):
+def test_rate_limiter_with_redis_interruption(docker_services, mock_wikipedia, limiter_test_interruption):
     """
     Test that Idunn isn't impacted by any Redis interruption:
     If Redis service stops then the wikipedia block should not be returned.

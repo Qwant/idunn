@@ -41,7 +41,7 @@ def test_circuit_breaker_500(breaker_test):
     client = TestClient(app)
     with responses.RequestsMock() as rsps:
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=500)
         """
         We mock 10 calls to wikipedia while the max number
@@ -86,7 +86,7 @@ def test_circuit_breaker_404(breaker_test):
     client = TestClient(app)
     with responses.RequestsMock() as rsps:
         rsps.add('GET',
-                re.compile('^https://.*\.wikipedia.org/'),
+                re.compile(r'^https://.*\.wikipedia.org/'),
                 status=404)
         """
         Even after more requests than the max number of
