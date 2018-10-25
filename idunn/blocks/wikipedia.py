@@ -2,18 +2,22 @@ import json
 import logging
 import requests
 import pybreaker
-
 from apistar import validators
-from .base import BaseBlock, BlocksValidator
 from requests.exceptions import HTTPError, RequestException, Timeout
-from redis import Redis, ConnectionPool, ConnectionError as RedisConnectionError, TimeoutError, RedisError
+from redis import Redis, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from elasticsearch import Elasticsearch, ConnectionError
 from redis_rate_limit import RateLimiter, TooManyRequests
+
 from idunn.utils import prometheus
+from idunn.utils.redis import get_redis_pool, RedisNotConfigured
+from .base import BaseBlock
+
 
 GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
 GET_SUMMARY = "get_summary"
+
+DISABLED_STATE = object() # Used to flag rate-limiter or cache as disabled by settings
 
 logger = logging.getLogger(__name__)
 
@@ -27,37 +31,25 @@ class WikipediaLimiter:
     def get_limiter(cls):
         if cls._limiter is None:
             from app import settings
-
-            redis_url = settings['WIKI_API_REDIS_URL']
-
-            if redis_url is not None:
+            try:
+                redis_pool = get_redis_pool(settings, db=settings['WIKI_API_REDIS_DB'])
+            except RedisNotConfigured:
+                logger.warning("Redis URL not configured: rate limiter not started")
+                cls._limiter = DISABLED_STATE
+            else:
                 """
-                If a redis url has been provided to Idunn,
+                If a redis is configured,
                 then we use the corresponding redis
                 service in the rate limiter.
                 """
                 max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
                 redis_period = int(settings['WIKI_API_RL_PERIOD'])
-
-                redis_url = "redis://" + redis_url
-                redis_db = settings['WIKI_API_REDIS_DB']
-                redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
-
-                try:
-                    pool = ConnectionPool.from_url(redis_url, db=redis_db, socket_timeout=redis_timeout)
-                except RedisError:
-                    logger.warning("No Redis instance available for limiter", exc_info=True)
-                    cls._limiter = False
-
                 cls._limiter = RateLimiter(
                     resource='WikipediaAPI',
                     max_requests=max_calls,
                     expire=redis_period,
-                    redis_pool=pool
+                    redis_pool=redis_pool
                 )
-            else:
-                logger.warning("No Redis URL has been provided: rate limiter not started", exc_info=True)
-                cls._limiter = False
         return cls._limiter
 
     @classmethod
@@ -65,7 +57,7 @@ class WikipediaLimiter:
         def wrapper(*args, **kwargs):
             limiter = cls.get_limiter()
 
-            if limiter is not False:
+            if limiter is not DISABLED_STATE:
                 """
                 We use the RateLimiter since
                 the redis service url has been provided
@@ -89,6 +81,7 @@ class LogListener(pybreaker.CircuitBreakerListener):
         msg = "State Change: CB: {0}, From: {1} to New State: {2}".format(cb.name, old_state, new_state)
         logger.warning(msg)
 
+
 class WikipediaBreaker:
     _breaker = None
 
@@ -96,10 +89,10 @@ class WikipediaBreaker:
     def init_breaker(cls):
         from app import settings
         cls._breaker = pybreaker.CircuitBreaker(
-                fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
-                reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
-                exclude = [HTTPError40X],
-                listeners=[LogListener()]
+            fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
+            reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
+            exclude = [HTTPError40X],
+            listeners=[LogListener()]
         )
 
     @classmethod
@@ -137,6 +130,10 @@ class WikipediaBreaker:
                 logger.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
         return wrapped_f
 
+
+class CacheNotAvailable(Exception):
+    pass
+
 class WikipediaCache:
     _expire = None
     _connection = None
@@ -154,35 +151,23 @@ class WikipediaCache:
         try:
             value_stored = cls._connection.get(key)
             return value_stored
-        except RedisError:
+        except RedisError as exc:
             prometheus.exception("RedisError")
             logging.exception("Got a RedisError")
-            return None
+            raise CacheNotAvailable from exc
 
     @classmethod
     def init_cache(cls):
         from app import settings
-
-        redis_url = settings['WIKI_API_REDIS_URL']
-
-        if redis_url is not None:
-            cls._expire = int(settings['WIKI_CACHE_TIMEOUT']) # seconds
-            redis_db = settings['WIKI_CACHE_REDIS_DB']
-            redis_timeout = int(settings['WIKI_REDIS_TIMEOUT'])
-            redis_url = "redis://" + redis_url
-
-            try:
-                pool = ConnectionPool.from_url(redis_url, db=redis_db, socket_timeout=redis_timeout)
-            except RedisError:
-                logger.warning("No Redis instance available for caching", exc_info=True)
-                cls._connection = False
-
-            cls._connection = Redis(
-                connection_pool=pool
-            )
-        else:
+        cls._expire = int(settings['WIKI_CACHE_TIMEOUT'])  # seconds
+        redis_db = settings['WIKI_CACHE_REDIS_DB']
+        try:
+            redis_pool = get_redis_pool(settings, db=redis_db)
+        except RedisNotConfigured:
             logger.warning("No Redis URL has been set for caching", exc_info=True)
-            cls._connection = False
+            cls._connection = DISABLED_STATE
+        else:
+            cls._connection = Redis(connection_pool=redis_pool)
 
     @classmethod
     def cache_it(cls, key, f):
@@ -199,8 +184,13 @@ class WikipediaCache:
             If the redis is up we use the cache,
             otherwise we bypass it
             """
-            if cls._connection is not False:
-                value_stored = cls.get_value(key)
+            if cls._connection is not DISABLED_STATE:
+                try:
+                    value_stored = cls.get_value(key)
+                except CacheNotAvailable:
+                    # Cache is not reachable: we don't want to execute 'f'
+                    # (and fetch wikipedia content, possibly very often)
+                    return None
                 if value_stored is not None:
                     return json.loads(value_stored.decode('utf-8'))
                 result = f(*args, **kwargs)
@@ -310,9 +300,9 @@ class WikidataConnector:
                 raise WikiUndefinedException
             else:
                 cls._wiki_es = Elasticsearch(
-                        wiki_es,
-                        max_retries=wiki_es_max_retries,
-                        timeout=wiki_es_timeout
+                    wiki_es,
+                    max_retries=wiki_es_max_retries,
+                    timeout=wiki_es_timeout
                 )
 
     @classmethod

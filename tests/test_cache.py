@@ -1,8 +1,7 @@
 import responses
-import pytest
 import re
-from time import sleep
-from freezegun import freeze_time
+from unittest import mock
+from redis import Redis, RedisError
 from app import app, settings
 from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaCache
@@ -81,7 +80,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
         the Wiki ES
         """
         rsps.add('GET',
-             re.compile('^https://.*\.wikipedia.org/'),
+             re.compile(r'^https://.*\.wikipedia.org/'),
              status=200)
 
         response = client.get(
@@ -136,3 +135,24 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
                 assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block
 
             assert len(rsps.calls) == 0 # Wikipedia API has never been called
+
+
+def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia):
+    """
+    Wikipedia should NOT be called if cache is enabled in settings,
+    and redis is not reachable
+    """
+    def fake_get(*args):
+        # A method 'get' for Redis,
+        # that behaves as if redis is not available
+        raise RedisError
+
+    with mock.patch.object(Redis, 'get', fake_get):
+        client = TestClient(app)
+        response = client.get(
+            url='http://localhost/v1/pois/osm:relation:7515426?lang=es',
+        )
+        assert response.status_code == 200
+        resp = response.json()
+        assert len(mock_wikipedia.calls) == 0
+        assert not any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
