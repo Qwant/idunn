@@ -42,3 +42,4 @@ PLACE_STREET_INDEX: "munin_street"
 PLACE_ADDRESS_INDEX: "munin_addr"
 PLACE_POI_INDEX: "munin_poi"
 
+WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block

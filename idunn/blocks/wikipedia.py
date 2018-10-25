@@ -342,6 +342,23 @@ class WikidataConnector:
 
         return wiki
 
+class SizeLimiter:
+    _max_wiki_desc_size = None
+
+    @classmethod
+    def init_max_size(cls):
+        if cls._max_wiki_desc_size is None:
+            from app import settings
+            cls._max_wiki_desc_size = settings.get('WIKI_DESC_MAX_SIZE')
+
+    @classmethod
+    def limit_size(cls, content):
+        """
+        Just cut a string if its length > max_size
+        """
+        cls.init_max_size()
+        return (content[:cls._max_wiki_desc_size] + '...') if len(content) > cls._max_wiki_desc_size else content
+
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"
 
@@ -366,12 +383,10 @@ class WikipediaBlock(BaseBlock):
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
                     wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
                     if wiki_poi_info is not None:
-                        content = wiki_poi_info.get("content", "")
-                        desc = (content[:325] + '...') if len(content) > 325 else content
                         return cls(
                             url=wiki_poi_info.get("url"),
                             title=wiki_poi_info.get("title")[0],
-                            description=desc,
+                            description=SizeLimiter.limit_size(wiki_poi_info.get("content", "")),
                         )
                     else:
                         """
@@ -404,10 +419,8 @@ class WikipediaBlock(BaseBlock):
             key = GET_SUMMARY + "_" + wiki_title + "_" + lang
             wiki_summary = WikipediaCache.cache_it(key, cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
-                extract = wiki_summary.get("extract", "")
-                desc = (extract[:325] + '...') if len(extract) > 325 else extract
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),
                     title=wiki_summary.get("displaytitle", ""),
-                    description=desc,
+                    description=SizeLimiter.limit_size(wiki_summary.get("extract", "")),
                 )
