@@ -22,7 +22,7 @@ python-redis-rate-limit = "*"
 prometheus-client = "*"
 apistar-prometheus = "*"
 python-json-logger = "*"
-osm-humanized-opening-hours = {editable = true, ref = "2fde45bec", git = "https://github.com/rezemika/humanized_opening_hours.git"}
+osm-humanized-opening-hours = "==1.0.0b2"
 
 [requires]
 python_version = "3.6"

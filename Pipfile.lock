@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6cb82966b23914137e257f8fc3a8575efd6e81166bbe0934f8a5d8255755d737"
+            "sha256": "ae800dbe6ce04179d03ec3f85fb8c6d462646a05d3cfff6770fdeb3a0f33b7a8"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -111,9 +111,11 @@
             "version": "==1.0"
         },
         "osm-humanized-opening-hours": {
-            "editable": true,
-            "git": "https://github.com/rezemika/humanized_opening_hours.git",
-            "ref": "65ab008d206c7ed9bab55a535d127b0f1afa2443"
+            "hashes": [
+                "sha256:75d44cd9237ba8c79cec4bbc05a6984f165791073b139540932d7c624dd5c54a",
+                "sha256:8380430cc4342ce1dc3b2aa4c1dea1136aec20ae42101bb4e8cfcfec2aa68486"
+            ],
+            "version": "==1.0.0b2"
         },
         "prometheus-client": {
             "hashes": [
