@@ -332,6 +332,23 @@ class WikidataConnector:
 
         return wiki
 
+class SizeLimiter:
+    _max_wiki_desc_size = None
+
+    @classmethod
+    def init_max_size(cls):
+        if cls._max_wiki_desc_size is None:
+            from app import settings
+            cls._max_wiki_desc_size = settings.get('WIKI_DESC_MAX_SIZE')
+
+    @classmethod
+    def limit_size(cls, content):
+        """
+        Just cut a string if its length > max_size
+        """
+        cls.init_max_size()
+        return (content[:cls._max_wiki_desc_size] + '...') if len(content) > cls._max_wiki_desc_size else content
+
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"
 
@@ -359,7 +376,7 @@ class WikipediaBlock(BaseBlock):
                         return cls(
                             url=wiki_poi_info.get("url"),
                             title=wiki_poi_info.get("title")[0],
-                            description=wiki_poi_info.get("content"),
+                            description=SizeLimiter.limit_size(wiki_poi_info.get("content", "")),
                         )
                     else:
                         """
@@ -395,5 +412,5 @@ class WikipediaBlock(BaseBlock):
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),
                     title=wiki_summary.get("displaytitle", ""),
-                    description=wiki_summary.get("extract", ""),
+                    description=SizeLimiter.limit_size(wiki_summary.get("extract", "")),
                 )
