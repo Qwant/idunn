@@ -13,7 +13,7 @@ networks:
 
 services:
   idunn:
-    image: qwantresearch/idunn@sha256:370c6d84f4dc5c1abb755efeb31f01abd9b553d681e715c46404ba3f7d6161fd
+    image: qwantresearch/idunn@sha256:632c184a2fab07280ca40f437a564c94fd6783711eeee248489dc692ce35774d
     labels: &ci_labels
       com.qwant.ci.job_id: ${CI_JOB_ID}
       com.qwant.ci.pipeline_id: ${CI_PIPELINE_ID}
