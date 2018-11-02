@@ -5,7 +5,7 @@ before_script:
   - &docker_host            "tcp://10.103.9.1:2375"
   - &environment            "PAR-RESEARCH-MAPS/$CI_COMMIT_REF_SLUG"
   - &pbf                    "http://download.geofabrik.de/europe/liechtenstein-180723.osm.pbf"
-  - &product_ref_slug "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
+  - &product_ref_slug       "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
 
 .script:
   - &docker_build   docker-compose build --pull
@@ -22,6 +22,19 @@ before_script:
   allow_failure: true
   when: manual
 
+push redis image:
+  <<: *action
+  stage: deploy
+  variables:
+      COMPOSE_FILE: "docker-compose.build.yml"
+      COMPOSE_PROJECT_NAME: *product_ref_slug
+  script:
+  - *docker_build
+  - *docker_login
+  - *docker_push
+  tags:
+  - light
+
 deploy services:
   <<: [*docker, *action]
   stage: deploy
@@ -35,6 +48,7 @@ deploy services:
   script:
   - *docker_login
   - *docker_deploy
+  - docker service update --network-add ${STACK}_default product-maps-master_traefik || true
 
 stop services:
   <<: [*docker, *action]
@@ -47,4 +61,5 @@ stop services:
     GIT_STRATEGY: none
   before_script: []
   script:
+  - docker service update --network-rm ${STACK}_default product-maps-master_traefik
   - docker stack rm "$STACK"

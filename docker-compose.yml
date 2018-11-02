@@ -7,9 +7,6 @@ networks:
   default:
     attachable: true
     driver: overlay
-  traefik:
-    external:
-      name: product-maps-master_traefik
 
 services:
   idunn:
@@ -22,7 +19,7 @@ services:
     deploy:
       labels:
         <<: *ci_labels
-        traefik.docker.network: "product-maps-master_traefik"
+        traefik.docker.network: "${STACK}_traefik"
         traefik.frontend.rule: "PathPrefixStrip:/maps/detail/"
         traefik.port: "5000"
       mode: replicated
@@ -47,15 +44,20 @@ services:
     networks:
       - bridge
       - default
-      - traefik
 
   idunn-redis:
-    image: redis:4
     deploy:
+      labels: *ci_labels
       resources:
         limits:
-          cpus: '3.0'
+          cpus: '3'
           memory: 10g
         reservations:
-          cpus: '2.0'
+          cpus: '2'
           memory: 7g
+      restart_policy:
+        condition: on-failure
+    environment:
+      REDIS_ALIAS: "{{.Service.Name}}.{{.Task.Slot}}"
+    image: $CI_REGISTRY_IMAGE/idunn-redis:43722
+    labels: *ci_labels
