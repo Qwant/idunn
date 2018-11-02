@@ -30,7 +30,7 @@ services:
         constraints:
         - node.labels.type != node1
         - node.labels.type != node4
-      replicas: 2
+      replicas: 4
       resources:
         limits:
           memory: 4g
