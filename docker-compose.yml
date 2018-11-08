@@ -20,7 +20,7 @@ services:
       labels:
         <<: *ci_labels
         traefik.docker.network: "${STACK}_traefik"
-        traefik.frontend.rule: "PathPrefixStrip:/maps/detail/"
+        traefik.frontend.rule: "Host:${CI_COMMIT_REF_SLUG}.idunn.maps.qwant.plive"
         traefik.port: "5000"
       mode: replicated
       placement:
