@@ -13,7 +13,7 @@ responses = "*"
 [packages]
 apistar = "==0.5.*"
 elasticsearch = ">=2.0.0,<3.0.0"
-requests = "==2.*"
+requests = ">=2.20.0"
 tzwhere = "*"
 babel = "*"
 pybreaker = "*"
