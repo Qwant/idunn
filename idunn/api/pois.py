@@ -29,5 +29,5 @@ def get_poi(id, es: Elasticsearch, settings: Settings, lang=None) -> POI:
     lang = lang.lower()
 
     es_poi = fetch_es_poi(id, es)
-    poi = POI.load_poi(es_poi, lang)
+    poi = POI.load_poi(es_poi, lang, "full")
     return poi
