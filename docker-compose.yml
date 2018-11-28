@@ -23,10 +23,6 @@ services:
         traefik.frontend.rule: "PathPrefixStrip:/maps/detail/"
         traefik.port: "5000"
       mode: replicated
-      placement:
-        constraints:
-        - node.labels.type != node1
-        - node.labels.type != node4
       replicas: 4
       resources:
         limits:

@@ -2,9 +2,8 @@ before_script:
   - source ci/bootstrap.sh
 
 .values:
-  - &docker_host            "tcp://10.103.9.1:2375"
-  - &environment            "PAR-RESEARCH-MAPS/$CI_COMMIT_REF_SLUG"
-  - &pbf                    "http://download.geofabrik.de/europe/liechtenstein-180723.osm.pbf"
+  - &docker_host            "tcp://10.100.31.132:2375"
+  - &environment            "$CI_COMMIT_REF_SLUG"
   - &product_ref_slug       "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
 
 .script:
@@ -41,14 +40,15 @@ deploy services:
   environment:
     name: *environment
     on_stop: "stop services"
-    url: "http://10.103.9.1:8585"
+    url: "http://maps.dev.qwant.ninja/maps"
   variables: &deploy_variables
     DOCKER_HOST: *docker_host
     STACK: *product_ref_slug
   script:
   - *docker_login
   - *docker_deploy
-  - docker service update --network-add ${STACK}_default product-maps-master_traefik || true
+  - docker service update --network-add ${STACK}_default product-maps-traefik_traefik || true
+  - sleep 5m
 
 stop services:
   <<: [*docker, *action]
@@ -61,5 +61,5 @@ stop services:
     GIT_STRATEGY: none
   before_script: []
   script:
-  - docker service update --network-rm ${STACK}_default product-maps-master_traefik
+  - docker service update --network-rm ${STACK}_default product-maps-traefik_traefik
   - docker stack rm "$STACK"
