@@ -3,7 +3,11 @@ from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSite
 from idunn.blocks.base import BlocksValidator
 from idunn.api.place import Place
 
-BLOCKS_ORDER = [
+FULL = "full"
+LITE = "lite"
+DEFAULT_VERBOSITY = FULL
+
+FULL_BLOCKS = [
     OpeningHourBlock,
     PhoneBlock,
     InformationBlock,
@@ -15,14 +19,19 @@ LITE_BLOCKS = [
     OpeningHourBlock
 ]
 
-def build_blocks(es_poi, lang, lite):
+def build_blocks(es_poi, lang, verbosity):
     blocks = []
-    for c in BLOCKS_ORDER:
-        if lite and not c in LITE_BLOCKS:
-            continue
+
+    blocks_loader = {
+        FULL: FULL_BLOCKS,
+        LITE: LITE_BLOCKS
+    }
+
+    for c in blocks_loader.get(verbosity):
         block = c.from_es(es_poi, lang)
         if block is not None:
             blocks.append(block)
+
     return blocks
 
 def get_name(properties, lang):
@@ -80,7 +89,6 @@ def get_geom(es_poi):
             }
     return geom
 
-
 class POI(Place):
     PLACE_TYPE = 'poi'
 
@@ -91,7 +99,7 @@ class POI(Place):
     subclass_name = validators.String(allow_null=True)
     geometry = validators.Object(allow_null=True)
     address = validators.Object(allow_null=True)
-    blocks = BlocksValidator(allowed_blocks=BLOCKS_ORDER)
+    blocks = BlocksValidator(allowed_blocks=FULL_BLOCKS)
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
@@ -104,8 +112,6 @@ class POI(Place):
         properties = es_poi.get('properties', {})
         address = es_poi.get('address') or {}
 
-        lite = verbosity == "lite"
-
         return cls(
             id=es_poi['id'],
             name=get_name(properties, lang),
@@ -116,5 +122,5 @@ class POI(Place):
             address= {
                 'label': address.get('label')
             },
-            blocks=build_blocks(es_poi, lang, lite)
+            blocks=build_blocks(es_poi, lang, verbosity)
         )

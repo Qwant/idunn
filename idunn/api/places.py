@@ -8,9 +8,11 @@ from idunn.api.place import Place, Admin, Street, Address
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.utils import prometheus
+from idunn.api.poi import FULL, LITE, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)
-VERBOSITY_LEVELS = ["full", "lite"]
+
+VERBOSITY_LEVELS = [FULL, LITE]
 
 def fetch_es_place(id, es, indices, type) -> list:
     if type is None:
@@ -36,9 +38,9 @@ def fetch_es_place(id, es, indices, type) -> list:
 
     return es_place
 
-def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, type=None, verbosity="full") -> Place:
+def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
     if verbosity not in VERBOSITY_LEVELS:
-        return None
+        raise NotFound(detail={'message': f"verbosity {verbosity} does not belong to the set of possible verbosity values={VERBOSITY_LEVELS}"})
 
     if not lang:
         lang = settings['DEFAULT_LANGUAGE']

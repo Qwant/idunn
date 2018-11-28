@@ -218,3 +218,11 @@ def test_basic_lite_query_poi():
     assert resp["blocks"][0]["type"] == "opening_hours"
     assert len(resp["blocks"]) == 1 # it contains only the block opening hours
 
+def test_wrong_verbosity():
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=liiiite',
+    )
+    assert response.status_code == 404
+    assert response._content == b'{"message":"verbosity liiiite does not belong to the set of possible verbosity values=[\'full\', \'lite\']"}'
