@@ -1,4 +1,3 @@
-
 [![GitHub Build](https://travis-ci.org/QwantResearch/idunn.svg?branch=master)](https://github.com/QwantResearch/idunn)
 [![GitHub license](https://img.shields.io/github/license/QwantResearch/idunn.svg)](https://github.com/QwantResearch/idunn/blob/master/LICENSE)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qwantresearch/idunn.svg)](https://hub.docker.com/r/qwantresearch/idunn/)
@@ -15,7 +14,7 @@
 `GET /schema`
 
 The main endpoints are:
-* `/v1/places/{place_id}?lang={lang}&type={type}` to get the details of a place (admin, street, address or POI). The `type` parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`
+* `/v1/places/{place_id}?lang={lang}&type={type}&verbosity={verbosity}` to get the details of a place (admin, street, address or POI). The `type` parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`. The `verbosity` parameter belongs to the set `{'full', 'default'}`. The default verbosity is `full`.
 * `/v1/pois/{poi_id}?lang={lang}` is the deprecated route to get the details of a POI.
 * `/v1/status` to get the status of the API and associated ES cluster.
 * `/v1/metrics` to get some metrics on the API that give statistics on the number of requests received, the duration of requests... This endpoint can be scraped by Prometheus.
