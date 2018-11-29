@@ -4,7 +4,7 @@ from pytz import timezone, UTC
 from apistar import validators, types
 from tzwhere import tzwhere
 import humanized_opening_hours as hoh
-from humanized_opening_hours.exceptions import HOHError
+from humanized_opening_hours.exceptions import HOHError, NextChangeRecursionError
 
 from .base import BaseBlock
 
@@ -16,28 +16,23 @@ We load the tz structure once when Idunn starts since it's a time consuming step
 """
 tz = tzwhere.tzwhere(forceTZ=True)
 
-def get_tz(es_poi):
+def get_tz(poi_tzname, lat, lon):
     """
     Returns the timezone corresponding to the coordinates of the POI.
+    """
+    if lon is not None and lat is not None:
+        return timezone(poi_tzname)
+    return None
 
-    >>> get_tz({}) is None
-    True
-
-    >>> get_tz({'coord':{"lon": None, "lat": 48.858260156496016}}) is None
-    True
-
-    >>> get_tz({'coord':{"lon": 2.2944990157640612, "lat": None}}) is None
-    True
-
-    >>> get_tz({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}})
-    <DstTzInfo 'Europe/Paris' LMT+0:09:00 STD>
+def get_coord(es_poi):
+    """
+    Returns the coordinates from the POI json
     """
     if 'coord' in es_poi:
         coord = es_poi.get('coord')
         lon = coord.get('lon')
         lat = coord.get('lat')
-        if lon is not None and lat is not None:
-            return timezone(tz.tzNameAt(lat, lon, forceTZ=True))
+        return (lat, lon)
     return None
 
 
@@ -55,8 +50,8 @@ class OpeningHourBlock(BaseBlock):
     BLOCK_TYPE = 'opening_hours'
 
     status = validators.String(enum=['open', 'closed'])
-    next_transition_datetime = validators.String()
-    seconds_before_next_transition = validators.Integer()
+    next_transition_datetime = validators.String(allow_null=True)
+    seconds_before_next_transition = validators.Integer(allow_null=True)
     is_24_7 = validators.Boolean()
     raw = validators.String()
     days = validators.Array(items=DaysType)
@@ -66,29 +61,54 @@ class OpeningHourBlock(BaseBlock):
         raw = es_poi.get('properties', {}).get('opening_hours')
         if raw is None:
             return None
+
+        poi_coord = get_coord(es_poi)
+        poi_lat = poi_coord[0]
+        poi_lon = poi_coord[1]
+
         is247 = raw == '24/7'
 
-        try:
-            oh = hoh.OHParser(raw)
-        except HOHError:
-            logger.info("Failed to parse OSM opening_hour field", exc_info=True)
-            return None
+        poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
+        poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
+        poi_location = (poi_lat, poi_lon, poi_tzname, 24)
 
-        poi_tz = get_tz(es_poi)
         if poi_tz is None:
             logger.info("No timezone found for poi %s", es_poi.get('id'))
             return None
 
+        try:
+            oh = hoh.OHParser(raw, location=poi_location)
+        except HOHError:
+            logger.info("Failed to parse OSM opening_hour field", exc_info=True)
+            return None
+
         poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)
+
+        if oh.is_open(poi_dt.replace(tzinfo=None)):
+            status = 'open'
+        else:
+            status = 'closed'
+
+        if is247:
+            return cls(
+                status=status,
+                next_transition_datetime=None,
+                seconds_before_next_transition=None,
+                is_24_7=is247,
+                raw=oh.field,
+                days=cls.get_days(oh, dt=poi_dt)
+            )
+
         # The current version of the hoh lib doesn't allow to use the next_change() function
         # with an offset aware datetime.
         # This is why we replace the timezone info until this problem is fixed in the library.
         try:
             nt = oh.next_change(dt=poi_dt.replace(tzinfo=None))
+        except NextChangeRecursionError:
+            logger.info("NextChangeRecursionError: Failed to compute next transition for poi %s", es_poi.get('id'), exc_info=True)
         except HOHError:
-            logger.info("Failed to compute next transition for poi %s",
+            logger.info("HOHError: Failed to compute next transition for poi %s",
                 es_poi.get('id'), exc_info=True)
-
 
         # Then we localize the next_change transition datetime in the local POI timezone.
         next_transition = poi_tz.localize(nt.replace(tzinfo=None))
@@ -98,11 +118,6 @@ class OpeningHourBlock(BaseBlock):
         delta = next_transition - poi_dt
         time_before_next = int(delta.total_seconds())
 
-        if oh.is_open(poi_dt.replace(tzinfo=None)):
-            status = 'open'
-        else:
-            status = 'closed'
-
         return cls(
             status=status,
             next_transition_datetime=next_transition_datetime,
@@ -111,7 +126,6 @@ class OpeningHourBlock(BaseBlock):
             raw=oh.field,
             days=cls.get_days(oh, dt=poi_dt)
         )
-
 
     @staticmethod
     def round_dt_to_minute(dt):
