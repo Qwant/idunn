@@ -40,7 +40,10 @@ def fetch_es_place(id, es, indices, type) -> list:
 
 def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
     if verbosity not in VERBOSITY_LEVELS:
-        raise NotFound(detail={'message': f"verbosity {verbosity} does not belong to the set of possible verbosity values={VERBOSITY_LEVELS}"})
+        raise BadRequest(
+            status_code=400,
+            detail={"message": f"verbosity {verbosity} does not belong to the set of possible verbosity values={VERBOSITY_LEVELS}"}
+        )
 
     if not lang:
         lang = settings['DEFAULT_LANGUAGE']
