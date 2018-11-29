@@ -3,35 +3,29 @@ from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSite
 from idunn.blocks.base import BlocksValidator
 from idunn.api.place import Place
 
-FULL = "full"
-LITE = "lite"
-DEFAULT_VERBOSITY = FULL
+LONG = "long"
+SHORT = "short"
+DEFAULT_VERBOSITY = LONG
 
-FULL_BLOCKS = [
-    OpeningHourBlock,
-    PhoneBlock,
-    InformationBlock,
-    WebSiteBlock,
-    ContactBlock
-]
-
-LITE_BLOCKS = [
-    OpeningHourBlock
-]
+BLOCKS_BY_VERBOSITY = {
+    LONG: [
+        OpeningHourBlock,
+        PhoneBlock,
+        InformationBlock,
+        WebSiteBlock,
+        ContactBlock
+    ],
+    SHORT: [
+        OpeningHourBlock
+    ]
+}
 
 def build_blocks(es_poi, lang, verbosity):
     blocks = []
-
-    blocks_loader = {
-        FULL: FULL_BLOCKS,
-        LITE: LITE_BLOCKS
-    }
-
-    for c in blocks_loader.get(verbosity):
+    for c in BLOCKS_BY_VERBOSITY.get(verbosity):
         block = c.from_es(es_poi, lang)
         if block is not None:
             blocks.append(block)
-
     return blocks
 
 def get_name(properties, lang):
@@ -99,7 +93,7 @@ class POI(Place):
     subclass_name = validators.String(allow_null=True)
     geometry = validators.Object(allow_null=True)
     address = validators.Object(allow_null=True)
-    blocks = BlocksValidator(allowed_blocks=FULL_BLOCKS)
+    blocks = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):

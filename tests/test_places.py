@@ -198,10 +198,10 @@ def test_wrong_type():
     assert response.status_code == 404
     assert response._content == b'{"message":"place addr:5.108632;48.810273 not found with type=poi"}'
 
-def test_basic_lite_query_poi():
+def test_basic_short_query_poi():
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=lite',
+        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=short',
     )
 
     assert response.status_code == 200
@@ -222,7 +222,7 @@ def test_wrong_verbosity():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=liiiite',
+        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=shoooooort',
     )
     assert response.status_code == 400
-    assert response._content == b'{"message":"verbosity liiiite does not belong to the set of possible verbosity values=[\'full\', \'lite\']"}'
+    assert response._content == b'{"message":"verbosity shoooooort does not belong to the set of possible verbosity values=[\'long\', \'short\']"}'

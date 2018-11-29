@@ -89,7 +89,6 @@ def init_indices(mimir_client, wiki_client):
         }
     )
 
-
 @pytest.fixture(scope="module", autouse=True)
 def mock_external_requests():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:

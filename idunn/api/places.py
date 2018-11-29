@@ -8,11 +8,11 @@ from idunn.api.place import Place, Admin, Street, Address
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.utils import prometheus
-from idunn.api.poi import FULL, LITE, DEFAULT_VERBOSITY
+from idunn.api.poi import LONG, SHORT, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)
 
-VERBOSITY_LEVELS = [FULL, LITE]
+VERBOSITY_LEVELS = [LONG, SHORT]
 
 def fetch_es_place(id, es, indices, type) -> list:
     if type is None:
