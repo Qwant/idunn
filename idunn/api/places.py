@@ -8,8 +8,11 @@ from idunn.api.place import Place, Admin, Street, Address
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.utils import prometheus
+from idunn.api.poi import LONG, SHORT, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)
+
+VERBOSITY_LEVELS = [LONG, SHORT]
 
 def fetch_es_place(id, es, indices, type) -> list:
     if type is None:
@@ -35,7 +38,13 @@ def fetch_es_place(id, es, indices, type) -> list:
 
     return es_place
 
-def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, type=None) -> Place:
+def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
+    if verbosity not in VERBOSITY_LEVELS:
+        raise BadRequest(
+            status_code=400,
+            detail={"message": f"verbosity {verbosity} does not belong to the set of possible verbosity values={VERBOSITY_LEVELS}"}
+        )
+
     if not lang:
         lang = settings['DEFAULT_LANGUAGE']
     lang = lang.lower()
@@ -56,4 +65,4 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, la
         logger.error("The place with the id {} has a wrong type: {}".format(id, es_place[0].get('_type')))
         return None
 
-    return loader.load_place(es_place[0]['_source'], lang, settings)
+    return loader.load_place(es_place[0]['_source'], lang, settings, verbosity)

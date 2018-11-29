@@ -3,17 +3,26 @@ from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSite
 from idunn.blocks.base import BlocksValidator
 from idunn.api.place import Place
 
-BLOCKS_ORDER = [
-    OpeningHourBlock,
-    PhoneBlock,
-    InformationBlock,
-    WebSiteBlock,
-    ContactBlock
-]
+LONG = "long"
+SHORT = "short"
+DEFAULT_VERBOSITY = LONG
 
-def build_blocks(es_poi, lang):
+BLOCKS_BY_VERBOSITY = {
+    LONG: [
+        OpeningHourBlock,
+        PhoneBlock,
+        InformationBlock,
+        WebSiteBlock,
+        ContactBlock
+    ],
+    SHORT: [
+        OpeningHourBlock
+    ]
+}
+
+def build_blocks(es_poi, lang, verbosity):
     blocks = []
-    for c in BLOCKS_ORDER:
+    for c in BLOCKS_BY_VERBOSITY.get(verbosity):
         block = c.from_es(es_poi, lang)
         if block is not None:
             blocks.append(block)
@@ -74,7 +83,6 @@ def get_geom(es_poi):
             }
     return geom
 
-
 class POI(Place):
     PLACE_TYPE = 'poi'
 
@@ -85,16 +93,16 @@ class POI(Place):
     subclass_name = validators.String(allow_null=True)
     geometry = validators.Object(allow_null=True)
     address = validators.Object(allow_null=True)
-    blocks = BlocksValidator(allowed_blocks=BLOCKS_ORDER)
+    blocks = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
 
     @classmethod
-    def load_place(cls, es_place, lang, settings):
+    def load_place(cls, es_place, lang, settings, verbosity):
         properties = {p.get('key'): p.get('value') for p in es_place.get('properties')}
         es_place['properties'] = properties
-        return cls.load_poi(es_place, lang)
+        return cls.load_poi(es_place, lang, verbosity)
 
     @classmethod
-    def load_poi(cls, es_poi, lang):
+    def load_poi(cls, es_poi, lang, verbosity):
         properties = es_poi.get('properties', {})
         address = es_poi.get('address') or {}
 
@@ -108,5 +116,5 @@ class POI(Place):
             address= {
                 'label': address.get('label')
             },
-            blocks=build_blocks(es_poi, lang)
+            blocks=build_blocks(es_poi, lang, verbosity)
         )

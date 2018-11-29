@@ -197,3 +197,32 @@ def test_wrong_type():
     )
     assert response.status_code == 404
     assert response._content == b'{"message":"place addr:5.108632;48.810273 not found with type=poi"}'
+
+def test_basic_short_query_poi():
+    client = TestClient(app)
+    response = client.get(
+        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=short',
+    )
+
+    assert response.status_code == 200
+    assert response.headers.get('Access-Control-Allow-Origin') == '*'
+
+    resp = response.json()
+
+    assert resp["id"] == "osm:way:63178753"
+    assert resp["name"] == "Musée d'Orsay"
+    assert resp["local_name"] == "Musée d'Orsay"
+    assert resp["class_name"] == "museum"
+    assert resp["subclass_name"] == "museum"
+    assert resp["address"]["label"] == "62B Rue de Lille (Paris)"
+    assert resp["blocks"][0]["type"] == "opening_hours"
+    assert len(resp["blocks"]) == 1 # it contains only the block opening hours
+
+def test_wrong_verbosity():
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=shoooooort',
+    )
+    assert response.status_code == 400
+    assert response._content == b'{"message":"verbosity shoooooort does not belong to the set of possible verbosity values=[\'long\', \'short\']"}'

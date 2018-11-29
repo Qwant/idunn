@@ -16,7 +16,7 @@ class Place(types.Type):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def load_place(cls, es_place, lang, settings):
+    def load_place(cls, es_place, lang, settings, verbosity):
         raise NotImplementedError
 
 class Admin(Place):
@@ -27,7 +27,7 @@ class Admin(Place):
     label = validators.String(allow_null=True)
 
     @classmethod
-    def load_place(cls, es_place, lang, settings):
+    def load_place(cls, es_place, lang, settings, verbosity):
         return cls(
             id=es_place.get('id', ''),
             name=es_place.get('name', ''),
@@ -42,7 +42,7 @@ class Street(Place):
     label = validators.String(allow_null=True)
 
     @classmethod
-    def load_place(cls, es_place, lang, settings):
+    def load_place(cls, es_place, lang, settings, verbosity):
         return cls(
             id=es_place.get('id', ''),
             name=es_place.get('name', ''),
@@ -57,7 +57,7 @@ class Address(Place):
     label = validators.String(allow_null=True)
 
     @classmethod
-    def load_place(cls, es_place, lang, settings):
+    def load_place(cls, es_place, lang, settings, verbosity):
         return cls(
             id=es_place.get('id', ''),
             name=es_place.get('name', ''),
