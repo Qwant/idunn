@@ -381,8 +381,8 @@ def test_opening_hour_2_years():
     assert oh_block == dict(
         type='opening_hours',
         status='open',
-        next_transition_datetime=None,
-        seconds_before_next_transition=None,
+        next_transition_datetime='2019-02-10T19:30:00+03:00',
+        seconds_before_next_transition=30600,
         is_24_7=True,
         raw='Oct-Mar 07:30-19:30; Apr-Sep 07:00-21:00',
         days=ANY
