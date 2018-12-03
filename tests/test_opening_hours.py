@@ -1,3 +1,4 @@
+import pytest
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
@@ -310,6 +311,7 @@ def test_opening_hour_sunrise_sunset():
             },
         ]
     )
+
 @freeze_time("2018-06-30T11:00:00+03:00")
 def test_opening_hour_24_7():
     """
@@ -367,4 +369,21 @@ def test_opening_hour_24_7():
                 "opening_hours": [{"beginning": "00:00", "end": "00:00"}]
             },
         ]
+    )
+
+@freeze_time("2019-02-10T11:00:00+03:00")
+@pytest.mark.skip(reason="fail until hoh issue 26 is fixed")
+def test_opening_hour_2_years():
+    """
+    Opening_hours span over 2 years without explicit years.
+    """
+    oh_block = get_moscow_poi("Oct-Mar 07:30-19:30; Apr-Sep 07:00-21:00")
+    assert oh_block == dict(
+        type='opening_hours',
+        status='open',
+        next_transition_datetime=None,
+        seconds_before_next_transition=None,
+        is_24_7=True,
+        raw='Oct-Mar 07:30-19:30; Apr-Sep 07:00-21:00',
+        days=ANY
     )
