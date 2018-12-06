@@ -104,11 +104,9 @@ class OpeningHourBlock(BaseBlock):
         # This is why we replace the timezone info until this problem is fixed in the library.
         try:
             nt = oh.next_change(dt=poi_dt.replace(tzinfo=None))
-        except NextChangeRecursionError:
-            logger.info("NextChangeRecursionError: Failed to compute next transition for poi %s", es_poi.get('id'), exc_info=True)
         except HOHError:
-            logger.info("HOHError: Failed to compute next transition for poi %s",
-                es_poi.get('id'), exc_info=True)
+            logger.info("HOHError: Failed to compute next transition for poi %s", es_poi.get('id'), exc_info=True)
+            return None
 
         # Then we localize the next_change transition datetime in the local POI timezone.
         next_transition = poi_tz.localize(nt.replace(tzinfo=None))
