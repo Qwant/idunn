@@ -12,5 +12,8 @@ def get_poi(id, es: Elasticsearch, settings: Settings, lang=None) -> POI:
     lang = lang.lower()
 
     es_poi = fetch_es_poi(id, es)
-    poi = POI.load_poi(es_poi, lang, DEFAULT_VERBOSITY)
+    data_poi = PlaceData(es_poi)
+
+    poi = POI.load_poi(data_poi, lang, DEFAULT_VERBOSITY)
+
     return poi

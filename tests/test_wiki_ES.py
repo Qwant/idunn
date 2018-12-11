@@ -63,7 +63,6 @@ def test_basket_ball():
 
         assert len(rsps.calls) == 0
 
-
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_WIKI_ES_KO(wiki_client_ko):
     """
@@ -219,7 +218,6 @@ def test_POI_not_in_WIKI_ES():
                 ]
             }
         ]
-
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_no_lang_WIKI_ES():

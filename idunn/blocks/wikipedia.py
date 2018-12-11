@@ -8,9 +8,9 @@ from redis import Redis, ConnectionError as RedisConnectionError, TimeoutError, 
 from elasticsearch import Elasticsearch, ConnectionError
 from redis_rate_limit import RateLimiter, TooManyRequests
 
+from .base import BaseBlock
 from idunn.utils import prometheus
 from idunn.utils.redis import get_redis_pool, RedisNotConfigured
-from .base import BaseBlock
 
 
 GET_WIKI_INFO = "get_wiki_info"
@@ -279,6 +279,12 @@ class WikidataConnector:
     _es_lang = None
 
     @classmethod
+    def get_wiki_es(cls):
+        if cls._wiki_es is None:
+            cls.init_wiki_es()
+        return cls._wiki_es
+
+    @classmethod
     def get_wiki_index(cls, lang):
         if cls._es_lang is None:
             from app import settings
@@ -306,7 +312,7 @@ class WikidataConnector:
                 )
 
     @classmethod
-    def get_wiki_info(cls, wikidata_id, lang, wiki_index):
+    def get_wiki_info(cls, wikidata_id, lang, wiki_index, es_poi):
         cls.init_wiki_es()
 
         try:
@@ -329,6 +335,8 @@ class WikidataConnector:
             return None
 
         wiki = resp[0]['_source']
+
+        es_poi.wiki_resp = wiki
 
         return wiki
 
@@ -371,7 +379,7 @@ class WikipediaBlock(BaseBlock):
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
+                    wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index, es_poi)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),

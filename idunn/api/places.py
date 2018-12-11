@@ -40,4 +40,5 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, la
         logger.error("The place with the id {} has a wrong type: {}".format(id, es_place[0].get('_type')))
         return None
 
-    return loader.load_place(es_place[0]['_source'], lang, settings, verbosity)
+    place = PlaceData(es_place[0]['_source'])
+    return loader.load_place(place, lang, settings, verbosity)

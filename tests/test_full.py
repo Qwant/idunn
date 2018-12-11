@@ -36,6 +36,7 @@ def test_full():
                 48.86618482685007
             ]
         },
+        "label": "62B Rue de Lille (Paris)",
         "address": {
             "admin": None,
             "admins": [],
@@ -50,6 +51,17 @@ def test_full():
                 "label": "Rue de Lille (Paris)",
                 "postcodes": ["75007", "75008"]
             }
+        },
+        "address": {
+            "city": "Paris",
+            "citycode": "75056",
+            "housenumber": "62B",
+            "id": "addr:2.326285;48.859635",
+            "label": "62B Rue de Lille (Paris)",
+            "name": "62B Rue de Lille",
+            "postcode": "75007",
+            "street": "Rue de Lille",
+            "type": "house"
         },
         "blocks": [
             {
