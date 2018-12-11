@@ -1,14 +1,19 @@
 import logging
-from apistar.exceptions import NotFound, BadRequest
 from elasticsearch import Elasticsearch
+from apistar.exceptions import NotFound, BadRequest
 
-from idunn.api.poi import POI
-from idunn.api.pois import fetch_es_poi
-from idunn.api.place import Place, Admin, Street, Address
+from idunn.utils import prometheus
+from idunn.utils.geom import get_geom, get_name
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
-from idunn.utils import prometheus
-from idunn.api.poi import LONG, SHORT, DEFAULT_VERBOSITY
+
+from idunn.api.pois import fetch_es_poi
+from idunn.api.place import Place, LONG, SHORT, DEFAULT_VERBOSITY
+
+from idunn.api.locations.poi import POI
+from idunn.api.locations.admin import Admin
+from idunn.api.locations.street import Street
+from idunn.api.locations.address import Address
 
 logger = logging.getLogger(__name__)
 

@@ -52,7 +52,6 @@ def test_basic_query_admin():
 
     assert resp["id"] == "admin:osm:relation:123057"
     assert resp["name"] == "Goujounac"
-    assert resp["label"] == "Goujounac (46250), Lot, Occitanie, France"
 
 def test_basic_query_street():
     client = TestClient(app)
@@ -67,7 +66,6 @@ def test_basic_query_street():
 
     assert resp["id"] == "35460343"
     assert resp["name"] == "9a Birnenweg"
-    assert resp["label"] == "9a Birnenweg (Label)"
 
 def test_basic_query_address():
     client = TestClient(app)
@@ -84,7 +82,6 @@ def test_basic_query_address():
 
     assert resp["id"] == "addr:5.108632;48.810273"
     assert resp["name"] == "4 Rue du Moulin"
-    assert resp["label"] == "4 Rue du Moulin (Val-d'Ornain)"
 
 
 def test_basic_query_poi():
@@ -120,7 +117,6 @@ def test_type_query_admin():
 
     assert resp["id"] == "admin:osm:relation:123057"
     assert resp["name"] == "Goujounac"
-    assert resp["label"] == "Goujounac (46250), Lot, Occitanie, France"
 
 def test_type_query_street():
     client = TestClient(app)
@@ -135,7 +131,6 @@ def test_type_query_street():
 
     assert resp["id"] == "35460343"
     assert resp["name"] == "9a Birnenweg"
-    assert resp["label"] == "9a Birnenweg (Label)"
 
 def test_type_query_address():
     client = TestClient(app)
@@ -152,7 +147,6 @@ def test_type_query_address():
 
     assert resp["id"] == "addr:5.108632;48.810273"
     assert resp["name"] == "4 Rue du Moulin"
-    assert resp["label"] == "4 Rue du Moulin (Val-d'Ornain)"
 
 
 def test_type_query_poi():

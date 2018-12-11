@@ -1,7 +1,8 @@
 from apistar.exceptions import NotFound
 from elasticsearch import Elasticsearch
 
-from idunn.api.poi import POI, DEFAULT_VERBOSITY
+from idunn.api.place import DEFAULT_VERBOSITY
+from idunn.api.locations.poi import POI
 from idunn.utils.settings import Settings
 
 def fetch_es_poi(id, es) -> dict:
