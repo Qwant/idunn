@@ -43,3 +43,7 @@ PLACE_ADDRESS_INDEX: "munin_addr"
 PLACE_POI_INDEX: "munin_poi"
 
 WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
+
+THUMBR_SALT:
+THUMBR_ENABLED: True # Set to False if you want to keep raw image urls instead of Thumbr
+THUMBR_DOMAINS: "qwant.com"

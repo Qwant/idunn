@@ -41,16 +41,15 @@ def wiki_client(wiki_es):
     return Elasticsearch([wiki_es])
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def wiki_es_ko(docker_services):
-    docker_services.start('wiki_es')
     port = docker_services.wait_for_service("wiki_es", 9200)
     url = "something.invalid:1234"
 
     with override_settings({'WIKI_ES': url, 'ES_WIKI_LANG': 'fr'}):
         yield url
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def wiki_client_ko(wiki_es_ko):
     return Elasticsearch([wiki_es_ko])
 

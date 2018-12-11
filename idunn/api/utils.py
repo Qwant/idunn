@@ -1,5 +1,5 @@
 from apistar.exceptions import NotFound, BadRequest
-from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
+from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock, ImagesBlock
 
 LONG = "long"
 SHORT = "short"
@@ -11,12 +11,26 @@ BLOCKS_BY_VERBOSITY = {
         PhoneBlock,
         InformationBlock,
         WebSiteBlock,
-        ContactBlock
+        ContactBlock,
+        ImagesBlock
     ],
     SHORT: [
         OpeningHourBlock
     ]
 }
+
+class PlaceData(dict):
+    def __init__(self, d):
+        super().__init__(d)
+        self._wiki_resp = None
+
+    @property
+    def wiki_resp(self):
+        return self._wiki_resp
+
+    @wiki_resp.setter
+    def wiki_resp(self, resp):
+        self._wiki_resp = resp
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -139,6 +153,3 @@ def get_name(properties, lang):
     if name is None:
         name = properties.get('name')
     return name
-
-
-
