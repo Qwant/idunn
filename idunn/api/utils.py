@@ -105,7 +105,6 @@ def get_geom(es_place):
         lon = coord.get('lon')
         lat = coord.get('lat')
         if lon is not None and lat is not None:
-            bbox = None
             geom = {
                 'coordinates': [lon, lat],
                 'center': [lon, lat],
