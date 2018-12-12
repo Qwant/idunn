@@ -1,23 +1,6 @@
 from apistar import types, validators
 from idunn.blocks.base import BlocksValidator
-from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
-
-LONG = "long"
-SHORT = "short"
-DEFAULT_VERBOSITY = LONG
-
-BLOCKS_BY_VERBOSITY = {
-    LONG: [
-        OpeningHourBlock,
-        PhoneBlock,
-        InformationBlock,
-        WebSiteBlock,
-        ContactBlock
-    ],
-    SHORT: [
-        OpeningHourBlock
-    ]
-}
+from idunn.api.utils import LONG, BLOCKS_BY_VERBOSITY
 
 class Place(types.Type):
     PLACE_TYPE = ''
@@ -29,6 +12,7 @@ class Place(types.Type):
     class_name = validators.String(allow_null=True)
     subclass_name = validators.String(allow_null=True)
     geometry = validators.Object(allow_null=True)
+    label = validators.String(allow_null=True)
     address = validators.Object(allow_null=True)
     blocks = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
 

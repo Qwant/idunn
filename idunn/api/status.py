@@ -1,10 +1,11 @@
 import logging
 from elasticsearch import Elasticsearch, ConnectionError
 
-
 ES_RUNNING_STATUS = ('green', 'yellow')
 
 def get_status(es: Elasticsearch):
+    """Returns the status of the elastic cluster
+    """
     try:
         cluster_health = es.cluster.health()
     except ConnectionError as err:

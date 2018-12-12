@@ -1,5 +1,5 @@
-from idunn.utils.geom import get_name, get_geom, build_blocks
-from idunn.api.place import Place, BLOCKS_BY_VERBOSITY
+from .place import Place
+from idunn.api.utils import build_blocks, get_geom, get_name
 
 class POI(Place):
     PLACE_TYPE = 'poi'
@@ -22,8 +22,7 @@ class POI(Place):
             class_name=properties.get('poi_class'),
             subclass_name=properties.get('poi_subclass'),
             geometry=get_geom(es_poi),
-            address= {
-                'label': address.get('label')
-            },
+            label=address.get('label'),
+            address=address,
             blocks=build_blocks(es_poi, lang, verbosity)
         )
