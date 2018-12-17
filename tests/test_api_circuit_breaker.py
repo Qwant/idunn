@@ -1,11 +1,11 @@
-import responses
-import pytest
 import re
-from freezegun import freeze_time
+import pytest
+import responses
 from app import app
+from time import sleep
+from freezegun import freeze_time
 from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaBreaker
-from time import sleep
 
 from .test_api import load_poi
 

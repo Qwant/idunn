@@ -5,8 +5,7 @@ from apistar.exceptions import BadRequest
 from idunn.utils import prometheus
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
-
-from idunn.api.place import Place, Admin, Street, Address, POI
+from idunn.places import Place, Admin, Street, Address, POI
 from idunn.api.utils import get_geom, get_name, fetch_es_place, LONG, SHORT, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)

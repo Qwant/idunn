@@ -1,8 +1,8 @@
 import pytest
 from app import app
-from idunn.blocks.services_and_information import AccessibilityBlock
 from .test_api import load_poi
 from apistar.test import TestClient
+from idunn.blocks.services_and_information import AccessibilityBlock
 
 @pytest.fixture(autouse=True)
 def load_all(mimir_client, init_indices):

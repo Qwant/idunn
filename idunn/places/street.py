@@ -14,7 +14,7 @@ class Street(Place):
             local_name=es_place.get('name'),
             class_name=es_place.get('poi_class'),
             subclass_name=es_place.get('poi_subclass'),
-            geometry=get_geom(es_place),
+            geometry=get_geom(es_place, 'polygon'),
             label=address.get('label'),
             address=address,
             blocks=build_blocks(es_place, lang, verbosity)

@@ -1,7 +1,7 @@
 from inspect import Parameter
 from apistar import Component
-from elasticsearch import Elasticsearch
 from .settings import Settings
+from elasticsearch import Elasticsearch
 
 class IndexNames(dict):
     """

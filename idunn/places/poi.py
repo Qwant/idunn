@@ -21,7 +21,7 @@ class POI(Place):
             local_name=properties.get('name'),
             class_name=properties.get('poi_class'),
             subclass_name=properties.get('poi_subclass'),
-            geometry=get_geom(es_poi),
+            geometry=get_geom(es_poi, 'Point'),
             label=address.get('label'),
             address=address,
             blocks=build_blocks(es_poi, lang, verbosity)

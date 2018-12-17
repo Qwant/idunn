@@ -1,8 +1,8 @@
-from apistar.test import TestClient
-from app import app
-import pytest
-import json
 import os
+import json
+import pytest
+from app import app
+from apistar.test import TestClient
 
 
 def load_poi(file_name, mimir_client):

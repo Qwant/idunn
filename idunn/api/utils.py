@@ -82,21 +82,21 @@ def build_blocks(es_poi, lang, verbosity):
             blocks.append(block)
     return blocks
 
-def get_geom(es_place):
+def get_geom(es_place, type):
     """Return the correct geometry from the elastic response
 
     A correct geometry means both lat and lon coordinates are required
 
-    >>> get_geom({}) is None
+    >>> get_geom({}, None) is None
     True
 
-    >>> get_geom({'coord':{"lon": None, "lat": 48.858260156496016}}) is None
+    >>> get_geom({'coord':{"lon": None, "lat": 48.858260156496016}}, None) is None
     True
 
-    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": None}}) is None
+    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": None}}, None) is None
     True
 
-    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}})
+    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}}, "Point")
     {'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016], 'type': 'Point'}
     """
     geom = None
@@ -108,11 +108,10 @@ def get_geom(es_place):
             geom = {
                 'coordinates': [lon, lat],
                 'center': [lon, lat],
-                'type': 'Point'
+                'type': type
             }
             if 'bbox' in es_place:
                 geom['bbox'] = es_place.get('bbox')
-                geom['type'] = 'Polygon'
     return geom
 
 def get_name(properties, lang):

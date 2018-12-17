@@ -1,7 +1,7 @@
 from apistar.exceptions import NotFound
 from elasticsearch import Elasticsearch
 
-from idunn.api.place import POI
+from idunn.places import POI
 from idunn.utils.settings import Settings
 from idunn.api.utils import fetch_es_poi, DEFAULT_VERBOSITY
 
