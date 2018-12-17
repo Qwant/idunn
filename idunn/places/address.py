@@ -1,12 +1,13 @@
 from .place import Place
-from idunn.api.utils import build_blocks, get_geom
+from idunn.api.utils import build_blocks, get_geom, build_address
 
 class Address(Place):
     PLACE_TYPE = 'address'
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        address = es_place.get('address') or {}
+        raw_address = es_place.get('address') or {}
+        address = build_address(raw_address)
 
         return cls(
             id=es_place.get('id', ''),

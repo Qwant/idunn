@@ -1,5 +1,5 @@
 from .place import Place
-from idunn.api.utils import build_blocks, get_geom, get_name
+from idunn.api.utils import build_blocks, get_geom, get_name, build_address
 
 class POI(Place):
     PLACE_TYPE = 'poi'
@@ -13,7 +13,8 @@ class POI(Place):
     @classmethod
     def load_poi(cls, es_poi, lang, verbosity):
         properties = es_poi.get('properties', {})
-        address = es_poi.get('address') or {}
+        raw_address = es_poi.get('address') or {}
+        address = build_address(raw_address)
 
         return cls(
             id=es_poi['id'],

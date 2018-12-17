@@ -139,3 +139,28 @@ def get_name(properties, lang):
     if name is None:
         name = properties.get('name')
     return name
+
+def build_address(address):
+    """Filter information
+    from the raw address object.
+    """
+    if not address is None:
+        if "type" in address:
+            del address["type"]
+        if "coord" in address:
+            del address["coord"]
+        if "weight" in address:
+            del address["weight"]
+        if "street" in address:
+            street = address["street"]
+            if "administrative_regions" in street:
+                del street["administrative_regions"]
+            if "weight" in street:
+                del street["weight"]
+            if "coord" in street:
+                del street["coord"]
+            address["street"] = street
+        return address
+    return None
+
+
