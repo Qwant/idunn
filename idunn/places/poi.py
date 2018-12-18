@@ -14,7 +14,7 @@ class POI(Place):
     def load_poi(cls, es_poi, lang, verbosity):
         properties = es_poi.get('properties', {})
         raw_address = es_poi.get('address', {})
-        admins = es_poi.get('administrative_regions', {})
+        admins = es_poi.get('administrative_regions', None)
         address = build_address(raw_address, admins)
 
         return cls(

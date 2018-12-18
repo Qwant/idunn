@@ -7,7 +7,7 @@ class Address(Place):
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
         raw_address = es_place.get('address', {})
-        admins = es_place.get('administrative_regions', {})
+        admins = es_place.get('administrative_regions', None)
         address = build_address(raw_address, admins)
 
         return cls(
