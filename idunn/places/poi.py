@@ -13,8 +13,9 @@ class POI(Place):
     @classmethod
     def load_poi(cls, es_poi, lang, verbosity):
         properties = es_poi.get('properties', {})
-        raw_address = es_poi.get('address') or {}
-        address = build_address(raw_address)
+        raw_address = es_poi.get('address', {})
+        admins = es_poi.get('administrative_regions', {})
+        address = build_address(raw_address, admins)
 
         return cls(
             id=es_poi['id'],
@@ -22,7 +23,7 @@ class POI(Place):
             local_name=properties.get('name'),
             class_name=properties.get('poi_class'),
             subclass_name=properties.get('poi_subclass'),
-            geometry=get_geom(es_poi, 'Point'),
+            geometry=get_geom(es_poi),
             label=address.get('label'),
             address=address,
             blocks=build_blocks(es_poi, lang, verbosity)

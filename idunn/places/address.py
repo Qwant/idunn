@@ -6,8 +6,9 @@ class Address(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        raw_address = es_place.get('address') or {}
-        address = build_address(raw_address)
+        raw_address = es_place.get('address', {})
+        admins = es_place.get('administrative_regions', {})
+        address = build_address(raw_address, admins)
 
         return cls(
             id=es_place.get('id', ''),
@@ -15,7 +16,7 @@ class Address(Place):
             local_name=es_place.get('name'),
             class_name=es_place.get('poi_class'),
             subclass_name=es_place.get('poi_subclass'),
-            geometry=get_geom(es_place, 'Point'),
+            geometry=get_geom(es_place),
             label=address.get('label'),
             address=address,
             blocks=build_blocks(es_place, lang, verbosity)

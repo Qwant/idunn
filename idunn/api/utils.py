@@ -82,22 +82,22 @@ def build_blocks(es_poi, lang, verbosity):
             blocks.append(block)
     return blocks
 
-def get_geom(es_place, type):
+def get_geom(es_place):
     """Return the correct geometry from the elastic response
 
     A correct geometry means both lat and lon coordinates are required
 
-    >>> get_geom({}, None) is None
+    >>> get_geom({}) is None
     True
 
-    >>> get_geom({'coord':{"lon": None, "lat": 48.858260156496016}}, None) is None
+    >>> get_geom({'coord':{"lon": None, "lat": 48.858260156496016}}) is None
     True
 
-    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": None}}, None) is None
+    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": None}}) is None
     True
 
-    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}}, "Point")
-    {'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016], 'type': 'Point'}
+    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}})
+    {'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016]}
     """
     geom = None
     if 'coord' in es_place:
@@ -107,8 +107,7 @@ def get_geom(es_place, type):
         if lon is not None and lat is not None:
             geom = {
                 'coordinates': [lon, lat],
-                'center': [lon, lat],
-                'type': type
+                'center': [lon, lat]
             }
             if 'bbox' in es_place:
                 geom['bbox'] = es_place.get('bbox')
@@ -140,27 +139,38 @@ def get_name(properties, lang):
         name = properties.get('name')
     return name
 
-def build_address(address):
+def build_address(address, raw_admins):
     """Filter information
     from the raw address object.
     """
     if not address is None:
-        if "type" in address:
-            del address["type"]
-        if "coord" in address:
-            del address["coord"]
-        if "weight" in address:
-            del address["weight"]
-        if "street" in address:
-            street = address["street"]
-            if "administrative_regions" in street:
-                del street["administrative_regions"]
-            if "weight" in street:
-                del street["weight"]
-            if "coord" in street:
-                del street["coord"]
-            address["street"] = street
-        return address
+        raw_street = address.get("street")
+        street = None if raw_street is None else {
+            "id": raw_street.get("id"),
+            "name": raw_street.get("name"),
+            "label": raw_street.get("label"),
+            "zip_codes": raw_street.get("zip_codes")
+        }
+        admins = []
+        if not raw_admins is None:
+            for raw_admin in raw_admins:
+                admin = {
+                    "id": raw_admin.get("id"),
+                    "label": raw_admin.get("label"),
+                    "name": raw_admin.get("name"),
+                    "level": raw_admin.get("level"),
+                    "zip_codes": raw_admin.get("zip_codes")
+                }
+                admins.append(admin)
+        return {
+            "id": address.get("id"),
+            "name": address.get("name"),
+            "house_number": address.get("house_number"),
+            "label": address.get("label"),
+            "zip_codes": address.get("zip_codes"),
+            "street": street,
+            "admins": admins
+        }
     return None
 
 

@@ -126,7 +126,20 @@
     "label": "62B Rue de Lille (Paris)",
     "name": "62B Rue de Lille",
     "postcode": "75007",
-    "street": "Rue de Lille",
+    "street": {
+		"id": "street:553660044C",
+		"street_name": "Rue du Moulin",
+		"name": "Rue du Moulin",
+		"label": "Rue du Moulin (Val-d'Ornain)",
+		"weight": 0.000006877017509339014,
+		"coord": {
+			"lon": 5.06982,
+			"lat": 48.803242
+		},
+		"zip_codes": [
+			"55000"
+		]
+	},
     "type": "house"
   },
   "administrative_regions": [

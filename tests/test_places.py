@@ -52,6 +52,8 @@ def test_basic_query_admin():
 
     assert resp["id"] == "admin:osm:relation:123057"
     assert resp["name"] == "Goujounac"
+    # We check admins are read
+    assert resp["address"]["admins"][0]["id"] == "admin:osm:relation:7382"
 
 def test_basic_query_street():
     client = TestClient(app)

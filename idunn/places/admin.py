@@ -7,7 +7,8 @@ class Admin(Place):
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
         raw_address = es_place.get('address') or {}
-        address = build_address(raw_address)
+        admins = es_place.get('administrative_regions') or {}
+        address = build_address(raw_address, admins)
 
         return cls(
             id=es_place.get('id', ''),
@@ -15,7 +16,7 @@ class Admin(Place):
             local_name=es_place.get('name'),
             class_name='city',
             subclass_name='city',
-            geometry=get_geom(es_place, 'polygon'),
+            geometry=get_geom(es_place),
             label=address.get('label'),
             address=address,
             blocks=build_blocks(es_place, lang, verbosity)
