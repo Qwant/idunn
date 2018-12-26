@@ -2,7 +2,7 @@ before_script:
   - source ci/bootstrap.sh
 
 .values:
-  - &docker_host            "tcp://10.100.31.132:2375"
+  - &docker_host            "tcp://10.103.9.1:2375"
   - &environment            "$CI_COMMIT_REF_SLUG"
   - &product_ref_slug       "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
 
@@ -40,7 +40,7 @@ deploy services:
   environment:
     name: *environment
     on_stop: "stop services"
-    url: "http://maps.dev.qwant.ninja/maps"
+    url: "https://www.qwant.plive/maps"
   variables: &deploy_variables
     DOCKER_HOST: *docker_host
     STACK: *product_ref_slug
