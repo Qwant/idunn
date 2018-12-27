@@ -97,7 +97,7 @@ def get_geom(es_place):
     True
 
     >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}})
-    {'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016]}
+    {'type': 'Point', 'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016]}
     """
     geom = None
     if 'coord' in es_place:
@@ -106,11 +106,14 @@ def get_geom(es_place):
         lat = coord.get('lat')
         if lon is not None and lat is not None:
             geom = {
+                'type': 'Point',
                 'coordinates': [lon, lat],
                 'center': [lon, lat]
             }
             if 'bbox' in es_place:
                 geom['bbox'] = es_place.get('bbox')
+            if 'boundary' in es_place:
+                geom['type'] = es_place.get('boundary').get('type')
     return geom
 
 def get_name(properties, lang):
@@ -139,38 +142,5 @@ def get_name(properties, lang):
         name = properties.get('name')
     return name
 
-def build_address(address, raw_admins):
-    """Filter information
-    from the raw address object.
-    """
-    if not address is None:
-        raw_street = address.get("street")
-        street = None if raw_street is None else {
-            "id": raw_street.get("id"),
-            "name": raw_street.get("name"),
-            "label": raw_street.get("label"),
-            "zip_codes": raw_street.get("zip_codes")
-        }
-        admins = []
-        if not raw_admins is None:
-            for raw_admin in raw_admins:
-                admin = {
-                    "id": raw_admin.get("id"),
-                    "label": raw_admin.get("label"),
-                    "name": raw_admin.get("name"),
-                    "level": raw_admin.get("level"),
-                    "zip_codes": raw_admin.get("zip_codes")
-                }
-                admins.append(admin)
-        return {
-            "id": address.get("id"),
-            "name": address.get("name"),
-            "house_number": address.get("house_number"),
-            "label": address.get("label"),
-            "zip_codes": address.get("zip_codes"),
-            "street": street,
-            "admins": admins
-        }
-    return None
 
 

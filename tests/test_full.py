@@ -41,6 +41,7 @@ def test_full():
                 2.3250037768187326,
                 48.86618482685007
             ],
+            "type": "Point",
             "center": [
                 2.3250037768187326,
                 48.86618482685007
@@ -48,18 +49,18 @@ def test_full():
         },
         "label": "62B Rue de Lille (Paris)",
         "address": {
+            "admins": [],
             "id": "addr:2.326285;48.859635",
             "name": "62B Rue de Lille",
-            "house_number": None,
+            "house_number": "62B",
             "label": "62B Rue de Lille (Paris)",
-            "zip_codes": None,
+            "postcode": "75007;75008",
             "street": {
                 "id": "street:553660044C",
-                "name": "Rue du Moulin",
-                "label": "Rue du Moulin (Val-d'Ornain)",
-                "zip_codes": ["55000"]
-            },
-            "admins": []
+                "name": "Rue de Lille",
+                "label": "Rue de Lille (Paris)",
+                "postcode": ["75007", "75008"]
+            }
         },
         "blocks": [
             {

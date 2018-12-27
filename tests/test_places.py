@@ -66,8 +66,71 @@ def test_basic_query_street():
 
     resp = response.json()
 
-    assert resp["id"] == "35460343"
-    assert resp["name"] == "9a Birnenweg"
+    assert resp == {
+        "type": "street",
+        "id": "35460343",
+        "name": "9a Birnenweg",
+        "local_name": "9a Birnenweg",
+        "class_name": "street",
+        "subclass_name": "street",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                10.6646915,
+                53.847809999999996
+                ],
+            "center": [
+                10.6646915,
+                53.847809999999996
+                ]
+            },
+        "label": "9a Birnenweg (Label)",
+        "address": {
+            "id": None,
+            "name": None,
+            "house_number": None,
+            "label": None,
+            "postcode": "",
+            "street": {
+                "id": None,
+                "name": None,
+                "label": None,
+                "postcode": None
+                },
+            "admins": [
+                {
+                    "id": "admin:osm:relation:27027",
+                    "label": "L\u00fcbeck, Schleswig-Holstein, Deutschland",
+                    "name": "L\u00fcbeck",
+                    "level": 6,
+                    "postcode": []
+                    },
+                {
+                    "id": "admin:osm:relation:51529",
+                    "label": "Schleswig-Holstein, Deutschland",
+                    "name": "Schleswig-Holstein",
+                    "level": 4,
+                    "postcode": []
+                    },
+                {
+                    "id": "admin:osm:relation:51477",
+                    "label": "Deutschland",
+                    "name": "Deutschland",
+                    "level": 2,
+                    "postcode": []
+                    },
+                {
+                    "id": "admin:osm:relation:367854",
+                    "label": "Sankt Lorenz S\u00fcd, L\u00fcbeck, Schleswig-Holstein, Deutschland",
+                    "name": "Sankt Lorenz S\u00fcd",
+                    "level": 9,
+                    "postcode": []
+                    }
+                ]
+            },
+        "blocks": []
+}
+
 
 def test_basic_query_address():
     client = TestClient(app)
