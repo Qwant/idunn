@@ -102,7 +102,6 @@ def test_WIKI_ES_KO(wiki_client_ko):
         assert resp['local_name'] == "Musée d'Orsay"
         assert resp['class_name'] == 'museum'
         assert resp['subclass_name'] == 'museum'
-        assert resp['address']['label'] == '62B Rue de Lille (Paris)'
         assert resp['blocks'][0]['type'] == 'opening_hours'
         assert resp['blocks'][1]['type'] == 'phone'
         assert resp['blocks'][0]['is_24_7'] == False
@@ -200,7 +199,6 @@ def test_POI_not_in_WIKI_ES():
         assert resp['local_name'] == "Musée d'Orsay"
         assert resp['class_name'] == 'museum'
         assert resp['subclass_name'] == 'museum'
-        assert resp['address']['label'] == '62B Rue de Lille (Paris)'
         assert resp['blocks'][0]['type'] == 'opening_hours'
         assert resp['blocks'][1]['type'] == 'phone'
         assert resp['blocks'][0]['is_24_7'] == False

@@ -45,7 +45,6 @@ def test_basic_query():
     assert resp['local_name'] == "Musée d'Orsay"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
-    assert resp['address']['label'] == '62B Rue de Lille (Paris)'
     assert resp['blocks'][0]['type'] == 'opening_hours'
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
@@ -65,7 +64,6 @@ def test_lang():
     assert resp['local_name'] == "Musée d'Orsay"
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
-    assert resp['address']['label'] == '62B Rue de Lille (Paris)'
     assert resp['blocks'][0]['type'] == 'opening_hours'
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
@@ -111,7 +109,6 @@ def test_block_null():
     assert resp['local_name'] == "Église Notre-Dame-des-Blancs-Manteaux"
     assert resp['class_name'] == 'place_of_worship'
     assert resp['subclass_name'] == 'place_of_worship'
-    assert resp['address']['label'] == 'Rue Aubriot (Paris)'
     assert resp['blocks'][0]['type'] == 'phone'
     assert resp['blocks'][0]['url'] == 'tel:+33 1 42 72 09 37'
 

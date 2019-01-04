@@ -6,6 +6,8 @@ class Street(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
+        street_addr = Place.build_address(es_place)
+        del street_addr['admin']
 
         return cls(
             id=es_place.get('id', ''),
@@ -14,7 +16,6 @@ class Street(Place):
             class_name='street',
             subclass_name='street',
             geometry=get_geom(es_place),
-            label=es_place.get('label'),
-            address=Place.build_address(es_place),
+            address=street_addr,
             blocks=build_blocks(es_place, lang, verbosity)
         )

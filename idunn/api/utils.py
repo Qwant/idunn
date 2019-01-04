@@ -112,8 +112,6 @@ def get_geom(es_place):
             }
             if 'bbox' in es_place:
                 geom['bbox'] = es_place.get('bbox')
-            if 'boundary' in es_place:
-                geom['type'] = es_place.get('boundary').get('type')
     return geom
 
 def get_name(properties, lang):

@@ -6,6 +6,8 @@ class Address(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
+        address_addr = Place.build_address(es_place)
+        del address_addr['admin']
 
         return cls(
             id=es_place.get('id', ''),
@@ -14,7 +16,6 @@ class Address(Place):
             class_name='address',
             subclass_name='address',
             geometry=get_geom(es_place),
-            label=es_place.get('label'),
-            address=Place.build_address(es_place),
+            address=address_addr,
             blocks=build_blocks(es_place, lang, verbosity)
         )

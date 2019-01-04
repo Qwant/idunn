@@ -6,6 +6,8 @@ class Admin(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
+        admin_addr = Place.build_address(es_place)
+        del admin_addr['admins']
 
         return cls(
             id=es_place.get('id', ''),
@@ -14,7 +16,6 @@ class Admin(Place):
             class_name=es_place.get('zone_type'),
             subclass_name=es_place.get('zone_type'),
             geometry=get_geom(es_place),
-            label=es_place.get('label'),
-            address=Place.build_address(es_place),
+            address=admin_addr,
             blocks=build_blocks(es_place, lang, verbosity)
         )
