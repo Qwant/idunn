@@ -48,8 +48,10 @@ def test_full():
             ]
         },
         "address": {
+            "admin": None,
             "admins": [],
             "id": "addr:2.326285;48.859635",
+            "label": "62B Rue de Lille (Paris)",
             "name": "62B Rue de Lille",
             "housenumber": "62B",
             "postcode": "75007;75008",

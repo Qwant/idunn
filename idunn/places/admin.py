@@ -5,9 +5,18 @@ class Admin(Place):
     PLACE_TYPE = 'admin'
 
     @classmethod
+    def build_admin(cls, es_place):
+        return {
+            'label': es_place.get('label')
+        }
+
+    @classmethod
+    def get_postcodes(cls, es_place):
+        return es_place.get("zip_codes")
+
+    @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        admin_addr = Place.build_address(es_place)
-        del admin_addr['admins']
+        admin_addr = cls.build_address(es_place)
 
         return cls(
             id=es_place.get('id', ''),

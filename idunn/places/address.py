@@ -4,10 +4,17 @@ from idunn.api.utils import build_blocks, get_geom
 class Address(Place):
     PLACE_TYPE = 'address'
 
+    @staticmethod
+    def get_raw_address(es_place):
+        return es_place
+
+    @classmethod
+    def get_raw_admins(cls, es_place):
+        return cls.get_raw_street(es_place).get("administrative_regions") or []
+
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        address_addr = Place.build_address(es_place)
-        del address_addr['admin']
+        address_addr = cls.build_address(es_place)
 
         return cls(
             id=es_place.get('id', ''),

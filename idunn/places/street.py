@@ -5,9 +5,16 @@ class Street(Place):
     PLACE_TYPE = 'street'
 
     @classmethod
+    def get_raw_street(cls, es_place):
+        return es_place
+
+    @classmethod
+    def get_postcodes(cls, es_place):
+        return es_place.get("zip_codes")
+
+    @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        street_addr = Place.build_address(es_place)
-        del street_addr['admin']
+        street_addr = cls.build_address(es_place)
 
         return cls(
             id=es_place.get('id', ''),

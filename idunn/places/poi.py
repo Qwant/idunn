@@ -12,8 +12,7 @@ class POI(Place):
 
     @classmethod
     def load_poi(cls, es_poi, lang, verbosity):
-        poi_addr = Place.build_address(es_poi)
-        del poi_addr['admin']
+        poi_addr = cls.build_address(es_poi)
 
         properties = es_poi.get('properties', {})
         admins = es_poi.get('administrative_regions', None)

@@ -30,11 +30,7 @@ class Place(types.Type):
         raise NotImplementedError
 
     @classmethod
-    def build_address(cls, es_place):
-        raw_address = es_place.get('address') or {}
-        raw_street = es_place.get('street') or raw_address.get("street") or {}
-        raw_admins = es_place.get('administrative_regions') or raw_street.get('administrative_regions') or raw_address.get('administrative_regions') or {}
-
+    def build_admins(cls, raw_admins):
         admins = []
         if not raw_admins is None:
             for raw_admin in raw_admins:
@@ -42,27 +38,70 @@ class Place(types.Type):
                     "id": raw_admin.get("id"),
                     "label": raw_admin.get("label"),
                     "name": raw_admin.get("name"),
-                    "level": raw_admin.get("level"),
-                    "postcode": raw_admin.get("zip_codes")
+                    "class_name": raw_admin.get("level"),
+                    "postcodes": raw_admin.get("zip_codes")
                 }
                 admins.append(admin)
-        postcodes = es_place.get("zip_codes") or raw_address.get("zip_codes")
+        return admins
+
+    @classmethod
+    def build_street(cls, raw_street):
+        return {
+            "id": raw_street.get("id"),
+            "name": raw_street.get("name"),
+            "label": raw_street.get("label"),
+            "postcodes": raw_street.get("zip_codes")
+        }
+
+    @staticmethod
+    def get_raw_address(es_place):
+        return es_place.get("address") or {}
+
+    @classmethod
+    def get_raw_street(cls, es_place):
+        return cls.get_raw_address(es_place).get("street") or {}
+
+    @classmethod
+    def get_raw_admins(cls, es_place):
+        return es_place.get("administrative_regions") or []
+
+    @staticmethod
+    def build_admin(es_place):
+        return None
+
+    @classmethod
+    def get_postcodes(cls, es_place):
+        return cls.get_raw_address(es_place).get("zip_codes")
+
+    @classmethod
+    def build_address(cls, es_place):
+        """
+        Method to build the address field for an Address,
+        a Street, an Admin or a POI.
+        """
+        raw_address = cls.get_raw_address(es_place)
+        raw_street = cls.get_raw_street(es_place)
+        raw_admins = cls.get_raw_admins(es_place)
+        postcodes = cls.get_postcodes(es_place)
         if postcodes is not None:
             if isinstance(postcodes,list):
                 postcodes = ';'.join(postcodes)
+
+        id = raw_address.get("id")
+        name = raw_address.get("name")
+        housenumber = raw_address.get("house_number")
+        label = raw_address.get("label")
+
+        admins = cls.build_admins(raw_admins)
+        street = cls.build_street(raw_street)
+
         return {
-            "id": raw_address.get("id"),
-            "name": raw_address.get("name"),
-            "housenumber": raw_address.get("house_number"),
+            "id": id,
+            "name": name,
+            "housenumber": housenumber,
             "postcode": postcodes,
-            "admin": {
-                "label": es_place.get("label")
-            },
-            "street": {
-                "id": raw_street.get("id"),
-                "name": raw_street.get("name"),
-                "label": raw_street.get("label"),
-                "postcodes": raw_street.get("zip_codes")
-            },
+            "label": label,
+            "admin": cls.build_admin(es_place),
+            "street": street,
             "admins": admins
         }
