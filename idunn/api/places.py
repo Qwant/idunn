@@ -6,7 +6,7 @@ from idunn.utils import prometheus
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.places import Place, Admin, Street, Address, POI
-from idunn.api.utils import fetch_es_place, LONG, SHORT, DEFAULT_VERBOSITY
+from idunn.api.utils import fetch_es_place, PlaceData, LONG, SHORT, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)
 
