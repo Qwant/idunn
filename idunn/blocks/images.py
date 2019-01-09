@@ -37,7 +37,7 @@ class ThumbrHelper:
         hash = hashlib.sha256(bytes(token, encoding='utf8')).hexdigest()
         domain = self.get_domain(hash)
 
-        size = int(width) * int(height)
+        size = f"{width}x{height}"
 
         hashURLpart = f"{hash[0]}/{hash[1]}/{hash[2:]}"
 

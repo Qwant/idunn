@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 
 from idunn.places import POI
 from idunn.utils.settings import Settings
-from idunn.api.utils import fetch_es_poi, DEFAULT_VERBOSITY
+from idunn.api.utils import fetch_es_poi, PlaceData, DEFAULT_VERBOSITY
 
 def get_poi(id, es: Elasticsearch, settings: Settings, lang=None) -> POI:
     """Handler that returns points-of-interest"""
