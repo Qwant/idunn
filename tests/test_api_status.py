@@ -1,5 +1,5 @@
-from unittest.mock import patch
 from apistar import TestClient
+from unittest.mock import patch
 from elasticsearch.client import ClusterClient
 from elasticsearch.exceptions import ConnectionError
 

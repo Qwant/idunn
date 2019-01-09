@@ -1,403 +1,447 @@
 {
-	"id": "osm:relation:7515426",
-	"label": "Musée du Louvre (Paris)",
-	"name": "Musée du Louvre",
-	"coord": {
-		"lon": 2.338027583323689,
-		"lat": 48.86114726113347
-	},
-	"administrative_regions": [
-		{
-			"id": "admin:osm:relation:2172740",
-			"insee": "7510101",
-			"level": 10,
-			"label": "Quartier Saint-Germain-l'Auxerrois (75001), Paris 1er Arrondissement, Paris, Île-de-France, France",
-			"name": "Quartier Saint-Germain-l'Auxerrois",
-			"zip_codes": [
-				"75001"
-			],
-			"weight": 0.0,
-			"coord": {
-				"lon": 2.3348500250166864,
-				"lat": 48.86067829798387
-			},
-			"admin_type": "Unknown",
-			"zone_type": "suburb"
-		},
-		{
-			"id": "admin:osm:relation:20727",
-			"insee": "75101",
-			"level": 9,
-			"label": "Paris 1er Arrondissement (75001), Paris, Île-de-France, France",
-			"name": "Paris 1er Arrondissement",
-			"zip_codes": [
-				"75001"
-			],
-			"weight": 0.0,
-			"coord": {
-				"lon": 2.334396,
-				"lat": 48.8646144
-			},
-			"admin_type": "Unknown",
-			"zone_type": "city_district"
-		},
-		{
-			"id": "admin:osm:relation:8649",
-			"insee": "11",
-			"level": 4,
-			"label": "Île-de-France, France",
-			"name": "Île-de-France",
-			"zip_codes": [
-
-			],
-			"weight": 0.08250229135889316,
-			"coord": {
-				"lon": 2.3514992,
-				"lat": 48.8566101
-			},
-			"admin_type": "Unknown",
-			"zone_type": "state"
-		},
-		{
-			"id": "admin:osm:relation:7444",
-			"insee": "75056",
-			"level": 8,
-			"label": "Paris (75000-75116), Île-de-France, France",
-			"name": "Paris",
-			"zip_codes": [
-				"75000",
-				"75001",
-				"75002",
-				"75003",
-				"75004",
-				"75005",
-				"75006",
-				"75007",
-				"75008",
-				"75009",
-				"75010",
-				"75011",
-				"75012",
-				"75013",
-				"75014",
-				"75015",
-				"75016",
-				"75017",
-				"75018",
-				"75019",
-				"75020",
-				"75116"
-			],
-			"weight": 0.015618298409952111,
-			"coord": {
-				"lon": 2.3514992,
-				"lat": 48.8566101
-			},
-			"admin_type": "City",
-			"zone_type": "city"
-		},
-		{
-			"id": "admin:osm:relation:71525",
-			"insee": "75",
-			"level": 6,
-			"label": "Paris, Île-de-France, France",
-			"name": "Paris",
-			"zip_codes": [
-
-			],
-			"weight": 0.0,
-			"coord": {
-				"lon": 2.3514992,
-				"lat": 48.8566101
-			},
-			"admin_type": "Unknown",
-			"zone_type": "state_district"
-		},
-		{
-			"id": "admin:osm:relation:2202162",
-			"insee": "",
-			"level": 2,
-			"label": "France",
-			"name": "France",
-			"zip_codes": [
-
-			],
-			"weight": 0.0,
-			"coord": {
-				"lon": 2.3514992,
-				"lat": 48.8566101
-			},
-			"admin_type": "Unknown",
-			"zone_type": "country"
-		}
-	],
-	"weight": 0.0,
-	"zip_codes": [
-
-	],
-	"poi_type": {
-		"id": "museum",
-		"name": "museum"
-	},
-	"properties": [
-		{
-			"key": "opening_hours",
-			"value": "Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off"
-		},
-		{
-			"key": "contact:phone",
-			"value": "+33 1 40 20 52 29"
-		},
-		{
-			"key": "surveillance",
-			"value": "indoor"
-		},
-		{
-			"key": "type",
-			"value": "multipolygon"
-		},
-		{
-			"key": "museum",
-			"value": "art"
-		},
-		{
-			"key": "int_name",
-			"value": "Louvre"
-		},
-		{
-			"key": "name:latin",
-			"value": "Musée du Louvre"
-		},
-		{
-			"key": "contact:website",
-			"value": "http://www.louvre.fr"
-		},
-		{
-			"key": "wheelchair",
-			"value": "yes"
-		},
-		{
-			"key": "addr:city",
-			"value": "Paris"
-		},
-		{
-			"key": "name:en",
-			"value": "Louvre Museum"
-		},
-		{
-			"key": "importance",
-			"value": "international"
-		},
-		{
-			"key": "name:de",
-			"value": "Museum des Louvre"
-		},
-		{
-			"key": "wikipedia",
-			"value": "fr:Musée du Louvre"
-		},
-		{
-			"key": "name_int",
-			"value": "Louvre"
-		},
-		{
-			"key": "wikidata",
-			"value": "Q19675"
-		},
-		{
-			"key": "tourism:visitors",
-			"value": "9000000"
-		},
-		{
-			"key": "name",
-			"value": "Musée du Louvre"
-		},
-		{
-			"key": "name:ja",
-			"value": "ルーブル美術館"
-		},
-		{
-			"key": "name:ru",
-			"value": "Лувр"
-		},
-		{
-			"key": "image",
-			"value": "http://upload.wikimedia.org/wikipedia/commons/6/66/Louvre_Museum_Wikimedia_Commons.jpg"
-		},
-		{
-			"key": "name:zh",
-			"value": "卢浮宫博物馆"
-		},
-		{
-			"key": "name:es",
-			"value": "Museo del Louvre"
-		},
-		{
-			"key": "opening_hours:lastcheck",
-			"value": "2015-03"
-		},
-		{
-			"key": "note",
-			"value": "This is for the LOUVRE MUSEUM and includes some features that are outside the building/underground. DO NOT MIX IT UP WITH THE LOUVRE PALACE!"
-		},
-		{
-			"key": "tourism",
-			"value": "museum"
-		},
-		{
-			"key": "name:pt",
-			"value": "Museu do Louvre"
-		},
-		{
-			"key": "addr:postcode",
-			"value": "75001"
-		},
-		{
-			"key": "poi_subclass",
-			"value": "museum"
-		},
-		{
-			"key": "poi_class",
-			"value": "museum"
-		}
-	],
-	"address": {
-		"type": "street",
-		"id": "449583505",
-		"street_name": "Ascenseur G",
-		"administrative_regions": [
-			{
-				"id": "admin:osm:relation:2172740",
-				"insee": "7510101",
-				"level": 10,
-				"label": "Quartier Saint-Germain-l'Auxerrois (75001), Paris 1er Arrondissement, Paris, Île-de-France, France",
-				"name": "Quartier Saint-Germain-l'Auxerrois",
-				"zip_codes": [
-					"75001"
-				],
-				"weight": 0.00007004292428501386,
-				"coord": {
-					"lon": 2.3348500250166864,
-					"lat": 48.86067829798387
-				},
-				"admin_type": "Unknown",
-				"zone_type": "suburb"
-			},
-			{
-				"id": "admin:osm:relation:20727",
-				"insee": "75101",
-				"level": 9,
-				"label": "Paris 1er Arrondissement (75001), Paris, Île-de-France, France",
-				"name": "Paris 1er Arrondissement",
-				"zip_codes": [
-					"75001"
-				],
-				"weight": 0.00018819613999811804,
-				"coord": {
-					"lon": 2.334396,
-					"lat": 48.8646144
-				},
-				"admin_type": "Unknown",
-				"zone_type": "city_district"
-			},
-			{
-				"id": "admin:osm:relation:8649",
-				"insee": "11",
-				"level": 4,
-				"label": "Île-de-France, France",
-				"name": "Île-de-France",
-				"zip_codes": [
-
-				],
-				"weight": 0.08254246087132787,
-				"coord": {
-					"lon": 2.3514992,
-					"lat": 48.8566101
-				},
-				"admin_type": "Unknown",
-				"zone_type": "state"
-			},
-			{
-				"id": "admin:osm:relation:7444",
-				"insee": "75056",
-				"level": 8,
-				"label": "Paris (75000-75116), Île-de-France, France",
-				"name": "Paris",
-				"zip_codes": [
-					"75000",
-					"75001",
-					"75002",
-					"75003",
-					"75004",
-					"75005",
-					"75006",
-					"75007",
-					"75008",
-					"75009",
-					"75010",
-					"75011",
-					"75012",
-					"75013",
-					"75014",
-					"75015",
-					"75016",
-					"75017",
-					"75018",
-					"75019",
-					"75020",
-					"75116"
-				],
-				"weight": 0.004979426212820409,
-				"coord": {
-					"lon": 2.3514992,
-					"lat": 48.8566101
-				},
-				"admin_type": "City",
-				"zone_type": "city"
-			},
-			{
-				"id": "admin:osm:relation:71525",
-				"insee": "75",
-				"level": 6,
-				"label": "Paris, Île-de-France, France",
-				"name": "Paris",
-				"zip_codes": [
-
-				],
-				"weight": 0.004979415162807348,
-				"coord": {
-					"lon": 2.3514992,
-					"lat": 48.8566101
-				},
-				"admin_type": "Unknown",
-				"zone_type": "state_district"
-			},
-			{
-				"id": "admin:osm:relation:2202162",
-				"insee": "",
-				"level": 2,
-				"label": "France",
-				"name": "France",
-				"zip_codes": [
-
-				],
-				"weight": 1.0,
-				"coord": {
-					"lon": 2.3514992,
-					"lat": 48.8566101
-				},
-				"admin_type": "Unknown",
-				"zone_type": "country"
-			}
-		],
-		"label": "Ascenseur G (Paris)",
-		"weight": 0.004979426212820409,
-		"coord": {
-			"lon": 2.3376124,
-			"lat": 48.8607838
-		},
-		"zip_codes": [
-			"75001"
-		]
-	}
+    "address": {
+        "coord": {
+            "lat": 48.860861,
+            "lon": 2.338773
+        },
+        "house_number": "91A",
+        "id": "addr:2.338773;48.860861",
+        "label": "91A Rue de Rivoli (Paris)",
+        "name": "91A Rue de Rivoli",
+        "street": {
+            "administrative_regions": [
+                {
+                    "bbox": [
+                        2.224122,
+                        48.8155755,
+                        2.4697602,
+                        48.902156
+                    ],
+                    "codes": [],
+                    "coord": {
+                        "lat": 48.8566101,
+                        "lon": 2.3514992
+                    },
+                    "id": "admin:osm:relation:7444",
+                    "insee": "75056",
+                    "label": "Paris (75000-75116), \u00cele-de-France, France",
+                    "level": 8,
+                    "name": "Paris",
+                    "parent_id": null,
+                    "weight": 0.015618298409952111,
+                    "zip_codes": [
+                        "75000",
+                        "75001",
+                        "75002",
+                        "75003",
+                        "75004",
+                        "75005",
+                        "75006",
+                        "75007",
+                        "75008",
+                        "75009",
+                        "75010",
+                        "75011",
+                        "75012",
+                        "75013",
+                        "75014",
+                        "75015",
+                        "75016",
+                        "75017",
+                        "75018",
+                        "75019",
+                        "75020",
+                        "75116"
+                    ],
+                    "zone_type": "city"
+                },
+                {
+                    "bbox": [
+                        2.224122,
+                        48.8155755,
+                        2.4697602,
+                        48.902156
+                    ],
+                    "codes": [],
+                    "coord": {
+                        "lat": 48.8566101,
+                        "lon": 2.3514992
+                    },
+                    "id": "admin:osm:relation:71525",
+                    "insee": "75",
+                    "label": "Paris, \u00cele-de-France, France",
+                    "level": 6,
+                    "name": "Paris",
+                    "parent_id": null,
+                    "weight": 0.015618298409952111,
+                    "zip_codes": [],
+                    "zone_type": "state_district"
+                },
+                {
+                    "bbox": [
+                        1.4462445,
+                        48.1201456,
+                        3.5592208,
+                        49.241431
+                    ],
+                    "codes": [],
+                    "coord": {
+                        "lat": 48.8566101,
+                        "lon": 2.3514992
+                    },
+                    "id": "admin:osm:relation:8649",
+                    "insee": "11",
+                    "label": "\u00cele-de-France, France",
+                    "level": 4,
+                    "name": "\u00cele-de-France",
+                    "parent_id": null,
+                    "weight": 0.08250229135889316,
+                    "zip_codes": [],
+                    "zone_type": "state"
+                },
+                {
+                    "bbox": [
+                        2.3209018,
+                        48.8540519,
+                        2.3482048,
+                        48.8663867
+                    ],
+                    "codes": [],
+                    "coord": {
+                        "lat": 48.86067853419233,
+                        "lon": 2.3348496934066136
+                    },
+                    "id": "admin:osm:relation:2172740",
+                    "insee": "7510101",
+                    "label": "Quartier Saint-Germain-l'Auxerrois (75001), Paris 1er Arrondissement, Paris, \u00cele-de-France, France",
+                    "level": 10,
+                    "name": "Quartier Saint-Germain-l'Auxerrois",
+                    "parent_id": null,
+                    "weight": 0,
+                    "zip_codes": [
+                        "75001"
+                    ],
+                    "zone_type": "suburb"
+                },
+                {
+                    "bbox": [
+                        -5.4534286,
+                        41.2632185,
+                        9.8678344,
+                        51.268318
+                    ],
+                    "codes": [],
+                    "coord": {
+                        "lat": 48.8566101,
+                        "lon": 2.3514992
+                    },
+                    "id": "admin:osm:relation:2202162",
+                    "insee": "",
+                    "label": "France",
+                    "level": 2,
+                    "name": "France",
+                    "parent_id": null,
+                    "weight": 0.015618298409952111,
+                    "zip_codes": [],
+                    "zone_type": "country"
+                },
+                {
+                    "bbox": [
+                        2.3209018,
+                        48.8540519,
+                        2.3509479,
+                        48.869929
+                    ],
+                    "codes": [],
+                    "coord": {
+                        "lat": 48.8646144,
+                        "lon": 2.334396
+                    },
+                    "id": "admin:osm:relation:20727",
+                    "insee": "75101",
+                    "label": "Paris 1er Arrondissement (75001), Paris, \u00cele-de-France, France",
+                    "level": 9,
+                    "name": "Paris 1er Arrondissement",
+                    "parent_id": null,
+                    "weight": 0.00012047309620611302,
+                    "zip_codes": [
+                        "75001"
+                    ],
+                    "zone_type": "city_district"
+                }
+            ],
+            "coord": {
+                "lat": 48.860861,
+                "lon": 2.338773
+            },
+            "id": "street:751018249S",
+            "label": "Rue de Rivoli (Paris)",
+            "name": "Rue de Rivoli",
+            "weight": 0.015618298409952111,
+            "zip_codes": [
+                "75001"
+            ]
+        },
+        "type": "addr",
+        "weight": 0.015618298409952111,
+        "zip_codes": [
+            "75001"
+        ]
+    },
+    "administrative_regions": [
+        {
+            "admin_type": "Unknown",
+            "coord": {
+                "lat": 48.86067829798387,
+                "lon": 2.3348500250166864
+            },
+            "id": "admin:osm:relation:2172740",
+            "insee": "7510101",
+            "label": "Quartier Saint-Germain-l'Auxerrois (75001), Paris 1er Arrondissement, Paris, \u00cele-de-France, France",
+            "level": 10,
+            "name": "Quartier Saint-Germain-l'Auxerrois",
+            "weight": 0.0,
+            "zip_codes": [
+                "75001"
+            ],
+            "zone_type": "suburb"
+        },
+        {
+            "admin_type": "Unknown",
+            "coord": {
+                "lat": 48.8646144,
+                "lon": 2.334396
+            },
+            "id": "admin:osm:relation:20727",
+            "insee": "75101",
+            "label": "Paris 1er Arrondissement (75001), Paris, \u00cele-de-France, France",
+            "level": 9,
+            "name": "Paris 1er Arrondissement",
+            "weight": 0.0,
+            "zip_codes": [
+                "75001"
+            ],
+            "zone_type": "city_district"
+        },
+        {
+            "admin_type": "Unknown",
+            "coord": {
+                "lat": 48.8566101,
+                "lon": 2.3514992
+            },
+            "id": "admin:osm:relation:8649",
+            "insee": "11",
+            "label": "\u00cele-de-France, France",
+            "level": 4,
+            "name": "\u00cele-de-France",
+            "weight": 0.08250229135889316,
+            "zip_codes": [],
+            "zone_type": "state"
+        },
+        {
+            "admin_type": "City",
+            "coord": {
+                "lat": 48.8566101,
+                "lon": 2.3514992
+            },
+            "id": "admin:osm:relation:7444",
+            "insee": "75056",
+            "label": "Paris (75000-75116), \u00cele-de-France, France",
+            "level": 8,
+            "name": "Paris",
+            "weight": 0.015618298409952111,
+            "zip_codes": [
+                "75000",
+                "75001",
+                "75002",
+                "75003",
+                "75004",
+                "75005",
+                "75006",
+                "75007",
+                "75008",
+                "75009",
+                "75010",
+                "75011",
+                "75012",
+                "75013",
+                "75014",
+                "75015",
+                "75016",
+                "75017",
+                "75018",
+                "75019",
+                "75020",
+                "75116"
+            ],
+            "zone_type": "city"
+        },
+        {
+            "admin_type": "Unknown",
+            "coord": {
+                "lat": 48.8566101,
+                "lon": 2.3514992
+            },
+            "id": "admin:osm:relation:71525",
+            "insee": "75",
+            "label": "Paris, \u00cele-de-France, France",
+            "level": 6,
+            "name": "Paris",
+            "weight": 0.0,
+            "zip_codes": [],
+            "zone_type": "state_district"
+        },
+        {
+            "admin_type": "Unknown",
+            "coord": {
+                "lat": 48.8566101,
+                "lon": 2.3514992
+            },
+            "id": "admin:osm:relation:2202162",
+            "insee": "",
+            "label": "France",
+            "level": 2,
+            "name": "France",
+            "weight": 0.0,
+            "zip_codes": [],
+            "zone_type": "country"
+        }
+    ],
+    "coord": {
+        "lat": 48.86114726113347,
+        "lon": 2.338027583323689
+    },
+    "id": "osm:relation:7515426",
+    "label": "Mus\u00e9e du Louvre (Paris)",
+    "name": "Mus\u00e9e du Louvre",
+    "poi_type": {
+        "id": "museum",
+        "name": "museum"
+    },
+    "properties": [
+        {
+            "key": "opening_hours",
+            "value": "Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off"
+        },
+        {
+            "key": "contact:phone",
+            "value": "+33 1 40 20 52 29"
+        },
+        {
+            "key": "surveillance",
+            "value": "indoor"
+        },
+        {
+            "key": "type",
+            "value": "multipolygon"
+        },
+        {
+            "key": "museum",
+            "value": "art"
+        },
+        {
+            "key": "int_name",
+            "value": "Louvre"
+        },
+        {
+            "key": "name:latin",
+            "value": "Mus\u00e9e du Louvre"
+        },
+        {
+            "key": "contact:website",
+            "value": "http://www.louvre.fr"
+        },
+        {
+            "key": "wheelchair",
+            "value": "yes"
+        },
+        {
+            "key": "addr:city",
+            "value": "Paris"
+        },
+        {
+            "key": "name:en",
+            "value": "Louvre Museum"
+        },
+        {
+            "key": "importance",
+            "value": "international"
+        },
+        {
+            "key": "name:de",
+            "value": "Museum des Louvre"
+        },
+        {
+            "key": "wikipedia",
+            "value": "fr:Mus\u00e9e du Louvre"
+        },
+        {
+            "key": "name_int",
+            "value": "Louvre"
+        },
+        {
+            "key": "wikidata",
+            "value": "Q19675"
+        },
+        {
+            "key": "tourism:visitors",
+            "value": "9000000"
+        },
+        {
+            "key": "name",
+            "value": "Mus\u00e9e du Louvre"
+        },
+        {
+            "key": "name:ja",
+            "value": "\u30eb\u30fc\u30d6\u30eb\u7f8e\u8853\u9928"
+        },
+        {
+            "key": "name:ru",
+            "value": "\u041b\u0443\u0432\u0440"
+        },
+        {
+            "key": "image",
+            "value": "http://upload.wikimedia.org/wikipedia/commons/6/66/Louvre_Museum_Wikimedia_Commons.jpg"
+        },
+        {
+            "key": "name:zh",
+            "value": "\u5362\u6d6e\u5bab\u535a\u7269\u9986"
+        },
+        {
+            "key": "name:es",
+            "value": "Museo del Louvre"
+        },
+        {
+            "key": "opening_hours:lastcheck",
+            "value": "2015-03"
+        },
+        {
+            "key": "note",
+            "value": "This is for the LOUVRE MUSEUM and includes some features that are outside the building/underground. DO NOT MIX IT UP WITH THE LOUVRE PALACE!"
+        },
+        {
+            "key": "tourism",
+            "value": "museum"
+        },
+        {
+            "key": "name:pt",
+            "value": "Museu do Louvre"
+        },
+        {
+            "key": "addr:postcode",
+            "value": "75001"
+        },
+        {
+            "key": "poi_subclass",
+            "value": "museum"
+        },
+        {
+            "key": "poi_class",
+            "value": "museum"
+        }
+    ],
+    "weight": 0.0,
+    "zip_codes": [
+        "75001"
+    ]
 }

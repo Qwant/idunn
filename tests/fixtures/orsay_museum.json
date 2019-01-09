@@ -1,196 +1,66 @@
 {
-  "address": {
-    "administrative_regions": [
-      {
-        "admin_type": "Unknown",
-        "coord": {
-          "lat": 48.85526260583396,
-          "lon": 2.3255879694021946
-        },
-        "id": "admin:osm:relation:2188567",
-        "insee": "7510725",
-        "label": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
-        "level": 10,
-        "name": "Quartier Saint-Thomas-d'Aquin",
-        "weight": 0.0,
-        "zip_codes": [
-          "75007"
-        ],
-        "zone_type": "suburb"
-      },
-      {
-        "admin_type": "Unknown",
-        "coord": {
-          "lat": 48.8566101,
-          "lon": 2.3514992
-        },
-        "id": "admin:osm:relation:8649",
-        "insee": "11",
-        "label": "Île-de-France, France",
-        "level": 4,
-        "name": "Île-de-France",
-        "weight": 0.08250229135889316,
-        "zip_codes": [],
-        "zone_type": "state"
-      },
-      {
-        "admin_type": "City",
-        "coord": {
-          "lat": 48.8566101,
-          "lon": 2.3514992
-        },
-        "id": "admin:osm:relation:7444",
-        "insee": "75056",
-        "label": "Paris (75000-75116), Île-de-France, France",
-        "level": 8,
-        "name": "Paris",
-        "weight": 0.015618298409952111,
-        "zip_codes": [
-          "75000",
-          "75001",
-          "75002",
-          "75003",
-          "75004",
-          "75005",
-          "75006",
-          "75007",
-          "75008",
-          "75009",
-          "75010",
-          "75011",
-          "75012",
-          "75013",
-          "75014",
-          "75015",
-          "75016",
-          "75017",
-          "75018",
-          "75019",
-          "75020",
-          "75116"
-        ],
-        "zone_type": "city"
-      },
-      {
-        "admin_type": "Unknown",
-        "coord": {
-          "lat": 48.8566101,
-          "lon": 2.3514992
-        },
-        "id": "admin:osm:relation:71525",
-        "insee": "75",
-        "label": "Paris, Île-de-France, France",
-        "level": 6,
-        "name": "Paris",
-        "weight": 0.0,
-        "zip_codes": [],
-        "zone_type": "state_district"
-      },
-      {
-        "admin_type": "Unknown",
-        "coord": {
-          "lat": 48.8566101,
-          "lon": 2.3514992
-        },
-        "id": "admin:osm:relation:2202162",
-        "insee": "",
-        "label": "France",
-        "level": 2,
-        "name": "France",
-        "weight": 0.0,
-        "zip_codes": [],
-        "zone_type": "country"
-      },
-      {
-        "admin_type": "Unknown",
-        "coord": {
-          "lat": 48.8570281,
-          "lon": 2.3201953
-        },
-        "id": "admin:osm:relation:9521",
-        "insee": "75107",
-        "label": "Paris 7e Arrondissement (75007), Paris, Île-de-France, France",
-        "level": 9,
-        "name": "Paris 7e Arrondissement",
-        "weight": 0.0,
-        "zip_codes": [
-          "75007"
-        ],
-        "zone_type": "city_district"
-      }
-    ],
-    "city": "Paris",
-    "citycode": "75056",
-    "housenumber": "62B",
-    "id": "addr:2.326285;48.859635",
-    "label": "62B Rue de Lille (Paris)",
-    "name": "62B Rue de Lille",
-    "postcode": "75007",
-    "street": "Rue de Lille",
-    "type": "house"
+  "id": "osm:way:63178753",
+  "label": "Musée d'Orsay (Paris)",
+  "name": "Musée d'Orsay",
+  "coord": {
+    "lon": 2.3265827716099623,
+    "lat": 48.859917803575875
   },
   "administrative_regions": [
     {
-      "admin_type": "Unknown",
-      "coord": {
-        "lat": 48.85526260583396,
-        "lon": 2.3255879694021946
-      },
       "id": "admin:osm:relation:2188567",
       "insee": "7510725",
-      "label": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
       "level": 10,
+      "label": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
       "name": "Quartier Saint-Thomas-d'Aquin",
-      "weight": 0.0,
       "zip_codes": [
         "75007"
       ],
-      "zone_type": "suburb"
+      "weight": 0.0,
+      "coord": {
+        "lon": 2.3255879694021946,
+        "lat": 48.85526260583396
+      },
+      "bbox": [
+        2.319015,
+        48.8484202,
+        2.3332665,
+        48.8614751
+      ],
+      "zone_type": "suburb",
+      "parent_id": null,
+      "codes": []
     },
     {
-      "admin_type": "Unknown",
-      "coord": {
-        "lat": 48.8570281,
-        "lon": 2.3201953
-      },
       "id": "admin:osm:relation:9521",
       "insee": "75107",
-      "label": "Paris 7e Arrondissement (75007), Paris, Île-de-France, France",
       "level": 9,
+      "label": "Paris 7e Arrondissement (75007), Paris, Île-de-France, France",
       "name": "Paris 7e Arrondissement",
-      "weight": 0.0,
       "zip_codes": [
         "75007"
       ],
-      "zone_type": "city_district"
+      "weight": 0.0004035305800469838,
+      "coord": {
+        "lon": 2.3201953,
+        "lat": 48.8570281
+      },
+      "bbox": [
+        2.2898239,
+        48.8459336,
+        2.3332665,
+        48.8637782
+      ],
+      "zone_type": "city_district",
+      "parent_id": null,
+      "codes": []
     },
     {
-      "admin_type": "Unknown",
-      "coord": {
-        "lat": 48.8566101,
-        "lon": 2.3514992
-      },
-      "id": "admin:osm:relation:8649",
-      "insee": "11",
-      "label": "Île-de-France, France",
-      "level": 4,
-      "name": "Île-de-France",
-      "weight": 0.08250229135889316,
-      "zip_codes": [],
-      "zone_type": "state"
-    },
-    {
-      "admin_type": "City",
-      "coord": {
-        "lat": 48.8566101,
-        "lon": 2.3514992
-      },
       "id": "admin:osm:relation:7444",
       "insee": "75056",
-      "label": "Paris (75000-75116), Île-de-France, France",
       "level": 8,
+      "label": "Paris (75000-75116), Île-de-France, France",
       "name": "Paris",
-      "weight": 0.015618298409952111,
       "zip_codes": [
         "75000",
         "75001",
@@ -215,171 +85,220 @@
         "75020",
         "75116"
       ],
-      "zone_type": "city"
+      "weight": 0.015618298409952111,
+      "coord": {
+        "lon": 2.3514992,
+        "lat": 48.8566101
+      },
+      "bbox": [
+        2.224122,
+        48.8155755,
+        2.4697602,
+        48.902156
+      ],
+      "zone_type": "city",
+      "parent_id": null,
+      "codes": []
     },
     {
-      "admin_type": "Unknown",
-      "coord": {
-        "lat": 48.8566101,
-        "lon": 2.3514992
-      },
       "id": "admin:osm:relation:71525",
       "insee": "75",
-      "label": "Paris, Île-de-France, France",
       "level": 6,
+      "label": "Paris, Île-de-France, France",
       "name": "Paris",
-      "weight": 0.0,
       "zip_codes": [],
-      "zone_type": "state_district"
+      "weight": 0.015618298409952111,
+      "coord": {
+        "lon": 2.3514992,
+        "lat": 48.8566101
+      },
+      "bbox": [
+        2.224122,
+        48.8155755,
+        2.4697602,
+        48.902156
+      ],
+      "zone_type": "state_district",
+      "parent_id": null,
+      "codes": []
     },
     {
-      "admin_type": "Unknown",
+      "id": "admin:osm:relation:8649",
+      "insee": "11",
+      "level": 4,
+      "label": "Île-de-France, France",
+      "name": "Île-de-France",
+      "zip_codes": [],
+      "weight": 0.08250229135889316,
       "coord": {
-        "lat": 48.8566101,
-        "lon": 2.3514992
+        "lon": 2.3514992,
+        "lat": 48.8566101
       },
+      "bbox": [
+        1.4462445,
+        48.1201456,
+        3.5592208,
+        49.241431
+      ],
+      "zone_type": "state",
+      "parent_id": null,
+      "codes": []
+    },
+    {
       "id": "admin:osm:relation:2202162",
       "insee": "",
-      "label": "France",
       "level": 2,
+      "label": "France",
       "name": "France",
-      "weight": 0.0,
       "zip_codes": [],
-      "zone_type": "country"
+      "weight": 0.015618298409952111,
+      "coord": {
+        "lon": 2.3514992,
+        "lat": 48.8566101
+      },
+      "bbox": [
+        -5.4534286,
+        41.2632185,
+        9.8678344,
+        51.268318
+      ],
+      "zone_type": "country",
+      "parent_id": null,
+      "codes": []
     }
   ],
-  "city": "Paris",
-  "citycode": "75056",
-  "id": "osm:way:63178753",
-  "label": "Musée d'Orsay (Paris)",
-  "name": "Musée d'Orsay",
-  "coord": {
-	"lon": 2.3250037768187326,
-	"lat": 48.86618482685007
+  "weight": 1.0,
+  "zip_codes": [
+    "75007"
+  ],
+  "poi_type": {
+    "id": "museum",
+    "name": "museum"
   },
-  "poi_types": [
-    {
-      "id": "museum",
-      "name": "museum"
-    }
-  ],
-  "postcode": null,
   "properties": [
     {
-      "key": "name:it",
-      "value": "Museo d'Orsay"
-    },
-    {
-      "key": "name:ja",
-      "value": "オルセー美術館"
-    },
-    {
-      "key": "website",
-      "value": "http://www.musee-orsay.fr"
-    },
-    {
-      "key": "wikidata",
-      "value": "Q23402"
-    },
-    {
-      "key": "wikipedia",
-      "value": "fr:Musée d'Orsay"
-    },
-    {
-      "key": "name:en",
-      "value": "Musee d'Orsay"
-    },
-    {
-      "key": "name:latin",
-      "value": "Musée d'Orsay"
-    },
-    {
-      "key": "building:use",
-      "value": "museum"
-    },
-    {
-      "key": "description:fr",
-      "value": "Collections : Art français et européen de 1848 à 1914"
-    },
-    {
-      "key": "tourism:visitors",
-      "value": "3500000"
-    },
-    {
-      "key": "name:ko",
-      "value": "오르세 미술관"
-    },
-    {
-      "key": "name:zh",
-      "value": "奧賽博物館"
-    },
-    {
-      "key": "name_int",
-      "value": "Musee d'Orsay"
-    },
-    {
-      "key": "addr:postcode",
-      "value": "75007"
-    },
-    {
-      "key": "name",
-      "value": "Musée d'Orsay"
-    },
-    {
-      "key": "height",
-      "value": "35"
-    },
-    {
-      "key": "name:es",
-      "value": "Museo de Orsay"
-    },
-    {
-      "key": "wheelchair",
-      "value": "yes"
-    },
-    {
-      "key": "name:ru",
-      "value": "Музей Орсе"
+      "key": "addr:street",
+      "value": "Rue de la Légion d'Honneur"
     },
     {
       "key": "tourism",
       "value": "museum"
     },
     {
-      "key": "name:fr",
-      "value": "Musée d'Orsay"
+      "key": "importance",
+      "value": "international"
+    },
+    {
+      "key": "tourism:visitors",
+      "value": "3500000"
+    },
+    {
+      "key": "name:ru",
+      "value": "Музей Орсе"
+    },
+    {
+      "key": "addr:postcode",
+      "value": "75007"
+    },
+    {
+      "key": "description:fr",
+      "value": "Collections : Art français et européen de 1848 à 1914"
+    },
+    {
+      "key": "name:ko",
+      "value": "오르세 미술관"
     },
     {
       "key": "name:pl",
       "value": "Muzeum Orsay"
     },
     {
-      "key": "phone",
-      "value": "+33140494814"
+      "key": "wikidata",
+      "value": "Q23402"
+    },
+    {
+      "key": "building:use",
+      "value": "museum"
+    },
+    {
+      "key": "wikipedia",
+      "value": "fr:Musée d'Orsay"
+    },
+    {
+      "key": "opening_hours",
+      "value": "Tu-Su 09:30-18:00; Th 09:30-21:45"
+    },
+    {
+      "key": "name:es",
+      "value": "Museo de Orsay"
+    },
+    {
+      "key": "height",
+      "value": "35"
+    },
+    {
+      "key": "name:zh",
+      "value": "奧賽博物館"
     },
     {
       "key": "building",
       "value": "train_station"
     },
     {
+      "key": "name",
+      "value": "Musée d'Orsay"
+    },
+    {
+      "key": "name:en",
+      "value": "Musee d'Orsay"
+    },
+    {
+      "key": "name:ja",
+      "value": "オルセー美術館"
+    },
+    {
       "key": "addr:housenumber",
       "value": "1"
     },
     {
-      "key": "importance",
-      "value": "international"
+      "key": "name:latin",
+      "value": "Musée d'Orsay"
+    },
+    {
+      "key": "name:fr",
+      "value": "Musée d'Orsay"
     },
     {
       "key": "old_name",
       "value": "Gare d'Orsay"
     },
     {
-      "key": "addr:street",
-      "value": "Rue de la Légion d'Honneur"
+      "key": "phone",
+      "value": "+33140494814"
     },
     {
-      "key": "opening_hours",
-      "value": "Tu-Su 09:30-18:00; Th 09:30-21:45"
+      "key": "name:it",
+      "value": "Museo d'Orsay"
+    },
+    {
+      "key": "website",
+      "value": "http://www.musee-orsay.fr"
+    },
+    {
+      "key": "wheelchair",
+      "value": "yes"
+    },
+	{
+      "key": "brewery",
+      "value": "Tripel Karmeliet;Delirium;Chouffe"
+    },
+	{
+      "key": "wifi",
+      "value": "yes"
+    },
+    {
+      "key": "name_int",
+      "value": "Musee d'Orsay"
     },
     {
       "key": "poi_subclass",
@@ -388,27 +307,195 @@
     {
       "key": "poi_class",
       "value": "museum"
-    },
-    {
-      "key": "brewery",
-      "value": "Tripel Karmeliet;Delirium;Chouffe"
-    },
-    {
-      "key": "wifi",
-      "value": "yes"
-    },
-    {
-      "key": "contact:website",
-      "value": "http://testing.test"
-    },
-    {
-      "key": "wheelchair",
-      "value": "yes"
-    },
-    {
-      "key": "mail",
-      "value": "mailto:contact@example.com"
     }
   ],
-  "type": "poi"
+  "address": {
+    "type": "addr",
+    "id": "addr_poi:osm:way:63178753",
+    "name": "1 Rue de la Légion d'Honneur",
+    "house_number": "1",
+    "street": {
+      "id": "street_poi:osm:way:63178753",
+      "name": "Rue de la Légion d'Honneur",
+      "administrative_regions": [
+        {
+          "id": "admin:osm:relation:2188567",
+          "insee": "7510725",
+          "level": 10,
+          "label": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
+          "name": "Quartier Saint-Thomas-d'Aquin",
+          "zip_codes": [
+            "75007"
+          ],
+          "weight": 0.0,
+          "coord": {
+            "lon": 2.3255879694021946,
+            "lat": 48.85526260583396
+          },
+          "bbox": [
+            2.319015,
+            48.8484202,
+            2.3332665,
+            48.8614751
+          ],
+          "zone_type": "suburb",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:9521",
+          "insee": "75107",
+          "level": 9,
+          "label": "Paris 7e Arrondissement (75007), Paris, Île-de-France, France",
+          "name": "Paris 7e Arrondissement",
+          "zip_codes": [
+            "75007"
+          ],
+          "weight": 0.0004035305800469838,
+          "coord": {
+            "lon": 2.3201953,
+            "lat": 48.8570281
+          },
+          "bbox": [
+            2.2898239,
+            48.8459336,
+            2.3332665,
+            48.8637782
+          ],
+          "zone_type": "city_district",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:7444",
+          "insee": "75056",
+          "level": 8,
+          "label": "Paris (75000-75116), Île-de-France, France",
+          "name": "Paris",
+          "zip_codes": [
+            "75000",
+            "75001",
+            "75002",
+            "75003",
+            "75004",
+            "75005",
+            "75006",
+            "75007",
+            "75008",
+            "75009",
+            "75010",
+            "75011",
+            "75012",
+            "75013",
+            "75014",
+            "75015",
+            "75016",
+            "75017",
+            "75018",
+            "75019",
+            "75020",
+            "75116"
+          ],
+          "weight": 0.015618298409952111,
+          "coord": {
+            "lon": 2.3514992,
+            "lat": 48.8566101
+          },
+          "bbox": [
+            2.224122,
+            48.8155755,
+            2.4697602,
+            48.902156
+          ],
+          "zone_type": "city",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:71525",
+          "insee": "75",
+          "level": 6,
+          "label": "Paris, Île-de-France, France",
+          "name": "Paris",
+          "zip_codes": [],
+          "weight": 0.015618298409952111,
+          "coord": {
+            "lon": 2.3514992,
+            "lat": 48.8566101
+          },
+          "bbox": [
+            2.224122,
+            48.8155755,
+            2.4697602,
+            48.902156
+          ],
+          "zone_type": "state_district",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:8649",
+          "insee": "11",
+          "level": 4,
+          "label": "Île-de-France, France",
+          "name": "Île-de-France",
+          "zip_codes": [],
+          "weight": 0.08250229135889316,
+          "coord": {
+            "lon": 2.3514992,
+            "lat": 48.8566101
+          },
+          "bbox": [
+            1.4462445,
+            48.1201456,
+            3.5592208,
+            49.241431
+          ],
+          "zone_type": "state",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:2202162",
+          "insee": "",
+          "level": 2,
+          "label": "France",
+          "name": "France",
+          "zip_codes": [],
+          "weight": 0.015618298409952111,
+          "coord": {
+            "lon": 2.3514992,
+            "lat": 48.8566101
+          },
+          "bbox": [
+            -5.4534286,
+            41.2632185,
+            9.8678344,
+            51.268318
+          ],
+          "zone_type": "country",
+          "parent_id": null,
+          "codes": []
+        }
+      ],
+      "label": "Rue de la Légion d'Honneur (Paris)",
+      "weight": 0.015618298409952111,
+      "coord": {
+        "lon": 2.3265827716099623,
+        "lat": 48.859917803575875
+      },
+      "zip_codes": [
+        "75007"
+      ]
+    },
+    "label": "1 Rue de la Légion d'Honneur (Paris)",
+    "coord": {
+      "lon": 2.3265827716099623,
+      "lat": 48.859917803575875
+    },
+    "weight": 0.015618298409952111,
+    "zip_codes": [
+      "75007"
+    ]
+  }
 }

@@ -1,10 +1,10 @@
 import json
 import logging
 
-from .settings import Settings
-from pythonjsonlogger import jsonlogger
 from apistar import http
+from .settings import Settings
 from idunn.utils import prometheus
+from pythonjsonlogger import jsonlogger
 
 def init_logging(settings: Settings):
     """

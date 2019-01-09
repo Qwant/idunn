@@ -1,44 +1,19 @@
 import logging
-from apistar.exceptions import NotFound, BadRequest
 from elasticsearch import Elasticsearch
+from apistar.exceptions import BadRequest
 
-from idunn.api.poi import POI
-from idunn.api.pois import fetch_es_poi
-from idunn.api.place import Place, Admin, Street, Address
+from idunn.utils import prometheus
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
-from idunn.utils import prometheus
-from idunn.api.poi import LONG, SHORT, DEFAULT_VERBOSITY
+from idunn.places import Place, Admin, Street, Address, POI
+from idunn.api.utils import get_geom, get_name, fetch_es_place, LONG, SHORT, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)
 
 VERBOSITY_LEVELS = [LONG, SHORT]
 
-def fetch_es_place(id, es, indices, type) -> list:
-    if type is None:
-        index_name = "munin"
-    elif type not in indices:
-        raise BadRequest(
-            status_code=400,
-            detail={"message": f"Wrong type parameter: type={type}"}
-        )
-    else:
-        index_name = indices.get(type)
-
-    es_places = es.search(index=index_name,
-        body={
-            "filter": {
-                "term": {"_id": id}
-            }
-        })
-
-    es_place = es_places.get('hits', {}).get('hits', [])
-    if len(es_place) == 0:
-        raise NotFound(detail={'message': f"place {id} not found with type={type}"})
-
-    return es_place
-
 def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
+    """Main handler that returns the requested place"""
     if verbosity not in VERBOSITY_LEVELS:
         raise BadRequest(
             status_code=400,

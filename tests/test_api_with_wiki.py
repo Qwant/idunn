@@ -1,7 +1,7 @@
-from apistar.test import TestClient
-from app import app
-import responses
 import pytest
+import responses
+from app import app
+from apistar.test import TestClient
 
 from .test_api import load_poi
 
