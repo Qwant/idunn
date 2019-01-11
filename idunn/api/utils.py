@@ -1,5 +1,8 @@
 from apistar.exceptions import NotFound, BadRequest
-from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock, ImagesBlock
+from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GET_WIKI_INFO, WikipediaCache
+from elasticsearch import Elasticsearch, ConnectionError
+from idunn.utils import prometheus
+import logging
 
 LONG = "long"
 SHORT = "short"
@@ -19,10 +22,90 @@ BLOCKS_BY_VERBOSITY = {
     ]
 }
 
+logger = logging.getLogger(__name__)
+
+class WikidataConnector:
+    _wiki_es = None
+    _es_lang = None
+
+    @classmethod
+    def get_wiki_index(cls, lang):
+        if cls._es_lang is None:
+            from app import settings
+            cls._es_lang = settings['ES_WIKI_LANG'].split(',')
+        if lang in cls._es_lang:
+            return "wikidata_{}".format(lang)
+        return None
+
+    @classmethod
+    def init_wiki_es(cls):
+        if cls._wiki_es is None:
+            from app import settings
+
+            wiki_es = settings.get('WIKI_ES')
+            wiki_es_max_retries = settings.get('WIKI_ES_MAX_RETRIES')
+            wiki_es_timeout = settings.get('WIKI_ES_TIMEOUT')
+
+            if wiki_es is None:
+                raise WikiUndefinedException
+            else:
+                cls._wiki_es = Elasticsearch(
+                    wiki_es,
+                    max_retries=wiki_es_max_retries,
+                    timeout=wiki_es_timeout
+                )
+
+    @classmethod
+    def get_wiki_info(cls, wikidata_id, lang, wiki_index, es_poi):
+        cls.init_wiki_es()
+
+        try:
+            with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
+                resp = cls._wiki_es.search(
+                    index=wiki_index,
+                    body={
+                        "filter": {
+                            "term": {
+                                "wikibase_item": wikidata_id
+                            }
+                        }
+                    }
+                ).get('hits', {}).get('hits', [])
+        except ConnectionError:
+            logger.warning("Wiki ES not available: connection exception raised", exc_info=True)
+            return None
+
+        if len(resp) == 0:
+            return None
+
+        wiki = resp[0]['_source']
+
+        return wiki
+
 class PlaceData(dict):
     def __init__(self, d):
         super().__init__(d)
         self._wiki_resp = None
+
+    def get_wiki_info(self, wikidata_id, lang, wiki_index):
+        return WikidataConnector.get_wiki_info(wikidata_id, lang, wiki_index, self)
+
+    def get_wiki_index(self, lang):
+        return WikidataConnector.get_wiki_index(lang)
+
+    def get_wiki_resp(self, lang):
+        if self.wiki_resp is None:
+            wikidata_id = self.get("properties", {}).get("wikidata")
+            if wikidata_id is not None:
+                wiki_index = self.get_wiki_index(lang)
+                if wiki_index is not None:
+                    key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
+                    try:
+                        self.wiki_resp = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index, self)
+                    except WikiUndefinedException:
+                        logger.info("WIKI_ES variable has not been set: cannot fetch wikidata images")
+                        return None
+        return self.wiki_resp
 
     @property
     def wiki_resp(self):
