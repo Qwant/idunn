@@ -48,4 +48,4 @@ LIST_PLACES_MAX_SIZE: 50
 
 THUMBR_SALT:
 THUMBR_ENABLED: True # Set to False if you want to keep raw image urls instead of Thumbr
-THUMBR_DOMAINS: "qwant.com"
+THUMBR_DOMAINS: "s1.qwant.com,s2.qwant.com"
