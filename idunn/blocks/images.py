@@ -46,7 +46,7 @@ class ThumbrHelper:
         if not bool(re.match("^.*\.(jpg|jpeg|png|gif)$", filename)):
             filename += ".jpg"
 
-        params = urllib.parse.urlencode({"u": urllib.parse.quote_plus(source), "q": 1 if displayErrorImage else 0, "b": 1 if bestFit else 0, "p": 1 if progressive else 0, "a": 1 if animated else 0})
+        params = urllib.parse.urlencode({"u": source, "q": 1 if displayErrorImage else 0, "b": 1 if bestFit else 0, "p": 1 if progressive else 0, "a": 1 if animated else 0})
         return domain + "/" + str(size) + "/" + hashURLpart + "/" + filename + "?" + params
 
 class Image(types.Type):
