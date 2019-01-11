@@ -129,7 +129,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
 
 @pytest.fixture(scope="function")
 def undefine_wiki_es():
-    from idunn.blocks.wikipedia import WikidataConnector
+    from idunn.api.utils import WikidataConnector
     WikidataConnector._wiki_es = None
     wiki_es_ip = settings['WIKI_ES'] # temporary variable to store the ip of WIKI_ES to reset it after the test
     settings._settings['WIKI_ES'] = None

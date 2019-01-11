@@ -7,7 +7,6 @@ from urllib.parse import urlsplit, unquote
 
 from apistar import types, validators
 from .base import BaseBlock, BlocksValidator
-from .wikipedia import WikidataConnector, WikiUndefinedException
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +62,9 @@ class ImagesBlock(BaseBlock):
     @classmethod
     def from_es(cls, es_poi, lang):
         global thumbr_helper
-        if es_poi.wiki_resp is not None:
+
+        wiki_resp = es_poi.get_wiki_resp(lang)
+        if wiki_resp is not None:
             properties = es_poi.get('properties', {})
             place_name = properties.get('name')
 
