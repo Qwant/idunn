@@ -6,7 +6,7 @@
 
 - Idunn is an API to get [points-of-interest](https://en.wikipedia.org/wiki/Point_of_interest) information for QwantMaps.
 - The POIs are taken from the [mimir](https://github.com/CanalTP/mimirsbrunn) ElasticSearch database.
-- It also fetches POI data from Wikipedia API and a Wikidate Elasticsearch source.
+- It also fetches POI data from Wikipedia API and a custom Wikidata Elasticsearch source.
 - Why [Idunn](https://fr.wikipedia.org/wiki/Idunn) ? Because she is the wife of [Bragi](https://fr.wikipedia.org/wiki/Bragi) that is also [the main](https://github.com/CanalTP/mimirsbrunn/tree/master/libs/bragi) mimir API.
 - A simple workflow schema of Idunn is presented below.
 
