@@ -6,7 +6,11 @@
 
 - Idunn is an API to get [points-of-interest](https://en.wikipedia.org/wiki/Point_of_interest) information for QwantMaps.
 - The POIs are taken from the [mimir](https://github.com/CanalTP/mimirsbrunn) ElasticSearch database.
+- It also fetches POI data from Wikipedia API and a custom Wikidata Elasticsearch source.
 - Why [Idunn](https://fr.wikipedia.org/wiki/Idunn) ? Because she is the wife of [Bragi](https://fr.wikipedia.org/wiki/Bragi) that is also [the main](https://github.com/CanalTP/mimirsbrunn/tree/master/libs/bragi) mimir API.
+- A simple workflow schema of Idunn is presented below.
+
+![Idunn workflow](/doc/idunn.png)
 
 ## API
 
@@ -44,12 +48,13 @@ The configuration can be given from different ways:
  3. specific variable can be overriden with env var. They need to be given like "IDUNN_{var_name}={value}"
     eg IDUNN_MIMIR_ES=...
 
-## Testing
+## How to contribute ?
 
-- To run the tests you need the dev dependencies:
-`pipenv install --dev`
+- Idunn comes along with all necessary components to contribute as easily as possible: specifically you don't need to have any Elasticsearch instance running. Idunn uses [docker images](tests/docker-compose.yml) to simulate the Elasticsearch sources and the Redis. This means that you will need a local docker install to be able to spawn an ES cluster.
 
-- Then you can run pytest:
-`pipenv run pytest`
+- To contribute the common workflow is:
 
-Note: this will require docker to be able to spawn an ES cluster.
+	1. install the dev dependencies: `pipenv install --dev`
+	2. add a test in `./tests` for the new feature you propose
+	3. implement your feature
+	4. run pytest: `pipenv run pytest -vv -x`
