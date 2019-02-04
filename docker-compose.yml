@@ -38,9 +38,11 @@ services:
       - IDUNN_LOG_JSON=1
       - IDUNN_MIMIR_ES=http://es:9200
       - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
-      - IDUNN_WIKI_ES=http://10.100.33.34:9200
+      - IDUNN_WIKI_ES=http://wiki-es:9200
       - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
-      - no_proxy=es,10.100.33.34
+      - no_proxy=es,wiki-es
+    extra_hosts:
+      - "wiki-es:10.100.33.34"
     networks:
       - bridge
       - default
