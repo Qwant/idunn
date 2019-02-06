@@ -42,6 +42,46 @@ def fetch_es_poi(id, es) -> dict:
     result['properties'] = properties
     return result
 
+def fetch_es_venues(left, bot, right, top, es, indices, categories) -> list:
+    venues = []
+    es_venues = es.search(
+        index="munin_poi",
+        body={
+            "query": {
+                "bool" : {
+                    "must" : {
+                        "terms" : {
+                            "poi_type.name": categories
+                        }
+                    },
+                    "filter" : {
+                        "geo_bounding_box" : {
+                            "coord" : {
+                                "top_left" : {
+                                    "lat" : top,
+                                    "lon" : left
+                                },
+                                "bottom_right" : {
+                                    "lat" : bot,
+                                    "lon" : right
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "sort": {"weight":"desc"}
+        },
+        size=50
+    )
+
+    es_venues = es_venues.get('hits', {}).get('hits', [])
+
+    if len(es_venues) == 0:
+        raise NotFound(detail={'message': f"no venue found in the given location with these categories: {categories}"})
+
+    return es_venues
+
 def fetch_es_place(id, es, indices, type) -> list:
     """Returns the raw Place data
 
