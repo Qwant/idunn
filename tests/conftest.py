@@ -60,7 +60,27 @@ def init_indices(mimir_client, wiki_client):
     """
     Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir does
     """
-    mimir_client.indices.create(index='munin_poi')
+    mimir_client.indices.create(
+        index='munin_poi',
+        body={
+            "mappings": {
+                "poi": {
+                    "properties": {
+                        "coord": {
+                            "type": "geo_point",
+                            "lat_lon": True,
+                            "geohash": True,
+                            "geohash_prefix": True,
+                            "geohash_precision": 11
+                        },
+                        "weight": {
+                            "type": "double"
+                        }
+                    }
+                }
+            }
+        }
+    )
     mimir_client.indices.put_alias(name='munin', index='munin_poi')
 
     mimir_client.indices.create(index='munin_addr')
