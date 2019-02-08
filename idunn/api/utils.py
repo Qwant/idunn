@@ -4,6 +4,7 @@ from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSite
 LONG = "long"
 SHORT = "short"
 DEFAULT_VERBOSITY = LONG
+DEFAULT_VERBOSITY_LIST = SHORT
 
 BLOCKS_BY_VERBOSITY = {
     LONG: [
@@ -17,6 +18,12 @@ BLOCKS_BY_VERBOSITY = {
         OpeningHourBlock
     ]
 }
+
+def send_400(msg):
+    raise BadRequest(
+        status_code=400,
+        detail={"message": msg}
+    )
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -42,9 +49,11 @@ def fetch_es_poi(id, es) -> dict:
     result['properties'] = properties
     return result
 
-def fetch_es_venues(left, bot, right, top, es, indices, categories) -> list:
-    venues = []
-    es_venues = es.search(
+def fetch_bbox_places(bbox, es, indices, categories) -> list:
+    left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
+    categories = categories.split(",")
+
+    bbox_places = es.search(
         index="munin_poi",
         body={
             "query": {
@@ -75,12 +84,13 @@ def fetch_es_venues(left, bot, right, top, es, indices, categories) -> list:
         size=50
     )
 
-    es_venues = es_venues.get('hits', {}).get('hits', [])
+    bbox_places = bbox_places.get('hits', {}).get('hits', [])
 
-    if len(es_venues) == 0:
+
+    if len(bbox_places) == 0:
         raise NotFound(detail={'message': f"no venue found in the given location with these categories: {categories}"})
 
-    return es_venues
+    return bbox_places
 
 def fetch_es_place(id, es, indices, type) -> list:
     """Returns the raw Place data
