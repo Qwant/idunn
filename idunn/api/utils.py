@@ -77,16 +77,13 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
                 }
             )
 
-    print("classes: " + str(classes))
-    print("subclasses: " + str(subclasses))
-    print("class_sub: " + str(class_sub))
-
     bbox_places = es.search(
         index="munin_poi",
         body={
             "query": {
                 "bool": {
                     "should": should_terms,
+                    "minimum_should_match": 1,
                     "filter": {
                         "geo_bounding_box": {
                             "coord" : {
@@ -107,8 +104,6 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
         },
         size=max_size
     )
-
-    print(should_terms)
 
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
 

@@ -19,6 +19,7 @@
 
 The main endpoints are:
 * `/v1/places/{place_id}?lang={lang}&type={type}&verbosity={verbosity}` to get the details of a place (admin, street, address or POI). The `type` parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`. The `verbosity` parameter belongs to the set `{'long', 'short'}`. The default verbosity is `long`.
+* `/v1/places/_list?bbox={bbox}&categories=[{category}]&size={size}` to get a list of all points of interest matching the given bbox (=left,bot,right,top e.g. `bbox=2,48,3,49`) and the categories (e.g. `categories=[(_any,restaurant),(shop,_any),(bakery,bakery)]`)
 * `/v1/pois/{poi_id}?lang={lang}` is the deprecated route to get the details of a POI.
 * `/v1/status` to get the status of the API and associated ES cluster.
 * `/v1/metrics` to get some metrics on the API that give statistics on the number of requests received, the duration of requests... This endpoint can be scraped by Prometheus.
