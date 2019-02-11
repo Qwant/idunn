@@ -20,6 +20,8 @@ BLOCKS_BY_VERBOSITY = {
     ]
 }
 
+ANY = "_any"
+
 def send_400(msg):
     raise BadRequest(
         status_code=400,
@@ -56,10 +58,10 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
     categories = re.findall(r'\((\w*?,\w*?)\)', categories)
     classes, subclasses, class_sub = [], [], []
     for pair in categories:
-        if pair.split(",")[1] == "_any":
+        if pair.split(",")[1] == ANY:
             classes.append("class" + pair.split(",")[0])
             classes.append(pair.split(",")[0])
-        elif pair.split(",")[0] == "_any":
+        elif pair.split(",")[0] == ANY:
             subclasses.append("subclass_" + pair.split(",")[1])
             subclasses.append(pair.split(",")[1])
         else:
