@@ -65,35 +65,42 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
         else:
             class_sub.append("class" + pair.split(",")[0] + " subclass_" + pair.split(",")[1])
             class_sub.append(pair.split(",")[0] + " " + pair.split(",")[1])
-    classes.extend(subclasses)
-    class_sub.extend(classes)
+
+    should_terms = []
+    for term in [classes, subclasses, class_sub]:
+        if term != []:
+            should_terms.append(
+                {
+                    "terms": {
+                        "poi_type.name": term
+                    }
+                }
+            )
+
+    print("classes: " + str(classes))
+    print("subclasses: " + str(subclasses))
+    print("class_sub: " + str(class_sub))
 
     bbox_places = es.search(
         index="munin_poi",
         body={
             "query": {
                 "bool": {
-                    "filter": [
-                        {
-                            "terms": {
-                                "poi_type.name": class_sub
-                            }
-                        },
-                        {
-                            "geo_bounding_box": {
-                                "coord" : {
-                                    "top_left": {
-                                        "lat": top,
-                                        "lon": left
-                                    },
-                                    "bottom_right": {
-                                        "lat": bot,
-                                        "lon": right
-                                    }
+                    "should": should_terms,
+                    "filter": {
+                        "geo_bounding_box": {
+                            "coord" : {
+                                "top_left": {
+                                    "lat": top,
+                                    "lon": left
+                                },
+                                "bottom_right": {
+                                    "lat": bot,
+                                    "lon": right
                                 }
                             }
                         }
-                    ]
+                    }
                 }
             },
             "sort": {"weight":"desc"}
@@ -101,8 +108,9 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
         size=max_size
     )
 
-    bbox_places = bbox_places.get('hits', {}).get('hits', [])
+    print(should_terms)
 
+    bbox_places = bbox_places.get('hits', {}).get('hits', [])
 
     if len(bbox_places) == 0:
         raise NotFound(detail={'message': f"no venue found in the given location with these categories: {categories}"})
