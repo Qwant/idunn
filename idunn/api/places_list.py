@@ -7,11 +7,13 @@ from idunn.utils.index_names import IndexNames
 from idunn.places import Place, Admin, Street, Address, POI
 from idunn.api.utils import get_geom, get_name, fetch_bbox_places, LONG, SHORT, DEFAULT_VERBOSITY_LIST, send_400
 
+from apistar import http
+
 logger = logging.getLogger(__name__)
 
 VERBOSITY_LEVELS = [LONG, SHORT]
 
-def bbox_or_400(verbosity, bbox, categories):
+def bbox_or_400(verbosity, bbox):
     if verbosity not in VERBOSITY_LEVELS:
         send_400(f"verbosity {verbosity} does not belong to the set of possible verbosity values={VERBOSITY_LEVELS}")
     if not bbox:
@@ -28,23 +30,35 @@ def bbox_or_400(verbosity, bbox, categories):
         send_400(f"bounding box is too wide")
     if top - bot > 0.109:
         send_400(f"bounding box is too high")
-    if categories is None:
-        send_400(f"no category provided")
     return bbox
 
-def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, categories, lang=None, type=None, verbosity=DEFAULT_VERBOSITY_LIST):
+def get_size(settings, size):
+    max_size = settings['LIST_PLACES_MAX_SIZE']
+    if size and int(size) < max_size:
+        max_size = int(size)
+    return max_size
+
+def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams, lang=None, verbosity=DEFAULT_VERBOSITY_LIST, size=None):
     """
         bbox = left,bottom,right,top
     """
     places_list = []
+    params = dict(query_params)
 
-    bbox = bbox_or_400(verbosity, bbox, categories)
+    bbox = bbox_or_400(verbosity, params.get('bbox'))
+
+    try:
+        categories = params['categories']
+    except KeyError:
+        send_400(f"no category provided")
 
     if not lang:
         lang = settings['DEFAULT_LANGUAGE']
     lang = lang.lower()
 
-    bbox_places = fetch_bbox_places(bbox, es, indices, categories)
+    size = get_size(settings, size)
+
+    bbox_places = fetch_bbox_places(bbox, es, indices, categories, size)
 
     for p in bbox_places:
         poi = POI.load_place(p['_source'], lang, settings, verbosity)

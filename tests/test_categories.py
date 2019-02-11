@@ -26,7 +26,7 @@ def load_poi(file_name, mimir_client):
 def load_all(mimir_client, init_indices):
     """
     fill elasticsearch with 4 POI:
-        - 3 are in the query bbox
+        - 3 are in the BBOX_PARIS
         - 1 is not (patisserie)
     """
     load_poi('patisserie_peron.json', mimir_client)
@@ -44,7 +44,7 @@ def test_bbox():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=bakery,museum,place_of_worship'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=[(_any,bakery),(_any,museum),(_any,place_of_worship)]'
     )
 
     assert response.status_code == 200
@@ -89,6 +89,37 @@ def test_bbox():
         ]
     }
 
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_size_list():
+    """
+        Test the bbox query with a list size=1:
+        Same test as test_bbox but with a max list size of 1
+    """
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=[(_any,bakery),(_any,museum),(_any,place_of_worship)]&size=1'
+    )
+
+    assert response.status_code == 200
+
+    resp = response.json()
+
+    assert resp == {
+        "places": [
+            {
+                'type': 'poi',
+                'id': 'osm:way:63178753',
+                'name': "Musee d'Orsay",
+                'local_name': "Musée d'Orsay",
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875], 'center': [2.3265827716099623, 48.859917803575875]},
+                'address': {'id': 'addr_poi:osm:way:63178753', 'name': "1 Rue de la Légion d'Honneur", 'housenumber': '1', 'postcode': '75007', 'label': "1 Rue de la Légion d'Honneur (Paris)", 'admin': None, 'street': {'id': 'street_poi:osm:way:63178753', 'name': "Rue de la Légion d'Honneur", 'label': "Rue de la Légion d'Honneur (Paris)", 'postcodes': ['75007']}, 'admins': [{'id': 'admin:osm:relation:2188567', 'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France", 'name': "Quartier Saint-Thomas-d'Aquin", 'class_name': 10, 'postcodes': ['75007']}, {'id': 'admin:osm:relation:9521', 'label': 'Paris 7e Arrondissement (75007), Paris, Île-de-France, France', 'name': 'Paris 7e Arrondissement', 'class_name': 9, 'postcodes': ['75007']}, {'id': 'admin:osm:relation:7444', 'label': 'Paris (75000-75116), Île-de-France, France', 'name': 'Paris', 'class_name': 8, 'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']}, {'id': 'admin:osm:relation:71525', 'label': 'Paris, Île-de-France, France', 'name': 'Paris', 'class_name': 6, 'postcodes': []}, {'id': 'admin:osm:relation:8649', 'label': 'Île-de-France, France', 'name': 'Île-de-France', 'class_name': 4, 'postcodes': []}, {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': 2, 'postcodes': []}]},
+                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]
+            }
+        ]
+    }
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_category():
@@ -102,7 +133,7 @@ def test_category():
         The result should contain only one POI: blancs_manteaux
     """
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=place_of_worship'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=[(_any,place_of_worship)]'
     )
 
     assert response.status_code == 200
@@ -124,3 +155,7 @@ def test_category():
             }
         ]
     }
+
+
+
+

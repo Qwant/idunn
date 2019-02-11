@@ -1,5 +1,6 @@
 from apistar.exceptions import NotFound, BadRequest
 from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
+import re
 
 LONG = "long"
 SHORT = "short"
@@ -49,39 +50,55 @@ def fetch_es_poi(id, es) -> dict:
     result['properties'] = properties
     return result
 
-def fetch_bbox_places(bbox, es, indices, categories) -> list:
+def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
-    categories = categories.split(",")
+
+    categories = re.findall(r'\((\w*?,\w*?)\)', categories)
+    classes, subclasses, class_sub = [], [], []
+    for pair in categories:
+        if pair.split(",")[1] == "_any":
+            classes.append("class" + pair.split(",")[0])
+            classes.append(pair.split(",")[0])
+        elif pair.split(",")[0] == "_any":
+            subclasses.append("subclass_" + pair.split(",")[1])
+            subclasses.append(pair.split(",")[1])
+        else:
+            class_sub.append("class" + pair.split(",")[0] + " subclass_" + pair.split(",")[1])
+            class_sub.append(pair.split(",")[0] + " " + pair.split(",")[1])
+    classes.extend(subclasses)
+    class_sub.extend(classes)
 
     bbox_places = es.search(
         index="munin_poi",
         body={
             "query": {
-                "bool" : {
-                    "must" : {
-                        "terms" : {
-                            "poi_type.name": categories
-                        }
-                    },
-                    "filter" : {
-                        "geo_bounding_box" : {
-                            "coord" : {
-                                "top_left" : {
-                                    "lat" : top,
-                                    "lon" : left
-                                },
-                                "bottom_right" : {
-                                    "lat" : bot,
-                                    "lon" : right
+                "bool": {
+                    "filter": [
+                        {
+                            "terms": {
+                                "poi_type.name": class_sub
+                            }
+                        },
+                        {
+                            "geo_bounding_box": {
+                                "coord" : {
+                                    "top_left": {
+                                        "lat": top,
+                                        "lon": left
+                                    },
+                                    "bottom_right": {
+                                        "lat": bot,
+                                        "lon": right
+                                    }
                                 }
                             }
                         }
-                    }
+                    ]
                 }
             },
             "sort": {"weight":"desc"}
         },
-        size=50
+        size=max_size
     )
 
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
