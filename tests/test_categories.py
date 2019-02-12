@@ -44,7 +44,7 @@ def test_bbox():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=[(_any,bakery),(_any,museum),(_any,place_of_worship)]'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(_any,museum),(_any,place_of_worship)'
     )
 
     assert response.status_code == 200
@@ -98,7 +98,7 @@ def test_size_list():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=[(_any,bakery),(_any,museum),(_any,place_of_worship)]&size=1'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(_any,museum),(_any,place_of_worship)&size=1'
     )
 
     assert response.status_code == 200
@@ -133,7 +133,7 @@ def test_category():
         The result should contain only one POI: blancs_manteaux
     """
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&categories=[(_any,place_of_worship)]'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,place_of_worship)'
     )
 
     assert response.status_code == 200

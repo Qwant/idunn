@@ -48,9 +48,9 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     bbox = bbox_or_400(verbosity, params.get('bbox'))
 
     try:
-        categories = params['categories']
+        categories = params['raw_filter[]']
     except KeyError:
-        send_400(f"no category provided")
+        send_400(f"no raw_filter provided")
 
     if not lang:
         lang = settings['DEFAULT_LANGUAGE']
