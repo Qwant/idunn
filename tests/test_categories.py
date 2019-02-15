@@ -44,7 +44,7 @@ def test_bbox():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(_any,museum),(_any,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(museum,_any),(_any,place_of_worship)'
     )
 
     assert response.status_code == 200
@@ -52,7 +52,7 @@ def test_bbox():
     resp = response.json()
 
     assert resp == {
-        "places": [
+        'places': [
             {
                 'type': 'poi',
                 'id': 'osm:way:63178753',
@@ -89,6 +89,9 @@ def test_bbox():
         ]
     }
 
+
+
+
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_size_list():
     """
@@ -98,7 +101,7 @@ def test_size_list():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(_any,museum),(_any,place_of_worship)&size=1'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(museum,_any),(_any,place_of_worship)&size=1'
     )
 
     assert response.status_code == 200
@@ -157,5 +160,20 @@ def test_category():
     }
 
 
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_category_2_museums():
+    """
+    """
+    client = TestClient(app)
+    """
+    """
+    response = client.get(
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(museum,museum)'
+    )
 
+    assert response.status_code == 200
 
+    resp = response.json()
+
+    assert len(resp['places']) == 1
+    assert resp['places'][0]['name'] ==  'Louvre Museum'

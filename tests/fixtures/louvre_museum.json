@@ -316,7 +316,7 @@
     "name": "Mus\u00e9e du Louvre",
     "poi_type": {
         "id": "museum",
-        "name": "museum"
+        "name": "class_museum subclass_museum"
     },
     "properties": [
         {

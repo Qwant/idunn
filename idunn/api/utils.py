@@ -22,11 +22,17 @@ BLOCKS_BY_VERBOSITY = {
 
 ANY = "_any"
 
-def send_400(msg):
-    raise BadRequest(
-        status_code=400,
-        detail={"message": msg}
-    )
+class InvalidBbox(BadRequest):
+    default_status_code = 400
+    default_detail = {"message": "invalid bbox"}
+
+class NoFilter(BadRequest):
+    default_status_code = 400
+    default_detail = {"message": "no raw filter provided"}
+
+class BadVerbosity(BadRequest):
+    default_status_code = 400
+    default_detail = {"message": "invalid verbosity"}
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -53,31 +59,36 @@ def fetch_es_poi(id, es) -> dict:
     return result
 
 def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
+    bbox = [float(c) for c in bbox.split(",")]
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
+    if left > right or bot > top:
+        raise InvalidBbox
+    if (left - right > 0.181) or (top - bot > 0.109):
+        raise InvalidBbox
+
     categories = re.findall(r'\((\w*?,\w*?)\)', categories)
-    classes, subclasses, class_sub = [], [], []
+
+    terms_filters = []
     for pair in categories:
-        if pair.split(",")[1] == ANY:
-            classes.append("class" + pair.split(",")[0])
-            classes.append(pair.split(",")[0])
-        elif pair.split(",")[0] == ANY:
-            subclasses.append("subclass_" + pair.split(",")[1])
-            subclasses.append(pair.split(",")[1])
+        (cls,subcls) = pair.split(",", 1)
+        if subcls == ANY:
+            terms_filters.append(["class_" + cls])
+            terms_filters.append([cls])
+        elif cls == ANY:
+            terms_filters.append(["subclass_" + subcls])
         else:
-            class_sub.append("class" + pair.split(",")[0] + " subclass_" + pair.split(",")[1])
-            class_sub.append(pair.split(",")[0] + " " + pair.split(",")[1])
+            terms_filters.append(["class_" + cls, "subclass_" + subcls])
 
     should_terms = []
-    for term in [classes, subclasses, class_sub]:
-        if term != []:
-            should_terms.append(
-                {
-                    "terms": {
-                        "poi_type.name": term
-                    }
+    for filtre in terms_filters:
+        should_terms.append(
+            {
+                "bool": {
+                    "must": [{"term": {"poi_type.name": term}} for term in filtre]
                 }
-            )
+            }
+        )
 
     bbox_places = es.search(
         index="munin_poi",
@@ -106,6 +117,7 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
         },
         size=max_size
     )
+
 
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
 

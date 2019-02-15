@@ -77,6 +77,28 @@ def init_indices(mimir_client, wiki_client):
                             "type": "double"
                         }
                     }
+                },
+                "poi_type": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "index_options": "docs",
+                            "analyzer": "word"
+                        }
+                    }
+                }
+            },
+            "settings":  {
+                "index": {
+                    "analysis": {
+                        "analyzer": {
+                            "word": {
+                                "filter": ["lowercase", "asciifolding"],
+                                "type": "custom",
+                                "tokenizer": "standard"
+                            }
+                        }
+                    }
                 }
             }
         }
