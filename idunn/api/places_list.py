@@ -5,47 +5,80 @@ from apistar.exceptions import BadRequest
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.places import Place, Admin, Street, Address, POI
-from idunn.api.utils import get_geom, get_name, fetch_bbox_places, LONG, SHORT, DEFAULT_VERBOSITY_LIST, InvalidBbox, NoFilter, BadVerbosity
+from idunn.api.utils import get_geom, get_name, fetch_bbox_places, LONG, SHORT, DEFAULT_VERBOSITY_LIST
 
 from apistar import http
+import json
+
+from pydantic import BaseModel, ValidationError, validator
+from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 
 VERBOSITY_LEVELS = [LONG, SHORT]
+MAX_WIDTH = 0.181
+MAX_HIGH = 0.109
 
-def get_size(settings, size):
-    max_size = settings['LIST_PLACES_MAX_SIZE']
-    if size and int(size) < max_size:
-        max_size = int(size)
-    return max_size
+class DataListPlaces(BaseModel):
+    bbox: str
+    raw_filter: str
+    size: int = None
+    lang: str = None
+    verbosity: str = DEFAULT_VERBOSITY_LIST
 
-def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams, lang=None, verbosity=DEFAULT_VERBOSITY_LIST, size=None):
-    """
-        bbox = left,bottom,right,top
-    """
+    @validator('lang', pre=True, always=True)
+    def valid_lang(cls, v):
+        from app import settings
+        if v is None:
+            v = settings['DEFAULT_LANGUAGE']
+        return v.lower()
+
+    @validator('verbosity', pre=True, always=True)
+    def valid_verbosity(cls, v):
+        if v not in VERBOSITY_LEVELS:
+            raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
+        return v
+
+    @validator('bbox')
+    def valid_bbox(cls, v):
+        v = v.split(',')
+        if len(v) < 4:
+            raise ValueError('the bbox is incomplete')
+        left, bot, right, top = float(v[0]), float(v[1]), float(v[2]), float(v[3])
+        if left > right or bot > top or (right - left > MAX_WIDTH) or (top - bot > MAX_HIGH):
+            raise ValueError('the bbox dimensions are invalid')
+        return v
+
+    @validator('size', pre=True, always=True)
+    def max_size(cls, v):
+        from app import settings
+        max_size = settings['LIST_PLACES_MAX_SIZE']
+        sizes = [v, max_size]
+        return min(int(i) for i in sizes if i is not None)
+
+def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
     places_list = []
+
+    raw_filters = query_params.get_list('raw_filter')
     params = dict(query_params)
-
-    if not lang:
-        lang = settings['DEFAULT_LANGUAGE']
-    lang = lang.lower()
-
-    if verbosity not in VERBOSITY_LEVELS:
-        raise BadVerbosity
+    params['raw_filter'] = ','.join(raw_filters)
 
     try:
-        categories = params['raw_filter[]']
-    except KeyError:
-        raise NoFilter
+        params = dict(DataListPlaces(**params))
+    except ValidationError as e:
+        logger.error(f"Validation Error: {e.json()}")
+        raise BadRequest(
+            status_code=400,
+            detail={"message": e.errors()}
+        )
 
-    try:
-        bbox = params['bbox']
-    except KeyError:
-        raise InvalidBbox
+    lang = params.get('lang')
+    size = params.get('size')
+    bbox = params.get('bbox')
+    filters = params.get('raw_filter')
+    verbosity = params.get('verbosity')
 
-    size = get_size(settings, size)
-
-    bbox_places = fetch_bbox_places(bbox, es, indices, categories, size)
+    bbox_places = fetch_bbox_places(bbox, es, indices, filters, size)
 
     for p in bbox_places:
         poi = POI.load_place(p['_source'], lang, settings, verbosity)

@@ -28,6 +28,7 @@ prometheus-client = "*"
 apistar-prometheus = "*"
 python-json-logger = "*"
 osm-humanized-opening-hours = "==1.0.0b3"
+pydantic = "*"
 
 
 [requires]

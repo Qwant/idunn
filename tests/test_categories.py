@@ -7,6 +7,8 @@ from freezegun import freeze_time
 from .test_api import load_poi
 
 BBOX_PARIS="2.252876,48.819862,2.395707,48.891132"
+INVALID_BBOX_PARIS_LEFT_PERM_RIGHT="2.395707,48.819862,2.252876,48.891132"
+INVALID_BBOX_PARIS_MISSING="48.819862,2.252876,48.891132"
 
 def load_poi(file_name, mimir_client):
     """
@@ -44,7 +46,7 @@ def test_bbox():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(museum,_any),(_any,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(_any,bakery),(museum,_any),(_any,place_of_worship)'
     )
 
     assert response.status_code == 200
@@ -101,7 +103,7 @@ def test_size_list():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,bakery),(museum,_any),(_any,place_of_worship)&size=1'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(_any,bakery),(museum,_any),(_any,place_of_worship)&size=1'
     )
 
     assert response.status_code == 200
@@ -136,7 +138,7 @@ def test_category():
         The result should contain only one POI: blancs_manteaux
     """
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(_any,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(_any,place_of_worship)'
     )
 
     assert response.status_code == 200
@@ -168,7 +170,7 @@ def test_category_2_museums():
     """
     """
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter[]=(museum,museum)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(museum,museum)'
     )
 
     assert response.status_code == 200
@@ -177,3 +179,51 @@ def test_category_2_museums():
 
     assert len(resp['places']) == 1
     assert resp['places'][0]['name'] ==  'Louvre Museum'
+
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_invalid_bbox():
+    """
+        Test the an invalid bbox query:
+    """
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places/_list?bbox={INVALID_BBOX_PARIS_LEFT_PERM_RIGHT}&raw_filter=(_any,bakery),(museum,_any),(_any,place_of_worship)'
+    )
+
+    assert response.status_code == 400
+
+    resp = response.json()
+
+    assert resp == {
+        'message': 'params errors: [\n'
+                '  {\n'
+                '    "loc": [\n'
+                '      "bbox"\n'
+                '    ],\n'
+                '    "msg": "the bbox dimensions are invalid",\n'
+                '    "type": "value_error"\n'
+                '  }\n'
+                ']'
+    }
+
+    response = client.get(
+        url=f'http://localhost/v1/places/_list?bbox={INVALID_BBOX_PARIS_MISSING}&raw_filter=(_any,bakery),(museum,_any),(_any,place_of_worship)'
+    )
+
+    assert response.status_code == 400
+
+    resp = response.json()
+
+    assert resp == {
+        'message': 'params errors: [\n'
+                '  {\n'
+                '    "loc": [\n'
+                '      "bbox"\n'
+                '    ],\n'
+                '    "msg": "the bbox dimensions are invalid",\n'
+                '    "type": "value_error"\n'
+                '  }\n'
+                ']'
+    }

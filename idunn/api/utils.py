@@ -20,19 +20,8 @@ BLOCKS_BY_VERBOSITY = {
     ]
 }
 
-ANY = "_any"
+ANY = '*'
 
-class InvalidBbox(BadRequest):
-    default_status_code = 400
-    default_detail = {"message": "invalid bbox"}
-
-class NoFilter(BadRequest):
-    default_status_code = 400
-    default_detail = {"message": "no raw filter provided"}
-
-class BadVerbosity(BadRequest):
-    default_status_code = 400
-    default_detail = {"message": "invalid verbosity"}
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -59,15 +48,9 @@ def fetch_es_poi(id, es) -> dict:
     return result
 
 def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
-    bbox = [float(c) for c in bbox.split(",")]
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
-    if left > right or bot > top:
-        raise InvalidBbox
-    if (left - right > 0.181) or (top - bot > 0.109):
-        raise InvalidBbox
-
-    categories = re.findall(r'\((\w*?,\w*?)\)', categories)
+    categories = re.findall(r'\((.*?,.*?)\)', categories)
 
     terms_filters = []
     for pair in categories:
@@ -89,6 +72,7 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
                 }
             }
         )
+
 
     bbox_places = es.search(
         index="munin_poi",
