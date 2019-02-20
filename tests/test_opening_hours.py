@@ -301,7 +301,7 @@ def test_opening_hour_sunrise_sunset():
                 "dayofweek": 6,
                 "local_date": "2018-06-30",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:48", "end": "21:19"}]
+                "opening_hours": [{"beginning": "03:48", "end": "21:18"}]
             },
             {
                 "dayofweek": 7,
