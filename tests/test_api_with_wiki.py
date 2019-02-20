@@ -3,17 +3,6 @@ import responses
 from app import app
 from apistar.test import TestClient
 
-from .test_api import load_poi
-
-@pytest.fixture(autouse=True)
-def louvre_museum(mimir_client):
-    """
-    fill elasticsearch with a fake POI that contains all information possible
-    in order that Idunn returns all possible blocks.
-    """
-    load_poi('louvre_museum.json', mimir_client)
-
-
 @pytest.fixture(scope='module', autouse=True)
 def mock_wikipedia_response():
     with responses.RequestsMock() as rsps:

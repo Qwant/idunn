@@ -5,7 +5,6 @@ from elasticsearch.exceptions import ConnectionError
 
 from app import app
 
-
 def test_v1_status_ok(mimir_es):
     client = TestClient(app)
     response = client.get("http://localhost/v1/status")

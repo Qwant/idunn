@@ -8,17 +8,9 @@ from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaLimiter
 from .utils import override_settings
 
-from .test_api import load_poi
 from redis import RedisError
 from redis_rate_limit import RateLimiter
 from functools import wraps
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    """
-    fill elasticsearch with all POI this module requires
-    """
-    load_poi('louvre_museum.json', mimir_client)
 
 @pytest.fixture(scope="function")
 def limiter_test_normal(redis):

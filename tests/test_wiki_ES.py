@@ -7,16 +7,6 @@ import json
 import responses
 
 from app import app, settings
-from .test_api import load_poi
-
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    """
-    fill elasticsearch with all POI this module requires
-    """
-    load_poi('orsay_museum.json', mimir_client)
-    load_poi('basket_ball.json', mimir_client)
 
 @pytest.fixture(scope="session", autouse=True)
 def basket_ball_wiki_es(wiki_client, init_indices):

@@ -59,12 +59,8 @@ class DataListPlaces(BaseModel):
 def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
     places_list = []
 
-    raw_filters = query_params.get_list('raw_filter')
-    params = dict(query_params)
-    params['raw_filter'] = ','.join(raw_filters)
-
     try:
-        params = dict(DataListPlaces(**params))
+        params = dict(DataListPlaces(**dict(query_params)))
     except ValidationError as e:
         logger.error(f"Validation Error: {e.json()}")
         raise BadRequest(
@@ -72,16 +68,21 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
             detail={"message": e.errors()}
         )
 
-    lang = params.get('lang')
-    size = params.get('size')
-    bbox = params.get('bbox')
-    filters = params.get('raw_filter')
-    verbosity = params.get('verbosity')
-
-    bbox_places = fetch_bbox_places(bbox, es, indices, filters, size)
+    bbox_places = fetch_bbox_places(
+        es,
+        indices,
+        categories = query_params.get_list('raw_filter'),
+        bbox = params.get('bbox'),
+        max_size = params.get('size')
+    )
 
     for p in bbox_places:
-        poi = POI.load_place(p['_source'], lang, settings, verbosity)
+        poi = POI.load_place(
+            p['_source'],
+            params.get('lang'),
+            settings,
+            params.get('verbosity')
+        )
         places_list.append(poi)
 
     return {

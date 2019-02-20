@@ -47,10 +47,8 @@ def fetch_es_poi(id, es) -> dict:
     result['properties'] = properties
     return result
 
-def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
+def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
-
-    categories = re.findall(r'\((.*?,.*?)\)', categories)
 
     terms_filters = []
     for pair in categories:
@@ -72,7 +70,6 @@ def fetch_bbox_places(bbox, es, indices, categories, max_size) -> list:
                 }
             }
         )
-
 
     bbox_places = es.search(
         index="munin_poi",

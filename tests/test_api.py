@@ -1,33 +1,6 @@
-import os
-import json
 import pytest
 from app import app
 from apistar.test import TestClient
-
-
-def load_poi(file_name, mimir_client):
-    """
-    Load a json file in the elasticsearch and returns the corresponding POI id
-    """
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', file_name)
-    with open(filepath, "r") as f:
-        poi = json.load(f)
-        poi_id = poi['id']
-        mimir_client.index(index='munin_poi',
-                        body=poi,
-                        doc_type='poi',
-                        id=poi_id,
-                        refresh=True)
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    """
-    fill elasticsearch with all POI this module requires
-    """
-    load_poi('patisserie_peron.json', mimir_client)
-    load_poi('orsay_museum.json', mimir_client)
-    load_poi('blancs_manteaux.json', mimir_client)
-    load_poi('louvre_museum.json', mimir_client)
 
 def test_basic_query():
     client = TestClient(app)

@@ -4,49 +4,22 @@ import pytest
 from app import app
 from apistar.test import TestClient
 from freezegun import freeze_time
-from .test_api import load_poi
 
 BBOX_PARIS="2.252876,48.819862,2.395707,48.891132"
 INVALID_BBOX_PARIS_LEFT_PERM_RIGHT="2.395707,48.819862,2.252876,48.891132"
 INVALID_BBOX_PARIS_MISSING="48.819862,2.252876,48.891132"
-
-def load_poi(file_name, mimir_client):
-    """
-    Load a json file in the elasticsearch and returns the corresponding POI id
-    """
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', file_name)
-    with open(filepath, "r") as f:
-        poi = json.load(f)
-        poi_id = poi['id']
-        mimir_client.index(index='munin_poi',
-                        body=poi,
-                        doc_type='poi',
-                        id=poi_id,
-                        refresh=True)
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    """
-    fill elasticsearch with 4 POI:
-        - 3 are in the BBOX_PARIS
-        - 1 is not (patisserie)
-    """
-    load_poi('patisserie_peron.json', mimir_client)
-    load_poi('orsay_museum.json', mimir_client)
-    load_poi('blancs_manteaux.json', mimir_client)
-    load_poi('louvre_museum.json', mimir_client)
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_bbox():
     """
         Test the bbox query:
         Query first all categories in fixtures with bbox that excludes the patisserie POI
-        We should have 3 POI results: blancs_manteaux, orsay and louvre, but not patisserie_peron (not in bbox)
+        We should have 4 POI results: blancs_manteaux, orsay and louvre, but not patisserie_peron (not in bbox)
     """
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(*,bakery)&raw_filter=(museum,*)&raw_filter=(*,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship'
     )
 
     assert response.status_code == 200
@@ -87,12 +60,20 @@ def test_bbox():
                 'geometry': {'type': 'Point', 'coordinates': [2.338027583323689, 48.86114726113347], 'center': [2.338027583323689, 48.86114726113347]},
                 'address': {'id': 'addr:2.338773;48.860861', 'name': '91A Rue de Rivoli', 'housenumber': '91A', 'postcode': '75001', 'label': '91A Rue de Rivoli (Paris)', 'admin': None, 'street': {'id': 'street:751018249S', 'name': 'Rue de Rivoli', 'label': 'Rue de Rivoli (Paris)', 'postcodes': ['75001']}, 'admins': [{'id': 'admin:osm:relation:2172740', 'label': "Quartier Saint-Germain-l'Auxerrois (75001), Paris 1er Arrondissement, Paris, Île-de-France, France", 'name': "Quartier Saint-Germain-l'Auxerrois", 'class_name': 10, 'postcodes': ['75001']}, {'id': 'admin:osm:relation:20727', 'label': 'Paris 1er Arrondissement (75001), Paris, Île-de-France, France', 'name': 'Paris 1er Arrondissement', 'class_name': 9, 'postcodes': ['75001']}, {'id': 'admin:osm:relation:8649', 'label': 'Île-de-France, France', 'name': 'Île-de-France', 'class_name': 4, 'postcodes': []}, {'id': 'admin:osm:relation:7444', 'label': 'Paris (75000-75116), Île-de-France, France', 'name': 'Paris', 'class_name': 8, 'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']}, {'id': 'admin:osm:relation:71525', 'label': 'Paris, Île-de-France, France', 'name': 'Paris', 'class_name': 6, 'postcodes': []}, {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': 2, 'postcodes': []}]},
                 'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T18:00:00+02:00', 'seconds_before_next_transition': 27000, 'is_24_7': False, 'raw': 'Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}]}]
+            },
+            {
+                'type': 'poi',
+                'id': 'osm:way:7777777',
+                'name': 'Fake All',
+                'local_name': 'Fake All',
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007], 'center': [2.3250037768187326, 48.86618482685007]},
+                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': None, 'postcode': '75007', 'label': '62B Rue de Lille (Paris)', 'admin': None, 'street': {'id': 'street:553660044C', 'name': 'Rue de Lille', 'label': 'Rue de Lille (Paris)', 'postcodes': ['75007']}, 'admins': []},
+                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]
             }
         ]
     }
-
-
-
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_size_list():
@@ -103,7 +84,7 @@ def test_size_list():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(*,bakery)&raw_filter=(museum,*)&raw_filter=(*,place_of_worship)&size=1'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship&size=1'
     )
 
     assert response.status_code == 200
@@ -128,9 +109,6 @@ def test_size_list():
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_category():
-    """
-        Test the category query
-    """
     client = TestClient(app)
     """
     Test the category filter:
@@ -138,7 +116,7 @@ def test_category():
         The result should contain only one POI: blancs_manteaux
     """
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(*,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=*,place_of_worship'
     )
 
     assert response.status_code == 200
@@ -161,7 +139,6 @@ def test_category():
         ]
     }
 
-
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_category_2_museums():
     """
@@ -170,7 +147,7 @@ def test_category_2_museums():
     """
     """
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=(museum,museum)'
+        url=f'http://localhost/v1/places/_list?bbox={BBOX_PARIS}&raw_filter=museum,museum'
     )
 
     assert response.status_code == 200
@@ -180,7 +157,6 @@ def test_category_2_museums():
     assert len(resp['places']) == 1
     assert resp['places'][0]['name'] ==  'Louvre Museum'
 
-
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_invalid_bbox():
     """
@@ -189,7 +165,7 @@ def test_invalid_bbox():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={INVALID_BBOX_PARIS_LEFT_PERM_RIGHT}&raw_filter=(*,bakery)&raw_filter=(museum,*)&raw_filter=(*,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={INVALID_BBOX_PARIS_LEFT_PERM_RIGHT}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship'
     )
 
     assert response.status_code == 400
@@ -209,7 +185,7 @@ def test_invalid_bbox():
     }
 
     response = client.get(
-        url=f'http://localhost/v1/places/_list?bbox={INVALID_BBOX_PARIS_MISSING}&raw_filter=(*,bakery)&raw_filter=(museum,*)&raw_filter=(*,place_of_worship)'
+        url=f'http://localhost/v1/places/_list?bbox={INVALID_BBOX_PARIS_MISSING}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship'
     )
 
     assert response.status_code == 400
