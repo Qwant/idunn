@@ -271,43 +271,43 @@ def test_opening_hour_sunrise_sunset():
                 "dayofweek": 1,
                 "local_date": "2018-06-25",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:46", "end": "21:18"}]
+                "opening_hours": [{"beginning": "03:45", "end": "21:19"}]
             },
             {
                 "dayofweek": 2,
                 "local_date": "2018-06-26",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:46", "end": "21:18"}]
+                "opening_hours": [{"beginning": "03:46", "end": "21:19"}]
             },
             {
                 "dayofweek": 3,
                 "local_date": "2018-06-27",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:47", "end": "21:18"}]
+                "opening_hours": [{"beginning": "03:46", "end": "21:19"}]
             },
             {
                 "dayofweek": 4,
                 "local_date": "2018-06-28",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:48", "end": "21:18"}]
+                "opening_hours": [{"beginning": "03:47", "end": "21:19"}]
             },
             {
                 "dayofweek": 5,
                 "local_date": "2018-06-29",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:48", "end": "21:18"}]
+                "opening_hours": [{"beginning": "03:47", "end": "21:19"}]
             },
             {
                 "dayofweek": 6,
                 "local_date": "2018-06-30",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:49", "end": "21:18"}]
+                "opening_hours": [{"beginning": "03:48", "end": "21:19"}]
             },
             {
                 "dayofweek": 7,
                 "local_date": "2018-07-01",
                 "status": "open",
-                "opening_hours": [{"beginning": "03:50", "end": "21:17"}]
+                "opening_hours": [{"beginning": "03:49", "end": "21:18"}]
             },
         ]
     )
