@@ -14,7 +14,7 @@ def test_bbox():
     """
         Test the bbox query:
         Query first all categories in fixtures with bbox that excludes the patisserie POI
-        We should have 4 POI results: blancs_manteaux, orsay and louvre, but not patisserie_peron (not in bbox)
+        We should have 5 POI results including: blancs_manteaux, orsay and louvre, but not patisserie_peron (not in bbox)
     """
     client = TestClient(app)
 
@@ -69,7 +69,17 @@ def test_bbox():
                 'class_name': 'museum',
                 'subclass_name': 'museum',
                 'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007], 'center': [2.3250037768187326, 48.86618482685007]},
-                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': None, 'postcode': '75007', 'label': '62B Rue de Lille (Paris)', 'admin': None, 'street': {'id': 'street:553660044C', 'name': 'Rue de Lille', 'label': 'Rue de Lille (Paris)', 'postcodes': ['75007']}, 'admins': []},
+                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': '62B', 'postcode': '75007', 'label': '62B Rue de Lille (Paris)', 'admin': None, 'street': {'id': 'street:553660044C', 'name': 'Rue de Lille', 'label': 'Rue de Lille (Paris)', 'postcodes': ['75007']}, 'admins': []},
+                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]}, 
+            {
+                'type': 'poi',
+                'id': 'osm:way:7777778',
+                'name': 'Fake All',
+                'local_name': 'Fake All',
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007], 'center': [2.3250037768187326, 48.86618482685007]},
+                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': '62B', 'postcode': '75007;75008', 'label': '62B Rue de Lille (Paris)', 'admin': None, 'street': {'id': 'street:553660044C', 'name': 'Rue de Lille', 'label': 'Rue de Lille (Paris)', 'postcodes': ['75007', '75008']}, 'admins': []},
                 'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]
             }
         ]
