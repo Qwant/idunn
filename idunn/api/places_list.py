@@ -16,8 +16,9 @@ from typing import List, Optional
 logger = logging.getLogger(__name__)
 
 VERBOSITY_LEVELS = [LONG, SHORT]
-MAX_WIDTH = 0.181
-MAX_HIGH = 0.109
+
+MAX_WIDTH = 1.0 # max longitude in degrees
+MAX_HIGH = 1.0  # max latitude in degrees
 
 class PlacesQueryParam(BaseModel):
     bbox: str
