@@ -19,10 +19,10 @@ VERBOSITY_LEVELS = [LONG, SHORT]
 MAX_WIDTH = 0.181
 MAX_HIGH = 0.109
 
-class DataListPlaces(BaseModel):
+class PlacesQueryParam(BaseModel):
     bbox: str
     raw_filter: str
-    size: int = None
+    size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
 
@@ -42,29 +42,34 @@ class DataListPlaces(BaseModel):
     @validator('bbox')
     def valid_bbox(cls, v):
         v = v.split(',')
-        if len(v) < 4:
+        if len(v) != 4:
             raise ValueError('the bbox is incomplete')
         left, bot, right, top = float(v[0]), float(v[1]), float(v[2]), float(v[3])
         if left > right or bot > top or (right - left > MAX_WIDTH) or (top - bot > MAX_HIGH):
             raise ValueError('the bbox dimensions are invalid')
         return v
 
-    @validator('size', pre=True, always=True)
+    @validator('size', always=True)
     def max_size(cls, v):
         from app import settings
         max_size = settings['LIST_PLACES_MAX_SIZE']
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
+    @validator('raw_filter', always=True)
+    def valid_raw_filter(cls, v):
+        if "," not in v:
+            raise ValueError(f"raw_filter \'{v}\' is invalid")
+        return v
+
 def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
     places_list = []
 
     try:
-        params = dict(DataListPlaces(**dict(query_params)))
+        params = PlacesQueryParam(**query_params)
     except ValidationError as e:
-        logger.error(f"Validation Error: {e.json()}")
+        logger.warning(f"Validation Error: {e.json()}")
         raise BadRequest(
-            status_code=400,
             detail={"message": e.errors()}
         )
 
@@ -72,16 +77,16 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
         es,
         indices,
         categories = query_params.get_list('raw_filter'),
-        bbox = params.get('bbox'),
-        max_size = params.get('size')
+        bbox = params.bbox,
+        max_size = params.size
     )
 
     for p in bbox_places:
         poi = POI.load_place(
             p['_source'],
-            params.get('lang'),
+            params.lang,
             settings,
-            params.get('verbosity')
+            params.verbosity
         )
         places_list.append(poi)
 
