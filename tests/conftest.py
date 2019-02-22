@@ -1,3 +1,5 @@
+import os
+import json
 import pytest
 import responses
 import re
@@ -60,7 +62,49 @@ def init_indices(mimir_client, wiki_client):
     """
     Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir does
     """
-    mimir_client.indices.create(index='munin_poi')
+    mimir_client.indices.create(
+        index='munin_poi',
+        body={
+            "mappings": {
+                "poi": {
+                    "properties": {
+                        "coord": {
+                            "type": "geo_point",
+                            "lat_lon": True,
+                            "geohash": True,
+                            "geohash_prefix": True,
+                            "geohash_precision": 11
+                        },
+                        "weight": {
+                            "type": "double"
+                        }
+                    }
+                },
+                "poi_type": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "index_options": "docs",
+                            "analyzer": "word"
+                        }
+                    }
+                }
+            },
+            "settings":  {
+                "index": {
+                    "analysis": {
+                        "analyzer": {
+                            "word": {
+                                "filter": ["lowercase", "asciifolding"],
+                                "type": "custom",
+                                "tokenizer": "standard"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    )
     mimir_client.indices.put_alias(name='munin', index='munin_poi')
 
     mimir_client.indices.create(index='munin_addr')
@@ -106,3 +150,41 @@ def redis(docker_services):
     url = f'{docker_services.docker_ip}:{port}'
 
     return url
+
+INDICES = {
+    "admin": "munin_admin",
+    "street": "munin_street",
+    "addr": "munin_addr",
+    "poi": "munin_poi"
+}
+
+def load_place(file_name, mimir_client, doc_type='poi'):
+    """
+    Load a json file in the elasticsearch
+    """
+    index_name = INDICES.get(doc_type)
+
+    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', file_name)
+    with open(filepath, "r") as f:
+        place = json.load(f)
+        place_id = place['id']
+        mimir_client.index(
+            index=index_name,
+            body=place,
+            doc_type=doc_type, # 'admin', 'street', 'addr' or 'poi'
+            id=place_id,
+            refresh=True
+        )
+
+@pytest.fixture(autouse=True, scope='session')
+def load_all(mimir_client, init_indices):
+    load_place('patisserie_peron.json', mimir_client)
+    load_place('orsay_museum.json', mimir_client)
+    load_place('blancs_manteaux.json', mimir_client)
+    load_place('louvre_museum.json', mimir_client)
+    load_place('cinema_multiplexe.json', mimir_client)
+    load_place('fake_all_blocks.json', mimir_client)
+    load_place('basket_ball.json', mimir_client)
+    load_place('admin_goujounac.json', mimir_client, 'admin')
+    load_place('street_birnenweg.json', mimir_client, 'street')
+    load_place('address_du_moulin.json', mimir_client, 'addr')

@@ -173,7 +173,7 @@
   ],
   "poi_type": {
     "id": "place_of_worship",
-    "name": "place_of_worship"
+    "name": "subclass_place_of_worship"
   },
   "properties": [
     {

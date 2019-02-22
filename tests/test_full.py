@@ -3,17 +3,6 @@ from apistar.test import TestClient
 from freezegun import freeze_time
 
 from app import app
-from .test_api import load_poi
-
-
-@pytest.fixture(autouse=True)
-def fake_all_blocks(mimir_client):
-    """
-    fill elasticsearch with a fake POI that contains all information possible
-    in order that Idunn returns all possible blocks.
-    """
-    load_poi('fake_all_blocks.json', mimir_client)
-
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_full():
@@ -22,7 +11,7 @@ def test_full():
     """
     client = TestClient(app)
     response = client.get(
-        url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
+        url=f'http://localhost/v1/pois/osm:way:7777778?lang=es',
     )
 
     assert response.status_code == 200
@@ -31,7 +20,7 @@ def test_full():
 
     assert resp == {
         "type": "poi",
-        "id": "osm:way:7777777",
+        "id": "osm:way:7777778",
         "name": "Fako Allo",
         "local_name": "Fake All",
         "class_name": "museum",

@@ -3,17 +3,8 @@ from app import app
 import responses
 import pytest
 
-from .test_api import load_poi
 from .utils import override_settings
 from idunn.blocks.wikipedia import SizeLimiter
-
-@pytest.fixture(autouse=True)
-def louvre_museum(mimir_client):
-    """
-    fill elasticsearch with a fake POI that contains all information possible
-    in order that Idunn returns all possible blocks.
-    """
-    load_poi('louvre_museum.json', mimir_client)
 
 @pytest.fixture(scope="function")
 def wiki_max_size():

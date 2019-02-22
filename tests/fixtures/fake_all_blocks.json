@@ -28,14 +28,14 @@
   },
   "city": "Paris",
   "citycode": "75056",
-  "id": "osm:way:7777777",
+  "id": "osm:way:7777778",
   "label": "Fake All (Paris)",
   "name": "Fake All",
   "coord": {
 	"lon": 2.3250037768187326,
 	"lat": 48.86618482685007
   },
-  "poi_types": [
+  "poi_type": [
     {
       "id": "museum",
       "name": "museum"

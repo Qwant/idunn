@@ -8,40 +8,7 @@ from freezegun import freeze_time
 
 """
     This module tests basic query against the endpoint '/places/'
-"""
 
-INDICES = {
-    "admin": "munin_admin",
-    "street": "munin_street",
-    "addr": "munin_addr",
-    "poi": "munin_poi"
-}
-
-def load_place(file_name, mimir_client, doc_type):
-    """
-    Load a json file in the elasticsearch and returns the corresponding Place id
-    """
-
-    index_name = INDICES.get(doc_type)
-
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', file_name)
-    with open(filepath, "r") as f:
-        place = json.load(f)
-        place_id = place['id']
-        mimir_client.index(index=index_name,
-                        body=place,
-                        doc_type=doc_type, # 'admin', 'street', 'addr' or 'poi'
-                        id=place_id,
-                        refresh=True)
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    load_place('admin_goujounac.json', mimir_client, 'admin')
-    load_place('street_birnenweg.json', mimir_client, 'street')
-    load_place('address_du_moulin.json', mimir_client, 'addr')
-    load_place('orsay_museum.json', mimir_client, 'poi')
-
-"""
     The purpose of the 4 following tests 'test_full'
     is to describe the response format for each possible
     spatial objects (Admin, Street, Address, POI)

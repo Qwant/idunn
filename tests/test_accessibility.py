@@ -1,16 +1,7 @@
 import pytest
 from app import app
-from .test_api import load_poi
 from apistar.test import TestClient
 from idunn.blocks.services_and_information import AccessibilityBlock
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    """
-    fill elasticsearch with all POI this module requires
-    """
-    load_poi('patisserie_peron.json', mimir_client)
-    load_poi('cinema_multiplexe.json', mimir_client)
 
 def test_accessibility_block():
     web_block = AccessibilityBlock.from_es(

@@ -4,6 +4,7 @@ from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSite
 LONG = "long"
 SHORT = "short"
 DEFAULT_VERBOSITY = LONG
+DEFAULT_VERBOSITY_LIST = SHORT
 
 BLOCKS_BY_VERBOSITY = {
     LONG: [
@@ -17,6 +18,8 @@ BLOCKS_BY_VERBOSITY = {
         OpeningHourBlock
     ]
 }
+
+ANY = '*'
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -41,6 +44,67 @@ def fetch_es_poi(id, es) -> dict:
     properties = {p.get('key'): p.get('value') for p in result.get('properties')}
     result['properties'] = properties
     return result
+
+def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
+    left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
+
+    terms_filters = []
+    for pair in categories:
+        (cls,subcls) = pair.split(",", 1)
+        if (cls,subcls) == (ANY, ANY):
+            terms_filters.append([])
+        elif subcls == ANY:
+            terms_filters.append(["class_" + cls])
+            terms_filters.append([cls])
+        elif cls == ANY:
+            terms_filters.append(["subclass_" + subcls])
+        else:
+            terms_filters.append(["class_" + cls, "subclass_" + subcls])
+
+    should_terms = []
+    for filt in terms_filters:
+        if filt == []:
+            should_terms.append({"match_all": {}})
+        else:
+            should_terms.append(
+                {
+                    "bool": {
+                        "must": [{"term": {"poi_type.name": term}} for term in filt]
+                    }
+                }
+            )
+
+    bbox_places = es.search(
+        index="munin_poi",
+        body={
+            "query": {
+                "bool": {
+                    "should": should_terms,
+                    "minimum_should_match": 1,
+                    "filter": {
+                        "geo_bounding_box": {
+                            "coord" : {
+                                "top_left": {
+                                    "lat": top,
+                                    "lon": left
+                                },
+                                "bottom_right": {
+                                    "lat": bot,
+                                    "lon": right
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "sort": {"weight":"desc"}
+        },
+        size=max_size,
+        timeout='3s'
+    )
+
+    bbox_places = bbox_places.get('hits', {}).get('hits', [])
+    return bbox_places
 
 def fetch_es_place(id, es, indices, type) -> list:
     """Returns the raw Place data

@@ -7,16 +7,6 @@ from freezegun import freeze_time
 from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaBreaker
 
-from .test_api import load_poi
-
-@pytest.fixture(autouse=True)
-def fake_all_blocks(mimir_client):
-    """
-    fill elasticsearch with a fake POI that contains all information possible
-    in order that Idunn returns all possible blocks.
-    """
-    load_poi('fake_all_blocks.json', mimir_client)
-
 @pytest.fixture()
 def breaker_test():
     """

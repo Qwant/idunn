@@ -6,18 +6,9 @@ from app import app, settings
 from apistar.test import TestClient
 from idunn.blocks.wikipedia import WikipediaCache
 from .test_wiki_ES import basket_ball_wiki_es
-from .test_api import load_poi
 from .test_rate_limiter import mock_wikipedia
 from functools import wraps
 import pytest
-
-@pytest.fixture(autouse=True)
-def load_all(mimir_client, init_indices):
-    """
-    fill elasticsearch with all POI this module requires
-    """
-    load_poi('basket_ball.json', mimir_client)
-    load_poi('louvre_museum.json', mimir_client)
 
 @pytest.fixture(scope="function")
 def cache_test_normal(redis):
