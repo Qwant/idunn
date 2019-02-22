@@ -22,5 +22,5 @@ def get_api_urls(settings):
         Route('/status', 'GET', handler=get_status),
         Route('/pois/{id}', 'GET', handler=get_poi),
         Route('/places/{id}', 'GET', handler=get_place),
-        Route('/places/', 'GET', handler=get_places_bbox)
+        Route('/places', 'GET', handler=get_places_bbox)
     ]

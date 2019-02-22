@@ -1,6 +1,5 @@
 from apistar.exceptions import NotFound, BadRequest
 from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
-import re
 
 LONG = "long"
 SHORT = "short"
@@ -21,7 +20,6 @@ BLOCKS_BY_VERBOSITY = {
 }
 
 ANY = '*'
-
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -53,7 +51,9 @@ def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
     terms_filters = []
     for pair in categories:
         (cls,subcls) = pair.split(",", 1)
-        if subcls == ANY:
+        if (cls,subcls) == (ANY, ANY):
+            terms_filters.append([])
+        elif subcls == ANY:
             terms_filters.append(["class_" + cls])
             terms_filters.append([cls])
         elif cls == ANY:
@@ -62,14 +62,17 @@ def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
             terms_filters.append(["class_" + cls, "subclass_" + subcls])
 
     should_terms = []
-    for filtre in terms_filters:
-        should_terms.append(
-            {
-                "bool": {
-                    "must": [{"term": {"poi_type.name": term}} for term in filtre]
+    for filt in terms_filters:
+        if filt == []:
+            should_terms.append({"match_all": {}})
+        else:
+            should_terms.append(
+                {
+                    "bool": {
+                        "must": [{"term": {"poi_type.name": term}} for term in filt]
+                    }
                 }
-            }
-        )
+            )
 
     bbox_places = es.search(
         index="munin_poi",
@@ -96,15 +99,11 @@ def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
             },
             "sort": {"weight":"desc"}
         },
-        size=max_size
+        size=max_size,
+        timeout='3s'
     )
 
-
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
-
-    if len(bbox_places) == 0:
-        raise NotFound(detail={'message': f"no venue found in the given location with these categories: {categories}"})
-
     return bbox_places
 
 def fetch_es_place(id, es, indices, type) -> list:
