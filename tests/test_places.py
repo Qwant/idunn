@@ -83,9 +83,9 @@ def test_full_query_street():
         "subclass_name": "street",
         "geometry": {
             "type": "Point",
-            "coordinates": [ 10.6646915, 53.847809999999996],
-            "center": [ 10.6646915, 53.847809999999996]
-            },
+            "coordinates": [10.6646915, 53.847809999999996],
+            "center": [10.6646915, 53.847809999999996]
+        },
         "address": {
             "admin": None,
             "id": None,
@@ -100,10 +100,33 @@ def test_full_query_street():
                 "postcodes": ["77777"]
             },
             "admins": [
-                { "id": "admin:osm:relation:27027", "label": "L\u00fcbeck, Schleswig-Holstein, Deutschland", "name": "L\u00fcbeck", "class_name": 6, "postcodes": [] },
-                { "id": "admin:osm:relation:51529", "label": "Schleswig-Holstein, Deutschland", "name": "Schleswig-Holstein", "class_name": 4, "postcodes": [] },
-                { "id": "admin:osm:relation:51477", "label": "Deutschland", "name": "Deutschland", "class_name": 2, "postcodes": [] },
-                { "id": "admin:osm:relation:367854", "label": "Sankt Lorenz S\u00fcd, L\u00fcbeck, Schleswig-Holstein, Deutschland", "name": "Sankt Lorenz S\u00fcd", "class_name": 9, "postcodes": [] }
+                {
+                    "id": "admin:osm:relation:27027",
+                    "label": "L\u00fcbeck, Schleswig-Holstein, Deutschland",
+                    "name": "L\u00fcbeck", "class_name": "state_district",
+                    "postcodes": []
+                },
+                {
+                    "id": "admin:osm:relation:51529",
+                    "label": "Schleswig-Holstein, Deutschland",
+                    "name": "Schleswig-Holstein",
+                    "class_name": "state",
+                    "postcodes": []
+                },
+                {
+                    "id": "admin:osm:relation:51477",
+                    "label": "Deutschland",
+                    "name": "Deutschland",
+                    "class_name": "country",
+                    "postcodes": []
+                },
+                {
+                    "id": "admin:osm:relation:367854",
+                    "label": "Sankt Lorenz S\u00fcd, L\u00fcbeck, Schleswig-Holstein, Deutschland",
+                    "name": "Sankt Lorenz S\u00fcd",
+                    "class_name": "city_district",
+                    "postcodes": []
+                }
             ]
         },
         "blocks": []
@@ -152,10 +175,10 @@ def test_full_query_address():
                 'postcodes': ['55000']
             },
             'admins': [
-                {'id': 'admin:osm:relation:7382', 'label': 'Meuse, Grand Est, France', 'name': 'Meuse', 'class_name': 6, 'postcodes': []},
-                {'id': 'admin:osm:relation:3792876', 'label': 'Grand Est, France', 'name': 'Grand Est', 'class_name': 4, 'postcodes': []},
-                {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': 2, 'postcodes': []},
-                {'id': 'admin:osm:relation:2645341', 'label': "Val-d'Ornain (55000), Meuse, Grand Est, France", 'name': "Val-d'Ornain", 'class_name': 8, 'postcodes': ['55000']}
+                {'id': 'admin:osm:relation:7382', 'label': 'Meuse, Grand Est, France', 'name': 'Meuse', 'class_name': "state_district", 'postcodes': []},
+                {'id': 'admin:osm:relation:3792876', 'label': 'Grand Est, France', 'name': 'Grand Est', 'class_name': "state", 'postcodes': []},
+                {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': "country", 'postcodes': []},
+                {'id': 'admin:osm:relation:2645341', 'label': "Val-d'Ornain (55000), Meuse, Grand Est, France", 'name': "Val-d'Ornain", 'class_name': "city", 'postcodes': ['55000']}
             ]
         },
         'blocks': []
@@ -202,12 +225,12 @@ def test_full_query_poi():
                 'postcodes': ['75007']
             },
             'admins': [
-                {'id': 'admin:osm:relation:2188567', 'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France", 'name': "Quartier Saint-Thomas-d'Aquin", 'class_name': 10, 'postcodes': ['75007']},
-                {'id': 'admin:osm:relation:9521', 'label': 'Paris 7e Arrondissement (75007), Paris, Île-de-France, France', 'name': 'Paris 7e Arrondissement', 'class_name': 9, 'postcodes': ['75007']},
-                {'id': 'admin:osm:relation:7444', 'label': 'Paris (75000-75116), Île-de-France, France', 'name': 'Paris', 'class_name': 8, 'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']},
-                {'id': 'admin:osm:relation:71525', 'label': 'Paris, Île-de-France, France', 'name': 'Paris', 'class_name': 6, 'postcodes': []},
-                {'id': 'admin:osm:relation:8649', 'label': 'Île-de-France, France', 'name': 'Île-de-France', 'class_name': 4, 'postcodes': []},
-                {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': 2, 'postcodes': []}
+                {'id': 'admin:osm:relation:2188567', 'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France", 'name': "Quartier Saint-Thomas-d'Aquin", 'class_name': "suburb", 'postcodes': ['75007']},
+                {'id': 'admin:osm:relation:9521', 'label': 'Paris 7e Arrondissement (75007), Paris, Île-de-France, France', 'name': 'Paris 7e Arrondissement', 'class_name': "city_district", 'postcodes': ['75007']},
+                {'id': 'admin:osm:relation:7444', 'label': 'Paris (75000-75116), Île-de-France, France', 'name': 'Paris', 'class_name': "city", 'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']},
+                {'id': 'admin:osm:relation:71525', 'label': 'Paris, Île-de-France, France', 'name': 'Paris', 'class_name': "state_district", 'postcodes': []},
+                {'id': 'admin:osm:relation:8649', 'label': 'Île-de-France, France', 'name': 'Île-de-France', 'class_name': "state", 'postcodes': []},
+                {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': "country", 'postcodes': []}
             ]
         },
         'blocks': [
