@@ -38,7 +38,7 @@ class Place(types.Type):
                     "id": raw_admin.get("id"),
                     "label": raw_admin.get("label"),
                     "name": raw_admin.get("name"),
-                    "class_name": raw_admin.get("level"),
+                    "class_name": raw_admin.get("zone_type"),
                     "postcodes": raw_admin.get("zip_codes")
                 }
                 admins.append(admin)
@@ -59,7 +59,10 @@ class Place(types.Type):
 
     @classmethod
     def get_raw_street(cls, es_place):
-        return cls.get_raw_address(es_place).get("street") or {}
+        raw_address = cls.get_raw_address(es_place)
+        if raw_address.get('type') == 'street':
+            return raw_address
+        return raw_address.get("street") or {}
 
     @classmethod
     def get_raw_admins(cls, es_place):

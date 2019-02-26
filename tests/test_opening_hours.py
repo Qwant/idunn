@@ -372,7 +372,6 @@ def test_opening_hour_24_7():
     )
 
 @freeze_time("2019-02-10T11:00:00+03:00")
-@pytest.mark.skip(reason="fail until hoh issue 26 is fixed")
 def test_opening_hour_2_years():
     """
     Opening_hours span over 2 years without explicit years.
@@ -383,7 +382,7 @@ def test_opening_hour_2_years():
         status='open',
         next_transition_datetime='2019-02-10T19:30:00+03:00',
         seconds_before_next_transition=30600,
-        is_24_7=True,
+        is_24_7=False,
         raw='Oct-Mar 07:30-19:30; Apr-Sep 07:00-21:00',
         days=ANY
     )

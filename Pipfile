@@ -1,21 +1,16 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [dev-packages]
-
 pytest = "*"
 lovely-pytest-docker = "*"
 freezegun = "*"
 ipython = "*"
 responses = "*"
 
-
 [packages]
-
 apistar = "==0.5.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = ">=2.20.0"
@@ -27,10 +22,8 @@ python-redis-rate-limit = "*"
 prometheus-client = "*"
 apistar-prometheus = "*"
 python-json-logger = "*"
-osm-humanized-opening-hours = "==1.0.0b3"
+osm-humanized-opening-hours = {editable = true, ref = "d249acd791467d073cc4ef35cf14ac5ab0c429ae", git = "https://github.com/rezemika/humanized_opening_hours.git"}
 pydantic = "*"
 
-
 [requires]
-
 python_version = "3.6"
