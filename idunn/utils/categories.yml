@@ -1,0 +1,26 @@
+categories:
+    restaurant:
+      - "*,restaurant"
+      - "*,cafe"
+      - "*,fast_food"
+    hotel:
+      - "*,hotel"
+    cinema:
+      - "*,cinema"
+      - "*,theatre"
+    leisure:
+      - "*,cinema"
+      - "*,theatre"
+    pharmacy:
+      - "*,pharmacy"
+    supermarket:
+      - "*,supermarket"
+      - "*,mall"
+    bank:
+      - "*,bank"
+    education:
+        - "school,*"
+
+
+
+

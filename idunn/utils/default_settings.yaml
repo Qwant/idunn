@@ -45,3 +45,5 @@ PLACE_POI_INDEX: "munin_poi"
 WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
 
 LIST_PLACES_MAX_SIZE: 50
+
+CATEGORIES_FILENAME: "categories.yml"
