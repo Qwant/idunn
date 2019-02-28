@@ -286,3 +286,77 @@ def test_invalid_bbox():
             }
         ]
     }
+
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_category_and_raw_filter():
+    """
+        Test we get a 400 if category and raw_filter are both present:
+    """
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=*,bakery&category=supermarket'
+    )
+
+    assert response.status_code == 400
+
+    resp = response.json()
+
+    assert resp == {
+        'message': "Both 'raw_filter' and 'category' parameters cannot be provided together"
+    }
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_category_or_raw_filter():
+    """
+        Test we get a 400 if none of category or raw_filter is present:
+    """
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places?bbox={BBOX_PARIS}'
+    )
+
+    assert response.status_code == 400
+
+    resp = response.json()
+
+    assert resp == {
+        'message': [
+            {
+                'loc': [
+                    'PlacesQueryParam'
+                ],
+                'msg': "At least one 'raw_filter' or one 'category' parameter is required",
+                'type': 'value_error'
+            }
+        ]
+    }
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+def test_invalid_category():
+    """
+        Test we get a 400 if the parameter category is invalid:
+    """
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places?bbox={BBOX_PARIS}&category=supppermarket'
+    )
+
+    assert response.status_code == 400
+
+    resp = response.json()
+
+    assert resp == {
+        'message': [
+            {
+                'loc': [
+                    'category', 0
+                ],
+                'msg': "Category 'supppermarket' is invalid since it does not belong to the set of possible categories: ['restaurant', 'hotel', 'cinema', 'leisure', 'pharmacy', 'supermarket', 'bank', 'education']", 'type': 'value_error'}, {'loc': ['category'],
+                'msg': 'value is not none', 'type': 'type_error.none.allowed'
+            }
+        ]
+    }
