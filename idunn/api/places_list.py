@@ -22,16 +22,11 @@ MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
 
-class Categories:
-    _categories = None
+def get_categories():
+    categories_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
+    return _load_yaml_file(categories_path)['categories']
 
-    @classmethod
-    def get_categories(cls):
-        if cls._categories is None:
-            categories_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
-            if categories_path:
-                categories = _load_yaml_file(categories_path)
-        return categories.get('categories')
+ALL_CATEGORIES = get_categories()
 
 class PlacesQueryParam(BaseModel):
     bbox: str
@@ -87,11 +82,10 @@ class PlacesQueryParam(BaseModel):
 
     @validator('category')
     def valid_category(cls, v):
-        all_categories = Categories.get_categories()
-        if v not in all_categories:
-            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(all_categories.keys())}")
+        if v not in ALL_CATEGORIES:
+            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
         else:
-            v = all_categories.get(v).get('raw_filters')
+            v = ALL_CATEGORIES.get(v).get('raw_filters')
         return v
 
     @validator('category', whole=True)

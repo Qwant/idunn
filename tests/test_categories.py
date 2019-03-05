@@ -402,7 +402,7 @@ def test_endpoint_categories():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places/categories'
+        url=f'http://localhost/v1/categories'
     )
 
     assert response.status_code == 200
@@ -414,48 +414,48 @@ def test_endpoint_categories():
 	    {
 		"name": "restaurant",
 		"raw_filters": [
-		    "*,restaurant",
-		    "*,cafe",
-		    "*,fast_food"
+		    "restaurant,*",
+		    "cafe,*",
+		    "fast_food,*"
 		]
 	    },
 	    {
 		"name": "hotel",
 		"raw_filters": [
-		    "*,hotel"
+		    "hotel,*"
 		]
 	    },
 	    {
 		"name": "cinema",
 		"raw_filters": [
-		    "*,cinema",
-		    "*,theatre"
+		    "cinema,*",
+		    "theatre,*"
 		]
 	    },
 	    {
 		"name": "leisure",
 		"raw_filters": [
-		    "*,cinema",
-		    "*,theatre"
+		    "cinema,*",
+		    "theatre,*"
 		]
 	    },
 	    {
 		"name": "pharmacy",
 		"raw_filters": [
-		    "*,pharmacy"
+		    "pharmacy,*"
 		]
 	    },
 	    {
 		"name": "supermarket",
 		"raw_filters": [
-		    "*,supermarket",
-		    "*,mall"
+		    "supermarket,*",
+		    "mall,*"
 		]
 	    },
 	    {
 		"name": "bank",
 		"raw_filters": [
-		    "*,bank"
+		    "bank,*"
 		]
 	    },
 	    {
