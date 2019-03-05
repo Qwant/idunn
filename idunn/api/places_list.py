@@ -1,8 +1,9 @@
+import os
 import logging
 from elasticsearch import Elasticsearch
 from apistar.exceptions import BadRequest
 
-from idunn.utils.settings import Settings
+from idunn.utils.settings import Settings, _load_yaml_file
 from idunn.utils.index_names import IndexNames
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, LONG, SHORT, DEFAULT_VERBOSITY_LIST
@@ -10,21 +11,38 @@ from idunn.api.utils import fetch_bbox_places, LONG, SHORT, DEFAULT_VERBOSITY_LI
 from apistar import http
 
 from pydantic import BaseModel, ValidationError, validator
-from typing import List, Optional
+from pydantic.error_wrappers import ErrorWrapper
+from typing import List, Optional, Any
 
 logger = logging.getLogger(__name__)
 
 VERBOSITY_LEVELS = [LONG, SHORT]
 
-MAX_WIDTH = 1.0 # max bbox longitude in degrees
+MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
+
+
+def get_categories():
+    categories_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
+    return _load_yaml_file(categories_path)['categories']
+
+ALL_CATEGORIES = get_categories()
 
 class PlacesQueryParam(BaseModel):
     bbox: str
-    raw_filter: List[str]
+    raw_filter: List[str] = None
+    category: List[str] = None
     size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        if not self.raw_filter and not self.category:
+            exc = ValueError("At least one \'raw_filter\' or one \'category\' parameter is required")
+            raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
+        if self.category:
+            self.category = [f for filters in self.category for f in filters]
 
     @validator('lang', pre=True, always=True)
     def valid_lang(cls, v):
@@ -58,16 +76,34 @@ class PlacesQueryParam(BaseModel):
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
-    @validator('raw_filter', always=True)
+    @validator('raw_filter')
     def valid_raw_filter(cls, v):
         if "," not in v:
             raise ValueError(f"raw_filter \'{v}\' is invalid")
         return v
 
-def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
+    @validator('category')
+    def valid_category(cls, v):
+        if v not in ALL_CATEGORIES:
+            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
+        else:
+            v = ALL_CATEGORIES.get(v).get('raw_filters')
+        return v
+
+def get_raw_params(query_params):
     raw_params = dict(query_params)
+    if 'category' in query_params:
+        raw_params['category'] = query_params.get_list('category')
     if 'raw_filter' in query_params:
         raw_params['raw_filter'] = query_params.get_list('raw_filter')
+    if raw_params.get('raw_filter') and raw_params.get('category'):
+        raise BadRequest(
+            detail={"message": "Both \'raw_filter\' and \'category\' parameters cannot be provided together"}
+        )
+    return raw_params
+
+def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
+    raw_params = get_raw_params(query_params)
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
@@ -79,7 +115,7 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     bbox_places = fetch_bbox_places(
         es,
         indices,
-        categories = params.raw_filter,
+        categories = params.raw_filter or params.category,
         bbox = params.bbox,
         max_size = params.size
     )

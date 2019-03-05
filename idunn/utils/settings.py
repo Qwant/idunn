@@ -8,7 +8,7 @@ from apistar import Component
 
 def _load_yaml_file(file):
     with open(file, 'r') as default:
-        return yaml.load(default)
+        return yaml.safe_load(default)
 
 
 class Settings(dict):

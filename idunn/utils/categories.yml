@@ -1,0 +1,26 @@
+categories:
+    restaurant:
+        raw_filters:
+            - "restaurant,*"
+            - "cafe,*"
+            - "fast_food,*"
+    hotel:
+        raw_filters:
+            - "*,hotel"
+    leisure:
+        raw_filters:
+            - "cinema,*"
+            - "theatre,*"
+    pharmacy:
+        raw_filters:
+            - "pharmacy,*"
+    supermarket:
+        raw_filters:
+            - "*,supermarket"
+            - "*,mall"
+    bank:
+        raw_filters:
+            - "bank,*"
+    education:
+        raw_filters:
+            - "school,*"
