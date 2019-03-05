@@ -41,6 +41,8 @@ class PlacesQueryParam(BaseModel):
         if self.raw_filter is None and self.category is None:
             exc = ValueError("At least one \'raw_filter\' or one \'category\' parameter is required")
             raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
+        if self.category is not None:
+            self.category = [f for filters in self.category for f in filters]
 
     @validator('lang', pre=True, always=True)
     def valid_lang(cls, v):
@@ -87,10 +89,6 @@ class PlacesQueryParam(BaseModel):
         else:
             v = ALL_CATEGORIES.get(v).get('raw_filters')
         return v
-
-    @validator('category', whole=True)
-    def flat_categories(cls, v):
-        return [f for filters in v for f in filters]
 
 def get_raw_params(query_params):
     raw_params = dict(query_params)

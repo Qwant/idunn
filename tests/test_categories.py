@@ -343,7 +343,7 @@ def test_valid_category():
     client = TestClient(app)
 
     response = client.get(
-        url=f'http://localhost/v1/places?bbox={BBOX_BREST}&category=cinema'
+        url=f'http://localhost/v1/places?bbox={BBOX_BREST}&category=leisure'
     )
 
     assert response.status_code == 200
@@ -387,9 +387,11 @@ def test_invalid_category():
                 'loc': [
                     'category', 0
                 ],
-                'msg': "Category 'supppermarket' is invalid since it does not belong to the set of possible categories: ['restaurant', 'hotel', 'cinema', 'leisure', 'pharmacy', 'supermarket', 'bank', 'education']", 'type': 'value_error'}, {'loc': ['category'],
-                'msg': 'value is not none', 'type': 'type_error.none.allowed'
-            }
+                'msg': "Category 'supppermarket' is invalid since it does not belong to the set of possible categories: ['restaurant', 'hotel', 'leisure', 'pharmacy', 'supermarket', 'bank', 'education']", 'type': 'value_error'},
+                {
+                    'loc': ['category'],
+                    'msg': 'value is not none', 'type': 'type_error.none.allowed'
+                }
         ]
     }
 
@@ -423,13 +425,6 @@ def test_endpoint_categories():
 		"name": "hotel",
 		"raw_filters": [
 		    "hotel,*"
-		]
-	    },
-	    {
-		"name": "cinema",
-		"raw_filters": [
-		    "cinema,*",
-		    "theatre,*"
 		]
 	    },
 	    {
