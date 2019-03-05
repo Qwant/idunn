@@ -1,10 +1,10 @@
+import os
 import logging
 from elasticsearch import Elasticsearch
 from apistar.exceptions import BadRequest
 
-from idunn.utils.settings import Settings
+from idunn.utils.settings import Settings, _load_yaml_file
 from idunn.utils.index_names import IndexNames
-from idunn.utils.categories import Categories
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, LONG, SHORT, DEFAULT_VERBOSITY_LIST
 
@@ -21,12 +21,17 @@ VERBOSITY_LEVELS = [LONG, SHORT]
 MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
-ALL_CATEGORIES = None
 
-def init_categories(categories):
-    global ALL_CATEGORIES
-    if ALL_CATEGORIES is None:
-        ALL_CATEGORIES = categories.get('categories')
+class Categories:
+    _categories = None
+
+    @classmethod
+    def get_categories(cls):
+        if cls._categories is None:
+            categories_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
+            if categories_path:
+                categories = _load_yaml_file(categories_path)
+        return categories.get('categories')
 
 class PlacesQueryParam(BaseModel):
     bbox: str
@@ -82,15 +87,16 @@ class PlacesQueryParam(BaseModel):
 
     @validator('category')
     def valid_category(cls, v):
-        if v not in ALL_CATEGORIES:
-            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
+        all_categories = Categories.get_categories()
+        if v not in all_categories:
+            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(all_categories.keys())}")
         else:
-            v = ALL_CATEGORIES.get(v)
+            v = all_categories.get(v).get('raw_filters')
         return v
 
     @validator('category', whole=True)
     def flat_categories(cls, v):
-        return [filt for filters in v for filt in filters]
+        return [f for filters in v for f in filters]
 
 def get_raw_params(query_params):
     raw_params = dict(query_params)
@@ -104,8 +110,7 @@ def get_raw_params(query_params):
         )
     return raw_params
 
-def get_places_bbox(bbox, es: Elasticsearch, categories: Categories, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
-    init_categories(categories)
+def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
     raw_params = get_raw_params(query_params)
     try:
         params = PlacesQueryParam(**raw_params)

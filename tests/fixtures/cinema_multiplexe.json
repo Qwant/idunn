@@ -104,7 +104,7 @@
   ],
   "poi_type": {
     "id": "cinema",
-    "name": "cinema"
+    "name": "subclass_cinema"
   },
   "properties": [
     {

@@ -1,26 +1,30 @@
 categories:
     restaurant:
-      - "*,restaurant"
-      - "*,cafe"
-      - "*,fast_food"
+        raw_filters:
+            - "*,restaurant"
+            - "*,cafe"
+            - "*,fast_food"
     hotel:
-      - "*,hotel"
+        raw_filters:
+            - "*,hotel"
     cinema:
-      - "*,cinema"
-      - "*,theatre"
+        raw_filters:
+            - "*,cinema"
+            - "*,theatre"
     leisure:
-      - "*,cinema"
-      - "*,theatre"
+        raw_filters:
+            - "*,cinema"
+            - "*,theatre"
     pharmacy:
-      - "*,pharmacy"
+        raw_filters:
+            - "*,pharmacy"
     supermarket:
-      - "*,supermarket"
-      - "*,mall"
+        raw_filters:
+            - "*,supermarket"
+            - "*,mall"
     bank:
-      - "*,bank"
+        raw_filters:
+            - "*,bank"
     education:
-        - "school,*"
-
-
-
-
+        raw_filters:
+            - "school,*"
