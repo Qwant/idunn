@@ -387,11 +387,9 @@ def test_invalid_category():
                 'loc': [
                     'category', 0
                 ],
-                'msg': "Category 'supppermarket' is invalid since it does not belong to the set of possible categories: ['restaurant', 'hotel', 'leisure', 'pharmacy', 'supermarket', 'bank', 'education']", 'type': 'value_error'},
-                {
-                    'loc': ['category'],
-                    'msg': 'value is not none', 'type': 'type_error.none.allowed'
-                }
+                'msg': "Category 'supppermarket' is invalid since it does not belong to the set of possible categories: ['restaurant', 'hotel', 'leisure', 'pharmacy', 'supermarket', 'bank', 'education']",
+                'type': 'value_error'
+            }
         ]
     }
 
@@ -410,54 +408,20 @@ def test_endpoint_categories():
     assert response.status_code == 200
 
     resp = response.json()
+    categories = resp['categories']
 
-    assert resp == {
-	"categories": [
-	    {
-		"name": "restaurant",
-		"raw_filters": [
-		    "restaurant,*",
-		    "cafe,*",
-		    "fast_food,*"
-		]
-	    },
-	    {
-		"name": "hotel",
-		"raw_filters": [
-		    "hotel,*"
-		]
-	    },
-	    {
-		"name": "leisure",
-		"raw_filters": [
-		    "cinema,*",
-		    "theatre,*"
-		]
-	    },
-	    {
-		"name": "pharmacy",
-		"raw_filters": [
-		    "pharmacy,*"
-		]
-	    },
-	    {
-		"name": "supermarket",
-		"raw_filters": [
-		    "supermarket,*",
-		    "mall,*"
-		]
-	    },
-	    {
-		"name": "bank",
-		"raw_filters": [
-		    "bank,*"
-		]
-	    },
-	    {
-		"name": "education",
-		"raw_filters": [
-		    "school,*"
-		]
-	    }
-	]
+    assert len(categories) == 7
+    assert categories[0] == {
+        "name": "restaurant",
+        "raw_filters": [
+            "restaurant,*",
+            "cafe,*",
+            "fast_food,*"
+        ]
+    }
+    assert categories[1] == {
+        "name": "hotel",
+        "raw_filters": [
+            "*,hotel"
+        ]
     }

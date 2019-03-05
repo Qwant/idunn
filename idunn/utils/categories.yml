@@ -6,7 +6,7 @@ categories:
             - "fast_food,*"
     hotel:
         raw_filters:
-            - "hotel,*"
+            - "*,hotel"
     leisure:
         raw_filters:
             - "cinema,*"
@@ -16,8 +16,8 @@ categories:
             - "pharmacy,*"
     supermarket:
         raw_filters:
-            - "supermarket,*"
-            - "mall,*"
+            - "*,supermarket"
+            - "*,mall"
     bank:
         raw_filters:
             - "bank,*"

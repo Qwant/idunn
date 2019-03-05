@@ -30,18 +30,18 @@ ALL_CATEGORIES = get_categories()
 
 class PlacesQueryParam(BaseModel):
     bbox: str
-    raw_filter: Optional[List[str]]
-    category: Optional[List[str]]
+    raw_filter: List[str] = None
+    category: List[str] = None
     size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
 
     def __init__(self, **data: Any):
         super().__init__(**data)
-        if self.raw_filter is None and self.category is None:
+        if not self.raw_filter and not self.category:
             exc = ValueError("At least one \'raw_filter\' or one \'category\' parameter is required")
             raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
-        if self.category is not None:
+        if self.category:
             self.category = [f for filters in self.category for f in filters]
 
     @validator('lang', pre=True, always=True)
