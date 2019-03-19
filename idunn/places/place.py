@@ -68,8 +68,8 @@ class Place(types.Type):
     def get_raw_admins(cls, es_place):
         return es_place.get("administrative_regions") or []
 
-    @staticmethod
-    def build_admin(es_place):
+    @classmethod
+    def build_admin(cls, es_place, lang=None):
         return None
 
     @classmethod
@@ -77,7 +77,7 @@ class Place(types.Type):
         return cls.get_raw_address(es_place).get("zip_codes")
 
     @classmethod
-    def build_address(cls, es_place):
+    def build_address(cls, es_place, lang):
         """
         Method to build the address field for an Address,
         a Street, an Admin or a POI.
@@ -104,7 +104,7 @@ class Place(types.Type):
             "housenumber": housenumber,
             "postcode": postcodes,
             "label": label,
-            "admin": cls.build_admin(es_place),
+            "admin": cls.build_admin(es_place, lang),
             "street": street,
             "admins": admins
         }

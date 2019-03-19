@@ -14,7 +14,7 @@ class Address(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        address_addr = cls.build_address(es_place)
+        address_addr = cls.build_address(es_place, lang)
 
         return cls(
             id=es_place.get('id', ''),
