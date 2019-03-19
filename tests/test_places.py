@@ -1,6 +1,3 @@
-import os
-import json
-import pytest
 import urllib
 from app import app
 from apistar.test import TestClient
@@ -255,6 +252,17 @@ def test_type_query_admin():
 
     assert resp["id"] == "admin:osm:relation:123057"
     assert resp["name"] == "Goujounac"
+
+def test_admin_i18n_name():
+    client = TestClient(app)
+    response = client.get(f'http://localhost/v1/places/admin:osm:relation:139610?lang=de')
+
+    assert response.status_code == 200
+    resp = response.json()
+    assert resp["id"] == "admin:osm:relation:139610"
+    assert resp["local_name"] == "Dunkerque"
+    assert resp["name"] == "Dünkirchen"
+    assert resp["address"]["admin"]["label"] == "Dünkirchen (59140-59640), Nord, Nordfrankreich, Frankreich"
 
 def test_type_query_street():
     client = TestClient(app)

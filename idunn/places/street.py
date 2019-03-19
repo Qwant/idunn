@@ -14,7 +14,7 @@ class Street(Place):
 
     @classmethod
     def load_place(cls, es_place, lang, settings, verbosity):
-        street_addr = cls.build_address(es_place)
+        street_addr = cls.build_address(es_place, lang)
 
         return cls(
             id=es_place.get('id', ''),
