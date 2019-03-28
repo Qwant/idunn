@@ -86,39 +86,6 @@ class WikidataConnector:
 
         return wiki
 
-class PlaceData(dict):
-    def __init__(self, d):
-        super().__init__(d)
-        self._wiki_resp = None
-
-    def get_wiki_info(self, wikidata_id, lang, wiki_index):
-        return WikidataConnector.get_wiki_info(wikidata_id, lang, wiki_index, self)
-
-    def get_wiki_index(self, lang):
-        return WikidataConnector.get_wiki_index(lang)
-
-    def get_wiki_resp(self, lang):
-        if self.wiki_resp is None:
-            wikidata_id = self.get("properties", {}).get("wikidata")
-            if wikidata_id is not None:
-                wiki_index = self.get_wiki_index(lang)
-                if wiki_index is not None:
-                    key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    try:
-                        self.wiki_resp = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index, self)
-                    except WikiUndefinedException:
-                        logger.info("WIKI_ES variable has not been set: cannot fetch wikidata images")
-                        return None
-        return self.wiki_resp
-
-    @property
-    def wiki_resp(self):
-        return self._wiki_resp
-
-    @wiki_resp.setter
-    def wiki_resp(self, resp):
-        self._wiki_resp = resp
-
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
     @deprecated by fetch_es_place()
@@ -136,12 +103,7 @@ def fetch_es_poi(id, es) -> dict:
     es_poi = es_pois.get('hits', {}).get('hits', [])
     if len(es_poi) == 0:
         raise NotFound(detail={'message': f"poi '{id}' not found"})
-    result = es_poi[0]['_source']
-
-    # Flatten properties into result
-    properties = {p.get('key'): p.get('value') for p in result.get('properties')}
-    result['properties'] = properties
-    return result
+    return es_poi[0]['_source']
 
 def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
@@ -204,7 +166,7 @@ def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
     return bbox_places
 
-def fetch_es_place(id, es, indices, type) -> list:
+def fetch_es_place(id, es, indices, type) -> dict:
     """Returns the raw Place data
 
     This function gets from Elasticsearch the
@@ -230,8 +192,10 @@ def fetch_es_place(id, es, indices, type) -> list:
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:
         raise NotFound(detail={'message': f"place {id} not found with type={type}"})
+    if len(es_place) > 1:
+        logger.warning("Got multiple places with id %s", id)
 
-    return es_place
+    return es_place[0]
 
 def build_blocks(es_poi, lang, verbosity):
     """Returns the list of blocks we want

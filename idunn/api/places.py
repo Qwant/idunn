@@ -6,7 +6,7 @@ from idunn.utils import prometheus
 from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.places import Place, Admin, Street, Address, POI
-from idunn.api.utils import fetch_es_place, PlaceData, LONG, SHORT, DEFAULT_VERBOSITY
+from idunn.api.utils import fetch_es_place, LONG, SHORT, DEFAULT_VERBOSITY
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +33,11 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, la
         "poi": POI,
     }
 
-    loader = places.get(es_place[0].get('_type'))
+    loader = places.get(es_place.get('_type'))
 
     if loader is None:
         prometheus.exception("FoundPlaceWithWrongType")
         logger.error("The place with the id {} has a wrong type: {}".format(id, es_place[0].get('_type')))
         return None
 
-    place = PlaceData(es_place[0]['_source'])
-    return loader.load_place(place, lang, settings, verbosity)
+    return loader(es_place['_source']).load_place(lang, verbosity)

@@ -1,29 +1,22 @@
-from .place import Place
+from .base import BasePlace
 from idunn.api.utils import build_blocks, get_geom, get_name
 
-class POI(Place):
+class POI(BasePlace):
     PLACE_TYPE = 'poi'
 
-    @classmethod
-    def load_place(cls, es_place, lang, settings, verbosity):
-        properties = {p.get('key'): p.get('value') for p in es_place.get('properties')}
-        es_place['properties'] = properties
-        return cls.load_poi(es_place, lang, verbosity)
+    def __init__(self, d):
+        super().__init__(d)
+        self['properties'] = {p.get('key'): p.get('value') for p in self.get('properties')}
+        self.properties = self['properties']
 
-    @classmethod
-    def load_poi(cls, es_poi, lang, verbosity):
-        poi_addr = cls.build_address(es_poi, lang)
+    def get_local_name(self):
+        return self.properties.get('name', '')
 
-        properties = es_poi.get('properties', {})
-        admins = es_poi.get('administrative_regions', None)
+    def get_name(self, lang):
+        return get_name(self.properties, lang)
 
-        return cls(
-            id=es_poi['id'],
-            name=get_name(properties, lang),
-            local_name=properties.get('name'),
-            class_name=properties.get('poi_class'),
-            subclass_name=properties.get('poi_subclass'),
-            geometry=get_geom(es_poi),
-            address=poi_addr,
-            blocks=build_blocks(es_poi, lang, verbosity)
-        )
+    def get_class_name(self):
+        return self.properties.get('poi_class')
+
+    def get_subclass_name(self):
+        return self.properties.get('poi_subclass')
