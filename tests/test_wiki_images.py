@@ -56,16 +56,11 @@ def test_orsay_images():
     resp = response.json()
 
     assert resp["blocks"][4]["type"] == "images"
-
     assert resp["blocks"][4]["images"] == [
         {
-          "url": "https://s2.qwant.com/thumbr/30x30/f/c/09ccd097b398526403a1bda0016d2e1385f0f9d7d2b069ee4b4221c9c5e3ed/1024px-Logo_musée_d'Orsay.png?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Ffr%2Fthumb%2F7%2F73%2FLogo_mus%25C3%25A9e_d%2527Orsay.png%2F1024px-Logo_mus%25C3%25A9e_d%2527Orsay.png&q=0&b=1&p=0&a=0",
+          "url": "https://s2.qwant.com/thumbr/0x0/7/8/858fd97fa3b173c3390a7480ed25ba70f8e2c9f1f3eeb69448db510bda93bd/1024px-Logo_musée_d'Orsay.png?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Ffr%2Fthumb%2F7%2F73%2FLogo_mus%25C3%25A9e_d%2527Orsay.png%2F1024px-Logo_mus%25C3%25A9e_d%2527Orsay.png&q=0&b=1&p=0&a=0",
           "alt": "Musée d'Orsay",
-          "credits": "wikimedia"
+          "credits": "",
+          "source_url": "https://upload.wikimedia.org/wikipedia/fr/thumb/7/73/Logo_mus%C3%A9e_d%27Orsay.png/1024px-Logo_mus%C3%A9e_d%27Orsay.png"
         },
-        {
-          "url": "https://s2.qwant.com/thumbr/15x15/9/6/a33bf3566fe4bb2189c652aba5da1d3cac58b91eaa0ad0007acee4a33653bb/1024px-Logo_musée_d'Orsay.png?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Ffr%2Fthumb%2F7%2F73%2FLogo_mus%25C3%25A9e_d%2527Orsay.png%2F1024px-Logo_mus%25C3%25A9e_d%2527Orsay.png&q=0&b=1&p=0&a=0",
-          "alt": "Musée d'Orsay",
-          "credits": "wikimedia"
-        }
     ]

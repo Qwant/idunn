@@ -1,5 +1,5 @@
 from .base import BasePlace
-from idunn.api.utils import build_blocks, get_geom, get_name
+from idunn.api.utils import get_name
 
 class POI(BasePlace):
     PLACE_TYPE = 'poi'

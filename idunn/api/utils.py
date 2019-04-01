@@ -1,8 +1,11 @@
 from apistar.exceptions import NotFound, BadRequest
-from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GET_WIKI_INFO, WikipediaCache
 from elasticsearch import Elasticsearch, ConnectionError
-from idunn.utils import prometheus
 import logging
+
+from idunn.blocks import \
+    PhoneBlock, OpeningHourBlock, InformationBlock, \
+    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException
+from idunn.utils import prometheus
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +63,7 @@ class WikidataConnector:
                 )
 
     @classmethod
-    def get_wiki_info(cls, wikidata_id, lang, wiki_index, es_poi):
+    def get_wiki_info(cls, wikidata_id, wiki_index):
         cls.init_wiki_es()
 
         try:

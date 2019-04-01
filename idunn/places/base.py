@@ -16,35 +16,33 @@ class BasePlace(dict):
                 self.__class__.__name__
             )
         super().__init__(d)
-        self._wiki_resp = None
+        self._wiki_resp = {}
+        self.properties = {}
 
-    def get_wiki_info(self, wikidata_id, lang, wiki_index):
-        return WikidataConnector.get_wiki_info(wikidata_id, lang, wiki_index, self)
+    def get_wiki_info(self, wikidata_id, wiki_index):
+        return WikidataConnector.get_wiki_info(wikidata_id, wiki_index)
 
     def get_wiki_index(self, lang):
         return WikidataConnector.get_wiki_index(lang)
 
     def get_wiki_resp(self, lang):
-        if self.wiki_resp is None:
-            wikidata_id = self.get("properties", {}).get("wikidata")
+        if lang not in self._wiki_resp:
+            self._wiki_resp[lang] = None
+            wikidata_id = self.wikidata_id
             if wikidata_id is not None:
                 wiki_index = self.get_wiki_index(lang)
                 if wiki_index is not None:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
                     try:
-                        self.wiki_resp = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index, self)
+                        self._wiki_resp[lang] = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, wiki_index)
                     except WikiUndefinedException:
                         logger.info("WIKI_ES variable has not been set: cannot fetch wikidata images")
                         return None
-        return self.wiki_resp
+        return self._wiki_resp.get(lang)
 
     @property
-    def wiki_resp(self):
-        return self._wiki_resp
-
-    @wiki_resp.setter
-    def wiki_resp(self, resp):
-        self._wiki_resp = resp
+    def wikidata_id(self):
+        return self.properties.get('wikidata')
 
     def get_name(self, lang):
         return self.get_local_name()

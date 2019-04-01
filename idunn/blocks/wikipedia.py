@@ -310,7 +310,7 @@ class WikipediaBlock(BaseBlock):
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = WikipediaCache.cache_it(key, es_poi.get_wiki_info)(wikidata_id, lang, wiki_index)
+                    wiki_poi_info = WikipediaCache.cache_it(key, es_poi.get_wiki_info)(wikidata_id, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
