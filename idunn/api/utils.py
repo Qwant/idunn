@@ -205,7 +205,9 @@ def build_blocks(es_poi, lang, verbosity):
     depending on the verbosity.
     """
     blocks = []
-    for c in BLOCKS_BY_VERBOSITY.get(verbosity):
+    for c in BLOCKS_BY_VERBOSITY[verbosity]:
+        if not c.is_enabled():
+            continue
         block = c.from_es(es_poi, lang)
         if block is not None:
             blocks.append(block)

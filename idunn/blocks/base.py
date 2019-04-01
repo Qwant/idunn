@@ -19,6 +19,10 @@ class BaseBlock(types.Type):
     def from_es(cls, es_poi, lang):
         raise NotImplementedError
 
+    @classmethod
+    def is_enabled(cls):
+        return True
+
 
 class TypedBlockValidator(validators.Object):
     errors = {

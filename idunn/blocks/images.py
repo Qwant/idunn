@@ -67,6 +67,11 @@ class ImagesBlock(BaseBlock):
     _thumb_helper = None
 
     @classmethod
+    def is_enabled(cls):
+        from app import settings
+        return settings['BLOCK_IMAGES_ENABLED']
+
+    @classmethod
     def get_thumbr_helper(cls):
         if cls._thumb_helper is None:
             cls._thumb_helper = ThumbrHelper()
