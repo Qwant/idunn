@@ -304,7 +304,7 @@ class WikipediaBlock(BaseBlock):
         then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
         else then we fetch the wikipedia API.
         """
-        wikidata_id = es_poi.get("properties", {}).get("wikidata")
+        wikidata_id = es_poi.wikidata_id
         if wikidata_id is not None:
             wiki_index = es_poi.get_wiki_index(lang)
             if wiki_index is not None:
@@ -328,7 +328,7 @@ class WikipediaBlock(BaseBlock):
                 except WikiUndefinedException:
                     logger.info("WIKI_ES variable has not been set: call to Wikipedia")
 
-        wikipedia_value = es_poi.get("properties", {}).get("wikipedia")
+        wikipedia_value = es_poi.properties.get("wikipedia")
         wiki_title = None
 
         if wikipedia_value:
