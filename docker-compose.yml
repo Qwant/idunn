@@ -43,7 +43,7 @@ services:
       - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
       - no_proxy=es,wiki-es
     extra_hosts:
-      - "wiki-es:10.100.33.34"
+      - "wiki-es:10.100.31.26"
     networks:
       - bridge
       - default
