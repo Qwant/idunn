@@ -58,7 +58,7 @@ def test_orsay_images():
     assert resp["blocks"][4]["type"] == "images"
     assert resp["blocks"][4]["images"] == [
         {
-          "url": "https://s2.qwant.com/thumbr/0x0/7/8/858fd97fa3b173c3390a7480ed25ba70f8e2c9f1f3eeb69448db510bda93bd/1024px-Logo_musée_d'Orsay.png?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Ffr%2Fthumb%2F7%2F73%2FLogo_mus%25C3%25A9e_d%2527Orsay.png%2F1024px-Logo_mus%25C3%25A9e_d%2527Orsay.png&q=0&b=1&p=0&a=0",
+          "url": "https://s2.qwant.com/thumbr/0x0/3/9/43f34b2898978cd1c6cbfa90766ef432d761f02d31f32120eff6db12f616b5/1024px-Logo_musée_d'Orsay.png?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Ffr%2Fthumb%2F7%2F73%2FLogo_mus%25C3%25A9e_d%2527Orsay.png%2F1024px-Logo_mus%25C3%25A9e_d%2527Orsay.png&q=0&b=1&p=0&a=0",
           "alt": "Musée d'Orsay",
           "credits": "",
           "source_url": "https://upload.wikimedia.org/wikipedia/fr/thumb/7/73/Logo_mus%C3%A9e_d%27Orsay.png/1024px-Logo_mus%C3%A9e_d%27Orsay.png"

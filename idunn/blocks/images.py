@@ -15,7 +15,9 @@ class ThumbrHelper:
         from app import settings
         self._sub_domains = settings.get('THUMBR_DOMAINS').split(',')
         self._thumbr_enabled = settings.get('THUMBR_ENABLED')
-        self._salt = settings.get('THUMBR_SALT')
+        self._salt = settings.get('THUMBR_SALT') or ''
+        if self._thumbr_enabled and not self._salt:
+            logger.warning('Thumbr salt is empty')
 
     def get_salt(self):
         return self._salt
