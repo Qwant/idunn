@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ThumbrHelper:
     def __init__(self):
         from app import settings
-        self._sub_domains = settings.get('THUMBR_DOMAINS').split(',')
+        self._thumbr_urls = settings.get('THUMBR_URLS').split(',')
         self._thumbr_enabled = settings.get('THUMBR_ENABLED')
         self._salt = settings.get('THUMBR_SALT') or ''
         if self._thumbr_enabled and not self._salt:
@@ -25,9 +25,9 @@ class ThumbrHelper:
     def is_enabled(self):
         return bool(self._thumbr_enabled)
 
-    def get_domain(self, hash):
-        n = int(hash[0], 16) % (len(self._sub_domains))
-        return 'https://' + self._sub_domains[n] + '/thumbr'
+    def get_thumbr_url(self, hash):
+        n = int(hash[0], 16) % (len(self._thumbr_urls))
+        return self._thumbr_urls[n]
 
     def get_url_remote_thumbnail(self, source, width=0, height=0, bestFit=True, progressive=False, animated=False):
         displayErrorImage = False
@@ -35,14 +35,13 @@ class ThumbrHelper:
         salt = self.get_salt()
         token = f"{source}{width}x{height}{salt}"
         hash = hashlib.sha256(bytes(token, encoding='utf8')).hexdigest()
-        domain = self.get_domain(hash)
+        base_url = self.get_thumbr_url(hash)
 
         size = f"{width}x{height}"
-
         hashURLpart = f"{hash[0]}/{hash[1]}/{hash[2:]}"
 
-        urlpath = urlsplit(source).path
-        filename = posixpath.basename(unquote(urlpath))
+        url_path = urlsplit(source).path
+        filename = posixpath.basename(unquote(url_path))
         if not bool(re.match("^.*\.(jpg|jpeg|png|gif)$", filename, re.IGNORECASE)):
             filename += ".jpg"
 
@@ -53,7 +52,7 @@ class ThumbrHelper:
             "p": 1 if progressive else 0,
             "a": 1 if animated else 0
         })
-        return domain + "/" + size + "/" + hashURLpart + "/" + filename + "?" + params
+        return base_url + "/" + size + "/" + hashURLpart + "/" + filename + "?" + params
 
 
 class Image(types.Type):
