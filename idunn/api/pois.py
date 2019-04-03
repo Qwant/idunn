@@ -1,4 +1,3 @@
-from apistar.exceptions import NotFound
 from elasticsearch import Elasticsearch
 
 from idunn.places import POI
@@ -12,5 +11,4 @@ def get_poi(id, es: Elasticsearch, settings: Settings, lang=None) -> POI:
     lang = lang.lower()
 
     es_poi = fetch_es_poi(id, es)
-    poi = POI.load_poi(es_poi, lang, DEFAULT_VERBOSITY)
-    return poi
+    return POI(es_poi).load_place(lang, verbosity=DEFAULT_VERBOSITY)

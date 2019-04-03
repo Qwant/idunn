@@ -64,9 +64,13 @@ class SettingsComponent(Component):
         eg. IDUNN_ES to override the "ES" settings in the IDUNN project.
         """
         for k in self._settings.keys():
-            ovveriden_value = os.environ.get(f'{project_name}_{k}')
-            if ovveriden_value:
-                self._settings[k] = ovveriden_value
+            overriden_value = os.environ.get(f'{project_name}_{k}')
+            if overriden_value:
+                if overriden_value.lower() == 'true':
+                    overriden_value = True
+                if overriden_value.lower() == 'false':
+                    overriden_value = False
+                self._settings[k] = overriden_value
 
     def can_handle_parameter(self, parameter: Parameter) -> bool:
         # Micro-optimization given that we know that this component

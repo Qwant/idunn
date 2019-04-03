@@ -63,7 +63,6 @@ def test_basket_ball():
 
         assert len(rsps.calls) == 0
 
-
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_WIKI_ES_KO(wiki_client_ko):
     """
@@ -130,7 +129,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
 
 @pytest.fixture(scope="function")
 def undefine_wiki_es():
-    from idunn.blocks.wikipedia import WikidataConnector
+    from idunn.api.utils import WikidataConnector
     WikidataConnector._wiki_es = None
     wiki_es_ip = settings['WIKI_ES'] # temporary variable to store the ip of WIKI_ES to reset it after the test
     settings._settings['WIKI_ES'] = None
@@ -219,7 +218,6 @@ def test_POI_not_in_WIKI_ES():
                 ]
             }
         ]
-
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_no_lang_WIKI_ES():

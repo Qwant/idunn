@@ -1,5 +1,13 @@
 from apistar.exceptions import NotFound, BadRequest
-from idunn.blocks import PhoneBlock, OpeningHourBlock, InformationBlock, WebSiteBlock, ContactBlock
+from elasticsearch import Elasticsearch, ConnectionError
+import logging
+
+from idunn.blocks import \
+    PhoneBlock, OpeningHourBlock, InformationBlock, \
+    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException
+from idunn.utils import prometheus
+
+logger = logging.getLogger(__name__)
 
 LONG = "long"
 SHORT = "short"
@@ -12,7 +20,8 @@ BLOCKS_BY_VERBOSITY = {
         PhoneBlock,
         InformationBlock,
         WebSiteBlock,
-        ContactBlock
+        ContactBlock,
+        ImagesBlock
     ],
     SHORT: [
         OpeningHourBlock
@@ -20,6 +29,65 @@ BLOCKS_BY_VERBOSITY = {
 }
 
 ANY = '*'
+
+
+class WikidataConnector:
+    _wiki_es = None
+    _es_lang = None
+
+    @classmethod
+    def get_wiki_index(cls, lang):
+        if cls._es_lang is None:
+            from app import settings
+            cls._es_lang = settings['ES_WIKI_LANG'].split(',')
+        if lang in cls._es_lang:
+            return "wikidata_{}".format(lang)
+        return None
+
+    @classmethod
+    def init_wiki_es(cls):
+        if cls._wiki_es is None:
+            from app import settings
+
+            wiki_es = settings.get('WIKI_ES')
+            wiki_es_max_retries = settings.get('WIKI_ES_MAX_RETRIES')
+            wiki_es_timeout = settings.get('WIKI_ES_TIMEOUT')
+
+            if wiki_es is None:
+                raise WikiUndefinedException
+            else:
+                cls._wiki_es = Elasticsearch(
+                    wiki_es,
+                    max_retries=wiki_es_max_retries,
+                    timeout=wiki_es_timeout
+                )
+
+    @classmethod
+    def get_wiki_info(cls, wikidata_id, wiki_index):
+        cls.init_wiki_es()
+
+        try:
+            with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
+                resp = cls._wiki_es.search(
+                    index=wiki_index,
+                    body={
+                        "filter": {
+                            "term": {
+                                "wikibase_item": wikidata_id
+                            }
+                        }
+                    }
+                ).get('hits', {}).get('hits', [])
+        except ConnectionError:
+            logger.warning("Wiki ES not available: connection exception raised", exc_info=True)
+            return None
+
+        if len(resp) == 0:
+            return None
+
+        wiki = resp[0]['_source']
+
+        return wiki
 
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
@@ -38,12 +106,7 @@ def fetch_es_poi(id, es) -> dict:
     es_poi = es_pois.get('hits', {}).get('hits', [])
     if len(es_poi) == 0:
         raise NotFound(detail={'message': f"poi '{id}' not found"})
-    result = es_poi[0]['_source']
-
-    # Flatten properties into result
-    properties = {p.get('key'): p.get('value') for p in result.get('properties')}
-    result['properties'] = properties
-    return result
+    return es_poi[0]['_source']
 
 def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
@@ -106,7 +169,7 @@ def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
     return bbox_places
 
-def fetch_es_place(id, es, indices, type) -> list:
+def fetch_es_place(id, es, indices, type) -> dict:
     """Returns the raw Place data
 
     This function gets from Elasticsearch the
@@ -132,15 +195,19 @@ def fetch_es_place(id, es, indices, type) -> list:
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:
         raise NotFound(detail={'message': f"place {id} not found with type={type}"})
+    if len(es_place) > 1:
+        logger.warning("Got multiple places with id %s", id)
 
-    return es_place
+    return es_place[0]
 
 def build_blocks(es_poi, lang, verbosity):
     """Returns the list of blocks we want
     depending on the verbosity.
     """
     blocks = []
-    for c in BLOCKS_BY_VERBOSITY.get(verbosity):
+    for c in BLOCKS_BY_VERBOSITY[verbosity]:
+        if not c.is_enabled():
+            continue
         block = c.from_es(es_poi, lang)
         if block is not None:
             blocks.append(block)
@@ -203,6 +270,3 @@ def get_name(properties, lang):
     if name is None:
         name = properties.get('name')
     return name
-
-
-

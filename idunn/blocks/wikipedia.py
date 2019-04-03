@@ -5,12 +5,11 @@ import pybreaker
 from apistar import validators
 from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, ConnectionError as RedisConnectionError, TimeoutError, RedisError
-from elasticsearch import Elasticsearch, ConnectionError
 from redis_rate_limit import RateLimiter, TooManyRequests
 
+from .base import BaseBlock
 from idunn.utils import prometheus
 from idunn.utils.redis import get_redis_pool, RedisNotConfigured
-from .base import BaseBlock
 
 
 GET_WIKI_INFO = "get_wiki_info"
@@ -20,6 +19,9 @@ GET_SUMMARY = "get_summary"
 DISABLED_STATE = object() # Used to flag rate-limiter or cache as disabled by settings
 
 logger = logging.getLogger(__name__)
+
+class WikiUndefinedException(Exception):
+    pass
 
 class HTTPError40X(HTTPError):
     pass
@@ -269,69 +271,6 @@ class WikipediaSession:
 
         return None
 
-
-class WikiUndefinedException(Exception):
-    pass
-
-
-class WikidataConnector:
-    _wiki_es = None
-    _es_lang = None
-
-    @classmethod
-    def get_wiki_index(cls, lang):
-        if cls._es_lang is None:
-            from app import settings
-            cls._es_lang = settings['ES_WIKI_LANG'].split(',')
-        if lang in cls._es_lang:
-            return "wikidata_{}".format(lang)
-        return None
-
-    @classmethod
-    def init_wiki_es(cls):
-        if cls._wiki_es is None:
-            from app import settings
-
-            wiki_es = settings.get('WIKI_ES')
-            wiki_es_max_retries = settings.get('WIKI_ES_MAX_RETRIES')
-            wiki_es_timeout = settings.get('WIKI_ES_TIMEOUT')
-
-            if wiki_es is None:
-                raise WikiUndefinedException
-            else:
-                cls._wiki_es = Elasticsearch(
-                    wiki_es,
-                    max_retries=wiki_es_max_retries,
-                    timeout=wiki_es_timeout
-                )
-
-    @classmethod
-    def get_wiki_info(cls, wikidata_id, lang, wiki_index):
-        cls.init_wiki_es()
-
-        try:
-            with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
-                resp = cls._wiki_es.search(
-                    index=wiki_index,
-                    body={
-                        "filter": {
-                            "term": {
-                                "wikibase_item": wikidata_id
-                            }
-                        }
-                    }
-                ).get('hits', {}).get('hits', [])
-        except ConnectionError:
-            logger.warning("Wiki ES not available: connection exception raised", exc_info=True)
-            return None
-
-        if len(resp) == 0:
-            return None
-
-        wiki = resp[0]['_source']
-
-        return wiki
-
 class SizeLimiter:
     _max_wiki_desc_size = None
 
@@ -365,13 +304,13 @@ class WikipediaBlock(BaseBlock):
         then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
         else then we fetch the wikipedia API.
         """
-        wikidata_id = es_poi.get("properties", {}).get("wikidata")
+        wikidata_id = es_poi.wikidata_id
         if wikidata_id is not None:
-            wiki_index = WikidataConnector.get_wiki_index(lang)
+            wiki_index = es_poi.get_wiki_index(lang)
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, lang, wiki_index)
+                    wiki_poi_info = WikipediaCache.cache_it(key, es_poi.get_wiki_info)(wikidata_id, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -389,7 +328,7 @@ class WikipediaBlock(BaseBlock):
                 except WikiUndefinedException:
                     logger.info("WIKI_ES variable has not been set: call to Wikipedia")
 
-        wikipedia_value = es_poi.get("properties", {}).get("wikipedia")
+        wikipedia_value = es_poi.properties.get("wikipedia")
         wiki_title = None
 
         if wikipedia_value:

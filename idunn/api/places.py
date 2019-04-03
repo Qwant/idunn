@@ -33,11 +33,11 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, la
         "poi": POI,
     }
 
-    loader = places.get(es_place[0].get('_type'))
+    loader = places.get(es_place.get('_type'))
 
     if loader is None:
         prometheus.exception("FoundPlaceWithWrongType")
         logger.error("The place with the id {} has a wrong type: {}".format(id, es_place[0].get('_type')))
         return None
 
-    return loader.load_place(es_place[0]['_source'], lang, settings, verbosity)
+    return loader(es_place['_source']).load_place(lang, verbosity)

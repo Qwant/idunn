@@ -4,7 +4,7 @@ from pytz import timezone, UTC
 from apistar import validators, types
 from tzwhere import tzwhere
 import humanized_opening_hours as hoh
-from humanized_opening_hours.exceptions import HOHError, NextChangeRecursionError
+from humanized_opening_hours.exceptions import HOHError
 
 from .base import BaseBlock
 

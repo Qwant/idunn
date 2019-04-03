@@ -1,6 +1,5 @@
 import logging
 import requests
-from requests.exceptions import HTTPError, RequestException, Timeout
 from apistar import validators
 
 from .base import BaseBlock, BlocksValidator

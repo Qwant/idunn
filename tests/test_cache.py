@@ -96,7 +96,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             by a fake method to be sure the real method is not
             called
             """
-            from idunn.blocks.wikipedia import WikidataConnector
+            from idunn.api.utils import WikidataConnector
 
             @wraps(WikidataConnector.get_wiki_info)
             def fake_get_wiki_info():
