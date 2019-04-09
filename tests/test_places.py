@@ -54,7 +54,8 @@ def test_full_query_admin():
                 'postcodes': None
             }
         },
-        'blocks': []
+        'blocks': [],
+        'meta': {'source': None}
     }
 
 def test_full_query_street():
@@ -126,7 +127,8 @@ def test_full_query_street():
                 }
             ]
         },
-        "blocks": []
+        "blocks": [],
+        'meta': {'source': None}
     }
 
 
@@ -178,7 +180,8 @@ def test_full_query_address():
                 {'id': 'admin:osm:relation:2645341', 'label': "Val-d'Ornain (55000), Meuse, Grand Est, France", 'name': "Val-d'Ornain", 'class_name': "city", 'postcodes': ['55000']}
             ]
         },
-        'blocks': []
+        'blocks': [],
+        'meta': {'source': None}
     }
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)
@@ -235,7 +238,8 @@ def test_full_query_poi():
             {'type': 'phone', 'url': 'tel:+33140494814', 'international_format': '+33140494814', 'local_format': '+33140494814'},
             {'type': 'information', 'blocks': [{'type': 'services_and_information', 'blocks': [{'type': 'accessibility', 'wheelchair': 'yes', 'toilets_wheelchair': 'unknown'}, {'type': 'internet_access', 'wifi': True}, {'type': 'brewery', 'beers': [{'name': 'Tripel Karmeliet'}, {'name': 'Delirium'}, {'name': 'Chouffe'}]}]}]},
             {'type': 'website', 'url': 'http://www.musee-orsay.fr'}
-        ]
+        ],
+        'meta': {'source': 'osm'}
     }
 
 

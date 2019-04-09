@@ -21,23 +21,23 @@ class AccessibilityBlock(BaseBlock):
     def from_es(cls, es_poi, lang):
         properties = es_poi.get("properties", {})
 
-        raw_wheelchair = properties.get("wheelchair")
+        raw_wheelchair = es_poi.get_raw_wheelchair()
         raw_toilets_wheelchair = properties.get("toilets:wheelchair")
 
-        if raw_wheelchair in ("yes", "designated"):
+        if raw_wheelchair in ("yes", "designated", True):
             wheelchair = cls.STATUS_OK
         elif raw_wheelchair == "limited":
             wheelchair = cls.STATUS_LIMITED
-        elif raw_wheelchair == "no":
+        elif raw_wheelchair in ("no", False):
             wheelchair = cls.STATUS_KO
         else:
             wheelchair = cls.STATUS_UNKNOWN
 
-        if raw_toilets_wheelchair == "yes":
+        if raw_toilets_wheelchair in ("yes", True):
             toilets_wheelchair = cls.STATUS_OK
         elif raw_toilets_wheelchair == "limited":
             toilets_wheelchair = cls.STATUS_LIMITED
-        elif raw_toilets_wheelchair == "no":
+        elif raw_toilets_wheelchair in ("no", False):
             toilets_wheelchair = cls.STATUS_KO
         else:
             toilets_wheelchair = cls.STATUS_UNKNOWN

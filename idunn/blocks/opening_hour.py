@@ -28,8 +28,8 @@ def get_coord(es_poi):
     """
     Returns the coordinates from the POI json
     """
-    if 'coord' in es_poi:
-        coord = es_poi.get('coord')
+    coord = es_poi.get_coord()
+    if coord:
         lon = coord.get('lon')
         lat = coord.get('lat')
         return (lat, lon)
@@ -46,6 +46,7 @@ class DaysType(types.Type):
     status = validators.String(enum=['open', 'closed'])
     opening_hours = validators.Array(items=OpeningHoursType)
 
+
 class OpeningHourBlock(BaseBlock):
     BLOCK_TYPE = 'opening_hours'
 
@@ -58,8 +59,8 @@ class OpeningHourBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        raw = es_poi.get('properties', {}).get('opening_hours')
-        if raw is None:
+        raw = es_poi.get_raw_opening_hours()
+        if not raw:
             return None
 
         poi_coord = get_coord(es_poi)
@@ -79,7 +80,10 @@ class OpeningHourBlock(BaseBlock):
         try:
             oh = hoh.OHParser(raw, location=poi_location)
         except HOHError:
-            logger.info("Failed to parse OSM opening_hour field", exc_info=True)
+            logger.info(
+                "Failed to parse opening_hours field, id:'%s' raw:'%s'",
+                es_poi.get_id(), raw, exc_info=True
+            )
             return None
 
         poi_dt = UTC.localize(datetime.utcnow()).astimezone(poi_tz)

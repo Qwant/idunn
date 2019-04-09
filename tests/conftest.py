@@ -4,11 +4,7 @@ import pytest
 import responses
 import re
 from elasticsearch import Elasticsearch
-from app import app, settings
-from idunn.utils.settings import SettingsComponent
-from idunn.blocks.wikipedia import HTTPError40X
-from idunn.blocks.wikipedia import WikipediaLimiter
-import time
+
 from .utils import override_settings
 
 

@@ -2,6 +2,7 @@ from apistar.exceptions import NotFound, BadRequest
 from elasticsearch import Elasticsearch, ConnectionError
 import logging
 
+from idunn import settings
 from idunn.blocks import \
     PhoneBlock, OpeningHourBlock, InformationBlock, \
     WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException
@@ -28,6 +29,9 @@ BLOCKS_BY_VERBOSITY = {
     ]
 }
 
+PLACE_DEFAULT_INDEX = settings['PLACE_DEFAULT_INDEX']
+PLACE_POI_INDEX = settings['PLACE_POI_INDEX']
+
 ANY = '*'
 
 
@@ -38,7 +42,6 @@ class WikidataConnector:
     @classmethod
     def get_wiki_index(cls, lang):
         if cls._es_lang is None:
-            from app import settings
             cls._es_lang = settings['ES_WIKI_LANG'].split(',')
         if lang in cls._es_lang:
             return "wikidata_{}".format(lang)
@@ -47,8 +50,6 @@ class WikidataConnector:
     @classmethod
     def init_wiki_es(cls):
         if cls._wiki_es is None:
-            from app import settings
-
             wiki_es = settings.get('WIKI_ES')
             wiki_es_max_retries = settings.get('WIKI_ES_MAX_RETRIES')
             wiki_es_timeout = settings.get('WIKI_ES_TIMEOUT')
@@ -96,7 +97,7 @@ def fetch_es_poi(id, es) -> dict:
     This function gets from Elasticsearch the
     entry corresponding to the given id.
     """
-    es_pois = es.search(index='munin_poi',
+    es_pois = es.search(index=PLACE_POI_INDEX,
                         body={
                             "filter": {
                                 "term": {"_id": id}
@@ -108,11 +109,11 @@ def fetch_es_poi(id, es) -> dict:
         raise NotFound(detail={'message': f"poi '{id}' not found"})
     return es_poi[0]['_source']
 
-def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
+def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
     terms_filters = []
-    for pair in categories:
+    for pair in raw_filters:
         (cls,subcls) = pair.split(",", 1)
         if (cls,subcls) == (ANY, ANY):
             terms_filters.append([])
@@ -138,7 +139,7 @@ def fetch_bbox_places(es, indices, categories, bbox, max_size) -> list:
             )
 
     bbox_places = es.search(
-        index="munin_poi",
+        index=indices['poi'],
         body={
             "query": {
                 "bool": {
@@ -176,7 +177,7 @@ def fetch_es_place(id, es, indices, type) -> dict:
     entry corresponding to the given id.
     """
     if type is None:
-        index_name = "munin"
+        index_name = PLACE_DEFAULT_INDEX
     elif type not in indices:
         raise BadRequest(
             status_code=400,
@@ -217,22 +218,22 @@ def get_geom(es_place):
     """Return the correct geometry from the elastic response
 
     A correct geometry means both lat and lon coordinates are required
-
-    >>> get_geom({}) is None
+    >>> from idunn.places import POI
+    >>> get_geom(POI({})) is None
     True
 
-    >>> get_geom({'coord':{"lon": None, "lat": 48.858260156496016}}) is None
+    >>> get_geom(POI({'coord':{"lon": None, "lat": 48.858260156496016}})) is None
     True
 
-    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": None}}) is None
+    >>> get_geom(POI({'coord':{"lon": 2.2944990157640612, "lat": None}})) is None
     True
 
-    >>> get_geom({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}})
+    >>> get_geom(POI({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}}))
     {'type': 'Point', 'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016]}
     """
     geom = None
-    if 'coord' in es_place:
-        coord = es_place.get('coord')
+    coord = es_place.get_coord()
+    if coord is not None:
         lon = coord.get('lon')
         lat = coord.get('lat')
         if lon is not None and lat is not None:

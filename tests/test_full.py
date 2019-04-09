@@ -166,5 +166,8 @@ def test_full():
                 "type": "contact",
                 "url": "mailto:contact@example.com",
             },
-        ]
+        ],
+        "meta": {
+            "source": "osm"
+        }
     }

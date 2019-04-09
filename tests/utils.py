@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from copy import deepcopy
-from app import settings
+
+from idunn import settings
 
 @contextmanager
 def override_settings(overrides):
