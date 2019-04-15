@@ -169,3 +169,6 @@ class BasePlace(dict):
 
     def get_images_urls(self):
         return []
+
+    def get_raw_grades(self):
+        return self.properties.get("grades") or {}

@@ -83,3 +83,6 @@ class PjPOI(BasePlace):
 
     def get_meta(self):
         return PlaceMeta(source='pagesjaunes')
+
+    def get_raw_grades(self):
+        return self.get('grades')
