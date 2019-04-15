@@ -1,5 +1,5 @@
 from apistar.exceptions import NotFound, BadRequest
-from elasticsearch import Elasticsearch, ConnectionError
+from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
 
 from idunn import settings
@@ -81,6 +81,13 @@ class WikidataConnector:
                 ).get('hits', {}).get('hits', [])
         except ConnectionError:
             logger.warning("Wiki ES not available: connection exception raised", exc_info=True)
+            return None
+        except NotFoundError:
+            logger.warning("Wiki ES didn't find wikidata_id '%s' in wiki_index '%s'",
+                           wikidata_id, wiki_index, exc_info=True)
+            return None
+        except ElasticsearchException as e:
+            logger.warning("Wiki ES failure: unknown elastic error", exc_info=True)
             return None
 
         if len(resp) == 0:
