@@ -6,13 +6,13 @@ import urllib.parse
 from urllib.parse import urlsplit, unquote
 
 from apistar import types, validators
+from idunn import settings
 from .base import BaseBlock
 
 logger = logging.getLogger(__name__)
 
 class ThumbrHelper:
     def __init__(self):
-        from app import settings
         self._thumbr_urls = settings.get('THUMBR_URLS').split(',')
         self._thumbr_enabled = settings.get('THUMBR_ENABLED')
         self._salt = settings.get('THUMBR_SALT') or ''
@@ -42,7 +42,7 @@ class ThumbrHelper:
 
         url_path = urlsplit(source).path
         filename = posixpath.basename(unquote(url_path))
-        if not bool(re.match("^.*\.(jpg|jpeg|png|gif)$", filename, re.IGNORECASE)):
+        if not bool(re.match(r"^.*\.(jpg|jpeg|png|gif)$", filename, re.IGNORECASE)):
             filename += ".jpg"
 
         params = urllib.parse.urlencode({
@@ -92,26 +92,35 @@ class ImagesBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        wiki_resp = es_poi.get_wiki_resp(lang)
-        if wiki_resp is None:
+        raw_urls = es_poi.get_images_urls()
+        if not raw_urls:
+            # Fallback to wikipedia image
+            wiki_resp = es_poi.get_wiki_resp(lang)
+            if wiki_resp is not None:
+                raw_url = wiki_resp.get('pageimage_thumb')
+                if raw_url:
+                    raw_urls.append(raw_url)
+
+        if not raw_urls:
             return None
 
         place_name = es_poi.get_name(lang)
-        raw_url = wiki_resp.get('pageimage_thumb')
-        if raw_url is None:
-            return None
-
-        source_url = cls.get_source_url(raw_url)
-        thumbr = cls.get_thumbr_helper()
-        if thumbr.is_enabled():
+        images = []
+        for raw_url in raw_urls:
+            source_url = cls.get_source_url(raw_url)
             thumbr = cls.get_thumbr_helper()
-            thumb_url = thumbr.get_url_remote_thumbnail(raw_url)
-        else:
-            thumb_url = raw_url
+            if thumbr.is_enabled():
+                thumbr = cls.get_thumbr_helper()
+                thumb_url = thumbr.get_url_remote_thumbnail(raw_url)
+            else:
+                thumb_url = raw_url
 
-        image_wiki = Image(
-            url=thumb_url,
-            alt=place_name,
-            source_url=source_url
-        )
-        return cls(images=[image_wiki])
+            images.append(
+                Image(
+                    url=thumb_url,
+                    alt=place_name,
+                    source_url=source_url
+                )
+            )
+
+        return cls(images=images)

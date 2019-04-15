@@ -1,14 +1,12 @@
 from apistar import App, Include
 
-from idunn.utils.settings import SettingsComponent
+from idunn import settings
 from idunn.utils.index_names import IndexNamesSettingsComponent
 from idunn.utils.es_wrapper import ElasticSearchComponent
 from idunn.utils.logging import init_logging, LogErrorHook
 from idunn.utils.cors import CORSHeaders
 from idunn.api.urls import get_api_urls
 from apistar_prometheus import PrometheusComponent, PrometheusHooks
-
-settings = SettingsComponent('IDUNN')
 
 init_logging(settings)
 

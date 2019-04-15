@@ -7,6 +7,7 @@ from idunn.utils.settings import Settings
 from idunn.utils.index_names import IndexNames
 from idunn.places import Place, Admin, Street, Address, POI
 from idunn.api.utils import fetch_es_place, LONG, SHORT, DEFAULT_VERBOSITY
+from idunn.api.pages_jaunes import pj_source
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,10 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, la
         lang = settings['DEFAULT_LANGUAGE']
     lang = lang.lower()
 
+    if id.startswith(pj_source.PLACE_ID_PREFIX):
+        pj_place = pj_source.get_place(id)
+        return pj_place.load_place(lang, verbosity)
+
     es_place = fetch_es_place(id, es, indices, type)
 
     places = {
@@ -32,7 +37,6 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, settings: Settings, la
         "addr": Address,
         "poi": POI,
     }
-
     loader = places.get(es_place.get('_type'))
 
     if loader is None:

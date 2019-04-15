@@ -12,8 +12,8 @@ class PhoneBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        raw = es_poi.get('properties', {}).get('phone') or es_poi.get('properties', {}).get('contact:phone')
-        if raw is None:
+        raw = es_poi.get_phone()
+        if not raw:
             return None
 
         return cls(

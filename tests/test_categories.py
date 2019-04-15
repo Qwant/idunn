@@ -34,7 +34,8 @@ def test_bbox():
                 'local_name': "Musée d'Orsay",
                 'class_name': 'museum',
                 'subclass_name': 'museum',
-                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875], 'center': [2.3265827716099623, 48.859917803575875]},
+                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875],
+                             'center': [2.3265827716099623, 48.859917803575875]},
                 'address': {
                     'id': 'addr_poi:osm:way:63178753',
                     'name': "1 Rue de la Légion d'Honneur",
@@ -59,7 +60,26 @@ def test_bbox():
                         ANY, ANY, ANY, ANY, ANY
                     ]
                 },
-                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]
+                'blocks': [
+                    {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                     'seconds_before_next_transition': 40500, 'is_24_7': False,
+                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}],
+                'meta': {
+                    'source': 'osm'
+                }
             },
             {
                 'type': 'poi',
@@ -68,9 +88,13 @@ def test_bbox():
                 'local_name': 'Église Notre-Dame-des-Blancs-Manteaux',
                 'class_name': 'place_of_worship',
                 'subclass_name': 'place_of_worship',
-                'geometry': {'type': 'Point', 'coordinates': [2.3577366716253647, 48.858955519212905], 'center': [2.3577366716253647, 48.858955519212905]},
+                'geometry': {'type': 'Point', 'coordinates': [2.3577366716253647, 48.858955519212905],
+                             'center': [2.3577366716253647, 48.858955519212905]},
                 'address': ANY,
-                'blocks': []
+                'blocks': [],
+                'meta': {
+                    'source': 'osm'
+                }
             },
             {
                 'type': 'poi',
@@ -79,9 +103,29 @@ def test_bbox():
                 'local_name': 'Musée du Louvre',
                 'class_name': 'museum',
                 'subclass_name': 'museum',
-                'geometry': {'type': 'Point', 'coordinates': [2.338027583323689, 48.86114726113347], 'center': [2.338027583323689, 48.86114726113347]},
+                'geometry': {'type': 'Point', 'coordinates': [2.338027583323689, 48.86114726113347],
+                             'center': [2.338027583323689, 48.86114726113347]},
                 'address': ANY,
-                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T18:00:00+02:00', 'seconds_before_next_transition': 27000, 'is_24_7': False, 'raw': 'Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}]}]
+                'blocks': [
+                    {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T18:00:00+02:00',
+                     'seconds_before_next_transition': 27000, 'is_24_7': False,
+                     'raw': 'Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off', 'days': [
+                        {'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'open',
+                         'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
+                        {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'closed', 'opening_hours': []},
+                        {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                         'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]},
+                        {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                         'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
+                        {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                         'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]},
+                        {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                         'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
+                        {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                         'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}]}],
+                'meta': {
+                    'source': 'osm'
+                }
             },
             {
                 'type': 'poi',
@@ -90,9 +134,30 @@ def test_bbox():
                 'local_name': 'Fake All',
                 'class_name': 'museum',
                 'subclass_name': 'museum',
-                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007], 'center': [2.3250037768187326, 48.86618482685007]},
+                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007],
+                             'center': [2.3250037768187326, 48.86618482685007]},
                 'address': ANY,
-                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]}, 
+                'blocks': [
+                    {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                     'seconds_before_next_transition': 40500, 'is_24_7': False,
+                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}],
+                'meta': {
+                    'source': 'osm'
+                }
+            },
             {
                 'type': 'poi',
                 'id': 'osm:way:7777778',
@@ -100,9 +165,32 @@ def test_bbox():
                 'local_name': 'Fake All',
                 'class_name': 'museum',
                 'subclass_name': 'museum',
-                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007], 'center': [2.3250037768187326, 48.86618482685007]},
-                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': '62B', 'postcode': '75007;75008', 'label': '62B Rue de Lille (Paris)', 'admin': None, 'street': {'id': 'street:553660044C', 'name': 'Rue de Lille', 'label': 'Rue de Lille (Paris)', 'postcodes': ['75007', '75008']}, 'admins': []},
-                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]
+                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007],
+                             'center': [2.3250037768187326, 48.86618482685007]},
+                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': '62B',
+                            'postcode': '75007;75008', 'label': '62B Rue de Lille (Paris)', 'admin': None,
+                            'street': {'id': 'street:553660044C', 'name': 'Rue de Lille',
+                                       'label': 'Rue de Lille (Paris)', 'postcodes': ['75007', '75008']}, 'admins': []},
+                'blocks': [
+                    {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                     'seconds_before_next_transition': 40500, 'is_24_7': False,
+                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}],
+                'meta': {
+                    'source': 'osm'
+                }
             }
         ]
     }
@@ -132,9 +220,28 @@ def test_size_list():
                 'local_name': "Musée d'Orsay",
                 'class_name': 'museum',
                 'subclass_name': 'museum',
-                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875], 'center': [2.3265827716099623, 48.859917803575875]},
+                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875],
+                             'center': [2.3265827716099623, 48.859917803575875]},
                 'address': ANY,
-                'blocks': [{'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}]
+                'blocks': [
+                    {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                     'seconds_before_next_transition': 40500, 'is_24_7': False,
+                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]}
+                ],
+                'meta': ANY
             }
         ]
     }
@@ -222,7 +329,8 @@ def test_single_raw_filter():
                         }
                     ]
                 },
-                'blocks': []
+                'blocks': [],
+                'meta': ANY
             }
         ]
     }
@@ -361,7 +469,8 @@ def test_valid_category():
                 'subclass_name': 'cinema',
                 'geometry': ANY,
                 'address': ANY,
-                'blocks': []
+                'blocks': [],
+                'meta': {'source': 'osm'}
             }
         ]
     }
@@ -380,18 +489,7 @@ def test_invalid_category():
     assert response.status_code == 400
 
     resp = response.json()
-
-    assert resp == {
-        'message': [
-            {
-                'loc': [
-                    'category', 0
-                ],
-                'msg': "Category 'supppermarket' is invalid since it does not belong to the set of possible categories: ['restaurant', 'hotel', 'leisure', 'pharmacy', 'supermarket', 'bank', 'education']",
-                'type': 'value_error'
-            }
-        ]
-    }
+    assert resp['message'][0]['msg'].startswith("Category 'supppermarket' is invalid ")
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
@@ -410,12 +508,11 @@ def test_endpoint_categories():
     resp = response.json()
     categories = resp['categories']
 
-    assert len(categories) == 7
+    assert len(categories) == 8
     assert categories[0] == {
         "name": "restaurant",
         "raw_filters": [
             "restaurant,*",
-            "cafe,*",
             "fast_food,*"
         ]
     }

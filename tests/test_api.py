@@ -1,4 +1,3 @@
-import pytest
 from app import app
 from apistar.test import TestClient
 

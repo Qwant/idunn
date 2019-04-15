@@ -1,26 +1,44 @@
 categories:
     restaurant:
+        pj_filters:
+            - "restaurants"
         raw_filters:
             - "restaurant,*"
-            - "cafe,*"
             - "fast_food,*"
     hotel:
+        pj_filters:
+            - "hôtels"
         raw_filters:
             - "*,hotel"
     leisure:
+        pj_filters:
+            - "salles de cinéma"
+            - "salles de concerts, de spectacles"
         raw_filters:
             - "cinema,*"
             - "theatre,*"
     pharmacy:
+        pj_filters:
+            - "Pharmacie"
         raw_filters:
             - "pharmacy,*"
     supermarket:
+        pj_filters:
+            - "supermarchés, hypermarchés"
         raw_filters:
             - "*,supermarket"
             - "*,mall"
     bank:
+        pj_filters:
+            - "banques"
         raw_filters:
             - "bank,*"
     education:
         raw_filters:
             - "school,*"
+    bar:
+        pj_filters:
+            - "cafés, bars"
+        raw_filters:
+            - "bar,*"
+            - "cafe,*"

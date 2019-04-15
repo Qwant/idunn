@@ -2,7 +2,7 @@ import logging
 
 from idunn.api.utils import WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO, WikipediaCache
-from .place import Place
+from .place import Place, PlaceMeta
 
 logger = logging.getLogger(__name__)
 
@@ -125,15 +125,47 @@ class BasePlace(dict):
             "postcodes": raw_street.get("zip_codes")
         }
 
+    def get_id(self):
+        return self.get('id', '')
+
+    def find_property_value(self, fallback_keys):
+        for k in fallback_keys:
+            val = self.properties.get(k)
+            if val:
+                return val
+        return None
+
+    def get_phone(self):
+        return self.find_property_value(['phone', 'contact:phone'])
+
+    def get_website(self):
+        return self.find_property_value(['contact:website', 'website', 'facebook'])
+
+    def get_coord(self):
+        return self.get('coord')
+
+    def get_raw_opening_hours(self):
+        return self.properties.get('opening_hours')
+
+    def get_raw_wheelchair(self):
+        return self.properties.get("wheelchair")
+
+    def get_meta(self):
+        return PlaceMeta()
+
     def load_place(self, lang, verbosity):
         return Place(
             type=self.PLACE_TYPE,
-            id=self.get('id', ''),
+            id=self.get_id(),
             name=self.get_name(lang),
             local_name=self.get_local_name(),
             class_name=self.get_class_name(),
             subclass_name=self.get_subclass_name(),
             geometry=get_geom(self),
             address=self.build_address(lang),
-            blocks=build_blocks(self, lang, verbosity)
+            blocks=build_blocks(self, lang, verbosity),
+            meta=self.get_meta()
         )
+
+    def get_images_urls(self):
+        return []

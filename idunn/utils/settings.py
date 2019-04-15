@@ -85,3 +85,6 @@ class SettingsComponent(Component):
 
     def __getitem__(self, name: str) -> Any:
         return self._settings[name]
+
+
+settings = SettingsComponent('IDUNN')

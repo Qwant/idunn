@@ -1,16 +1,16 @@
-import pytest
 from app import app
 from apistar.test import TestClient
 from idunn.blocks.services_and_information import AccessibilityBlock
+from idunn.places import POI
 
 def test_accessibility_block():
     web_block = AccessibilityBlock.from_es(
-        {
+        POI({
             "properties": {
                 'wheelchair': 'limited',
                 'toilets:wheelchair': 'no'
             }
-        },
+        }),
         lang='en'
     )
 
@@ -22,11 +22,11 @@ def test_accessibility_block():
 
 def test_accessibility_unknown():
     web_block = AccessibilityBlock.from_es(
-        {
+        POI({
             "properties": {
                 'wheelchair': 'toto',
             }
-        },
+        }),
         lang='en'
     )
     assert web_block is None

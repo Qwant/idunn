@@ -41,6 +41,7 @@ PLACE_ADMIN_INDEX: "munin_admin"
 PLACE_STREET_INDEX: "munin_street"
 PLACE_ADDRESS_INDEX: "munin_addr"
 PLACE_POI_INDEX: "munin_poi"
+PLACE_DEFAULT_INDEX: "munin"
 
 WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
 
@@ -50,3 +51,11 @@ BLOCK_IMAGES_ENABLED: True
 THUMBR_SALT:
 THUMBR_ENABLED: True # Set to False if you want to keep raw image urls instead of Thumbr
 THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
+
+#########################
+## Data sources
+
+# Pages jaunes
+PJ_ES:
+PJ_ES_INDEX: "pagesjaunes"
+PJ_ES_QUERY_TEMPLATE: "pagesjaunes_bounding_query"

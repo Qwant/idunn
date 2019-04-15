@@ -1,7 +1,7 @@
-import pytest
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
+from idunn.places import POI
 
 """
 In this module we test that the opening_hours block for
@@ -23,7 +23,7 @@ def get_moscow_poi(opening_hours):
     for different opening_hours formats.
     """
     return OpeningHourBlock.from_es(
-        {
+        POI({
             "coord": {
                 "lon": 37.588161523500276,
                 "lat": 55.74831406552745
@@ -31,7 +31,7 @@ def get_moscow_poi(opening_hours):
             "properties": {
                 "opening_hours": opening_hours
             }
-        },
+        }),
         lang='en'
     )
 
