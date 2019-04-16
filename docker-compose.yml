@@ -43,6 +43,7 @@ services:
       - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
       - IDUNN_THUMBR_SALT=${QMAPS_THUMBR_SECRET_DEV}
       - IDUNN_THUMBR_URLS=http://10.100.33.211:8080
+      - IDUNN_PJ_ES=http://wiki-es:9200
       - no_proxy=es,wiki-es
     extra_hosts:
       - "wiki-es:10.100.31.26"
