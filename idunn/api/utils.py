@@ -5,7 +5,7 @@ import logging
 from idunn import settings
 from idunn.blocks import \
     PhoneBlock, OpeningHourBlock, InformationBlock, \
-    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException
+    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GradesBlock
 from idunn.utils import prometheus
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,8 @@ BLOCKS_BY_VERBOSITY = {
         InformationBlock,
         WebSiteBlock,
         ContactBlock,
-        ImagesBlock
+        ImagesBlock,
+        GradesBlock
     ],
     SHORT: [
         OpeningHourBlock
