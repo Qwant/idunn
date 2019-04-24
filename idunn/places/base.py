@@ -171,4 +171,4 @@ class BasePlace(dict):
         return []
 
     def get_raw_grades(self):
-        return self.properties.get("grades") or {}
+        return {}

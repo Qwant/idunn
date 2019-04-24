@@ -1,14 +1,12 @@
 from idunn.blocks.grades import GradesBlock
-from idunn.places import POI
+from idunn.places import PjPOI
 
 def test_grades_block():
     web_block = GradesBlock.from_es(
-        POI({
-            "properties": {
-                "grades": {
-                    "total_grades_count": 8,
-                    "global_grade": 4,
-                }
+        PjPOI({
+            "grades": {
+                "total_grades_count": 8,
+                "global_grade": 4,
             }
         }),
         lang='en'

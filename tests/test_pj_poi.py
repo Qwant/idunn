@@ -50,3 +50,6 @@ def test_pj_place():
         assert blocks[4]['type'] == 'images'
         assert len(blocks[4]['images']) == 3
 
+        assert blocks[5]['type'] == 'grades'
+        assert blocks[5]['total_grades_count'] == 8
+        assert blocks[5]['global_grade'] == 4.
