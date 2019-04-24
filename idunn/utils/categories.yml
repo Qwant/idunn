@@ -34,8 +34,20 @@ categories:
         raw_filters:
             - "bank,*"
     education:
+        pj_filters:
+            - "écoles maternelles publiques"
+            - "écoles primaires publiques"
+            - "collèges publics"
+            - "lycées d'enseignement général et technologique publics"
+            - "écoles maternelles privées"
+            - "écoles primaires privées"
+            - "collèges privés"
+            - "lycées d'enseignement général et technologique privés"
+            - "enseignement supérieur public"
+            - "enseignement supérieur privé"
         raw_filters:
             - "school,*"
+            - "college,*"
     bar:
         pj_filters:
             - "cafés, bars"

@@ -37,6 +37,18 @@ class PjPOI(BasePlace):
             return 'cinema'
         if 'salles de concerts, de spectacles' in raw_categories:
             return 'theatre'
+        if 'Pharmacie' in raw_categories:
+            return 'pharmacy'
+        if 'supermarchés, hypermarchés' in raw_categories:
+            return 'grocery'
+        if 'banques' in raw_categories:
+            return 'bank'
+        if 'cafés, bars' in raw_categories:
+            return 'bar'
+        if any(k in c for c in raw_categories for k in ('écoles ','collèges ','lycées ')):
+            return 'school'
+        if any('enseignement supérieur' in c for c in raw_categories):
+            return 'college'
         return None
 
     def get_subclass_name(self):
