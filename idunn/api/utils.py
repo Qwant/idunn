@@ -12,8 +12,9 @@ logger = logging.getLogger(__name__)
 
 LONG = "long"
 SHORT = "short"
+LIST = "list"
 DEFAULT_VERBOSITY = LONG
-DEFAULT_VERBOSITY_LIST = SHORT
+DEFAULT_VERBOSITY_LIST = LIST
 
 BLOCKS_BY_VERBOSITY = {
     LONG: [
@@ -25,10 +26,18 @@ BLOCKS_BY_VERBOSITY = {
         ImagesBlock,
         GradesBlock
     ],
+    LIST: [
+        OpeningHourBlock,
+        PhoneBlock,
+        WebSiteBlock,
+        ImagesBlock,
+        GradesBlock
+    ],
     SHORT: [
         OpeningHourBlock
     ]
 }
+ALL_VERBOSITY_LEVELS = list(BLOCKS_BY_VERBOSITY.keys())
 
 PLACE_DEFAULT_INDEX = settings['PLACE_DEFAULT_INDEX']
 PLACE_POI_INDEX = settings['PLACE_POI_INDEX']
