@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
+SOURCE_OSM = 'osm'
+SOURCE_PAGESJAUNES = 'pagesjaunes'
+ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
 
 def get_categories():
     categories_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
@@ -35,6 +38,7 @@ class PlacesQueryParam(BaseModel):
     size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
+    source: Optional[str] = None
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -52,6 +56,12 @@ class PlacesQueryParam(BaseModel):
     def valid_verbosity(cls, v):
         if v not in ALL_VERBOSITY_LEVELS:
             raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
+        return v
+
+    @validator('source')
+    def valid_source(cls, v):
+        if v not in ALL_SOURCES:
+            raise ValueError(f"unknown source: '{v}'")
         return v
 
     @validator('bbox')
@@ -108,12 +118,20 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
             detail={"message": e.errors()}
         )
 
-    if params.category \
-        and all(c.get('pj_filters') for c in params.category) \
-        and pj_source.bbox_is_covered(params.bbox) :
+    source = params.source
+    if source is None:
+        if params.category \
+            and all(c.get('pj_filters') for c in params.category) \
+            and pj_source.bbox_is_covered(params.bbox):
+            source = SOURCE_PAGESJAUNES
+        else:
+            source = SOURCE_OSM
+
+    if source == SOURCE_PAGESJAUNES:
         all_categories = [pj_category for c in params.category for pj_category in c['pj_filters']]
         places_list = pj_source.get_places_bbox(all_categories, params.bbox, size=params.size)
     else:
+        # Default source (OSM)
         if params.raw_filter:
             raw_filters = params.raw_filter
         else:

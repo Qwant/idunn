@@ -3,6 +3,8 @@ from app import app
 from apistar.test import TestClient
 from freezegun import freeze_time
 
+from .utils import enable_pj_source
+
 BBOX_PARIS="2.252876,48.819862,2.395707,48.891132"
 BBOX_BREST="-4.807542,48.090743,-4.097541,48.800743"
 INVALID_BBOX_PARIS_LEFT_PERM_RIGHT="2.395707,48.819862,2.252876,48.891132"
@@ -535,6 +537,36 @@ def test_valid_category():
 
     assert response.status_code == 200
 
+    resp = response.json()
+
+    assert resp == {
+        'places': [
+            {
+                'type': 'poi',
+                'id': 'osm:node:36153811',
+                'name': 'Multiplexe Liberté',
+                'local_name': 'Multiplexe Liberté',
+                'class_name': 'cinema',
+                'subclass_name': 'cinema',
+                'geometry': ANY,
+                'address': ANY,
+                'blocks': [],
+                'meta': {'source': 'osm'}
+            }
+        ]
+    }
+
+@enable_pj_source()
+def test_places_with_explicit_source_osm():
+    """
+        If source=osm is passed to the query, pj_source should be ignored
+    """
+    client = TestClient(app)
+    response = client.get(
+        url=f'http://localhost/v1/places?bbox={BBOX_BREST}&category=leisure&source=osm'
+    )
+
+    assert response.status_code == 200
     resp = response.json()
 
     assert resp == {

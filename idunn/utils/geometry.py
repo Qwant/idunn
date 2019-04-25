@@ -55,6 +55,6 @@ def parse_poly(lines):
 with open(france_poly_filename) as france_file:
     france_polygon = parse_poly(france_file.readlines())
 
-def bbox_inside_polygon(minx, miny, maxx, maxy, poly, threshold=0.8):
+def bbox_inside_polygon(minx, miny, maxx, maxy, poly, threshold=0.75):
     rect = box(minx, miny, maxx, maxy)
     return poly.intersection(rect).area / rect.area > threshold
