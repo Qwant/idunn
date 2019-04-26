@@ -20,13 +20,14 @@
 The main endpoints are:
 * `/v1/places/{place_id}?lang={lang}&type={type}&verbosity={verbosity}` to get the details of a place
 (admin, street, address or POI).
-    * `type`: (optionnal) parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`
+    * `type`: (optional) parameter belongs to the set `{'admin', 'street', 'address', 'poi'}`
     * `verbosity` parameter belongs to the set `{'long', 'short'}`. The default verbosity is `long`.
 * `/v1/places?bbox={bbox}&category=<category-name>&size={size}` to get a list of all points of interest matching the given bbox and categories
     * `bbox`: left,bot,right,top e.g. `bbox=2.0,48.0,3.0,49.0`
     * `category`: multiple values are accepted (e.g. `category=leisure&category=museum`)
-    * `size`: maximum number of places in the response'
+    * `size`: maximum number of places in the response
     * `verbosity`: default verbosity is `list` (equivalent to `long`, except "information" and "wiki" blocks are not returned)
+    * `source`: (optional) to force a data source (instead of automated selection based on coverage). Accepted values: `osm`, `pagesjaunes`
 * `/v1/places?bbox={bbox}&raw_filter=class,subclass&size={size}` to get a list of all points of interest matching the given bbox (=left,bot,right,top e.g. `bbox=2,48,3,49`) and the raw filters (e.g. `raw_filter=*,restaurant&raw_filter=shop,*&raw_filter=bakery,bakery`)
 * `/v1/categories` to get the list of all the categories you can filter on.
 * `/v1/pois/{poi_id}?lang={lang}` is the **deprecated** route to get the details of a POI.
