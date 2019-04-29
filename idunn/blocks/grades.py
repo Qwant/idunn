@@ -11,8 +11,7 @@ class GradesBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        raw_grades = es_poi.get_raw_grades()
-
+        raw_grades = es_poi.get_raw_grades() or {}
         total_grades_count = raw_grades.get('total_grades_count', None)
         global_grade = raw_grades.get('global_grade', None)
 

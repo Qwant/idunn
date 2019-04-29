@@ -78,7 +78,7 @@ class PjPOI(BasePlace):
             "name": f'{number} {street}'.strip(),
             "housenumber": number,
             "postcode": postal_code,
-            "label": f'{number} {street}, {postal_code} {city}'.strip(),
+            "label": f'{number} {street}, {postal_code} {city}'.strip().strip(','),
             "admin": None,
             "admins": [],
             "street": {

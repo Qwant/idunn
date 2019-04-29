@@ -1,0 +1,67 @@
+{
+  "_index": "pages_jaunes_datafeed_1553179877",
+  "_type": "datafeed",
+  "_id": "05360257",
+  "_version": 3,
+  "found": true,
+  "_source": {
+    "Geo": {
+      "lon": 2.362634,
+      "lat": 48.859702
+    },
+    "additional_info": {
+      "amenities": [
+        {
+          "values": [
+            "musée de collection",
+            "exposition permanente",
+            "exposition temporaire",
+            "conférence",
+            "visite guidée",
+            "boutique",
+            "accès aux personnes à mobilité réduite"
+          ],
+          "label": "Services et prestations"
+        }
+      ],
+      "outdoorView": {
+        "thumbnail": "https://imt7.mappy.net/tile/200/007/003/2000070035914/l/z_0/00.jpg",
+        "url": "https://www.pagesjaunes.fr/partenaire?id=05360257&component=view360&xtor=AD-350-[QWANT]-[NAVIGATION]-[360]"
+      }
+    },
+    "BusinessName": "Musée Picasso",
+    "Category": [
+      "musées"
+    ],
+    "BusinessId": "05360257",
+    "Links": {
+      "viewPhotos": "https://[VOIR_TOUTES_PHOTOS]",
+      "addPhoto": "https:/[AJOUTER_PHOTO]",
+      "addReview": "https://[AJOUTER_AVIS]",
+      "view": "https://[FD]",
+      "viewReviews": "https://[VOIR_TOUS_AVIS]"
+    },
+    "WheelchairAccessible": true,
+    "photos": {
+      "total_photo_count": 3,
+      "pref_photo_id": "musee_picasso_OSD05360257-44923.jpg",
+      "photos": [
+        {
+          "pixel_height": 600,
+          "url": "http://static4.pagesjaunes.fr/media/resto/musee_picasso_OSD05360257-44923.jpg?w=800&h=600",
+          "pixel_width": 800
+        },
+        {
+          "pixel_height": 600,
+          "url": "http://static4.pagesjaunes.fr/media/resto/musee_picasso_OSD05360257-44924.jpg?w=800&h=600",
+          "pixel_width": 800
+        },
+        {
+          "pixel_height": 768,
+          "url": "http://static4.pagesjaunes.fr/media/ugc/musee_picasso_07505600_104036264?w=1024&h=768",
+          "pixel_width": 1024
+        }
+      ]
+    }
+  }
+}
