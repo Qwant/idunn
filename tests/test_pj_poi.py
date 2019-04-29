@@ -5,17 +5,15 @@ import os
 
 from app import app
 from idunn.api import places
-from idunn.api.pages_jaunes import PjSource
 
-from .utils import override_settings
+from .utils import enable_pj_source
 
 filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'pj', 'musee_picasso.json')
 musee_picasso = json.load(open(filepath))
 
 
-@override_settings({'PJ_ES': 'http://localhost'})
+@enable_pj_source()
 def test_pj_place():
-    places.pj_source = PjSource()
     with mock.patch.object(places.pj_source.es, 'search',
         new=lambda *x,**y : {"hits": {"hits": [musee_picasso]}}
     ):

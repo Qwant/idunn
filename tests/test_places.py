@@ -367,4 +367,4 @@ def test_wrong_verbosity():
         url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=shoooooort',
     )
     assert response.status_code == 400
-    assert response._content == b'{"message":"verbosity shoooooort does not belong to the set of possible verbosity values=[\'long\', \'short\']"}'
+    assert "Unknown verbosity" in response.json()['message']
