@@ -59,3 +59,10 @@ THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
 PJ_ES:
 PJ_ES_INDEX: "pagesjaunes"
 PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
+
+#######################
+## Data Publishing
+
+# kuzzle Cluster
+KUZZLE_CLUSTER_ADDRESS:
+KUZZLE_CLUSTER_PORT:

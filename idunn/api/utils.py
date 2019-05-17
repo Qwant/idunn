@@ -1,11 +1,10 @@
 from apistar.exceptions import NotFound, BadRequest
 from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
-
 from idunn import settings
 from idunn.blocks import \
     PhoneBlock, OpeningHourBlock, InformationBlock, \
-    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GradesBlock
+    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GradesBlock, OpeningDayEvent, DescriptionEvent
 from idunn.utils import prometheus
 import phonenumbers
 
@@ -19,6 +18,8 @@ DEFAULT_VERBOSITY_LIST = LIST
 
 BLOCKS_BY_VERBOSITY = {
     LONG: [
+        OpeningDayEvent,
+        DescriptionEvent,
         OpeningHourBlock,
         PhoneBlock,
         InformationBlock,
@@ -28,6 +29,8 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock
     ],
     LIST: [
+        OpeningDayEvent,
+        DescriptionEvent,
         OpeningHourBlock,
         PhoneBlock,
         WebSiteBlock,
