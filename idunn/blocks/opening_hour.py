@@ -71,14 +71,17 @@ class OpeningHourBlock(BaseBlock):
 
         poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
         poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
-        poi_location = (poi_lat, poi_lon, poi_tzname, 24)
 
         if poi_tz is None:
             logger.info("No timezone found for poi %s", es_poi.get('id'))
             return None
 
+        hoh_args = {}
+        if any(k in raw for k in ['sunset', 'sunrise', 'dawn', 'dusk']):
+            # Optimization: use astral location only when necessary
+            hoh_args['location'] = (poi_lat, poi_lon, poi_tzname, 24)
         try:
-            oh = hoh.OHParser(raw, location=poi_location)
+            oh = hoh.OHParser(raw, **hoh_args)
         except HOHError:
             logger.info(
                 "Failed to parse opening_hours field, id:'%s' raw:'%s'",

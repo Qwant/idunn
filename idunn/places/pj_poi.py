@@ -57,10 +57,29 @@ class PjPOI(BasePlace):
     def get_raw_opening_hours(self):
         opening_hours_dict = self.get('OpeningHours', {})
         raw = ""
+
+        def format_day_range(first_day, last_day, times):
+            if not times:
+                return ''
+            if first_day == last_day:
+                return f'{first_day} {times}; '
+            return f'{first_day}-{last_day} {times}; '
+
+        first_day, last_day, times = ('', '', '')
         for k in ['Mo','Tu','We','Th','Fr','Sa','Su']:
             value = opening_hours_dict.get(k)
-            if value:
-                raw += f'{k} {value}; '
+            if not value or value != times:
+                raw += format_day_range(first_day, last_day, times)
+                first_day = ''
+                last_day = ''
+                times = ''
+            if value and value != times:
+                first_day = k
+                last_day = k
+                times = value
+            if value and value == times:
+                last_day = k
+        raw += format_day_range(first_day, last_day, times)
         return raw.rstrip('; ')
 
     def get_raw_wheelchair(self):
