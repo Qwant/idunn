@@ -1,0 +1,58 @@
+{
+    "requestId": "b7a8c923-cb17-4dfd-b138-44590b1bdac3",
+    "status": 200,
+    "error": null,
+    "controller": "document",
+    "action": "search",
+    "collection": "events",
+    "index": "opendatasoft",
+    "volatile": null,
+    "result": {
+        "took": 3,
+        "timed_out": false,
+        "_shards": {
+            "total": 5,
+            "successful": 5,
+            "failed": 0
+        },
+        "hits": [
+            {
+                "_index": "opendatasoft",
+                "_type": "events",
+                "_id": "AWq7SKu1zO6rOIP0fiwG",
+                "_score": 1,
+                "_source": {
+                    "address": "30 Avenue Corentin Cariou, Paris",
+                    "city": "Paris",
+                    "date_end": "2019-05-25T00:00:00.000Z",
+                    "date_start": "2019-03-23T00:00:00.000Z",
+                    "description": "15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
+                    "free_text": "Lectures d'albums pour les plus petits (3-6 ans). À partir de 15h. Accès libre et gratuit \n\n**Batiment**: Niveau 0-Bibliothèque jeunesse \n\n**Thèmes**: Sciences et société \n\n**Activités**: Animation",
+                    "geo_loc": {
+                        "lat": 48.895949,
+                        "lon": 2.387209
+                    },
+                    "lang": "fr",
+                    "link": "http://openagenda.com/event/quand-les-livres-expliquent-la-science_557258",
+                    "placename": "Cité des Sciences et de l'Industrie",
+                    "space_time_info": "du samedi 23 mars au samedi 25 mai à Cité des Sciences et de l'Industrie",
+                    "tags": "DateModif:16/03/2019,Sciences et société,Animation",
+                    "timetable": "2019-03-23T15:00:00 2019-03-23T16:00:00;2019-04-13T15:00:00 2019-04-13T16:00:00;2019-05-25T15:00:00 2019-05-25T16:00:00",
+                    "title": "Quand les livres expliquent la science",
+                    "uid": "92106271",
+                    "updated_at": "2019-03-18T09:15:15.000Z"
+                },
+                "_meta": {
+                    "active": true,
+                    "author": "user-opendatasoft",
+                    "updater": null,
+                    "updatedAt": null,
+                    "deletedAt": null,
+                    "createdAt": 1557920263059
+                }
+            }
+        ],
+        "total": 1422,
+        "max_score": 1
+    }
+}

@@ -1,5 +1,6 @@
 import os
 import logging
+import requests
 from elasticsearch import Elasticsearch
 from apistar.exceptions import BadRequest
 
@@ -9,6 +10,7 @@ from idunn.utils.index_names import IndexNames
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
 from .pages_jaunes import pj_source
+from idunn.places.event import Event
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
 
 from apistar import http
@@ -22,6 +24,8 @@ logger = logging.getLogger(__name__)
 MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
+KUZZLE_CLUSTER_ADDRESS = 'KUZZLE_CLUSTER_ADDRESS'
+KUZZLE_CLUSTER_PORT = 'KUZZLE_CLUSTER_PORT'
 ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
 
 def get_categories():
@@ -153,3 +157,72 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
         "places": [p.load_place(params.lang, params.verbosity) for p in places_list],
         "source": source
     }
+
+
+def get_events_bbox(bbox, query_params: http.QueryParams):
+    raw_params = get_raw_params(query_params)
+    kuzzle_address = settings.get(KUZZLE_CLUSTER_ADDRESS)
+    kuzzle_port = settings.get(KUZZLE_CLUSTER_PORT)
+
+    if not kuzzle_address or not kuzzle_port:
+        raise Exception(f"Missing kuzzle address or port: (port {KUZZLE_CLUSTER_PORT} is not set or address ${KUZZLE_CLUSTER_ADDRESS} is not set")
+
+    try:
+        params = PlacesQueryParam(**raw_params)
+    except ValidationError as e:
+        logger.warning(f"Validation Error: {e.json()}")
+        raise BadRequest(
+            detail={"message": e.errors()}
+        )
+
+    bbox_places = fetch_event_places(
+        bbox=params.bbox,
+        kuzzle_address=kuzzle_address,
+        kuzzle_port=kuzzle_port,
+        size=params.size
+    )
+    places_list = [Event(p['_source']) for p in bbox_places]
+
+    return {
+        "events": [p.load_place(params.lang, params.verbosity) for p in places_list]
+    }
+
+
+def fetch_event_places(bbox, kuzzle_address, kuzzle_port, size) -> list:
+    left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
+
+    url_kuzzle = 'http://'+kuzzle_address+':'+kuzzle_port+'/opendatasoft/events/_search'
+    query = {
+        'query': {
+            'bool': {
+                'filter': {
+                    'geo_bounding_box': {
+                        'geo_loc': {
+                            'top_left': {
+                                'lat': top,
+                                'lon': left
+                            },
+                            'bottom_right': {
+                                'lat': bot,
+                                'lon': right
+                            }
+                        }
+                    }
+                },
+                'must': {
+                    'range': {
+                        'date_end': {
+                            'gte': 'now/d',
+                            'lte': 'now+31d/d'
+                        }
+                    }
+                }
+            }
+        },
+        'size': size
+    }
+    bbox_places = requests.post(url_kuzzle, json=query)
+    bbox_places = bbox_places.json()
+    bbox_places = bbox_places.get('result', {}).get('hits', [])
+
+    return bbox_places
