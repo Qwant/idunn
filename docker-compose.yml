@@ -10,7 +10,7 @@ networks:
 
 services:
   idunn:
-    image: qwantresearch/idunn:release-v0.1.4@sha256:dae0f20e18865c5fca3b4e265dba945a3dcc0acd110e79e66ba8bd924091e565
+    image: qwantresearch/idunn:release-v0.1.5@sha256:46a98339c30ad039eec8f2f38ead70cf0b56851307d9abad53b4e2131a55a86a
     labels: &ci_labels
       com.qwant.ci.job_id: ${CI_JOB_ID}
       com.qwant.ci.pipeline_id: ${CI_PIPELINE_ID}
