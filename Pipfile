@@ -25,6 +25,8 @@ python-json-logger = "*"
 pydantic = "*"
 lark-parser = "<0.7"
 osm_humanized_opening_hours = {git = "https://github.com/rezemika/humanized_opening_hours.git", ref = "d249acd791467d073cc4ef35cf14ac5ab0c429ae", editable = true}
+gunicorn = "*"
+meinheld = "*"
 
 [requires]
 python_version = "3.6"

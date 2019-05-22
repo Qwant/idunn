@@ -147,5 +147,6 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
         places_list = [POI(p['_source']) for p in bbox_places]
 
     return {
-        "places": [p.load_place(params.lang, params.verbosity) for p in places_list]
+        "places": [p.load_place(params.lang, params.verbosity) for p in places_list],
+        "source": source
     }
