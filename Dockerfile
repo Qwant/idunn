@@ -1,6 +1,6 @@
 FROM python:3.6-slim
 
-RUN apt-get update && apt-get -y install git
+RUN apt-get update && apt-get -y install git gcc
 
 RUN useradd -r app_user
 RUN mkdir /app
@@ -8,7 +8,7 @@ RUN chown app_user /app/
 WORKDIR /app
 
 # Installing packages
-RUN pip install pipenv gunicorn==19.8.1 meinheld==0.6.1
+RUN pip install pipenv==2018.11.26
 
 ADD --chown=app_user app.py Pipfile* /app/
 RUN pipenv install --system --deploy

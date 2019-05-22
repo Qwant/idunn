@@ -28,6 +28,7 @@ def test_bbox():
     resp = response.json()
 
     assert resp == {
+        'source': 'osm',
         'places': [
             {
                 'type': 'poi',
@@ -268,6 +269,7 @@ def test_size_list():
     resp = response.json()
 
     assert resp == {
+        "source": "osm",
         "places": [
             {
                 'type': 'poi',
@@ -333,6 +335,7 @@ def test_single_raw_filter():
     resp = response.json()
 
     assert resp == {
+        "source": "osm",
         "places": [
             {
                 'type': 'poi',
@@ -540,6 +543,7 @@ def test_valid_category():
     resp = response.json()
 
     assert resp == {
+        'source': 'osm',
         'places': [
             {
                 'type': 'poi',
@@ -570,6 +574,7 @@ def test_places_with_explicit_source_osm():
     resp = response.json()
 
     assert resp == {
+        'source': 'osm',
         'places': [
             {
                 'type': 'poi',
