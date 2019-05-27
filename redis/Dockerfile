@@ -1,5 +1,10 @@
 FROM redis:4@sha256:858b1677143e9f8455821881115e276f6177221de1c663d0abef9b2fda02d065
 
+RUN set -eu \
+ && apt-get update \
+ && apt-get install --assume-yes --quiet --no-install-recommends gettext-base \
+ && rm --recursive --force /tmp/* /var/tmp/* /var/lib/apt/lists/*
+
 # ADD Redis Metrics Exporter
 ADD "https://github.com/oliver006/redis_exporter/releases/download/v0.21.2/redis_exporter-v0.21.2.linux-amd64.tar.gz" /redis_exporter.tar.gz
 RUN tar -xv -f /redis_exporter.tar.gz --directory /usr/local/bin/ && rm /redis_exporter.tar.gz
