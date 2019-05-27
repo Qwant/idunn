@@ -5,7 +5,7 @@ ADD "https://github.com/oliver006/redis_exporter/releases/download/v0.21.2/redis
 RUN tar -xv -f /redis_exporter.tar.gz --directory /usr/local/bin/ && rm /redis_exporter.tar.gz
 
 # ADD Redis configuration
-ADD redis.conf /etc/redis/redis.conf
+COPY redis.conf /usr/local/etc/redis/redis.conf
 
 # ADD an entrypoint
 ADD docker-entrypoint.sh /usr/local/bin/
