@@ -191,7 +191,7 @@ def get_events_bbox(bbox, query_params: http.QueryParams):
 def fetch_event_places(bbox, kuzzle_address, kuzzle_port, size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
-    url_kuzzle = 'http://'+kuzzle_address+':'+kuzzle_port+'/opendatasoft/events/_search'
+    url_kuzzle = kuzzle_address+':'+kuzzle_port+'/opendatasoft/events/_search'
     query = {
         'query': {
             'bool': {
