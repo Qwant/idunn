@@ -21,7 +21,7 @@ def kuzzle_test_normal():
 
     # override_settings({'KUZZLE_CLUSTER_ADDRESS': 'localhost', 'KUZZLE_CLUSTER_PORT': '7512'})
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+
 def test_kuzzle_event_ok(kuzzle_test_normal):
     """
     Check the result of events contained in bbox
@@ -37,12 +37,10 @@ def test_kuzzle_event_ok(kuzzle_test_normal):
              status=200,
              json=json_event)
 
-
         response = client.get(
             url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191&raw_filter=bakery,*&size=5',
         )
 
-        print(response.json())
         assert len(rsps.calls) == 1
 
         resp = response.json()
@@ -63,16 +61,16 @@ def test_kuzzle_event_ok(kuzzle_test_normal):
         assert firstEventData['blocks'][0]['date_start'] == '2019-03-23T00:00:00.000Z'
         assert firstEventData['blocks'][3]['images'] == [
             {
-              "url": "https://s2.qwant.com/thumbr/0x0/b/8/ad1bd2ff50021ff6a1239585cc9ccde31e70072299c3cc910da54f9e791f7c/.jpg?u=&q=0&b=1&p=0&a=0",
-              "alt": "Quand les livres expliquent la science",
-              "credits": "",
-              "source_url": ""
+                "url": "https://s2.qwant.com/thumbr/0x0/3/a/0639adb03540e9f45abb5a27668ac04d6f964aa30d99fa0275756d3d2b413b/evtbevent_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg?u=http%3A%2F%2Fcibul.s3.amazonaws.com%2Fevtbevent_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg&q=0&b=1&p=0&a=0",
+                "alt": "Quand les livres expliquent la science",
+                "credits": "",
+                "source_url": "http://cibul.s3.amazonaws.com/evtbevent_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg"
             },
             {
-              "url": "https://s2.qwant.com/thumbr/0x0/b/8/ad1bd2ff50021ff6a1239585cc9ccde31e70072299c3cc910da54f9e791f7c/.jpg?u=&q=0&b=1&p=0&a=0",
-              "alt": "Quand les livres expliquent la science",
-              "credits": "",
-              "source_url": ""
+                "url": "https://s2.qwant.com/thumbr/0x0/7/f/c091d2d95f56f07beb1a2cd1c61f4d01a7ea4ab5079ab81b379baed315a48f/event_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg?u=http%3A%2F%2Fcibul.s3.amazonaws.com%2Fevent_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg&q=0&b=1&p=0&a=0",
+                "alt": "Quand les livres expliquent la science",
+                "credits": "",
+                "source_url": "http://cibul.s3.amazonaws.com/event_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg"
             }
         ]
 
@@ -83,7 +81,7 @@ def test_kuzzle_event_ok(kuzzle_test_normal):
         """
         assert all(b['type'] != "wikipedia" for b in firstEventData['blocks'])
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+
 def test_kuzzle_event_nok():
     """
     Check that an error is raised when kuzzle port and address not set
