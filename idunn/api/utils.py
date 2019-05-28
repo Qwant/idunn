@@ -7,6 +7,7 @@ from idunn.blocks import \
     PhoneBlock, OpeningHourBlock, InformationBlock, \
     WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GradesBlock
 from idunn.utils import prometheus
+import phonenumbers
 
 logger = logging.getLogger(__name__)
 
@@ -288,3 +289,33 @@ def get_name(properties, lang):
     if name is None:
         name = properties.get('name')
     return name
+
+
+def parse_phone_number(phone):
+    try:
+        return phonenumbers.parse(phone)
+    except Exception as e:
+        logger.warning("failed to parse phone number: {}".format(e), exc_info=True)
+    return None
+
+
+def get_formatted_phone_number(phone, output_format):
+    try:
+        if not isinstance(phone, phonenumbers.phonenumber.PhoneNumber):
+            phone = phonenumbers.parse(phone)
+        return phonenumbers.format_number(phone, output_format)
+    except Exception as e:
+        logger.warning("failed to format phone number: {}".format(e), exc_info=True)
+    return None
+
+
+def get_international_phone_number(phone):
+    return get_formatted_phone_number(phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+
+
+def get_national_phone_number(phone):
+    return get_formatted_phone_number(phone, phonenumbers.PhoneNumberFormat.NATIONAL)
+
+
+def get_e164_phone_number(phone):
+    return get_formatted_phone_number(phone, phonenumbers.PhoneNumberFormat.E164)

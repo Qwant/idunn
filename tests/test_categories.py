@@ -87,8 +87,8 @@ def test_bbox():
                     },
                     {
                         'type': 'phone',
-                        'international_format': '+33140494814',
-                        'local_format': '+33140494814',
+                        'international_format': '+33 1 40 49 48 14',
+                        'local_format': '01 40 49 48 14',
                         'url': 'tel:+33140494814'
                     },
                     {
@@ -113,9 +113,9 @@ def test_bbox():
                 'blocks': [
                     {
                         'international_format': '+33 1 42 72 09 37',
-                        'local_format': '+33 1 42 72 09 37',
+                        'local_format': '01 42 72 09 37',
                         'type': 'phone',
-                        'url': 'tel:+33 1 42 72 09 37'
+                        'url': 'tel:+33142720937'
                     },
                     {
                         'type': 'website',
@@ -159,9 +159,9 @@ def test_bbox():
                     },
                     {
                         'international_format': '+33 1 40 20 52 29',
-                        'local_format': '+33 1 40 20 52 29',
+                        'local_format': '01 40 20 52 29',
                         'type': 'phone',
-                        'url': 'tel:+33 1 40 20 52 29'
+                        'url': 'tel:+33140205229'
                     },
                     {
                         'type': 'website',
@@ -303,8 +303,8 @@ def test_size_list():
                         ]
                     },
                     {
-                        'international_format': '+33140494814',
-                        'local_format': '+33140494814',
+                        'international_format': '+33 1 40 49 48 14',
+                        'local_format': '01 40 49 48 14',
                         'type': 'phone',
                         'url': 'tel:+33140494814'
                     },
@@ -405,9 +405,9 @@ def test_single_raw_filter():
                 'blocks': [
                     {
                         'international_format': '+33 1 42 72 09 37',
-                        'local_format': '+33 1 42 72 09 37',
+                        'local_format': '01 42 72 09 37',
                         'type': 'phone',
-                        'url': 'tel:+33 1 42 72 09 37'
+                        'url': 'tel:+33142720937'
                     },
                     {
                         'type': 'website',

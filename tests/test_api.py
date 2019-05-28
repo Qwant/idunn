@@ -62,7 +62,9 @@ def test_contact_phone():
     assert resp['class_name'] == 'museum'
     assert resp['subclass_name'] == 'museum'
     assert resp['blocks'][1]['type'] == 'phone'
-    assert resp['blocks'][1]['url'] == 'tel:+33 1 40 20 52 29'
+    assert resp['blocks'][1]['url'] == 'tel:+33140205229'
+    assert resp['blocks'][1]['international_format'] == '+33 1 40 20 52 29'
+    assert resp['blocks'][1]['local_format'] == '01 40 20 52 29'
 
 def test_block_null():
     """
@@ -85,7 +87,7 @@ def test_block_null():
     assert resp['subclass_name'] == 'place_of_worship'
     assert resp['blocks'][0]['type'] == 'phone'
     assert resp['address']['label'] == 'Rue Aubriot (Paris)'
-    assert resp['blocks'][0]['url'] == 'tel:+33 1 42 72 09 37'
+    assert resp['blocks'][0]['url'] == 'tel:+33142720937'
 
 
 def test_unknow_poi():
