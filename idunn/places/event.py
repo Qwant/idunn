@@ -25,7 +25,7 @@ class Event(BasePlace):
         return self.get('link')
 
     def get_images_urls(self):
-        return [self.get('image', ''), self.get('image_thumb', '')]
+        return [self.get('image_thumb', ''), self.get('image', '')]
 
     def get_updated_at(self):
         return self.get('updated_at')
