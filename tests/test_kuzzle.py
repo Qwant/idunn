@@ -101,10 +101,8 @@ def test_kuzzle_event_nok():
                  json=json_event)
 
 
-            response = client.get(
+            client.get(
                 url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191&raw_filter=bakery,*&size=5',
             )
 
-            # print(response.json())
-            # assert len(rsps.calls) == 1
 
