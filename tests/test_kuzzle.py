@@ -16,7 +16,7 @@ def kuzzle_test_normal():
     We define here settings specific to tests.
     We define kuzzle address and port
     """
-    with override_settings({'KUZZLE_CLUSTER_ADDRESS': 'localhost', 'KUZZLE_CLUSTER_PORT': '7512'}):
+    with override_settings({'KUZZLE_CLUSTER_ADDRESS': 'http://localhost', 'KUZZLE_CLUSTER_PORT': '7512'}):
         yield
 
     # override_settings({'KUZZLE_CLUSTER_ADDRESS': 'localhost', 'KUZZLE_CLUSTER_PORT': '7512'})
