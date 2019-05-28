@@ -20,7 +20,12 @@ class OpeningDayEvent(BaseBlock):
 
         if isinstance(timetable, str):
             timetable = timetable.split(';')
+            test = []
+            for tt in timetable:
+                date_start_end = tt.split(' ')
+                test.append({ 'begin': date_start_end[0], 'end': date_start_end[1]})
 
+            timetable = test
         if not (date_start or date_end or space_time_info or timetable):
             return None
 
