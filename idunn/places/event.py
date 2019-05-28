@@ -8,11 +8,6 @@ class Event(BasePlace):
 
     def __init__(self, d):
         super().__init__(d)
-        if not isinstance(self.get('properties'), dict):
-            self['properties'] = {
-                p.get('key'): p.get('value') for p in self.get('properties', [])
-            }
-        self.properties = self['properties']
 
     def get_local_name(self):
         return self.get('title', '')
