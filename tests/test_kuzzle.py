@@ -11,7 +11,7 @@ from idunn.api.places_list import PlacesQueryParam
 from app import app, settings
 
 @pytest.fixture(scope="function")
-def limiter_test_normal():
+def kuzzle_test_normal():
     """
     We define here settings specific to tests.
     We define kuzzle address and port
@@ -22,7 +22,7 @@ def limiter_test_normal():
     # override_settings({'KUZZLE_CLUSTER_ADDRESS': 'localhost', 'KUZZLE_CLUSTER_PORT': '7512'})
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_kuzzle_event_ok(limiter_test_normal):
+def test_kuzzle_event_ok(kuzzle_test_normal):
     """
     Check the result of events contained in bbox
     """
