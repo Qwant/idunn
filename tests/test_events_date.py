@@ -4,18 +4,10 @@ from idunn.blocks.events import DescriptionEvent, OpeningDayEvent
 from idunn.places import POI
 
 """
-In this module we test that the opening_hours block for
-a POI located in a different timezone (Moscow) contains
-the correct information.
+In this module we test the events return. check if fields
+are correctly returned
 
-For each test we freeze time at different datetimes and
-for each we create a fake different OpeningHourBlock from
-a raw json extracted from a POI located in Moscow city.
-
-TODO: a test that checks that opening hours can now span
-over midnight (branch 'new-parsing' of the repo)
 """
-
 
 def get_event_day_complete_fields():
     """
