@@ -41,7 +41,7 @@ def test_pj_place():
         assert blocks[0]['raw'] == "Tu-Su 10:30-18:00"
 
         assert blocks[1]['type'] == 'phone'
-        assert blocks[1]['url'] == 'tel:+33 185560036'
+        assert blocks[1]['url'] == 'tel:+33185560036'
 
         assert blocks[2]['blocks'][0]['blocks'][0]['wheelchair'] == 'yes'
 

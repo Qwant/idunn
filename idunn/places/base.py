@@ -4,6 +4,7 @@ from idunn.api.utils import WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO, WikipediaCache
 from .place import Place, PlaceMeta
 
+
 logger = logging.getLogger(__name__)
 
 class BasePlace(dict):

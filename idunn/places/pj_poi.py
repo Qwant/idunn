@@ -1,6 +1,7 @@
 from .base import BasePlace
 from .place import PlaceMeta
 
+
 class PjPOI(BasePlace):
     PLACE_TYPE = 'poi'
 

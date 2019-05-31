@@ -125,8 +125,8 @@ def test_full():
             {
                 "type": "phone",
                 "url": "tel:+33140494814",
-                "international_format": "+33140494814",
-                "local_format": "+33140494814"
+                "international_format": "+33 1 40 49 48 14",
+                "local_format": "01 40 49 48 14"
             },
             {
                 "type": "information",
