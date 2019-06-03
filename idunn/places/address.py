@@ -1,5 +1,4 @@
 from .base import BasePlace
-from idunn.api.utils import build_blocks, get_geom
 
 class Address(BasePlace):
     PLACE_TYPE = 'address'

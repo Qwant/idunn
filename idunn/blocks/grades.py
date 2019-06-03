@@ -8,6 +8,7 @@ class GradesBlock(BaseBlock):
 
     total_grades_count = validators.Integer()
     global_grade = validators.Number()
+    url = validators.String(allow_null=True)
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -21,4 +22,5 @@ class GradesBlock(BaseBlock):
         return cls(
             total_grades_count=total_grades_count,
             global_grade=global_grade,
+            url=es_poi.get_reviews_url() or None
         )

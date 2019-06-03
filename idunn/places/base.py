@@ -173,3 +173,6 @@ class BasePlace(dict):
 
     def get_raw_grades(self):
         return {}
+
+    def get_reviews_url(self):
+        return ""

@@ -118,3 +118,6 @@ class PjPOI(BasePlace):
 
     def get_raw_grades(self):
         return self.get('grades')
+
+    def get_reviews_url(self):
+        return self.get('Links', {}).get('viewReviews', '')
