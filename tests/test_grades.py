@@ -14,5 +14,6 @@ def test_grades_block():
 
     assert web_block == GradesBlock(
         total_grades_count=8,
-        global_grade=4.
+        global_grade=4.,
+        url=None
     )

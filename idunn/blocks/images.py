@@ -79,7 +79,13 @@ class ImagesBlock(BaseBlock):
         return cls._thumb_helper
 
     @staticmethod
-    def get_source_url(raw_url):
+    def get_source_url(raw_url, place):
+        if 'Links' in place:
+            # Use pagesjaunes photos link when possible
+            link = place.get('Links', {}).get('viewPhotos')
+            if link:
+                return link
+
         # Use wikimedia commons media viewer when possible
         match = re.match(
             r'^https://upload.wikimedia.org/wikipedia/commons/(?:.+/)?\w{1}/\w{2}/([^/]+)',
@@ -107,7 +113,7 @@ class ImagesBlock(BaseBlock):
         place_name = es_poi.get_name(lang)
         images = []
         for raw_url in raw_urls:
-            source_url = cls.get_source_url(raw_url)
+            source_url = cls.get_source_url(raw_url, place=es_poi)
             thumbr = cls.get_thumbr_helper()
             if thumbr.is_enabled():
                 thumbr = cls.get_thumbr_helper()
