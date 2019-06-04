@@ -13,7 +13,10 @@ class Event(BasePlace):
         return self.get('title', '')
 
     def get_id(self):
-        return self.get('uid')
+        event_id = self.get('uid')
+        if event_id:
+            return  f'event:openagenda:{event_id}'
+        return None
 
     def get_coord(self):
         return self.get('geo_loc')
@@ -45,8 +48,6 @@ class Event(BasePlace):
 
         return {
             "name": self.get('placename'),
-            "region": self.get('region'),
-            "department": self.get('department'),
             "label": self.get('address'),
             "city": self.get('city'),
             "admin": self.build_admin(lang),
