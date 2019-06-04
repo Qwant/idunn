@@ -20,3 +20,13 @@ class Admin(BasePlace):
 
     def get_subclass_name(self):
         return self.get('zone_type')
+
+    @property
+    def wikidata_id(self):
+        codes = self.get("codes")
+        if codes is None:
+            return None
+        for entry in codes:
+            if entry["name"] == "wikidata":
+                return entry["value"]
+        return None
