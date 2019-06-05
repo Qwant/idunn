@@ -96,6 +96,44 @@ class PlacesQueryParam(BaseModel):
             v = ALL_CATEGORIES.get(v)
         return v
 
+
+class EventQueryParam(BaseModel):
+    bbox: str
+    size: Optional[int] = None
+    lang: str = None
+    verbosity: str = DEFAULT_VERBOSITY_LIST
+
+    @validator(('bbox'))
+    def valid_box(cls, v):
+        v = v.split(',')
+        if len(v) != 4:
+            raise ValueError('bbox should contain 4 numbers')
+        left, bot, right, top = float(v[0]), float(v[1]), float(v[2]), float(v[3])
+        if left > right or bot > top:
+            raise ValueError('bbox dimensions are invalid')
+        if (right - left > MAX_WIDTH) or (top - bot > MAX_HEIGHT):
+            raise ValueError('bbox is too large')
+        return (left, bot, right, top)
+
+    @validator('size', always=True)
+    def max_size(cls, v):
+        max_size = settings['LIST_PLACES_MAX_SIZE']
+        sizes = [v, max_size]
+        return min(int(i) for i in sizes if i is not None)
+
+    @validator('lang', pre=True, always=True)
+    def valid_lang(cls, v):
+        if v is None:
+            v = settings['DEFAULT_LANGUAGE']
+        return v.lower()
+
+    @validator('verbosity', pre=True, always=True)
+    def valid_verbosity(cls, v):
+        if v not in ALL_VERBOSITY_LEVELS:
+            raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
+        return v
+
+
 def get_raw_params(query_params):
     raw_params = dict(query_params)
     if 'category' in query_params:

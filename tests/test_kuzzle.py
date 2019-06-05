@@ -38,7 +38,7 @@ def test_kuzzle_event_ok(kuzzle_test_normal):
              json=json_event)
 
         response = client.get(
-            url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191&raw_filter=bakery,*&size=5',
+            url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5',
         )
 
         assert len(rsps.calls) == 1
@@ -46,7 +46,7 @@ def test_kuzzle_event_ok(kuzzle_test_normal):
         resp = response.json()
         firstEventData = resp['events'][0]
 
-        assert firstEventData['id'] == '92106271'
+        assert firstEventData['id'] == 'event:openagenda:92106271'
         assert firstEventData['name'] == "Quand les livres expliquent la science"
         assert firstEventData['local_name'] == "Quand les livres expliquent la science"
         assert firstEventData['class_name'] is None
@@ -100,7 +100,7 @@ def test_kuzzle_event_nok():
 
 
             client.get(
-                url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191&raw_filter=bakery,*&size=5',
+                url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5',
             )
 
 
