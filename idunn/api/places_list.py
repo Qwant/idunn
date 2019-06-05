@@ -103,6 +103,8 @@ class PlacesQueryParam(BaseModel):
 class EventQueryParam(BaseModel):
     bbox: str
     size: Optional[int] = None
+    lang: str = None
+    verbosity: str = DEFAULT_VERBOSITY_LIST
 
     @validator(('bbox'))
     def valid_box(cls, v):
@@ -122,6 +124,17 @@ class EventQueryParam(BaseModel):
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
+    @validator('lang', pre=True, always=True)
+    def valid_lang(cls, v):
+        if v is None:
+            v = settings['DEFAULT_LANGUAGE']
+        return v.lower()
+
+    @validator('verbosity', pre=True, always=True)
+    def valid_verbosity(cls, v):
+        if v not in ALL_VERBOSITY_LEVELS:
+            raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
+        return v
 
 
 def get_raw_params(query_params):
