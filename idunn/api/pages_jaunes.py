@@ -29,23 +29,29 @@ class PjSource:
             return False
         return bbox_inside_polygon(*bbox, poly=france_polygon)
 
-    def get_places_bbox(self, raw_categories, bbox, size=10):
+    def get_places_bbox(self, raw_categories, bbox, size=10, query=''):
         left, bot, right, top = bbox
+
+        body = {
+           'id': self.es_query_template,
+           'params': {
+               'query': query,
+               'top_left_lat': top,
+               'top_left_lon': left,
+               'bottom_right_lat': bot,
+               'bottom_right_lon': right,
+           },
+        }
+
+        if query:
+            body['params']['match_amenities'] = True
+        if raw_categories:
+            body['params']['filter_category'] = True
+            body['params']['category'] = raw_categories
 
         result = self.es.search_template(
             index=self.es_index,
-            body={
-                'id': self.es_query_template,
-                'params': {
-                    'query': '',
-                    'top_left_lat':  top,
-                    'top_left_lon': left,
-                    'bottom_right_lat': bot,
-                    'bottom_right_lon': right,
-                    'filter_category': True,
-                    'category': raw_categories,
-                },
-            },
+            body=body,
             params={
                 'size': size
             }

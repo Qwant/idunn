@@ -9,6 +9,7 @@ from idunn.utils.index_names import IndexNames
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
 from .pages_jaunes import pj_source
+from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
 
 from apistar import http
 
@@ -21,8 +22,6 @@ logger = logging.getLogger(__name__)
 MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
-SOURCE_OSM = 'osm'
-SOURCE_PAGESJAUNES = 'pagesjaunes'
 ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
 
 def get_categories():
@@ -34,16 +33,17 @@ ALL_CATEGORIES = get_categories()
 class PlacesQueryParam(BaseModel):
     bbox: str
     raw_filter: List[str] = None
-    category: List[Any] = None
+    category: List[Any] = []
     size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
     source: Optional[str] = None
+    q: Optional[str] = None
 
     def __init__(self, **data: Any):
         super().__init__(**data)
-        if not self.raw_filter and not self.category:
-            exc = ValueError("At least one \'raw_filter\' or one \'category\' parameter is required")
+        if not self.raw_filter and not self.category and not self.q:
+            exc = ValueError("One of 'category', 'raw_filter' or 'q' parameter is required")
             raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
 
     @validator('lang', pre=True, always=True)
@@ -120,7 +120,10 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
 
     source = params.source
     if source is None:
-        if params.category \
+        if params.q:
+            # PJ is currently the only source that accepts arbitrary queries
+            source = SOURCE_PAGESJAUNES
+        elif params.category \
             and all(c.get('pj_filters') for c in params.category) \
             and pj_source.bbox_is_covered(params.bbox):
             source = SOURCE_PAGESJAUNES
@@ -129,7 +132,7 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
 
     if source == SOURCE_PAGESJAUNES:
         all_categories = [pj_category for c in params.category for pj_category in c['pj_filters']]
-        places_list = pj_source.get_places_bbox(all_categories, params.bbox, size=params.size)
+        places_list = pj_source.get_places_bbox(all_categories, params.bbox, size=params.size, query=params.q)
     else:
         # Default source (OSM)
         if params.raw_filter:
