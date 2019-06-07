@@ -33,7 +33,7 @@ def test_pj_place():
         assert resp['class_name'] == 'museum'
         assert resp['subclass_name'] == 'museum'
         assert resp['type'] == 'poi'
-        assert resp['meta']['source'] == 'pagesjaunes'
+        assert resp['meta']['source'] == 'pages_jaunes'
         assert resp['geometry']['center'] == [2.362634, 48.859702]
 
         blocks = resp['blocks']
@@ -77,5 +77,5 @@ def test_pj_place_with_missing_data():
         assert resp['class_name'] == 'museum'
         assert resp['subclass_name'] == 'museum'
         assert resp['type'] == 'poi'
-        assert resp['meta']['source'] == 'pagesjaunes'
+        assert resp['meta']['source'] == 'pages_jaunes'
         assert resp['geometry']['center'] == [2.362634, 48.859702]

@@ -521,7 +521,7 @@ def test_category_or_raw_filter():
                 'loc': [
                     'PlacesQueryParam'
                 ],
-                'msg': "At least one 'raw_filter' or one 'category' parameter is required",
+                'msg': ANY,
                 'type': 'value_error'
             }
         ]
