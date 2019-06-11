@@ -94,11 +94,61 @@ class BreweryBlock(BaseBlock):
         return cls(beers=beers)
 
 
+def get_diet_status(diet_kind, data):
+    info = data.get("properties", {}).get("diet:{}".format(diet_kind))
+    return {
+        CuisineBlock.STATUS_YES: CuisineBlock.STATUS_YES,
+        CuisineBlock.STATUS_NO: CuisineBlock.STATUS_NO,
+        CuisineBlock.STATUS_ONLY: CuisineBlock.STATUS_ONLY
+    }.get(info, CuisineBlock.STATUS_UNKNOWN)
+
+
+class Cuisine(types.Type):
+    name = validators.String()
+
+
+class CuisineBlock(BaseBlock):
+    BLOCK_TYPE = "cuisine"
+    SUPPORTED_DIETS = ("vegetarian", "vegan", "gluten_free")
+    STATUS_YES = "yes"
+    STATUS_NO = "no"
+    STATUS_ONLY = "only"
+    STATUS_UNKNOWN = "unknown"
+
+    cuisines = validators.Array(items=Cuisine)
+    vegetarian = validators.String()
+    vegan = validators.String()
+    gluten_free = validators.String()
+
+    @classmethod
+    def from_es(cls, es_poi, lang):
+        cuisine = es_poi.get("properties", {}).get("cuisine")
+
+
+        vegetarian = get_diet_status("vegetarian", es_poi)
+        vegan = get_diet_status("vegan", es_poi)
+        gluten_free = get_diet_status("gluten_free", es_poi)
+
+
+        cuisines = []
+        if cuisine is not None:
+            cuisines = [Cuisine(name=b) for b in cuisine.split(";")]
+        elif (vegetarian == cls.STATUS_UNKNOWN and
+              vegan == cls.STATUS_UNKNOWN and
+              gluten_free == cls.STATUS_UNKNOWN):
+            return None
+
+        return cls(cuisines=cuisines,
+                   vegetarian=vegetarian,
+                   vegan=vegan,
+                   gluten_free=gluten_free)
+
+
 class ServicesAndInformationBlock(BaseBlock):
     BLOCK_TYPE = "services_and_information"
 
     blocks = BlocksValidator(
-        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock]
+        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]
     )
 
     @classmethod
@@ -108,6 +158,7 @@ class ServicesAndInformationBlock(BaseBlock):
         access_block = AccessibilityBlock.from_es(es_poi, lang)
         internet_block = InternetAccessBlock.from_es(es_poi, lang)
         brewery_block = BreweryBlock.from_es(es_poi, lang)
+        cuisine_block = CuisineBlock.from_es(es_poi, lang)
 
         if access_block is not None:
             blocks.append(access_block)
@@ -115,6 +166,8 @@ class ServicesAndInformationBlock(BaseBlock):
             blocks.append(internet_block)
         if brewery_block is not None:
             blocks.append(brewery_block)
+        if cuisine_block is not None:
+            blocks.append(cuisine_block)
 
         if len(blocks) > 0:
             return cls(blocks=blocks)

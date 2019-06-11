@@ -74,20 +74,4 @@ def test_wheelchair():
     assert resp['local_name'] == "Multiplexe Liberté"
     assert resp['class_name'] == 'cinema'
     assert resp['subclass_name'] == 'cinema'
-    assert resp['blocks'] == [
-            {
-                "type": "information",
-                "blocks": [
-                    {
-                        "type": "services_and_information",
-                        "blocks": [
-                            {
-                                "type": "accessibility",
-                                "wheelchair": "yes",
-                                "toilets_wheelchair": "yes"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
+    assert resp['blocks'] == [{'blocks': [{'blocks': [{'toilets_wheelchair': 'yes', 'type': 'accessibility', 'wheelchair': 'yes'}], 'type': 'services_and_information'}], 'type': 'information'}]
