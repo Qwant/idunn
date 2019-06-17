@@ -2,7 +2,7 @@ import os
 import logging
 import requests
 from elasticsearch import Elasticsearch
-from apistar.exceptions import BadRequest
+from apistar.exceptions import BadRequest, HTTPException
 
 from idunn import settings
 from idunn.utils.settings import Settings, _load_yaml_file
@@ -24,8 +24,7 @@ logger = logging.getLogger(__name__)
 MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
-KUZZLE_CLUSTER_ADDRESS = 'KUZZLE_CLUSTER_ADDRESS'
-KUZZLE_CLUSTER_PORT = 'KUZZLE_CLUSTER_PORT'
+
 ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
 
 def get_categories():
@@ -197,15 +196,15 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
 
 
 def get_events_bbox(bbox, query_params: http.QueryParams):
-    raw_params = get_raw_params(query_params)
-    kuzzle_address = settings.get(KUZZLE_CLUSTER_ADDRESS)
-    kuzzle_port = settings.get(KUZZLE_CLUSTER_PORT)
+    # raw_params = get_raw_params(query_params)
+    kuzzle_address = settings.get('KUZZLE_CLUSTER_ADDRESS')
+    kuzzle_port = settings.get('KUZZLE_CLUSTER_PORT')
 
     if not kuzzle_address or not kuzzle_port:
-        raise Exception(f"Missing kuzzle address or port: (port {KUZZLE_CLUSTER_PORT} is not set or address ${KUZZLE_CLUSTER_ADDRESS} is not set")
+        raise HTTPException(f"Missing kuzzle address or port", status_code=501)
 
     try:
-        params = EventQueryParam(**raw_params)
+        params = EventQueryParam(**query_params)
     except ValidationError as e:
         logger.warning(f"Validation Error: {e.json()}")
         raise BadRequest(

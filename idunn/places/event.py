@@ -21,8 +21,8 @@ class Event(BasePlace):
     def get_coord(self):
         return self.get('geo_loc')
 
-    def get_lang(self):
-        return self.get('lang')
+    # def get_lang(self):
+    #   return self.get('lang')
 
     def get_website(self):
         return self.get('link')

@@ -25,5 +25,5 @@ def get_api_urls(settings):
         Route('/places/{id}', 'GET', handler=get_place),
         Route('/categories', 'GET', handler=get_all_categories),
         Route('/places', 'GET', handler=get_places_bbox),
-        Route('/events', 'GET', handler=get_events_bbox)
+        Route('/events', 'GET', handler=get_events_bbox),
     ]
