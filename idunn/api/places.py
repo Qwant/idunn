@@ -42,6 +42,7 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, lang=None, type=None, 
         "addr": Address,
         "poi": POI,
     }
+
     loader = places.get(es_place.get('_type'))
 
     if loader is None:

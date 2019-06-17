@@ -6,8 +6,8 @@ from .base import BaseBlock
 class OpeningDayEvent(BaseBlock):
     BLOCK_TYPE = "event_opening_date"
 
-    date_start = validators.String()
-    date_end = validators.String()
+    date_start = validators.DateTime()
+    date_end = validators.DateTime()
     space_time_info = validators.String(allow_null=True)
     timetable = validators.Array(allow_null=True)
 
@@ -20,12 +20,12 @@ class OpeningDayEvent(BaseBlock):
 
         if isinstance(timetable, str):
             timetable = timetable.split(';')
-            test = []
+            new_format_timetable = []
             for tt in timetable:
                 date_start_end = tt.split(' ')
-                test.append({ 'begin': date_start_end[0], 'end': date_start_end[1]})
+                new_format_timetable.append({ 'begin': date_start_end[0], 'end': date_start_end[1]})
 
-            timetable = test
+            timetable = new_format_timetable
         if not (date_start or date_end or space_time_info or timetable):
             return None
 
