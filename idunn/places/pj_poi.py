@@ -56,7 +56,13 @@ class PjPOI(BasePlace):
         return self.get_class_name()
 
     def get_raw_opening_hours(self):
-        opening_hours_dict = self.get('OpeningHours', {})
+        return self.get_raw_hours_kind('OpeningHours')
+
+    def get_raw_happy_hours(self):
+        return self.get_raw_hours_kind('HappyHours')
+
+    def get_raw_hours_kind(self, kind):
+        opening_hours_dict = self.get(kind, {})
         raw = ""
 
         def format_day_range(first_day, last_day, times):

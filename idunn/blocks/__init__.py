@@ -1,4 +1,5 @@
 from .opening_hour import OpeningHourBlock
+from .happy_hour import HappyHourBlock
 from .phone import PhoneBlock
 from .information import InformationBlock
 from .website import WebSiteBlock
@@ -11,6 +12,7 @@ from .events import OpeningDayEvent, DescriptionEvent
 
 ALL_BLOCKS = [
     OpeningHourBlock,
+    HappyHourBlock,
     PhoneBlock,
     InformationBlock,
     WikipediaBlock,
