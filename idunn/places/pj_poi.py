@@ -2,6 +2,49 @@ from .base import BasePlace
 from .place import PlaceMeta
 from ..api.constants import SOURCE_PAGESJAUNES
 
+HEALTH = (
+    'Chiropracteur',
+    'Centre de radiologie',
+    'Cardiologue',
+    'Gynécologue',
+    'ORL',
+    'Radiologue',
+    'Centre médico-social',
+    'Ostéopathe',
+    'santé publique',
+    'médecine sociale',
+    'médecine du travail',
+    'Chirurgien',
+    'dentiste',
+    'Ophtalmologue',
+    'Médecin généraliste',
+    'Infirmier',
+    'soins à domicile',
+    'kinésithérapeute',
+    'Psychologue',
+    'Ergothérapeute',
+    'préfectures',
+    'sous-préfectures',
+    'Hôpital',
+    'Pharmacie',
+    'vétérinaires',
+)
+
+SERVICE = (
+    'plombiers',
+    'garages automobiles',
+    'mécanique générale',
+    'envoi, distribution de courrier, de colis',
+    'serrurerie, métallerie',
+    'mairies',
+    ' gendarmerie',
+    ' police',
+    'sapeurs-pompiers',
+    'centres de secours',
+    'entreprises de menuiserie',
+)
+
+
 class PjPOI(BasePlace):
     PLACE_TYPE = 'poi'
 
@@ -28,28 +71,35 @@ class PjPOI(BasePlace):
 
     def get_class_name(self):
         raw_categories = set(self.get('Category', []))
-        if 'restaurants' in raw_categories:
-            return 'restaurant'
-        if 'hôtels' in raw_categories:
-            return 'lodging'
-        if 'musées' in raw_categories:
-            return 'museum'
-        if 'salles de cinéma' in raw_categories:
-            return 'cinema'
-        if 'salles de concerts, de spectacles' in raw_categories:
-            return 'theatre'
-        if 'Pharmacie' in raw_categories:
-            return 'pharmacy'
-        if 'supermarchés, hypermarchés' in raw_categories:
-            return 'grocery'
-        if 'banques' in raw_categories:
-            return 'bank'
-        if 'cafés, bars' in raw_categories:
-            return 'bar'
-        if any(k in c for c in raw_categories for k in ('écoles ','collèges ','lycées ')):
-            return 'school'
-        if any('enseignement supérieur' in c for c in raw_categories):
-            return 'college'
+        categories = [
+            {'raw': 'restaurants', 'name': 'restaurant'},
+            {'raw': 'hôtels', 'name': 'lodging'},
+            {'raw': 'salles de cinéma', 'name': 'cinema'},
+            {'raw': 'salles de concerts, de spectacles', 'name': 'theatre'},
+            {'raw': 'Pharmacie', 'name': 'pharmacy'},
+            {'raw': 'supermarchés, hypermarchés', 'name': 'grocery'},
+            {'raw': 'banques', 'name': 'bank'},
+            {'raw': 'cafés, bars', 'name': 'bar'},
+            {'name': 'school',
+             'func': lambda raw_categories: any(k in c
+                                                for c in raw_categories
+                                                for k in ('écoles ', 'collèges ', 'lycées '))},
+            {'name': 'college',
+             'func': lambda raw_categories: any('enseignement supérieur' in c for c in raw_categories)},
+            {'raw': 'musées', 'name': 'museum'},
+            {'name': 'health',
+             'func': lambda raw_categories: any(k in c for c in raw_categories for k in HEALTH)},
+            {'name': 'service',
+             'func': lambda raw_categories: any(k in c for c in raw_categories for k in SERVICE)},
+            {'raw': 'agences immobilière', 'name': 'building'},
+        ]
+        for category in categories:
+            if 'raw' in category:
+                if category['raw'] in raw_categories:
+                    return category['name']
+            elif 'func' in category:
+                if category['func'](raw_categories):
+                    return category['name']
         return None
 
     def get_subclass_name(self):
