@@ -48,7 +48,7 @@ class DescriptionEvent(BaseBlock):
     def from_es(cls, es_poi, lang):
         description = es_poi.get('description', None)
         free_text =  es_poi.get('free_text', None)
-        price = es_poi.get('price', None)
+        price = es_poi.get('pricing_info', None)
 
         if not (description or free_text or price):
             return None
