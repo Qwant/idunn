@@ -4,16 +4,14 @@ from idunn.blocks.events import DescriptionEvent, OpeningDayEvent
 from idunn.places import POI
 
 """
-In this module we test the events return. check if fields
+In this module we test the events block OpeningDayEvent. check if fields
 are correctly returned
 
 """
 
 def get_event_day_complete_fields():
     """
-    returns an OpeningHourBlock from a fake json
-    corresponding to a POI located in moscow city
-    for different opening_hours formats.
+    returns an OpeningDayEvent with all features and multiple timetables
     """
     return OpeningDayEvent.from_es(
         POI({
@@ -27,9 +25,7 @@ def get_event_day_complete_fields():
 
 def get_event_day_complete_fields_with_one_timetable():
     """
-    returns an OpeningHourBlock from a fake json
-    corresponding to a POI located in moscow city
-    for different opening_hours formats.
+    returns an OpeningDayEvent with all features and simple timetable
     """
     return OpeningDayEvent.from_es(
         POI({
@@ -45,9 +41,7 @@ def get_event_day_complete_fields_with_one_timetable():
 
 def get_event_day_missing_fields():
     """
-    returns an OpeningHourBlock from a fake json
-    corresponding to a POI located in moscow city
-    for different opening_hours formats.
+    returns an OpeningDayEvent with date start and date end
     """
     return OpeningDayEvent.from_es(
         POI({
@@ -60,9 +54,7 @@ def get_event_day_missing_fields():
 
 def get_event_day_no_fields():
     """
-    returns an OpeningHourBlock from a fake json
-    corresponding to a POI located in moscow city
-    for different opening_hours formats.
+    returns an OpeningDayEvent empty
     """
     return OpeningDayEvent.from_es(
         POI({
@@ -73,10 +65,7 @@ def get_event_day_no_fields():
 
 def test_event_day_complete():
     """
-    We freeze time at 8:30 UTC (ie. 11:30 in Moscow)
-    The POI located in Moscow should be open since
-    it opens at 10:00 every day and the local time
-    is 11:30.
+    test OpeningDayEvent withall the features and timetable with different scheduled
     """
     ode_block = get_event_day_complete_fields()
 
@@ -94,10 +83,7 @@ def test_event_day_complete():
 
 def test_event_day_complete_with_one_timetable():
     """
-    We freeze time at 8:30 UTC (ie. 11:30 in Moscow)
-    The POI located in Moscow should be open since
-    it opens at 10:00 every day and the local time
-    is 11:30.
+    test OpeningDayEvent wit hall the features and simple timetable
     """
     ode_block = get_event_day_complete_fields_with_one_timetable()
 
@@ -114,10 +100,7 @@ def test_event_day_complete_with_one_timetable():
 
 def test_event_day_missing_fields():
     """
-    We freeze time at 8:30 UTC (ie. 11:30 in Moscow)
-    The POI located in Moscow should be open since
-    it opens at 10:00 every day and the local time
-    is 11:30.
+    test OpeningDayEvent with ano space_time_info and no timetable
     """
     ode_block = get_event_day_missing_fields()
     print(ode_block)
@@ -132,10 +115,7 @@ def test_event_day_missing_fields():
 
 def test_event_day_no_fields():
     """
-    We freeze time at 8:30 UTC (ie. 11:30 in Moscow)
-    The POI located in Moscow should be open since
-    it opens at 10:00 every day and the local time
-    is 11:30.
+    test OpeningDayEvent with no features
     """
     ode_block = get_event_day_no_fields()
 
