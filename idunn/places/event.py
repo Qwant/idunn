@@ -31,7 +31,7 @@ class Event(BasePlace):
         return self.get('updated_at')
 
     def get_class_name(self):
-        return self.get('poi_class')
+        return None
 
     def get_subclass_name(self):
         return self.get('poi_subclass')
