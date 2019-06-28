@@ -12,6 +12,7 @@ from .closest import closest_address
 from .directions import get_directions
 
 
+
 def get_metric_handler(settings):
     """Select the prometheus multiprocess mode or not"""
     if settings['PROMETHEUS_MULTIPROC']:
