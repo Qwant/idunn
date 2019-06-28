@@ -8,11 +8,13 @@ from .places_list import get_places_bbox, get_events_bbox
 from .categories import get_all_categories
 from .closest import closest_address
 
+
 def get_metric_handler(settings):
     """Select the prometheus multiprocess mode or not"""
     if settings['PROMETHEUS_MULTIPROC']:
         return expose_metrics_multiprocess
     return expose_metrics
+
 
 def get_api_urls(settings):
     """Defines all endpoints
