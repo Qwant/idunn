@@ -164,6 +164,7 @@ class BasePlace(dict):
             class_name=self.get_class_name(),
             subclass_name=self.get_subclass_name(),
             geometry=get_geom(self),
+            air_quality=self.get_air_quality(),
             address=self.build_address(lang),
             blocks=build_blocks(self, lang, verbosity),
             meta=self.get_meta()
@@ -173,6 +174,9 @@ class BasePlace(dict):
         return []
 
     def get_raw_grades(self):
+        return {}
+
+    def get_air_quality(self):
         return {}
 
     def get_reviews_url(self):

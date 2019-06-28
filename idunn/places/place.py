@@ -14,6 +14,7 @@ class Place(types.Type):
     local_name = validators.String(allow_null=True)
     class_name = validators.String(allow_null=True)
     subclass_name = validators.String(allow_null=True)
+    air_quality = validators.Object(allow_null=True)
     geometry = validators.Object(allow_null=True)
     address = validators.Object(allow_null=True)
     blocks = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
