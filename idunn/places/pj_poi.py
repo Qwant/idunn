@@ -81,7 +81,12 @@ class PjPOI(BasePlace):
             if value and value == times:
                 last_day = k
         raw += format_day_range(first_day, last_day, times)
-        return raw.rstrip('; ')
+        result = raw.rstrip('; ')
+
+        if result == 'Mo-Su 24/7':
+            return '24/7'
+
+        return result
 
     def get_raw_wheelchair(self):
         return self.get('WheelchairAccessible')

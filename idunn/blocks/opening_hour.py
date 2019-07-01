@@ -5,6 +5,7 @@ from apistar import validators, types
 from tzwhere import tzwhere
 import humanized_opening_hours as hoh
 from humanized_opening_hours.exceptions import HOHError
+from lark.exceptions import LarkError
 
 from .base import BaseBlock
 
@@ -82,7 +83,7 @@ class OpeningHourBlock(BaseBlock):
             hoh_args['location'] = (poi_lat, poi_lon, poi_tzname, 24)
         try:
             oh = hoh.OHParser(raw, **hoh_args)
-        except HOHError:
+        except (HOHError, LarkError):
             logger.info(
                 "Failed to parse opening_hours field, id:'%s' raw:'%s'",
                 es_poi.get_id(), raw, exc_info=True
@@ -96,15 +97,19 @@ class OpeningHourBlock(BaseBlock):
         else:
             status = 'closed'
 
-        if is247:
+        if is247 or oh.is_24_7:
             return cls(
                 status=status,
                 next_transition_datetime=None,
                 seconds_before_next_transition=None,
-                is_24_7=is247,
+                is_24_7=True,
                 raw=oh.field,
                 days=cls.get_days(oh, dt=poi_dt)
             )
+
+        if all(r.status == 'closed' for r in oh.rules):
+            # Ignore opening_hours such as "Apr 1-Sep 30: off", causing overflow
+            return None
 
         # The current version of the hoh lib doesn't allow to use the next_change() function
         # with an offset aware datetime.
@@ -127,7 +132,7 @@ class OpeningHourBlock(BaseBlock):
             status=status,
             next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
-            is_24_7=is247,
+            is_24_7=oh.is_24_7,
             raw=oh.field,
             days=cls.get_days(oh, dt=poi_dt)
         )

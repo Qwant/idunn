@@ -1,3 +1,4 @@
+import pytest
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
@@ -386,3 +387,31 @@ def test_opening_hour_2_years():
         raw='Oct-Mar 07:30-19:30; Apr-Sep 07:00-21:00',
         days=ANY
     )
+
+@freeze_time("2019-07-01T08:00:00")
+def test_oh_with_only_closed_rules():
+    oh_block = get_moscow_poi("Apr 1-Sep 30: off")
+    assert oh_block is None
+
+@freeze_time("2019-07-01T08:00:00")
+def test_oh_24_7_variant():
+    oh_block = get_moscow_poi("Apr 1-Sep 30: off")
+    assert oh_block is None
+
+@freeze_time("2019-07-01T08:00:00")
+def test_unsupported_rule_raises_no_exception():
+    oh_block = get_moscow_poi(
+        "Nov 3-Apr 30: 08:00-17:00; May 2-Nov 2: 08:00-17:30;"
+        "Jul 14 off; May 1 off; PH 12:30-13:30 off"
+    )
+    assert oh_block is None
+
+@pytest.mark.skip(
+    "Fix depending on https://github.com/rezemika/humanized_opening_hours/pull/35"
+)
+@freeze_time("2019-07-01T08:00:00")
+def test_oh_all_rules_in_the_past():
+    oh_block = get_moscow_poi(
+        "2018 Jul 02- 2018 Sep 02 Mo-Su 08:00-20:00"
+    )
+    assert oh_block is None
