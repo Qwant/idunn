@@ -31,7 +31,9 @@ def init_logging(settings: Settings):
     # we set this handler to the main logger
     logging.getLogger().handlers = [logHandler]
 
+
 class LogErrorHook:
-    def on_error(self, response: http.Response):
+    def on_error(self, request: http.Request):
         prometheus.exception("unhandled_error")
-        logging.getLogger('idunn.error').exception("An unhandled error was raised")
+        logging.getLogger('idunn.error')\
+            .exception("An unhandled error was raised.", extra={'url': request.url})

@@ -21,7 +21,9 @@ components = [
     PrometheusComponent()
 ]
 
-event_hooks = [LogErrorHook(), CORSHeaders, PrometheusHooks()]
+# WARNING: using Classes (and not instances) in hooks list causes a memory leak.
+# See https://github.com/encode/apistar/issues/606 for more details
+event_hooks = [LogErrorHook(), CORSHeaders(), PrometheusHooks()]
 
 
 app = App(
