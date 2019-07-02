@@ -117,7 +117,10 @@ class OpeningHourBlock(BaseBlock):
         try:
             nt = oh.next_change(dt=poi_dt.replace(tzinfo=None))
         except HOHError:
-            logger.info("HOHError: Failed to compute next transition for poi %s", es_poi.get('id'), exc_info=True)
+            logger.info(
+                "HOHError: Failed to compute next transition for poi %s",es_poi.get_id(),
+                exc_info=True
+            )
             return None
 
         # Then we localize the next_change transition datetime in the local POI timezone.
