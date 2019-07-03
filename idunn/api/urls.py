@@ -6,6 +6,7 @@ from .places import get_place
 from .status import get_status
 from .places_list import get_places_bbox
 from .categories import get_all_categories
+from .closest import closest_address
 
 def get_metric_handler(settings):
     """Select the prometheus multiprocess mode or not"""
@@ -24,5 +25,6 @@ def get_api_urls(settings):
         Route('/pois/{id}', 'GET', handler=get_poi),
         Route('/places/{id}', 'GET', handler=get_place),
         Route('/categories', 'GET', handler=get_all_categories),
-        Route('/places', 'GET', handler=get_places_bbox)
+        Route('/places', 'GET', handler=get_places_bbox),
+        Route('/reverse/{lat}/{lon}', 'GET', handler=closest_address),
     ]
