@@ -102,10 +102,42 @@ def init_indices(mimir_client, wiki_client):
     )
     mimir_client.indices.put_alias(name='munin', index='munin_poi')
 
-    mimir_client.indices.create(index='munin_addr')
+    mimir_client.indices.create(index='munin_addr',
+        body={
+            "mappings": {
+                "addr": {
+                    "properties": {
+                        "coord": {
+                            "type": "geo_point",
+                            "lat_lon": True,
+                            "geohash": True,
+                            "geohash_prefix": True,
+                            "geohash_precision": 11
+                        },
+                    }
+                }
+            }
+        }
+    )
     mimir_client.indices.put_alias(name='munin', index='munin_addr')
 
-    mimir_client.indices.create(index='munin_street')
+    mimir_client.indices.create(index='munin_street',
+        body={
+            "mappings": {
+                "street": {
+                    "properties": {
+                        "coord": {
+                            "type": "geo_point",
+                            "lat_lon": True,
+                            "geohash": True,
+                            "geohash_prefix": True,
+                            "geohash_precision": 11
+                        },
+                    }
+                }
+            }
+        }
+    )
     mimir_client.indices.put_alias(name='munin', index='munin_street')
 
     mimir_client.indices.create(index='munin_admin')

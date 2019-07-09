@@ -42,6 +42,8 @@ ALL_VERBOSITY_LEVELS = list(BLOCKS_BY_VERBOSITY.keys())
 
 PLACE_DEFAULT_INDEX = settings['PLACE_DEFAULT_INDEX']
 PLACE_POI_INDEX = settings['PLACE_POI_INDEX']
+PLACE_ADDRESS_INDEX = settings['PLACE_ADDRESS_INDEX']
+PLACE_STREET_INDEX = settings['PLACE_STREET_INDEX']
 
 ANY = '*'
 
@@ -218,6 +220,49 @@ def fetch_es_place(id, es, indices, type) -> dict:
         logger.warning("Got multiple places with id %s", id)
 
     return es_place[0]
+
+def fetch_closest(lat, lon, max_distance, es):
+    es_addrs = es.search(index=','.join([PLACE_ADDRESS_INDEX,PLACE_STREET_INDEX]),
+        body={
+            "query": {
+                "function_score": {
+                    "query": {
+                        "match_all": {}
+                    },
+                    "boost_mode": "replace", 
+                    "functions": [
+                        {
+                            "gauss": {
+                                "coord": {
+                                    "origin": {
+                                        "lat": lat,
+                                        "lon": lon
+                                    },
+                                    "scale": "{}m".format(max_distance)
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "filter": {
+                "geo_distance": {
+                    "distance": "{}m".format(max_distance),
+                    "coord": {
+                        "lat": lat,
+                        "lon": lon
+                    },
+                    "distance_type": "plane"
+                }
+            },
+            "from": 0,
+            "size": 1
+        }
+    )
+    es_addrs = es_addrs.get('hits', {}).get('hits', [])
+    if len(es_addrs) == 0:
+        raise NotFound(detail={'message': f"nothing around {lat}:{lon} within {max_distance}m..."})
+    return es_addrs[0]
 
 def build_blocks(es_poi, lang, verbosity):
     """Returns the list of blocks we want
