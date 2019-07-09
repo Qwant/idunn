@@ -26,5 +26,5 @@ def get_api_urls(settings):
         Route('/places/{id}', 'GET', handler=get_place),
         Route('/categories', 'GET', handler=get_all_categories),
         Route('/places', 'GET', handler=get_places_bbox),
-        Route('/reverse/{lat}/{lon}', 'GET', handler=closest_address),
+        Route('/reverse/{lat}:{lon}', 'GET', handler=closest_address),
     ]

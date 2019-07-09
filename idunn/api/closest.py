@@ -12,7 +12,7 @@ from idunn.api.pages_jaunes import pj_source
 logger = logging.getLogger(__name__)
 
 
-def closest_address(lat, lon, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, verbosity=DEFAULT_VERBOSITY) -> Address:
+def closest_address(lat: float, lon: float, es: Elasticsearch, indices: IndexNames, settings: Settings, lang=None, verbosity=DEFAULT_VERBOSITY) -> Address:
     """Main handler that returns the requested place"""
     if verbosity not in ALL_VERBOSITY_LEVELS:
         raise BadRequest({
@@ -34,5 +34,4 @@ def closest_address(lat, lon, es: Elasticsearch, indices: IndexNames, settings: 
         prometheus.exception("FoundPlaceWithWrongType")
         raise Exception("Closest address to '{}:{}' has a wrong type: '{}'".format(lat, lon, es_addr.get('_type')))
 
-    print('{} {}'.format(dir(es_addr), es_addr))
     return loader(es_addr['_source']).load_place(lang, verbosity)
