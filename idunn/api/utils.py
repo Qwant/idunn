@@ -261,8 +261,8 @@ def fetch_closest(lat, lon, max_distance, es):
     )
     es_addrs = es_addrs.get('hits', {}).get('hits', [])
     if len(es_addrs) == 0:
-        raise NotFound(detail={'message': f"nothing around {{{lat}:{lon}}} within {max_distance}m..."})
-    return es_addrs
+        raise NotFound(detail={'message': f"nothing around {lat}:{lon} within {max_distance}m..."})
+    return es_addrs[0]
 
 def build_blocks(es_poi, lang, verbosity):
     """Returns the list of blocks we want
