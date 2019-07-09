@@ -406,9 +406,6 @@ def test_unsupported_rule_raises_no_exception():
     )
     assert oh_block is None
 
-@pytest.mark.skip(
-    "Fix depending on https://github.com/rezemika/humanized_opening_hours/pull/35"
-)
 @freeze_time("2019-07-01T08:00:00")
 def test_oh_all_rules_in_the_past():
     oh_block = get_moscow_poi(
