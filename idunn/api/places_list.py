@@ -262,3 +262,4 @@ def fetch_event_places(bbox, kuzzle_address, kuzzle_port, size) -> list:
     bbox_places = bbox_places.get('result', {}).get('hits', [])
 
     return bbox_places
+

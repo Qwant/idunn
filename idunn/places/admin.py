@@ -1,5 +1,4 @@
 from .base import BasePlace
-from ..blocks.environment import Environment
 class Admin(BasePlace):
     PLACE_TYPE = 'admin'
 
@@ -14,12 +13,6 @@ class Admin(BasePlace):
 
     def get_name(self, lang):
         return self.get('names', {}).get(lang) or self.get_local_name()
-
-    def get_air_quality(self):
-        bbox = self.get_bbox()
-        test = Environment.get_air_quality(bbox)
-        print(test)
-        return test
 
     def get_bbox(self):
         return self.get('bbox')
