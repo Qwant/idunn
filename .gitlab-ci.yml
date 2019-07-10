@@ -48,6 +48,7 @@ deploy services:
   - *docker_login
   - *docker_deploy
   - docker service update --network-add ${STACK}_default product-maps-traefik_traefik || true
+  - docker service update --network-add ${STACK}_default 1216_kuzzle || true
   - sleep 5m
 
 stop services:
