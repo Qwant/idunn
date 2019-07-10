@@ -8,8 +8,10 @@ from idunn.utils.settings import Settings, _load_yaml_file
 from idunn.utils.index_names import IndexNames
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
+from idunn.places.event import Event
 from .pages_jaunes import pj_source
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
+from .kuzzle import kuzzle_client
 
 from apistar import http
 
@@ -22,10 +24,6 @@ logger = logging.getLogger(__name__)
 MAX_WIDTH = 1.0 # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
-<<<<<<< 9011e200079d05fbb992e7a5f41fce9aeda99f62
-=======
-
->>>>>>> light update from review
 ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
 
 def get_categories():
@@ -34,21 +32,11 @@ def get_categories():
 
 ALL_CATEGORIES = get_categories()
 
-class PlacesQueryParam(BaseModel):
+class CommonQueryParam(BaseModel):
     bbox: str
-    raw_filter: List[str] = None
-    category: List[Any] = []
     size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
-    source: Optional[str] = None
-    q: Optional[str] = None
-
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-        if not self.raw_filter and not self.category and not self.q:
-            exc = ValueError("One of 'category', 'raw_filter' or 'q' parameter is required")
-            raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
 
     @validator('lang', pre=True, always=True)
     def valid_lang(cls, v):
@@ -62,11 +50,11 @@ class PlacesQueryParam(BaseModel):
             raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
         return v
 
-    @validator('source')
-    def valid_source(cls, v):
-        if v not in ALL_SOURCES:
-            raise ValueError(f"unknown source: '{v}'")
-        return v
+    @validator('size', always=True)
+    def max_size(cls, v):
+        max_size = settings['LIST_PLACES_MAX_SIZE']
+        sizes = [v, max_size]
+        return min(int(i) for i in sizes if i is not None)
 
     @validator('bbox')
     def valid_bbox(cls, v):
@@ -80,11 +68,24 @@ class PlacesQueryParam(BaseModel):
             raise ValueError('bbox is too large')
         return (left, bot, right, top)
 
-    @validator('size', always=True)
-    def max_size(cls, v):
-        max_size = settings['LIST_PLACES_MAX_SIZE']
-        sizes = [v, max_size]
-        return min(int(i) for i in sizes if i is not None)
+
+class PlacesQueryParam(CommonQueryParam):
+    raw_filter: List[str] = None
+    category: List[Any] = []
+    source: Optional[str] = None
+    q: Optional[str] = None
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        if not self.raw_filter and not self.category and not self.q:
+            exc = ValueError("One of 'category', 'raw_filter' or 'q' parameter is required")
+            raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
+
+    @validator('source')
+    def valid_source(cls, v):
+        if v not in ALL_SOURCES:
+            raise ValueError(f"unknown source: '{v}'")
+        return v
 
     @validator('raw_filter')
     def valid_raw_filter(cls, v):
@@ -101,41 +102,8 @@ class PlacesQueryParam(BaseModel):
         return v
 
 
-class EventQueryParam(BaseModel):
-    bbox: str
-    size: Optional[int] = None
-    lang: str = None
-    verbosity: str = DEFAULT_VERBOSITY_LIST
-
-    @validator(('bbox'))
-    def valid_box(cls, v):
-        v = v.split(',')
-        if len(v) != 4:
-            raise ValueError('bbox should contain 4 numbers')
-        left, bot, right, top = float(v[0]), float(v[1]), float(v[2]), float(v[3])
-        if left > right or bot > top:
-            raise ValueError('bbox dimensions are invalid')
-        if (right - left > MAX_WIDTH) or (top - bot > MAX_HEIGHT):
-            raise ValueError('bbox is too large')
-        return (left, bot, right, top)
-
-    @validator('size', always=True)
-    def max_size(cls, v):
-        max_size = settings['LIST_PLACES_MAX_SIZE']
-        sizes = [v, max_size]
-        return min(int(i) for i in sizes if i is not None)
-
-    @validator('lang', pre=True, always=True)
-    def valid_lang(cls, v):
-        if v is None:
-            v = settings['DEFAULT_LANGUAGE']
-        return v.lower()
-
-    @validator('verbosity', pre=True, always=True)
-    def valid_verbosity(cls, v):
-        if v not in ALL_VERBOSITY_LEVELS:
-            raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
-        return v
+class EventQueryParam(CommonQueryParam):
+    pass
 
 
 def get_raw_params(query_params):
@@ -155,7 +123,7 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
-        logger.warning(f"Validation Error: {e.json()}")
+        logger.info(f"Validation Error: {e.json()}")
         raise BadRequest(
             detail={"message": e.errors()}
         )
@@ -198,69 +166,23 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
 
 
 def get_events_bbox(bbox, query_params: http.QueryParams):
-    # raw_params = get_raw_params(query_params)
-    kuzzle_address = settings.get('KUZZLE_CLUSTER_ADDRESS')
-    kuzzle_port = settings.get('KUZZLE_CLUSTER_PORT')
-
-    if not kuzzle_address or not kuzzle_port:
+    if not kuzzle_client.enabled:
         raise HTTPException(f"Missing kuzzle address or port", status_code=501)
 
     try:
         params = EventQueryParam(**query_params)
     except ValidationError as e:
-        logger.warning(f"Validation Error: {e.json()}")
+        logger.info(f"Validation Error: {e.json()}")
         raise BadRequest(
             detail={"message": e.errors()}
         )
 
-    bbox_places = fetch_event_places(
+    bbox_places = kuzzle_client.fetch_event_places(
         bbox=params.bbox,
-        kuzzle_address=kuzzle_address,
-        kuzzle_port=kuzzle_port,
         size=params.size
     )
-    places_list = [Event(p['_source']) for p in bbox_places]
+    events_list = [Event(p['_source']) for p in bbox_places]
 
     return {
-        "events": [p.load_place(params.lang, params.verbosity) for p in places_list]
+        "events": [p.load_place(params.lang, params.verbosity) for p in events_list]
     }
-
-
-def fetch_event_places(bbox, kuzzle_address, kuzzle_port, size) -> list:
-    left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
-
-    url_kuzzle = kuzzle_address+':'+kuzzle_port+'/opendatasoft/events/_search'
-    query = {
-        'query': {
-            'bool': {
-                'filter': {
-                    'geo_bounding_box': {
-                        'geo_loc': {
-                            'top_left': {
-                                'lat': top,
-                                'lon': left
-                            },
-                            'bottom_right': {
-                                'lat': bot,
-                                'lon': right
-                            }
-                        }
-                    }
-                },
-                'must': {
-                    'range': {
-                        'date_end': {
-                            'gte': 'now/d',
-                            'lte': 'now+31d/d'
-                        }
-                    }
-                }
-            }
-        },
-        'size': size
-    }
-    bbox_places = requests.post(url_kuzzle, json=query)
-    bbox_places = bbox_places.json()
-    bbox_places = bbox_places.get('result', {}).get('hits', [])
-
-    return bbox_places

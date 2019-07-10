@@ -1,33 +1,43 @@
-from apistar import validators
+from apistar import validators, types
 
 from .base import BaseBlock
 
 
+class TimeTableItem(types.Type):
+    beginning = validators.DateTime()
+    end = validators.DateTime()
+
+
 class OpeningDayEvent(BaseBlock):
-    BLOCK_TYPE = "event_opening_date"
+    BLOCK_TYPE = "event_opening_dates"
 
     date_start = validators.DateTime()
     date_end = validators.DateTime()
     space_time_info = validators.String(allow_null=True)
-    timetable = validators.Array(allow_null=True)
+    timetable = validators.Array(items=TimeTableItem)
 
     @classmethod
     def from_es(cls, es_poi, lang):
+        if es_poi.PLACE_TYPE != 'event':
+            return None
+
         date_start = es_poi.get('date_start')
         date_end = es_poi.get('date_end')
-        space_time_info= es_poi.get('space_time_info', None)
-        timetable = es_poi.get('timetable', None)
+        space_time_info= es_poi.get('space_time_info')
+        timetable = es_poi.get('timetable') or ''
 
-        if isinstance(timetable, str):
-            timetable = timetable.split(';')
-            new_format_timetable = []
-            for tt in timetable:
-                date_start_end = tt.split(' ')
-                new_format_timetable.append({ 'begin': date_start_end[0], 'end': date_start_end[1]})
-
-            timetable = new_format_timetable
-        if not (date_start or date_end or space_time_info or timetable):
+        if not date_start or not date_end:
             return None
+
+        timetable = timetable.split(';')
+        new_format_timetable = []
+        for tt in filter(None, timetable):
+            date_start_end = tt.split(' ')
+            new_format_timetable.append(
+                TimeTableItem(beginning=date_start_end[0], end=date_start_end[1])
+            )
+
+        timetable = new_format_timetable
 
         return cls(
             date_start=date_start,
@@ -46,11 +56,14 @@ class DescriptionEvent(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        description = es_poi.get('description', None)
-        free_text =  es_poi.get('free_text', None)
-        price = es_poi.get('pricing_info', None)
+        if es_poi.PLACE_TYPE != 'event':
+            return None
 
-        if not (description or free_text or price):
+        description = es_poi.get('description')
+        free_text =  es_poi.get('free_text')
+        price = es_poi.get('pricing_info')
+
+        if not description:
             return None
 
         return cls(
@@ -58,7 +71,3 @@ class DescriptionEvent(BaseBlock):
             free_text=free_text,
             price=price
         )
-
-
-
-

@@ -1,14 +1,12 @@
 from apistar.test import TestClient
-from freezegun import freeze_time
 import pytest
 import os
 import re
 import json
 import responses
 from .utils import override_settings
-from idunn.api.places_list import PlacesQueryParam
 
-from app import app, settings
+from app import app
 
 @pytest.fixture(scope="function")
 def kuzzle_test_normal():
@@ -16,10 +14,8 @@ def kuzzle_test_normal():
     We define here settings specific to tests.
     We define kuzzle address and port
     """
-    with override_settings({'KUZZLE_CLUSTER_ADDRESS': 'http://localhost', 'KUZZLE_CLUSTER_PORT': '7512'}):
+    with override_settings({'KUZZLE_CLUSTER_URL': 'http://localhost:7512'}):
         yield
-
-    # override_settings({'KUZZLE_CLUSTER_ADDRESS': 'localhost', 'KUZZLE_CLUSTER_PORT': '7512'})
 
 
 def test_kuzzle_event_ok(kuzzle_test_normal):
@@ -50,12 +46,12 @@ def test_kuzzle_event_ok(kuzzle_test_normal):
         assert firstEventData['id'] == 'event:openagenda:92106271'
         assert firstEventData['name'] == "Quand les livres expliquent la science"
         assert firstEventData['local_name'] == "Quand les livres expliquent la science"
-        assert firstEventData['class_name'] is None
-        assert firstEventData['subclass_name'] is None
+        assert firstEventData['class_name'] == 'event'
+        assert firstEventData['subclass_name'] == 'event'
         assert firstEventData['address']['name'] == 'Cité des Sciences et de l\'Industrie'
         assert firstEventData['address']['label'] == '30 Avenue Corentin Cariou, Paris'
         assert firstEventData['address']['city'] == 'Paris'
-        assert firstEventData['blocks'][0]['type'] == 'event_opening_date'
+        assert firstEventData['blocks'][0]['type'] == 'event_opening_dates'
         assert firstEventData['blocks'][1]['type'] == 'event_description'
         assert firstEventData['blocks'][2]['type'] == 'website'
         assert firstEventData['blocks'][3]['type'] == 'images'

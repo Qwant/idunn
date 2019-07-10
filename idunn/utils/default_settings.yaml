@@ -64,5 +64,4 @@ PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 ## Data Publishing
 
 # kuzzle Cluster
-KUZZLE_CLUSTER_ADDRESS:
-KUZZLE_CLUSTER_PORT:
+KUZZLE_CLUSTER_URL:
