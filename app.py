@@ -1,10 +1,11 @@
-from apistar import App, Include
+from apistar import Include
 
 from idunn import settings
 from idunn.utils.index_names import IndexNamesSettingsComponent
 from idunn.utils.es_wrapper import ElasticSearchComponent
 from idunn.utils.logging import init_logging, LogErrorHook
 from idunn.utils.cors import CORSHeaders
+from idunn.utils.app import IdunnApp
 from idunn.api.urls import get_api_urls
 from apistar_prometheus import PrometheusComponent, PrometheusHooks
 
@@ -26,7 +27,7 @@ components = [
 event_hooks = [LogErrorHook(), CORSHeaders(), PrometheusHooks()]
 
 
-app = App(
+app = IdunnApp(
     routes=routes,
     schema_url='/schema',
     components=components,

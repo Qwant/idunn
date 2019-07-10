@@ -1,7 +1,5 @@
-import time
 import contextlib
 
-from apistar import Component
 from prometheus_client import Counter, Gauge, Histogram
 
 

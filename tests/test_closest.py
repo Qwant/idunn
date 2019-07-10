@@ -11,6 +11,10 @@ def test_reverse():
     assert response.json()['id'] == 'addr:5.108632;48.810273'
     assert response.json()['name'] == '4 Rue du Moulin'
 
+def test_reverse_invalid():
+    client = TestClient(app)
+    response = client.get('http://localhost/v1/reverse/48.810273:abc')
+    assert response.status_code == 404
 
 def test_place_latlon():
     client = TestClient(app)
@@ -34,3 +38,8 @@ def test_place_latlon_no_address():
     assert response_data['name'] == '-48.81027 : 35.10863'
     assert response_data['geometry']['center'] == [35.10863, -48.81027]
     assert response_data['address'] is None
+
+def test_place_latlon_invalid():
+    client = TestClient(app)
+    response = client.get('http://localhost/v1/places/latlon:abc:55-')
+    assert response.status_code == 404

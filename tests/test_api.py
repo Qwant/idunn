@@ -148,3 +148,13 @@ def test_services_and_information():
 	}
     ]
 
+def test_exc_scenario():
+    """
+    A scenario with 2 consecutive requests that used to cause unhandled errors
+    because of a bug in Apistar injector.
+    """
+    client = TestClient(app)
+    response = client.get('http://localhost/v1/places?bbox=-0.3,49.2,8.1,55.5&size=52&category=bar&lang=fr')
+    assert response.status_code == 400
+    response = client.get('http://localhost/v1/abcdef')
+    assert response.status_code == 404

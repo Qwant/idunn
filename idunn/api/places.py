@@ -51,7 +51,7 @@ def get_place(id, es: Elasticsearch, indices: IndexNames, lang=None, type=None, 
     return loader(es_place['_source']).load_place(lang, verbosity)
 
 
-def get_place_latlon(lat, lon, es: Elasticsearch, lang=None, verbosity=DEFAULT_VERBOSITY) -> Place:
+def get_place_latlon(lat: float, lon: float, es: Elasticsearch, lang=None, verbosity=DEFAULT_VERBOSITY) -> Place:
     verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
     try:
