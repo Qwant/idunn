@@ -7,6 +7,7 @@ from .place import Place, PlaceMeta
 
 logger = logging.getLogger(__name__)
 
+
 class BasePlace(dict):
     PLACE_TYPE = ''
 

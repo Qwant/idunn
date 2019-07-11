@@ -1,15 +1,17 @@
 import os
 import logging
 from elasticsearch import Elasticsearch
-from apistar.exceptions import BadRequest
+from apistar.exceptions import BadRequest, HTTPException
 
 from idunn import settings
 from idunn.utils.settings import Settings, _load_yaml_file
 from idunn.utils.index_names import IndexNames
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
+from idunn.places.event import Event
 from .pages_jaunes import pj_source
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
+from .kuzzle import kuzzle_client
 
 from apistar import http
 
@@ -30,21 +32,11 @@ def get_categories():
 
 ALL_CATEGORIES = get_categories()
 
-class PlacesQueryParam(BaseModel):
+class CommonQueryParam(BaseModel):
     bbox: str
-    raw_filter: List[str] = None
-    category: List[Any] = []
     size: Optional[int] = None
     lang: str = None
     verbosity: str = DEFAULT_VERBOSITY_LIST
-    source: Optional[str] = None
-    q: Optional[str] = None
-
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-        if not self.raw_filter and not self.category and not self.q:
-            exc = ValueError("One of 'category', 'raw_filter' or 'q' parameter is required")
-            raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
 
     @validator('lang', pre=True, always=True)
     def valid_lang(cls, v):
@@ -58,11 +50,11 @@ class PlacesQueryParam(BaseModel):
             raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
         return v
 
-    @validator('source')
-    def valid_source(cls, v):
-        if v not in ALL_SOURCES:
-            raise ValueError(f"unknown source: '{v}'")
-        return v
+    @validator('size', always=True)
+    def max_size(cls, v):
+        max_size = settings['LIST_PLACES_MAX_SIZE']
+        sizes = [v, max_size]
+        return min(int(i) for i in sizes if i is not None)
 
     @validator('bbox')
     def valid_bbox(cls, v):
@@ -76,11 +68,24 @@ class PlacesQueryParam(BaseModel):
             raise ValueError('bbox is too large')
         return (left, bot, right, top)
 
-    @validator('size', always=True)
-    def max_size(cls, v):
-        max_size = settings['LIST_PLACES_MAX_SIZE']
-        sizes = [v, max_size]
-        return min(int(i) for i in sizes if i is not None)
+
+class PlacesQueryParam(CommonQueryParam):
+    raw_filter: List[str] = None
+    category: List[Any] = []
+    source: Optional[str] = None
+    q: Optional[str] = None
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        if not self.raw_filter and not self.category and not self.q:
+            exc = ValueError("One of 'category', 'raw_filter' or 'q' parameter is required")
+            raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
+
+    @validator('source')
+    def valid_source(cls, v):
+        if v not in ALL_SOURCES:
+            raise ValueError(f"unknown source: '{v}'")
+        return v
 
     @validator('raw_filter')
     def valid_raw_filter(cls, v):
@@ -95,6 +100,11 @@ class PlacesQueryParam(BaseModel):
         else:
             v = ALL_CATEGORIES.get(v)
         return v
+
+
+class EventQueryParam(CommonQueryParam):
+    pass
+
 
 def get_raw_params(query_params):
     raw_params = dict(query_params)
@@ -113,7 +123,7 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
-        logger.warning(f"Validation Error: {e.json()}")
+        logger.info(f"Validation Error: {e.json()}")
         raise BadRequest(
             detail={"message": e.errors()}
         )
@@ -152,4 +162,27 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     return {
         "places": [p.load_place(params.lang, params.verbosity) for p in places_list],
         "source": source
+    }
+
+
+def get_events_bbox(bbox, query_params: http.QueryParams):
+    if not kuzzle_client.enabled:
+        raise HTTPException("Kuzzle client is not available", status_code=501)
+
+    try:
+        params = EventQueryParam(**query_params)
+    except ValidationError as e:
+        logger.info(f"Validation Error: {e.json()}")
+        raise BadRequest(
+            detail={"message": e.errors()}
+        )
+
+    bbox_places = kuzzle_client.fetch_event_places(
+        bbox=params.bbox,
+        size=params.size
+    )
+    events_list = [Event(p['_source']) for p in bbox_places]
+
+    return {
+        "events": [p.load_place(params.lang, params.verbosity) for p in events_list]
     }
