@@ -167,7 +167,7 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
 
 def get_events_bbox(bbox, query_params: http.QueryParams):
     if not kuzzle_client.enabled:
-        raise HTTPException(f"Missing kuzzle address or port", status_code=501)
+        raise HTTPException("Kuzzle client is not available", status_code=501)
 
     try:
         params = EventQueryParam(**query_params)
