@@ -29,7 +29,6 @@ def get_closest_place(lat: float, lon: float, es: Elasticsearch):
 
 
 def closest_address(lat: float, lon: float, es: Elasticsearch, lang=None, verbosity=DEFAULT_VERBOSITY) -> Address:
-    """Main handler that returns the requested place"""
     if verbosity not in ALL_VERBOSITY_LEVELS:
         raise BadRequest({
             "message": f"Unknown verbosity '{verbosity}'. Accepted values are {ALL_VERBOSITY_LEVELS}"

@@ -22,11 +22,21 @@ def get_api_urls(settings):
     return [
         Route('/metrics', 'GET', handler=metric_handler),
         Route('/status', 'GET', handler=get_status),
+
+        # Deprecated
         Route('/pois/{id}', 'GET', handler=get_poi),
-        Route('/places/latlon:{lat}:{lon}', 'GET', handler=get_place_latlon),
+
+        # Werkzeug syntax is used to allow negative floats
+        Route('/places/latlon:<float(signed=True):lat>:<float(signed=True):lon>', 'GET', handler=get_place_latlon),
         Route('/places/{id}', 'GET', handler=get_place),
+
         Route('/categories', 'GET', handler=get_all_categories),
+
         Route('/places', 'GET', handler=get_places_bbox),
-        Route('/reverse/{lat}:{lon}', 'GET', handler=closest_address),
+
+        # Werkzeug syntax is used to allow negative floats
+        Route('/reverse/<float(signed=True):lat>:<float(signed=True):lon>', 'GET', handler=closest_address),
+
+        # Kuzzle events
         Route('/events', 'GET', handler=get_events_bbox),
     ]
