@@ -153,7 +153,21 @@ def test_full():
                                         "name": "Guinness"
                                     }
                                 ]
-                            }
+                            },
+                            {
+                                "type": "cuisine",
+                                "cuisines": [
+                                    {
+                                        "name": "Italian"
+                                    },
+                                    {
+                                        "name": "French"
+                                    }
+                                ],
+                                "gluten_free": "only",
+                                "vegan": "unknown",
+                                "vegetarian": "unknown"
+                            },
                         ]
                     }
                 ]
