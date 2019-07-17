@@ -1,0 +1,45 @@
+{
+    "requestId": "b7a8c923-cb17-4dfd-b138-44590b1bdac3",
+    "status": 200,
+    "error": null,
+    "controller": "document",
+    "action": "search",
+    "collection": "air_pollution",
+    "index": "eea",
+    "volatile": null,
+    "result": {
+        "took": 3,
+        "timed_out": false,
+        "_shards": {
+            "total": 5,
+            "successful": 5,
+            "failed": 0
+        },
+        "hits": [
+            {
+                "_index": "eea",
+                "_type": "air_pollutions",
+                "_id": "AWq7SKu1zO6rOIP0fiwG",
+                "_score": 1,
+                "_source": {
+                    "ic": "30 Avenue Corentin Cariou, Paris"
+                },
+                "_meta": {
+                    "active": true,
+                    "author": "user-opendatasoft",
+                    "updater": null,
+                    "updatedAt": null,
+                    "deletedAt": null,
+                    "createdAt": 1557920263059
+                }
+            }
+        ],
+        "aggregations": {
+            "PM2.5": 21.2,
+            "O3": 21.4,
+            "SO2": 0.12
+        },
+        "total": 1422,
+        "max_score": 1
+    }
+}

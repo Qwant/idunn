@@ -8,6 +8,7 @@ from .images import ImagesBlock
 from .services_and_information import ServicesAndInformationBlock, AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock
 from .grades import GradesBlock
 from .events import OpeningDayEvent, DescriptionEvent
+from .environment import AirQuality
 
 ALL_BLOCKS = [
     OpeningHourBlock,
@@ -25,5 +26,7 @@ ALL_BLOCKS = [
     OpeningDayEvent,
     DescriptionEvent,
     CuisineBlock,
+    AirQuality,
 ]
+
 BLOCK_TYPE_TO_CLASS = {b.BLOCK_TYPE: b for b in ALL_BLOCKS}
