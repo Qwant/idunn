@@ -4,11 +4,25 @@ from .phone import PhoneBlock
 from .information import InformationBlock
 from .website import WebSiteBlock
 from .contact import ContactBlock
-from .wikipedia import WikipediaBlock, WikiUndefinedException, GET_WIKI_INFO, WikipediaCache
+from .wikipedia import (
+    WikipediaBlock,
+    WikiUndefinedException,
+    GET_WIKI_INFO,
+    WikipediaCache,
+)
 from .images import ImagesBlock
-from .services_and_information import ServicesAndInformationBlock, AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock
+from .services_and_information import (
+    ServicesAndInformationBlock,
+    AccessibilityBlock,
+    InternetAccessBlock,
+    BreweryBlock,
+    CuisineBlock,
+)
 from .grades import GradesBlock
-from .events import OpeningDayEvent, DescriptionEvent
+from .events import (
+    OpeningDayEvent,
+    DescriptionEvent,
+)
 
 ALL_BLOCKS = [
     OpeningHourBlock,

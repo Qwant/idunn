@@ -2,9 +2,18 @@ from apistar.exceptions import NotFound, BadRequest
 from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
 from idunn import settings
-from idunn.blocks import \
-    PhoneBlock, OpeningHourBlock, InformationBlock, \
-    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GradesBlock, OpeningDayEvent, DescriptionEvent
+from idunn.blocks import (
+    ContactBlock,
+    DescriptionEvent,
+    GradesBlock,
+    ImagesBlock,
+    InformationBlock,
+    OpeningDayEvent,
+    OpeningHourBlock,
+    PhoneBlock,
+    WebSiteBlock,
+    WikiUndefinedException,
+)
 from idunn.utils import prometheus
 import phonenumbers
 
