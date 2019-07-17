@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, Elastic
 import logging
 from idunn import settings
 from idunn.blocks import (
+    AirQuality,
     ContactBlock,
     DescriptionEvent,
     GradesBlock,
@@ -17,6 +18,7 @@ from idunn.blocks import (
 )
 from idunn.utils import prometheus
 import phonenumbers
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,7 @@ DEFAULT_VERBOSITY_LIST = LIST
 
 BLOCKS_BY_VERBOSITY = {
     LONG: [
+        AirQuality,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
@@ -40,6 +43,7 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock
     ],
     LIST: [
+        AirQuality,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
