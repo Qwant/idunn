@@ -45,6 +45,7 @@ services:
       - IDUNN_THUMBR_URLS=http://10.100.33.211:8080
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
+      - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
       - no_proxy=es,wiki-es
     extra_hosts:
       - "wiki-es:10.100.31.26"
