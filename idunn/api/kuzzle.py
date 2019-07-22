@@ -1,6 +1,9 @@
 import requests
-from idunn import settings
+import logging
+from apistar.exceptions import HTTPException
 
+from idunn import settings
+logger = logging.getLogger(__name__)
 
 class KuzzleClient:
     def __init__(self):
@@ -28,8 +31,8 @@ class KuzzleClient:
                         'geo_bounding_box': {
                             'geo_loc': {
                                 'top_left': {
-                                    'lat': top,
-                                    'lon': left
+                                    'lat':  top,
+                                    'lon':  left
                                 },
                                 'bottom_right': {
                                     'lat': bot,
@@ -51,7 +54,14 @@ class KuzzleClient:
             'size': size
         }
         bbox_places = self.session.post(url_kuzzle, json=query)
-        bbox_places = bbox_places.json()
+        bbox_places.raise_for_status()
+        try:
+            bbox_places = bbox_places.json()
+        except Exception:
+            logger.error(f'Error with kuzzle JSON with request to {url_kuzzle} '
+                         f'Got {bbox_places.content}', exc_info=True)
+            raise HTTPException(status_code=503)
+
         bbox_places = bbox_places.get('result', {}).get('hits', [])
         return bbox_places
 
