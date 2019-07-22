@@ -46,7 +46,7 @@ services:
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
-      - no_proxy=es,wiki-es
+      - no_proxy=es,wiki-es,1216_kuzzle
     extra_hosts:
       - "wiki-es:10.100.31.26"
     networks:
