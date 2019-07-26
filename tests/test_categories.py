@@ -624,7 +624,7 @@ def test_endpoint_categories():
     resp = response.json()
     categories = resp['categories']
 
-    assert len(categories) == 8
+    assert len(categories) == 12
     assert categories[0] == {
         "name": "restaurant",
         "raw_filters": [
