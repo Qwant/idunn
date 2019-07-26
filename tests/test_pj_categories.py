@@ -46,21 +46,13 @@ def test_categories_pj():
     assert poi.get_subclass_name() == 'college'
 
     poi = PjPOI({'Category': [' Psychologue ']})
-    assert poi.get_class_name() == 'health'
-    assert poi.get_subclass_name() == 'health'
+    assert poi.get_class_name() == 'doctors'
+    assert poi.get_subclass_name() == 'doctors'
 
-    poi = PjPOI({'Category': ['vétérinaires ']})
-    assert poi.get_class_name() == 'health'
-    assert poi.get_subclass_name() == 'health'
+    poi = PjPOI({'Category': ['vétérinaires']})
+    assert poi.get_class_name() == 'veterinary'
+    assert poi.get_subclass_name() == 'veterinary'
 
-    poi = PjPOI({'Category': [' police']})
-    assert poi.get_class_name() == 'service'
-    assert poi.get_subclass_name() == 'service'
-
-    poi = PjPOI({'Category': [' centres de secours']})
-    assert poi.get_class_name() == 'service'
-    assert poi.get_subclass_name() == 'service'
-
-    poi = PjPOI({'Category': ['agences immobilière']})
-    assert poi.get_class_name() == 'building'
-    assert poi.get_subclass_name() == 'building'
+    poi = PjPOI({'Category': ['unrelated category', 'garages automobiles']})
+    assert poi.get_class_name() == 'car'
+    assert poi.get_subclass_name() == 'car_repair'

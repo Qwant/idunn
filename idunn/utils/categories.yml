@@ -62,9 +62,7 @@ categories:
     health:
         pj_filters:
             - "Centre médico-social"
-            - "santé publique"
-            - "médecine sociale"
-            - "dentiste"
+            - "Chirurgien-dentiste"
             - "Médecin généraliste"
             - "Hôpital"
         raw_filters:
@@ -72,32 +70,27 @@ categories:
             - "dentist,*"
             - "doctors,*"
             - "hospital,*"
-            - "nursing_home,*"
-            - "pharmacy,*"
-            - "veterinary,*"
     service:
         pj_filters:
             - "plombiers"
             - "garages automobiles"
-            - "mécanique générale"
             - "envoi, distribution de courrier, de colis"
             - "serrurerie, métallerie"
+            - "dépannage serrurerie"
             - "mairies"
-            - "gendarmerie"
-            - "police"
-            - "sapeurs-pompiers"
-            - "centres de secours"
-            - "entreprises de menuiserie"
-            - "préfectures"
-            - "sous-préfectures"
+            - "services de gendarmerie, de police"
+            - "sapeurs-pompiers, centres de secours"
+            - "préfectures, sous-préfectures"
         raw_filters:
             - "car_repair,*"
             - "post_office,*"
             - "townhall,*"
             - "police,*"
             - "fire_station,*"
-    building:
+    fitness:
         pj_filters:
-            - "agences immobilière"
+            - "infrastructures de sports et loisirs"
+            - "piscines (établissements)"
+            - "clubs de sport"
         raw_filters:
-            - "real_estate_agency,*"
+            - "sports_centre,*"
