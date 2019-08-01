@@ -66,4 +66,7 @@ PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 # kuzzle Cluster
 KUZZLE_CLUSTER_URL:
 
-ENABLE_OPTION_REQUESTS: False
+#######################
+## CORS
+
+CORS_OPTIONS_REQUESTS_ENABLED: False

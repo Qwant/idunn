@@ -171,7 +171,7 @@ def test_exc_scenario():
 
 @pytest.fixture(scope="function")
 def options_test_with_options():
-    with override_settings({'ENABLE_OPTION_REQUESTS': True}):
+    with override_settings({'CORS_OPTIONS_REQUESTS_ENABLED': True}):
         yield
 
 

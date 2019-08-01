@@ -67,7 +67,7 @@ def get_place_latlon(lat: float, lon: float, es: Elasticsearch, lang=None, verbo
 
 
 def handle_option(id, headers: Headers):
-    if settings.get('ENABLE_OPTION_REQUESTS', False) is True:
+    if settings.get('CORS_OPTIONS_REQUESTS_ENABLED', False) is True:
         headers = {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Headers': headers.get('Access-Control-Request-Headers', '*'),
