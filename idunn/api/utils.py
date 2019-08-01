@@ -1,4 +1,4 @@
-from apistar.exceptions import NotFound, BadRequest
+from apistar.exceptions import HTTPException, NotFound, BadRequest
 from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
 from idunn import settings
@@ -220,12 +220,16 @@ def fetch_es_place(id, es, indices, type) -> dict:
     else:
         index_name = indices.get(type)
 
-    es_places = es.search(index=index_name,
-        body={
-            "filter": {
-                "term": {"_id": id}
-            }
-        })
+    try:
+        es_places = es.search(index=index_name,
+            body={
+                "filter": {
+                    "term": {"_id": id}
+                }
+            })
+    except ElasticsearchException as error:
+        logger.warning(f"error with database: {error}")
+        raise HTTPException(detail='database issue', status_code=503)
 
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:
