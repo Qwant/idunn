@@ -46,6 +46,7 @@ services:
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
+      - IDUNN_CORS_OPTIONS_REQUESTS_ENABLED=true  # Allow cross-origin requests with custom headers (for development only)
       - no_proxy=es,wiki-es,1216_kuzzle
     extra_hosts:
       - "wiki-es:10.100.31.26"
