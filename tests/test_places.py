@@ -2,6 +2,7 @@ import urllib
 from app import app
 from apistar.test import TestClient
 from freezegun import freeze_time
+from elasticsearch import ElasticsearchException
 
 """
     This module tests basic query against the endpoint '/places/'
@@ -17,8 +18,8 @@ def test_full_query_admin():
     """
     client = TestClient(app)
     response = client.get(
-            url=f'http://localhost/v1/places/admin:osm:relation:123057?lang=fr',
-            )
+        url=f'http://localhost/v1/places/admin:osm:relation:123057?lang=fr',
+        )
     assert response.status_code == 200
     assert response.headers.get('Access-Control-Allow-Origin') == '*'
 
@@ -368,3 +369,18 @@ def test_wrong_verbosity():
     )
     assert response.status_code == 400
     assert "Unknown verbosity" in response.json()['message']
+
+
+def mock_search(detail, *args, **kwargs):
+    raise ElasticsearchException
+
+from elasticsearch import Elasticsearch
+from unittest.mock import patch
+@patch.object(Elasticsearch, "search", new=mock_search)
+def test_no_es():
+    client = TestClient(app)
+
+    response = client.get(
+        url=f'http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi',
+    )
+    assert response.status_code == 503
