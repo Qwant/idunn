@@ -1,6 +1,7 @@
 import logging
 from elasticsearch import Elasticsearch
 from apistar.exceptions import BadRequest, NotFound
+from apistar.http import Response, Headers
 
 from idunn import settings
 from idunn.utils import prometheus
@@ -9,6 +10,7 @@ from idunn.places import Place, Admin, Street, Address, POI, Latlon
 from idunn.api.utils import fetch_es_place, DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
 from idunn.api.pages_jaunes import pj_source
 from .closest import get_closest_place
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +22,12 @@ def validate_verbosity(verbosity):
         })
     return verbosity
 
+
 def validate_lang(lang):
     if not lang:
         return settings['DEFAULT_LANGUAGE']
     return lang.lower()
+
 
 def get_place(id, es: Elasticsearch, indices: IndexNames, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
     """Main handler that returns the requested place"""
@@ -60,3 +64,14 @@ def get_place_latlon(lat: float, lon: float, es: Elasticsearch, lang=None, verbo
         closest_place = None
     place = Latlon(lat, lon, closest_address=closest_place)
     return place.load_place(lang, verbosity)
+
+
+def handle_option(id, headers: Headers):
+    if settings.get('CORS_OPTIONS_REQUESTS_ENABLED', False) is True:
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': headers.get('Access-Control-Request-Headers', '*'),
+            'Access-Control-Allow-Methods': 'GET',
+        }
+        return Response('', headers=headers)
+    return Response('', status_code=405)
