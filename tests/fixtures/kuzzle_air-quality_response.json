@@ -16,13 +16,33 @@
             "failed": 0
         },
         "hits": [
-            {
-                "_index": "eea",
-                "_type": "air_pollutions",
-                "_id": "AWq7SKu1zO6rOIP0fiwG",
-                "_score": 1,
+    {
+                "_index": "opendatasoft",
+                "_type": "air_quality",
+                "_id": "France - Calvados - FR05082",
+                "_score": 0,
                 "_source": {
-                    "ic": "30 Avenue Corentin Cariou, Paris"
+                    "_kuzzle_info": {
+                        "active": true,
+                        "author": "user-opendatasoft",
+                        "updater": null,
+                        "updatedAt": null,
+                        "deletedAt": null,
+                        "createdAt": 1565101392866
+                    },
+                    "department": "Calvados",
+                    "name_station": "CC Coeur Côte Fleurie",
+                    "update_at": "2019-08-06T10:00:00.000Z",
+                    "measurements_unit": "µg/m³",
+                    "region": "NORMANDIE",
+                    "id_station": "France - Calvados - FR05082",
+                    "geo_loc": {
+                        "lat": 49.348015,
+                        "lon": 0.10925311
+                    },
+                    "city": "Touques",
+                    "source": "EEA France",
+                    "O3": 39.8
                 },
                 "_meta": {
                     "active": true,
@@ -30,14 +50,23 @@
                     "updater": null,
                     "updatedAt": null,
                     "deletedAt": null,
-                    "createdAt": 1557920263059
+                    "createdAt": 1565101392866
                 }
             }
         ],
         "aggregations": {
-            "PM2.5": 21.2,
-            "O3": 21.4,
-            "SO2": 0.12
+            "PM10": {
+                "value": 37.4
+            },
+            "O3": {
+                "value": 85.4
+            },
+            "SO2":{
+                "value": 509.6
+            } ,
+            "NO2": {
+                "value": 17.3
+            }
         },
         "total": 1422,
         "max_score": 1

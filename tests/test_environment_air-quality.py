@@ -132,7 +132,7 @@ def test_pollution_city(kuzzle_test_normal):
             json_aq = json.load(f)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add('POST',
-             re.compile(r'^http://localhost:7512/eea/air_pollution/'),
+             re.compile(r'^http://localhost:7512/opendatasoft/air_quality/'),
              status=200,
              json=json_aq)
 
@@ -142,7 +142,16 @@ def test_pollution_city(kuzzle_test_normal):
             lang='en'
         )
         assert res == AirQuality(
-             air_quality = {'PM2.5': 21.2, 'O3': 21.4, 'SO2': 0.12}
+             air_quality={
+                 'PM10': {'value': 37.4, 'quality_indice': 5},
+                 'O3': {'value': 85.4, 'quality_indice': 2},
+                 'SO2': {'value': 509.6, 'quality_indice': 9},
+                 'NO2': {'value': 17.3, 'quality_indice': 0},
+                 'globlalQuality': 4.0,
+                 'date': "2019-08-06T10:00:00.000Z",
+                 'source': 'EEA France',
+                 'measurements_unit': 'µg/m³'
+             }
         )
 
 def test_pollution_from_region(kuzzle_test_normal):
@@ -184,3 +193,4 @@ def test_pollution_with_no_kuzzle():
             lang='en'
         )
         assert res == None
+
