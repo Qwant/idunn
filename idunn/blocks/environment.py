@@ -3,10 +3,10 @@ import requests
 
 from apistar import validators
 from .base import BaseBlock
-from idunn import settings
+from idunn.api.kuzzle import kuzzle_client
+from apistar.exceptions import HTTPException
 
 logger = logging.getLogger(__name__)
-
 
 
 class AirQuality(BaseBlock):
@@ -33,67 +33,10 @@ class AirQuality(BaseBlock):
 
 
 def get_air_quality(geobbox):
-    kuzzle_address = settings.get('KUZZLE_CLUSTER_ADDRESS')
-    kuzzle_port = settings.get('KUZZLE_CLUSTER_PORT')
-    print(geobbox)
-    if not kuzzle_address or not kuzzle_port:
-        logger.warning(f"Missing kuzzle address or port")
-        return None
+    if not kuzzle_client.enabled:
+        raise HTTPException("Kuzzle client is not available", status_code=501)
 
-    if not geobbox:
-        logger.warning(f"Missing geobox")
-        return None
+    air_quality_res = kuzzle_client.fetch_air_quality(geobbox)
 
-    top = geobbox[3]
-    left = geobbox[0]
-    bottom = geobbox[1]
-    right = geobbox[2]
-
-    url_kuzzle = kuzzle_address + ':' + kuzzle_port+'/eea/air_pollution/_search'
-    print(url_kuzzle)
-    query = {
-        "query": {
-            "bool": {
-                "must": [{
-                    "term": {
-                        "date": "now-6h/h"
-                    }
-                }],
-                "filter": [{
-                    "geo_bounding_box": {
-                        "geo_loc": {
-                            "top": top,
-                            "left": left,
-                            "bottom": bottom,
-                            "right": right
-
-                        }
-                    }
-                }]
-            }
-        },
-        "aggregations": {
-            "PM10": {
-                "avg": {"field": "PM10"}
-            },
-            "O3": {
-                "avg": {"field": "O3"}
-            },
-            "NO2": {
-                "avg": {"field": "NO2"}
-            },
-            "SO2": {
-                "avg": {"field": "SO2"}
-            },
-            "PM2.5": {
-                "avg": {"field": "PM25"}
-            }
-        }
-    }
-
-    res = requests.post(url_kuzzle, json=query)
-    res = res.json()
-    res = res.get('result', {}).get('aggregations', {})
-
-    return res
+    return air_quality_res
 
