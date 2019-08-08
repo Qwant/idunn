@@ -158,7 +158,7 @@ class KuzzleClient:
                     "avg": {"field": "SO2"}
                 },
                 "PM2.5": {
-                    "avg": {"field": "PM25"}
+                    "avg": {"field": "PM2_5"}
                 }
             },
             "sort": [{
