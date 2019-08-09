@@ -1,4 +1,6 @@
+import json
 import logging
+import urllib.parse
 from elasticsearch import Elasticsearch
 from apistar.exceptions import BadRequest, NotFound
 from apistar.http import Response, Headers
@@ -29,7 +31,44 @@ def validate_lang(lang):
     return lang.lower()
 
 
-def get_place(id, es: Elasticsearch, indices: IndexNames, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
+def log_custom_headers(id, headers: Headers):
+    custom_data = {}
+    if 'X-QwantMaps-FocusPosition' in headers:
+        pos = headers.get('X-QwantMaps-FocusPosition', '').split(';')
+        if len(pos) == 3:
+            try:
+                lon = float(pos[0])
+                lat = float(pos[1])
+                zoom = float(pos[2])
+                custom_data['lon'] = lon
+                custom_data['lat'] = lat
+                custom_data['zoom'] = zoom
+            except Exception:
+                logger.warning('Invalid data given through "X-QwantMaps-FocusPosition" header', exc_info=True)
+    if 'X-QwantMaps-Query' in headers:
+        query = headers.get('X-QwantMaps-Query', '')
+        if len(query) > 0:
+            custom_data['query'] = urllib.parse.unquote_plus(query)
+    if 'X-QwantMaps-SuggestionRank' in headers:
+        ranking = headers.get('X-QwantMaps-SuggestionRank', '')
+        if len(ranking) > 0:
+            try:
+                ranking = int(ranking)
+                custom_data['ranking'] = ranking
+            except Exception:
+                logger.warning('Invalid data given through "X-QwantMaps-SuggestionRank" header', exc_info=True)
+    if 'X-QwantMaps-QueryLang' in headers:
+        lang = headers.get('X-QwantMaps-QueryLang', '')
+        if len(lang) > 0:
+            custom_data['lang'] = lang
+    if len(custom_data) > 0:
+        custom_data['id'] = id
+        logger.info('Received details about user query', extra={'user_selection': custom_data})
+
+
+def get_place(id, es: Elasticsearch, indices: IndexNames, headers: Headers, lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
+    log_custom_headers(id, headers)
+
     """Main handler that returns the requested place"""
     verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
