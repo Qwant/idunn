@@ -9,12 +9,12 @@ import re
 from .utils import override_settings
 
 """
-In this module we test the air_quality blocks with kuzzle. Air quality appears when a places (city or suburd)
+In this module we test the air_quality blocks with kuzzle. Air quality appears when an admin (city or suburd)
 is called
 
 """
 
-# places info ok
+# places info ok (correspond to city or suburd)
 testee = {
     'id': 'admin:osm:relation:7444',
     'insee': '75056',
@@ -61,7 +61,7 @@ testee = {
     }
   }
 
-# places info nok
+# places info nok (correspond to region)
 testee_nok = {
     'id': 'admin:osm:relation:7444',
     'insee': '75056',
@@ -143,13 +143,14 @@ def test_pollution_city(kuzzle_test_normal):
         )
         assert res == AirQuality(
              air_quality={
-                 'PM10': {'value': 37.4, 'quality_indice': 5},
-                 'O3': {'value': 85.4, 'quality_indice': 2},
-                 'SO2': {'value': 509.6, 'quality_indice': 9},
-                 'NO2': {'value': 17.3, 'quality_indice': 0},
-                 'globlalQuality': 4.0,
+                 'PM10': {'value': 37.4, 'quality_index': 3},
+                 'O3': {'value': 85.4, 'quality_index': 2},
+                 'SO2': {'value': 509.6, 'quality_index': 5},
+                 'NO2': {'value': 17.3, 'quality_index': 1},
+                 'globalQuality': 5,
                  'date': "2019-08-06T10:00:00.000Z",
                  'source': 'EEA France',
+                 'source_url': 'http://airindex.eea.europa.eu/',
                  'measurements_unit': 'µg/m³'
              }
         )
