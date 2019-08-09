@@ -6,11 +6,12 @@ from idunn import settings
 logger = logging.getLogger(__name__)
 
 scale = {
-    'NO2': [60, 80, 100, 120, 140, 160, 180, 200, 400],
-    'O3': [54, 72, 90, 108, 126, 144, 162, 180, 240],
-    'PM10': [15, 20, 25, 30, 35, 40, 45, 50, 80],
-    'PM2.5': [15, 20, 25, 30, 35, 40, 45, 50, 80],
-    'SO2': [100, 150, 200, 250, 300, 350, 400, 450, 500]
+    'CO': [5, 10, 25, 50],
+    'PM2.5': [10, 20, 25, 50],
+    'PM10': [20, 35, 50, 100],
+    'NO2': [40, 100, 200, 400],
+    'O3': [80, 120, 180, 240],
+    'SO2': [100, 200, 350, 500]
 }
 
 def enrichRes(res):
@@ -18,7 +19,7 @@ def enrichRes(res):
     Return pollutantes value with pollution indice and global air_quality indice
     """
     enrichData = {}
-    averageAirQuality = 0
+    globalQuality = 0
     numberElement = 0
     for particles, value in res.items():
         valueNumber = value.get("value")
@@ -26,16 +27,15 @@ def enrichRes(res):
             continue
         scaleP = scale[particles]
         numberElement += 1
-        scaleIndiceLength = len(scaleP)
+        scaleIndiceLength = len(scaleP) - 1
         while scaleIndiceLength >= 0:
-            scaleIndiceLength = scaleIndiceLength - 1
-
-            if(valueNumber > scaleP[scaleIndiceLength]):
+            if (valueNumber > scaleP[scaleIndiceLength]):
                 break
+            scaleIndiceLength -= 1
 
-        enrichData[particles] = { "value": valueNumber, "quality_indice": scaleIndiceLength+1}
-        averageAirQuality += (scaleIndiceLength+1)
-    enrichData['globlalQuality'] = averageAirQuality / numberElement
+        enrichData[particles] = {"value": valueNumber, "quality_index": scaleIndiceLength + 2}
+        globalQuality = max(globalQuality, scaleIndiceLength + 2)
+    enrichData['globalQuality'] = globalQuality
 
     return enrichData
 
@@ -45,9 +45,11 @@ def moreInfo(info):
     :param data received from kuzzle:
     :return: object last update, source name, measurements_unit
     """
+
     return {
         "date": info[0].get('_source').get('update_at'),
         "source": info[0].get('_source').get('source'),
+        "source_url": "http://airindex.eea.europa.eu/",
         "measurements_unit": info[0].get('_source').get('measurements_unit')
     }
 
