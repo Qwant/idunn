@@ -16,7 +16,6 @@ from .kuzzle import kuzzle_client
 from apistar import http
 
 from pydantic import BaseModel, ValidationError, validator
-from pydantic.error_wrappers import ErrorWrapper
 from typing import List, Optional, Any
 
 logger = logging.getLogger(__name__)
@@ -78,8 +77,9 @@ class PlacesQueryParam(CommonQueryParam):
     def __init__(self, **data: Any):
         super().__init__(**data)
         if not self.raw_filter and not self.category and not self.q:
-            exc = ValueError("One of 'category', 'raw_filter' or 'q' parameter is required")
-            raise ValidationError([ErrorWrapper(exc, loc='PlacesQueryParam')])
+            raise BadRequest({
+                "message": "One of 'category', 'raw_filter' or 'q' parameter is required"
+            })
 
     @validator('source')
     def valid_source(cls, v):
