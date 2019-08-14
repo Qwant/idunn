@@ -36,8 +36,8 @@ class DirectionsClient:
             params={
                 'type': mode,
                 'language': lang,
-                'steps': True,
-                'alternatives': True,
+                'steps': 'true',
+                'alternatives': 'true',
                 'overview': 'full',
                 'geometries': 'geojson',
                 **extra
@@ -65,8 +65,6 @@ class DirectionsClient:
             }
         )
         response.raise_for_status()
-
-        # print('COMBIGO', response.text)
 
         return DirectionsResponse(
             status='success',

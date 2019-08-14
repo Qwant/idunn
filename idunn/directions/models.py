@@ -37,8 +37,8 @@ class RouteManeuver(BaseModel):
 
 
 class TransportInfo(BaseModel):
-    num: str
-    direction: str
+    num: Optional[str]
+    direction: Optional[str]
     lineColor: str
     network: str
 
@@ -58,8 +58,8 @@ class TransportStop(BaseModel):
 
 class RouteStep(BaseModel):
     maneuver: RouteManeuver
-    duration: float
-    distance: float
+    duration: int
+    distance: int
     geometry: dict = Schema(..., description='GeoJSON')
     mode: TransportMode
     info: Optional[TransportInfo]
@@ -105,8 +105,8 @@ class RouteStep(BaseModel):
 
 
 class RouteLeg(BaseModel):
-    duration: float = Schema(..., description='duration in seconds')
-    distance: Optional[float] = Schema(..., description='distance in meters')
+    duration: int = Schema(..., description='duration in seconds')
+    distance: Optional[int] = Schema(..., description='distance in meters')
     summary: str
     steps: List[RouteStep]
 
@@ -114,8 +114,8 @@ class RouteLeg(BaseModel):
 class RouteSummaryPart(BaseModel):
     mode: TransportMode
     info: Optional[TransportInfo]
-    distance: float = Schema(..., description='distance in meters')
-    duration: float = Schema(..., description='duration in seconds')
+    distance: int = Schema(..., description='distance in meters')
+    duration: int = Schema(..., description='duration in seconds')
 
     def __init__(self, **data):
         if 'type' in data:
@@ -132,8 +132,8 @@ class RoutePrice(BaseModel):
 
 
 class DirectionsRoute(BaseModel):
-    duration: float = Schema(..., description='duration in seconds')
-    distance: Optional[float] = Schema(..., description='distance in meters')
+    duration: int = Schema(..., description='duration in seconds')
+    distance: Optional[int] = Schema(..., description='distance in meters')
     carbon: Optional[float] = Schema(..., description='value in gEC')
     summary: Optional[List[RouteSummaryPart]]
     price: Optional[RoutePrice]

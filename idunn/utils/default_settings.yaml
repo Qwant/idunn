@@ -70,3 +70,9 @@ KUZZLE_CLUSTER_URL:
 ## CORS
 
 CORS_OPTIONS_REQUESTS_ENABLED: False
+
+#######################
+## Directions
+QWANT_DIRECTIONS_API_BASE_URL:
+COMBIGO_API_BASE_URL: 'https://maps2.combigo.com/v1'
+COMBIGO_API_KEY:
