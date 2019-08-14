@@ -4,7 +4,7 @@ from idunn import settings
 from datetime import datetime, timedelta
 from .models import DirectionsResponse
 from apistar.http import JSONResponse
-from apistar.exceptions import BadRequest
+from apistar.exceptions import BadRequest, HTTPException
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +27,9 @@ class DirectionsClient:
         return settings['COMBIGO_API_BASE_URL']
 
     def directions_qwant(self, start, end, mode, lang, extra=None):
+        if not self.QWANT_BASE_URL:
+            raise HTTPException(f"Directions API is currently unavailable for mode {mode}", status_code=501)
+
         if extra is None:
             extra = {}
         start_lon, start_lat = start
@@ -54,6 +57,9 @@ class DirectionsClient:
         return DirectionsResponse(**response.json()).dict()
 
     def directions_combigo(self, start, end, mode, lang, **kwargs):
+        if not self.COMBIGO_BASE_URL:
+            raise HTTPException(f"Directions API is currently unavailable for mode {mode}", status_code=501)
+
         start_lon, start_lat = start
         end_lon, end_lat = end
         response = self.combigo_session.get(

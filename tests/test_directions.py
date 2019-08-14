@@ -52,7 +52,7 @@ def test_direction_car(mock_directions_car):
     response = client.get(
         "http://localhost/v1/directions/"
         "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
-        params={"language": "fr", "type": "car"},
+        params={"language": "fr", "type": "driving"},
     )
 
     assert response.status_code == 200
@@ -84,3 +84,13 @@ def test_direction_public_transport(mock_directions_public_transport):
         lambda part: part['mode'],
         response_data['data']['routes'][0]['summary']
     )) == ['WALK', 'SUBWAY', 'WALK', 'SUBWAY', 'WALK']
+
+def test_directions_not_configured():
+    with override_settings({'QWANT_DIRECTIONS_API_BASE_URL': None}):
+        client = TestClient(app)
+        response = client.get(
+            "http://localhost/v1/directions/"
+            "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+            params={"language": "fr", "type": "driving"},
+        )
+        assert response.status_code == 501
