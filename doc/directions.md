@@ -23,6 +23,9 @@
 
 #### `cycling` / `driving` / `walking`
 
+<details>
+<summary>See the response</summary>
+
 ```json
 {
     "data": {
@@ -248,10 +251,15 @@
     "status": "success"
 }
 ```
+</details>
 
-### `publictransport`
+#### `publictransport`
 
 *Some geometries are simplified for readability*
+
+
+<details>
+<summary>See the response</summary>
 
 ```json
 {
@@ -2116,3 +2124,4 @@
     "status": "success"
 }
 ```
+</details>

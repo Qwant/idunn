@@ -96,7 +96,4 @@ class DirectionsClient:
         return method(from_loc, to_loc, mode, lang, **extra)
 
 
-
-
-
 directions_client = DirectionsClient()
