@@ -419,7 +419,6 @@ def test_single_raw_filter():
         ]
     }
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_raw_filter_with_class_subclass():
     client = TestClient(app)
     response = client.get(
@@ -433,7 +432,6 @@ def test_raw_filter_with_class_subclass():
     assert len(resp['places']) == 1
     assert resp['places'][0]['name'] ==  'Louvre Museum'
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_invalid_bbox():
     """
         Test an invalid bbox query:
@@ -481,7 +479,6 @@ def test_invalid_bbox():
     }
 
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_category_and_raw_filter():
     """
         Test we get a 400 if category and raw_filter are both present:
@@ -493,14 +490,12 @@ def test_category_and_raw_filter():
     )
 
     assert response.status_code == 400
-
     resp = response.json()
-
     assert resp == {
         'message': "Both 'raw_filter' and 'category' parameters cannot be provided together"
     }
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+
 def test_category_or_raw_filter():
     """
         Test we get a 400 if none of category or raw_filter is present:
@@ -512,22 +507,10 @@ def test_category_or_raw_filter():
     )
 
     assert response.status_code == 400
-
     resp = response.json()
+    assert resp == {'message': ANY}
 
-    assert resp == {
-        'message': [
-            {
-                'loc': [
-                    'PlacesQueryParam'
-                ],
-                'msg': ANY,
-                'type': 'value_error'
-            }
-        ]
-    }
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_valid_category():
     """
         Test a valid category filter which should fetch only one cinema in a bbox around Brest city.
@@ -591,7 +574,7 @@ def test_places_with_explicit_source_osm():
         ]
     }
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
+
 def test_invalid_category():
     """
         Test we get a 400 if the parameter category is invalid:
@@ -608,7 +591,6 @@ def test_invalid_category():
     assert resp['message'][0]['msg'].startswith("Category 'supppermarket' is invalid ")
 
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_endpoint_categories():
     """
         Test the endpoint 'categories':

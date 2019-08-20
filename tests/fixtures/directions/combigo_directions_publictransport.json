@@ -1,0 +1,2477 @@
+{
+  "results": [
+    {
+      "id": "WALK-SUBWAY#12#METRO-WALK-SUBWAY#1#METRO-WALK-",
+      "distance": 7524.7075736351,
+      "carbon": 22.077,
+      "duration": 1800,
+      "dTime": 1565707001000,
+      "aTime": 1565708927000,
+      "booking": [
+        {
+          "deeplink_web": ""
+        }
+      ],
+      "summary": [
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 88,
+          "duration": 79
+        },
+        {
+          "type": "SUBWAY",
+          "infos": {
+            "num": "12",
+            "numLong": "Mairie d'Issy - Front Populaire",
+            "direction": "Mairie d'Issy (Issy-les-Moulineaux)",
+            "lineColor": "007852",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "distance": 2996,
+          "duration": 660
+        },
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 27,
+          "duration": 252
+        },
+        {
+          "type": "SUBWAY",
+          "infos": {
+            "num": "1",
+            "numLong": "Château de Vincennes - La Défense",
+            "direction": "Château de Vincennes (Paris)",
+            "lineColor": "FFCD00",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "distance": 3791,
+          "duration": 600
+        },
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 52,
+          "duration": 47
+        }
+      ],
+      "legs": [
+        {
+          "dTime": 1565707001000,
+          "aTime": 1565707080000,
+          "duration": 79,
+          "distance": 88,
+          "stops": [],
+          "from": {
+            "lat": 48.890073,
+            "lng": 2.340236,
+            "address": "Rue Darwin (Paris)",
+            "name": "Rue Darwin",
+            "id": "2.3402355;48.8900732",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.889738,
+            "lng": 2.339149,
+            "name": "Lamarck-Caulaincourt (Paris)",
+            "id": "stop_point:0:SP:59519",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "WALK",
+          "action": "Marcher",
+          "infos": {},
+          "shapes": [
+            [
+              2.340236,
+              48.890073
+            ],
+            [
+              2.339149,
+              48.889738
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707080000,
+          "aTime": 1565707740000,
+          "duration": 660,
+          "distance": 2996,
+          "stops": [
+            {
+              "stop": {
+                "lat": 48.889738,
+                "lng": 2.339149,
+                "name": "Lamarck-Caulaincourt (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59519"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.8844,
+                "lng": 2.338399,
+                "name": "Abbesses (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59521"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.882027,
+                "lng": 2.337214,
+                "name": "Pigalle (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59431"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.878594,
+                "lng": 2.337827,
+                "name": "Saint-Georges (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59512"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.876051,
+                "lng": 2.337909,
+                "name": "Notre-Dame de Lorette (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59515"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.876329,
+                "lng": 2.331805,
+                "name": "Trinité-d'Estienne d'Orves (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59600"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.875421,
+                "lng": 2.326695,
+                "name": "Saint-Lazare (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59222"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.869795,
+                "lng": 2.324612,
+                "name": "Madeleine (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59412"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            },
+            {
+              "stop": {
+                "lat": 48.865489,
+                "lng": 2.321412,
+                "name": "Concorde (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59239"
+              },
+              "dTime": 1565707080000,
+              "aTime": 1565707740000
+            }
+          ],
+          "from": {
+            "lat": 48.889738,
+            "lng": 2.339149,
+            "name": "Lamarck-Caulaincourt (Paris)",
+            "id": "stop_point:0:SP:59519",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.865489,
+            "lng": 2.321412,
+            "name": "Concorde (Paris)",
+            "id": "stop_point:0:SP:59239",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "SUBWAY",
+          "action": "Prendre le Métro 12",
+          "infos": {
+            "num": "12",
+            "direction": "Mairie d'Issy (Issy-les-Moulineaux)",
+            "lineColor": "007852",
+            "numLong": "Mairie d'Issy - Front Populaire",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "shapes": [
+            [
+              2.339149,
+              48.889738
+            ],
+            [
+              2.338399,
+              48.8844
+            ],
+            [
+              2.337214,
+              48.882027
+            ],
+            [
+              2.337827,
+              48.878594
+            ],
+            [
+              2.337909,
+              48.876051
+            ],
+            [
+              2.331805,
+              48.876329
+            ],
+            [
+              2.326695,
+              48.875421
+            ],
+            [
+              2.324612,
+              48.869795
+            ],
+            [
+              2.321412,
+              48.865489
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707740000,
+          "aTime": 1565707992000,
+          "duration": 252,
+          "distance": 27,
+          "stops": [],
+          "from": {
+            "lat": 48.865489,
+            "lng": 2.321412,
+            "name": "Concorde (Paris)",
+            "id": "stop_point:0:SP:59239",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.865678,
+            "lng": 2.321194,
+            "name": "Concorde (Paris)",
+            "id": "stop_point:0:SP:59235",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "WALK",
+          "action": "Marcher",
+          "infos": {},
+          "shapes": [
+            [
+              2.321412,
+              48.865489
+            ],
+            [
+              2.321194,
+              48.865678
+            ]
+          ]
+        },
+        {
+          "dTime": 1565708280000,
+          "aTime": 1565708880000,
+          "duration": 600,
+          "distance": 3791,
+          "stops": [
+            {
+              "stop": {
+                "lat": 48.865678,
+                "lng": 2.321194,
+                "name": "Concorde (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59235"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.86478,
+                "lng": 2.329095,
+                "name": "Tuileries (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59226"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.862372,
+                "lng": 2.336574,
+                "name": "Palais-Royal (Musée du Louvre) (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59591"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.86088,
+                "lng": 2.340973,
+                "name": "Louvre-Rivoli (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59231"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.85857,
+                "lng": 2.347933,
+                "name": "Châtelet (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59585"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.857356,
+                "lng": 2.352074,
+                "name": "Hôtel de Ville (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59590"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.855134,
+                "lng": 2.361334,
+                "name": "Saint-Paul (le Marais) (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59225"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            },
+            {
+              "stop": {
+                "lat": 48.852976,
+                "lng": 2.369219,
+                "name": "Bastille (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59238"
+              },
+              "dTime": 1565708280000,
+              "aTime": 1565708880000
+            }
+          ],
+          "from": {
+            "lat": 48.865678,
+            "lng": 2.321194,
+            "name": "Concorde (Paris)",
+            "id": "stop_point:0:SP:59235",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.852976,
+            "lng": 2.369219,
+            "name": "Bastille (Paris)",
+            "id": "stop_point:0:SP:59238",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "SUBWAY",
+          "action": "Prendre le Métro 1",
+          "infos": {
+            "num": "1",
+            "direction": "Château de Vincennes (Paris)",
+            "lineColor": "FFCD00",
+            "numLong": "Château de Vincennes - La Défense",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "shapes": [
+            [
+              2.321194,
+              48.865678
+            ],
+            [
+              2.329095,
+              48.86478
+            ],
+            [
+              2.336574,
+              48.862372
+            ],
+            [
+              2.340973,
+              48.86088
+            ],
+            [
+              2.347933,
+              48.85857
+            ],
+            [
+              2.352074,
+              48.857356
+            ],
+            [
+              2.361334,
+              48.855134
+            ],
+            [
+              2.369219,
+              48.852976
+            ]
+          ]
+        },
+        {
+          "dTime": 1565708880000,
+          "aTime": 1565708927000,
+          "duration": 47,
+          "distance": 52,
+          "stops": [],
+          "from": {
+            "lat": 48.852976,
+            "lng": 2.369219,
+            "name": "Bastille (Paris)",
+            "id": "stop_point:0:SP:59238",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.853053,
+            "lng": 2.368521,
+            "address": "3 Place de la Bastille (Paris)",
+            "name": "3 Place de la Bastille",
+            "id": "2.36809;48.853113",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "WALK",
+          "action": "Marcher",
+          "infos": {},
+          "shapes": [
+            [
+              2.369219,
+              48.852976
+            ],
+            [
+              2.368521,
+              48.853053
+            ]
+          ]
+        }
+      ],
+      "price": {
+        "value": 1.9,
+        "currency": "EUR",
+        "group": false
+      },
+      "note": 4.460941604639093
+    },
+    {
+      "id": "WALK-SUBWAY#12#METRO-WALK-SUBWAY#8#METRO-WALK-",
+      "distance": 7879.867429548014,
+      "carbon": 21.405,
+      "duration": 2122,
+      "dTime": 1565707241000,
+      "aTime": 1565709442000,
+      "booking": [
+        {
+          "deeplink_web": ""
+        }
+      ],
+      "summary": [
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 88,
+          "duration": 79
+        },
+        {
+          "type": "SUBWAY",
+          "infos": {
+            "num": "12",
+            "numLong": "Mairie d'Issy - Front Populaire",
+            "direction": "Mairie d'Issy (Issy-les-Moulineaux)",
+            "lineColor": "007852",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "distance": 2462,
+          "duration": 540
+        },
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 33,
+          "duration": 275
+        },
+        {
+          "type": "SUBWAY",
+          "infos": {
+            "num": "8",
+            "numLong": "Balard - Créteil-Pointe du Lac",
+            "direction": "Pointe du Lac (Créteil)",
+            "lineColor": "E19BDF",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "distance": 3442,
+          "duration": 660
+        },
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 625,
+          "duration": 442
+        }
+      ],
+      "legs": [
+        {
+          "dTime": 1565707241000,
+          "aTime": 1565707320000,
+          "duration": 79,
+          "distance": 88,
+          "stops": [],
+          "from": {
+            "lat": 48.890073,
+            "lng": 2.340236,
+            "address": "Rue Darwin (Paris)",
+            "name": "Rue Darwin",
+            "id": "2.3402355;48.8900732",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.889738,
+            "lng": 2.339149,
+            "name": "Lamarck-Caulaincourt (Paris)",
+            "id": "stop_point:0:SP:59519",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "WALK",
+          "action": "Marcher",
+          "infos": {},
+          "shapes": [
+            [
+              2.340236,
+              48.890073
+            ],
+            [
+              2.339149,
+              48.889738
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707320000,
+          "aTime": 1565707860000,
+          "duration": 540,
+          "distance": 2462,
+          "stops": [
+            {
+              "stop": {
+                "lat": 48.889738,
+                "lng": 2.339149,
+                "name": "Lamarck-Caulaincourt (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59519"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.8844,
+                "lng": 2.338399,
+                "name": "Abbesses (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59521"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.882027,
+                "lng": 2.337214,
+                "name": "Pigalle (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59431"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.878594,
+                "lng": 2.337827,
+                "name": "Saint-Georges (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59512"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.876051,
+                "lng": 2.337909,
+                "name": "Notre-Dame de Lorette (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59515"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.876329,
+                "lng": 2.331805,
+                "name": "Trinité-d'Estienne d'Orves (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59600"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.875421,
+                "lng": 2.326695,
+                "name": "Saint-Lazare (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59222"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            },
+            {
+              "stop": {
+                "lat": 48.869795,
+                "lng": 2.324612,
+                "name": "Madeleine (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59412"
+              },
+              "dTime": 1565707320000,
+              "aTime": 1565707860000
+            }
+          ],
+          "from": {
+            "lat": 48.889738,
+            "lng": 2.339149,
+            "name": "Lamarck-Caulaincourt (Paris)",
+            "id": "stop_point:0:SP:59519",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.869795,
+            "lng": 2.324612,
+            "name": "Madeleine (Paris)",
+            "id": "stop_point:0:SP:59412",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "SUBWAY",
+          "action": "Prendre le Métro 12",
+          "infos": {
+            "num": "12",
+            "direction": "Mairie d'Issy (Issy-les-Moulineaux)",
+            "lineColor": "007852",
+            "numLong": "Mairie d'Issy - Front Populaire",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "shapes": [
+            [
+              2.339149,
+              48.889738
+            ],
+            [
+              2.338399,
+              48.8844
+            ],
+            [
+              2.337214,
+              48.882027
+            ],
+            [
+              2.337827,
+              48.878594
+            ],
+            [
+              2.337909,
+              48.876051
+            ],
+            [
+              2.331805,
+              48.876329
+            ],
+            [
+              2.326695,
+              48.875421
+            ],
+            [
+              2.324612,
+              48.869795
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707860000,
+          "aTime": 1565708135000,
+          "duration": 275,
+          "distance": 33,
+          "stops": [],
+          "from": {
+            "lat": 48.869795,
+            "lng": 2.324612,
+            "name": "Madeleine (Paris)",
+            "id": "stop_point:0:SP:59412",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.869507,
+            "lng": 2.32468,
+            "name": "Madeleine (Paris)",
+            "id": "stop_point:0:SP:59414",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "WALK",
+          "action": "Marcher",
+          "infos": {},
+          "shapes": [
+            [
+              2.324612,
+              48.869795
+            ],
+            [
+              2.32468,
+              48.869507
+            ]
+          ]
+        },
+        {
+          "dTime": 1565708340000,
+          "aTime": 1565709000000,
+          "duration": 660,
+          "distance": 3442,
+          "stops": [
+            {
+              "stop": {
+                "lat": 48.869507,
+                "lng": 2.32468,
+                "name": "Madeleine (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59414"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.872006,
+                "lng": 2.339911,
+                "name": "Richelieu-Drouot (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59463"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.871575,
+                "lng": 2.342895,
+                "name": "Grands Boulevards (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59464"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.870577,
+                "lng": 2.348494,
+                "name": "Bonne Nouvelle (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59475"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.869381,
+                "lng": 2.35408,
+                "name": "Strasbourg-Saint-Denis (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59273"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.867671,
+                "lng": 2.363329,
+                "name": "République (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59557"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.863078,
+                "lng": 2.366746,
+                "name": "Filles du Calvaire (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59472"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.860975,
+                "lng": 2.367262,
+                "name": "Saint-Sébastien-Froissart (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59558"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            },
+            {
+              "stop": {
+                "lat": 48.857587,
+                "lng": 2.368037,
+                "name": "Chemin Vert (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59473"
+              },
+              "dTime": 1565708340000,
+              "aTime": 1565709000000
+            }
+          ],
+          "from": {
+            "lat": 48.869507,
+            "lng": 2.32468,
+            "name": "Madeleine (Paris)",
+            "id": "stop_point:0:SP:59414",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.857587,
+            "lng": 2.368037,
+            "name": "Chemin Vert (Paris)",
+            "id": "stop_point:0:SP:59473",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "SUBWAY",
+          "action": "Prendre le Métro 8",
+          "infos": {
+            "num": "8",
+            "direction": "Pointe du Lac (Créteil)",
+            "lineColor": "E19BDF",
+            "numLong": "Balard - Créteil-Pointe du Lac",
+            "network": "METRO",
+            "wheelchair": false
+          },
+          "shapes": [
+            [
+              2.32468,
+              48.869507
+            ],
+            [
+              2.339911,
+              48.872006
+            ],
+            [
+              2.342895,
+              48.871575
+            ],
+            [
+              2.348494,
+              48.870577
+            ],
+            [
+              2.35408,
+              48.869381
+            ],
+            [
+              2.363329,
+              48.867671
+            ],
+            [
+              2.366746,
+              48.863078
+            ],
+            [
+              2.367262,
+              48.860975
+            ],
+            [
+              2.368037,
+              48.857587
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709000000,
+          "aTime": 1565709220000,
+          "duration": 220,
+          "distance": 313,
+          "stops": [],
+          "from": {
+            "lat": 48.85759,
+            "lng": 2.36807,
+            "name": "Boulevard Beaumarchais"
+          },
+          "to": {
+            "lat": 48.85482,
+            "lng": 2.36873,
+            "name": "Boulevard Beaumarchais"
+          },
+          "type": "WALK",
+          "action": "Se diriger vers le sud sur le boulevard Beaumarchais",
+          "infos": {
+            "maneuverType": "depart"
+          },
+          "shapes": [
+            [
+              2.36807,
+              48.85759
+            ],
+            [
+              2.36812,
+              48.85738
+            ],
+            [
+              2.36815,
+              48.85723
+            ],
+            [
+              2.36818,
+              48.85714
+            ],
+            [
+              2.36821,
+              48.85701
+            ],
+            [
+              2.36822,
+              48.85694
+            ],
+            [
+              2.36824,
+              48.85689
+            ],
+            [
+              2.3683,
+              48.85661
+            ],
+            [
+              2.36841,
+              48.85616
+            ],
+            [
+              2.36844,
+              48.85603
+            ],
+            [
+              2.36846,
+              48.85595
+            ],
+            [
+              2.3685,
+              48.85582
+            ],
+            [
+              2.36851,
+              48.85577
+            ],
+            [
+              2.36852,
+              48.85571
+            ],
+            [
+              2.3686,
+              48.85538
+            ],
+            [
+              2.3687,
+              48.85495
+            ],
+            [
+              2.36873,
+              48.85482
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709220000,
+          "aTime": 1565709251000,
+          "duration": 31,
+          "distance": 46,
+          "stops": [],
+          "from": {
+            "lat": 48.85482,
+            "lng": 2.36873,
+            "name": "Boulevard Beaumarchais"
+          },
+          "to": {
+            "lat": 48.8548,
+            "lng": 2.36811,
+            "name": "Rue Jean Beausire"
+          },
+          "type": "WALK",
+          "action": "Tourner à droite sur la rue Jean Beausire",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.36873,
+              48.85482
+            ],
+            [
+              2.36854,
+              48.85481
+            ],
+            [
+              2.36816,
+              48.8548
+            ],
+            [
+              2.36811,
+              48.8548
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709251000,
+          "aTime": 1565709327000,
+          "duration": 76,
+          "distance": 110,
+          "stops": [],
+          "from": {
+            "lat": 48.8548,
+            "lng": 2.36811,
+            "name": "Rue Jean Beausire"
+          },
+          "to": {
+            "lat": 48.85382,
+            "lng": 2.36817,
+            "name": "Rue Jean Beausire"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche pour rester sur la rue Jean Beausire",
+          "infos": {
+            "maneuverType": "continue",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36811,
+              48.8548
+            ],
+            [
+              2.36812,
+              48.85476
+            ],
+            [
+              2.36815,
+              48.85426
+            ],
+            [
+              2.36817,
+              48.85386
+            ],
+            [
+              2.36817,
+              48.85382
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709327000,
+          "aTime": 1565709347000,
+          "duration": 20,
+          "distance": 30,
+          "stops": [],
+          "from": {
+            "lat": 48.85382,
+            "lng": 2.36817,
+            "name": "Rue Jean Beausire"
+          },
+          "to": {
+            "lat": 48.85376,
+            "lng": 2.36856,
+            "name": "Rue de la Bastille"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche sur la rue de la Bastille",
+          "infos": {
+            "maneuverType": "end of road",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36817,
+              48.85382
+            ],
+            [
+              2.36822,
+              48.85382
+            ],
+            [
+              2.36826,
+              48.85381
+            ],
+            [
+              2.36856,
+              48.85376
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709347000,
+          "aTime": 1565709423000,
+          "duration": 76,
+          "distance": 99,
+          "stops": [],
+          "from": {
+            "lat": 48.85376,
+            "lng": 2.36856,
+            "name": "Rue de la Bastille"
+          },
+          "to": {
+            "lat": 48.85292,
+            "lng": 2.36815
+          },
+          "type": "WALK",
+          "action": "Tourner à droite",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.36856,
+              48.85376
+            ],
+            [
+              2.36855,
+              48.85373
+            ],
+            [
+              2.3683,
+              48.8534
+            ],
+            [
+              2.36823,
+              48.85336
+            ],
+            [
+              2.36822,
+              48.85334
+            ],
+            [
+              2.3682,
+              48.85331
+            ],
+            [
+              2.36819,
+              48.85327
+            ],
+            [
+              2.36819,
+              48.85327
+            ],
+            [
+              2.36818,
+              48.85324
+            ],
+            [
+              2.36817,
+              48.85321
+            ],
+            [
+              2.3682,
+              48.85307
+            ],
+            [
+              2.36815,
+              48.85294
+            ],
+            [
+              2.36815,
+              48.85292
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709423000,
+          "aTime": 1565709442000,
+          "duration": 19,
+          "distance": 27,
+          "stops": [],
+          "from": {
+            "lat": 48.85292,
+            "lng": 2.36815
+          },
+          "to": {
+            "lat": 48.853,
+            "lng": 2.36849,
+            "name": "Boulevard Henri IV"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche sur le boulevard Henri IV",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36815,
+              48.85292
+            ],
+            [
+              2.36849,
+              48.853
+            ]
+          ]
+        }
+      ],
+      "price": {
+        "value": 1.9,
+        "currency": "EUR",
+        "group": false
+      },
+      "note": 4.571651780264984
+    },
+    {
+      "id": "WALK-BUS_CITY#56#RATP-WALK-",
+      "distance": 5823.599999999999,
+      "carbon": 466.2715,
+      "duration": 5056,
+      "dTime": 1565707641000,
+      "aTime": 1565710960000,
+      "booking": [
+        {
+          "deeplink_web": ""
+        }
+      ],
+      "summary": [
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 824,
+          "duration": 579
+        },
+        {
+          "type": "BUS_CITY",
+          "infos": {
+            "num": "56",
+            "numLong": "Porte de Clignancourt - Château de Vincennes",
+            "direction": "Château de Vincennes (Paris)",
+            "lineColor": "A0006E",
+            "network": "RATP",
+            "wheelchair": true
+          },
+          "distance": 3492,
+          "duration": 1740
+        },
+        {
+          "type": "WALK",
+          "infos": {},
+          "distance": 1408,
+          "duration": 1000
+        }
+      ],
+      "legs": [
+        {
+          "dTime": 1565707641000,
+          "aTime": 1565707671000,
+          "duration": 30,
+          "distance": 44,
+          "stops": [],
+          "from": {
+            "lat": 48.89007,
+            "lng": 2.34028,
+            "name": "Rue Saule"
+          },
+          "to": {
+            "lat": 48.88968,
+            "lng": 2.34021,
+            "name": "Rue Saule"
+          },
+          "type": "WALK",
+          "action": "Se diriger vers le sud sur la rue Saule",
+          "infos": {
+            "maneuverType": "depart"
+          },
+          "shapes": [
+            [
+              2.34028,
+              48.89007
+            ],
+            [
+              2.3402,
+              48.88983
+            ],
+            [
+              2.34021,
+              48.88968
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707671000,
+          "aTime": 1565707812000,
+          "duration": 141,
+          "distance": 201,
+          "stops": [],
+          "from": {
+            "lat": 48.88968,
+            "lng": 2.34021,
+            "name": "Rue Saule"
+          },
+          "to": {
+            "lat": 48.88979,
+            "lng": 2.34294,
+            "name": "Rue Caulaincourt"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche sur la rue Caulaincourt",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.34021,
+              48.88968
+            ],
+            [
+              2.34049,
+              48.88969
+            ],
+            [
+              2.34057,
+              48.88969
+            ],
+            [
+              2.34062,
+              48.8897
+            ],
+            [
+              2.34139,
+              48.88973
+            ],
+            [
+              2.3421,
+              48.88976
+            ],
+            [
+              2.34272,
+              48.88979
+            ],
+            [
+              2.34294,
+              48.88979
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707812000,
+          "aTime": 1565707910000,
+          "duration": 98,
+          "distance": 140,
+          "stops": [],
+          "from": {
+            "lat": 48.88979,
+            "lng": 2.34294,
+            "name": "Rue Caulaincourt"
+          },
+          "to": {
+            "lat": 48.88931,
+            "lng": 2.3447,
+            "name": "Rue Custine"
+          },
+          "type": "WALK",
+          "action": "Continuer tout droit sur la rue Custine",
+          "infos": {
+            "maneuverType": "new name",
+            "maneuverAction": "straight"
+          },
+          "shapes": [
+            [
+              2.34294,
+              48.88979
+            ],
+            [
+              2.34302,
+              48.88977
+            ],
+            [
+              2.34334,
+              48.88969
+            ],
+            [
+              2.3438,
+              48.88956
+            ],
+            [
+              2.34389,
+              48.88953
+            ],
+            [
+              2.34397,
+              48.88951
+            ],
+            [
+              2.34447,
+              48.88937
+            ],
+            [
+              2.34457,
+              48.88934
+            ],
+            [
+              2.3447,
+              48.88931
+            ]
+          ]
+        },
+        {
+          "dTime": 1565707910000,
+          "aTime": 1565708095000,
+          "duration": 185,
+          "distance": 262,
+          "stops": [],
+          "from": {
+            "lat": 48.88931,
+            "lng": 2.3447,
+            "name": "Rue Custine"
+          },
+          "to": {
+            "lat": 48.8884,
+            "lng": 2.348,
+            "name": "Rue Custine"
+          },
+          "type": "WALK",
+          "action": "Tenir la droite sur la rue Custine",
+          "infos": {
+            "maneuverType": "fork",
+            "maneuverAction": "slight right"
+          },
+          "shapes": [
+            [
+              2.3447,
+              48.88931
+            ],
+            [
+              2.34491,
+              48.88925
+            ],
+            [
+              2.34531,
+              48.88914
+            ],
+            [
+              2.34602,
+              48.88895
+            ],
+            [
+              2.34625,
+              48.88888
+            ],
+            [
+              2.34647,
+              48.88882
+            ],
+            [
+              2.34658,
+              48.88879
+            ],
+            [
+              2.34673,
+              48.88875
+            ],
+            [
+              2.34792,
+              48.88842
+            ],
+            [
+              2.348,
+              48.8884
+            ]
+          ]
+        },
+        {
+          "dTime": 1565708095000,
+          "aTime": 1565708179000,
+          "duration": 84,
+          "distance": 117,
+          "stops": [],
+          "from": {
+            "lat": 48.8884,
+            "lng": 2.348,
+            "name": "Rue Custine"
+          },
+          "to": {
+            "lat": 48.88836,
+            "lng": 2.34959,
+            "name": "Rue Doudeauville"
+          },
+          "type": "WALK",
+          "action": "Continuer tout droit sur la rue Doudeauville",
+          "infos": {
+            "maneuverType": "new name",
+            "maneuverAction": "straight"
+          },
+          "shapes": [
+            [
+              2.348,
+              48.8884
+            ],
+            [
+              2.34819,
+              48.88839
+            ],
+            [
+              2.34942,
+              48.88836
+            ],
+            [
+              2.34946,
+              48.88836
+            ],
+            [
+              2.34959,
+              48.88836
+            ]
+          ]
+        },
+        {
+          "dTime": 1565708179000,
+          "aTime": 1565708220000,
+          "duration": 41,
+          "distance": 60,
+          "stops": [],
+          "from": {
+            "lat": 48.88836,
+            "lng": 2.34959,
+            "name": "Rue Doudeauville"
+          },
+          "to": {
+            "lat": 48.88783,
+            "lng": 2.34957,
+            "name": "Boulevard Barbès"
+          },
+          "type": "WALK",
+          "action": "Tourner à droite sur le boulevard Barbès",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.34959,
+              48.88836
+            ],
+            [
+              2.34959,
+              48.88827
+            ],
+            [
+              2.34958,
+              48.88789
+            ],
+            [
+              2.34957,
+              48.88783
+            ]
+          ]
+        },
+        {
+          "dTime": 1565708220000,
+          "aTime": 1565709960000,
+          "duration": 1740,
+          "distance": 3492,
+          "stops": [
+            {
+              "stop": {
+                "lat": 48.887832,
+                "lng": 2.34937,
+                "name": "Château Rouge (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:4211799"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.884094,
+                "lng": 2.349288,
+                "name": "Barbes - Rochechouart (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:4211801"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.880876,
+                "lng": 2.351726,
+                "name": "Magenta - Maubeuge - Gare du Nord (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:4045032"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.878916,
+                "lng": 2.35347,
+                "name": "La Fayette - Magenta - Gare du Nord (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7275140"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.875851,
+                "lng": 2.356166,
+                "name": "Magenta-Gare de l'Est (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7899408"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.871114,
+                "lng": 2.360483,
+                "name": "Jacques Bonsergent (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:4044989"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.869011,
+                "lng": 2.362431,
+                "name": "République - Magenta (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7899412"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.867141,
+                "lng": 2.364936,
+                "name": "République (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7170694"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.866359,
+                "lng": 2.365494,
+                "name": "République - Voltaire (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7899414"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.864965,
+                "lng": 2.36785,
+                "name": "Jean-Pierre Timbaud (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7899416"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.8635,
+                "lng": 2.370329,
+                "name": "Oberkampf - Richard Lenoir (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7899418"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            },
+            {
+              "stop": {
+                "lat": 48.861108,
+                "lng": 2.374332,
+                "name": "Saint-Ambroise (Paris)",
+                "osm_id": "osm_id à venir",
+                "id": "stop_point:0:SP:59:7899420"
+              },
+              "dTime": 1565708220000,
+              "aTime": 1565709960000
+            }
+          ],
+          "from": {
+            "lat": 48.887832,
+            "lng": 2.34937,
+            "name": "Château Rouge (Paris)",
+            "id": "stop_point:0:SP:59:4211799",
+            "osm_id": "osm_id à venir"
+          },
+          "to": {
+            "lat": 48.861108,
+            "lng": 2.374332,
+            "name": "Saint-Ambroise (Paris)",
+            "id": "stop_point:0:SP:59:7899420",
+            "osm_id": "osm_id à venir"
+          },
+          "type": "BUS_CITY",
+          "action": "Prendre le Bus 56",
+          "infos": {
+            "num": "56",
+            "direction": "Château de Vincennes (Paris)",
+            "lineColor": "A0006E",
+            "numLong": "Porte de Clignancourt - Château de Vincennes",
+            "network": "RATP",
+            "wheelchair": true
+          },
+          "shapes": [
+            [
+              2.34937,
+              48.887832
+            ],
+            [
+              2.349288,
+              48.884094
+            ],
+            [
+              2.351726,
+              48.880876
+            ],
+            [
+              2.35347,
+              48.878916
+            ],
+            [
+              2.356166,
+              48.875851
+            ],
+            [
+              2.360483,
+              48.871114
+            ],
+            [
+              2.362431,
+              48.869011
+            ],
+            [
+              2.364936,
+              48.867141
+            ],
+            [
+              2.365494,
+              48.866359
+            ],
+            [
+              2.36785,
+              48.864965
+            ],
+            [
+              2.370329,
+              48.8635
+            ],
+            [
+              2.374332,
+              48.861108
+            ]
+          ]
+        },
+        {
+          "dTime": 1565709960000,
+          "aTime": 1565710034000,
+          "duration": 74,
+          "distance": 105,
+          "stops": [],
+          "from": {
+            "lat": 48.86119,
+            "lng": 2.37444,
+            "name": "Boulevard Voltaire"
+          },
+          "to": {
+            "lat": 48.86055,
+            "lng": 2.37549,
+            "name": "Boulevard Voltaire"
+          },
+          "type": "WALK",
+          "action": "Se diriger vers le sud-est sur le boulevard Voltaire",
+          "infos": {
+            "maneuverType": "depart"
+          },
+          "shapes": [
+            [
+              2.37444,
+              48.86119
+            ],
+            [
+              2.37451,
+              48.86115
+            ],
+            [
+              2.3746,
+              48.86109
+            ],
+            [
+              2.37477,
+              48.86098
+            ],
+            [
+              2.37494,
+              48.86088
+            ],
+            [
+              2.37527,
+              48.86068
+            ],
+            [
+              2.37532,
+              48.86065
+            ],
+            [
+              2.37537,
+              48.86063
+            ],
+            [
+              2.37549,
+              48.86055
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710034000,
+          "aTime": 1565710126000,
+          "duration": 92,
+          "distance": 127,
+          "stops": [],
+          "from": {
+            "lat": 48.86055,
+            "lng": 2.37549,
+            "name": "Boulevard Voltaire"
+          },
+          "to": {
+            "lat": 48.85944,
+            "lng": 2.37584,
+            "name": "Rue Popincourt"
+          },
+          "type": "WALK",
+          "action": "Tourner à droite sur la rue Popincourt",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.37549,
+              48.86055
+            ],
+            [
+              2.37546,
+              48.86049
+            ],
+            [
+              2.37545,
+              48.86045
+            ],
+            [
+              2.37555,
+              48.86017
+            ],
+            [
+              2.37557,
+              48.86012
+            ],
+            [
+              2.37571,
+              48.85977
+            ],
+            [
+              2.37581,
+              48.85951
+            ],
+            [
+              2.37582,
+              48.85948
+            ],
+            [
+              2.37584,
+              48.85944
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710126000,
+          "aTime": 1565710350000,
+          "duration": 224,
+          "distance": 320,
+          "stops": [],
+          "from": {
+            "lat": 48.85944,
+            "lng": 2.37584,
+            "name": "Rue Popincourt"
+          },
+          "to": {
+            "lat": 48.85814,
+            "lng": 2.37195,
+            "name": "Rue du Chemin Vert"
+          },
+          "type": "WALK",
+          "action": "Tourner à droite sur la rue du Chemin Vert",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.37584,
+              48.85944
+            ],
+            [
+              2.37578,
+              48.85942
+            ],
+            [
+              2.37501,
+              48.85916
+            ],
+            [
+              2.37496,
+              48.85915
+            ],
+            [
+              2.37489,
+              48.85912
+            ],
+            [
+              2.3748,
+              48.85909
+            ],
+            [
+              2.37389,
+              48.8588
+            ],
+            [
+              2.3738,
+              48.85877
+            ],
+            [
+              2.37312,
+              48.85854
+            ],
+            [
+              2.37204,
+              48.85817
+            ],
+            [
+              2.37195,
+              48.85814
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710350000,
+          "aTime": 1565710366000,
+          "duration": 16,
+          "distance": 24,
+          "stops": [],
+          "from": {
+            "lat": 48.85814,
+            "lng": 2.37195,
+            "name": "Rue du Chemin Vert"
+          },
+          "to": {
+            "lat": 48.85804,
+            "lng": 2.37166
+          },
+          "type": "WALK",
+          "action": "Continuer tout droit",
+          "infos": {
+            "maneuverType": "new name",
+            "maneuverAction": "straight"
+          },
+          "shapes": [
+            [
+              2.37195,
+              48.85814
+            ],
+            [
+              2.37179,
+              48.85809
+            ],
+            [
+              2.37166,
+              48.85804
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710366000,
+          "aTime": 1565710569000,
+          "duration": 203,
+          "distance": 281,
+          "stops": [],
+          "from": {
+            "lat": 48.85804,
+            "lng": 2.37166
+          },
+          "to": {
+            "lat": 48.85694,
+            "lng": 2.36822,
+            "name": "Rue du Chemin Vert"
+          },
+          "type": "WALK",
+          "action": "Tenir la droite sur la rue du Chemin Vert",
+          "infos": {
+            "maneuverType": "fork",
+            "maneuverAction": "slight right"
+          },
+          "shapes": [
+            [
+              2.37166,
+              48.85804
+            ],
+            [
+              2.37154,
+              48.85798
+            ],
+            [
+              2.37147,
+              48.85795
+            ],
+            [
+              2.37126,
+              48.85789
+            ],
+            [
+              2.37111,
+              48.85785
+            ],
+            [
+              2.37102,
+              48.85782
+            ],
+            [
+              2.37091,
+              48.85779
+            ],
+            [
+              2.3708,
+              48.85775
+            ],
+            [
+              2.36992,
+              48.85747
+            ],
+            [
+              2.36983,
+              48.85744
+            ],
+            [
+              2.36976,
+              48.85742
+            ],
+            [
+              2.36894,
+              48.85714
+            ],
+            [
+              2.36885,
+              48.85712
+            ],
+            [
+              2.36878,
+              48.85709
+            ],
+            [
+              2.36855,
+              48.85703
+            ],
+            [
+              2.3684,
+              48.85699
+            ],
+            [
+              2.36822,
+              48.85694
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710569000,
+          "aTime": 1565710738000,
+          "duration": 169,
+          "distance": 239,
+          "stops": [],
+          "from": {
+            "lat": 48.85694,
+            "lng": 2.36822,
+            "name": "Rue du Chemin Vert"
+          },
+          "to": {
+            "lat": 48.85482,
+            "lng": 2.36873,
+            "name": "Boulevard Beaumarchais"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche sur le boulevard Beaumarchais",
+          "infos": {
+            "maneuverType": "end of road",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36822,
+              48.85694
+            ],
+            [
+              2.36824,
+              48.85689
+            ],
+            [
+              2.3683,
+              48.85661
+            ],
+            [
+              2.36841,
+              48.85616
+            ],
+            [
+              2.36844,
+              48.85603
+            ],
+            [
+              2.36846,
+              48.85595
+            ],
+            [
+              2.3685,
+              48.85582
+            ],
+            [
+              2.36851,
+              48.85577
+            ],
+            [
+              2.36852,
+              48.85571
+            ],
+            [
+              2.3686,
+              48.85538
+            ],
+            [
+              2.3687,
+              48.85495
+            ],
+            [
+              2.36873,
+              48.85482
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710738000,
+          "aTime": 1565710769000,
+          "duration": 31,
+          "distance": 46,
+          "stops": [],
+          "from": {
+            "lat": 48.85482,
+            "lng": 2.36873,
+            "name": "Boulevard Beaumarchais"
+          },
+          "to": {
+            "lat": 48.8548,
+            "lng": 2.36811,
+            "name": "Rue Jean Beausire"
+          },
+          "type": "WALK",
+          "action": "Tourner à droite sur la rue Jean Beausire",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.36873,
+              48.85482
+            ],
+            [
+              2.36854,
+              48.85481
+            ],
+            [
+              2.36816,
+              48.8548
+            ],
+            [
+              2.36811,
+              48.8548
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710769000,
+          "aTime": 1565710845000,
+          "duration": 76,
+          "distance": 110,
+          "stops": [],
+          "from": {
+            "lat": 48.8548,
+            "lng": 2.36811,
+            "name": "Rue Jean Beausire"
+          },
+          "to": {
+            "lat": 48.85382,
+            "lng": 2.36817,
+            "name": "Rue Jean Beausire"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche pour rester sur la rue Jean Beausire",
+          "infos": {
+            "maneuverType": "continue",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36811,
+              48.8548
+            ],
+            [
+              2.36812,
+              48.85476
+            ],
+            [
+              2.36815,
+              48.85426
+            ],
+            [
+              2.36817,
+              48.85386
+            ],
+            [
+              2.36817,
+              48.85382
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710845000,
+          "aTime": 1565710865000,
+          "duration": 20,
+          "distance": 30,
+          "stops": [],
+          "from": {
+            "lat": 48.85382,
+            "lng": 2.36817,
+            "name": "Rue Jean Beausire"
+          },
+          "to": {
+            "lat": 48.85376,
+            "lng": 2.36856,
+            "name": "Rue de la Bastille"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche sur la rue de la Bastille",
+          "infos": {
+            "maneuverType": "end of road",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36817,
+              48.85382
+            ],
+            [
+              2.36822,
+              48.85382
+            ],
+            [
+              2.36826,
+              48.85381
+            ],
+            [
+              2.36856,
+              48.85376
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710865000,
+          "aTime": 1565710941000,
+          "duration": 76,
+          "distance": 99,
+          "stops": [],
+          "from": {
+            "lat": 48.85376,
+            "lng": 2.36856,
+            "name": "Rue de la Bastille"
+          },
+          "to": {
+            "lat": 48.85292,
+            "lng": 2.36815
+          },
+          "type": "WALK",
+          "action": "Tourner à droite",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "right"
+          },
+          "shapes": [
+            [
+              2.36856,
+              48.85376
+            ],
+            [
+              2.36855,
+              48.85373
+            ],
+            [
+              2.3683,
+              48.8534
+            ],
+            [
+              2.36823,
+              48.85336
+            ],
+            [
+              2.36822,
+              48.85334
+            ],
+            [
+              2.3682,
+              48.85331
+            ],
+            [
+              2.36819,
+              48.85327
+            ],
+            [
+              2.36819,
+              48.85327
+            ],
+            [
+              2.36818,
+              48.85324
+            ],
+            [
+              2.36817,
+              48.85321
+            ],
+            [
+              2.3682,
+              48.85307
+            ],
+            [
+              2.36815,
+              48.85294
+            ],
+            [
+              2.36815,
+              48.85292
+            ]
+          ]
+        },
+        {
+          "dTime": 1565710941000,
+          "aTime": 1565710960000,
+          "duration": 19,
+          "distance": 27,
+          "stops": [],
+          "from": {
+            "lat": 48.85292,
+            "lng": 2.36815
+          },
+          "to": {
+            "lat": 48.853,
+            "lng": 2.36849,
+            "name": "Boulevard Henri IV"
+          },
+          "type": "WALK",
+          "action": "Tourner à gauche sur le boulevard Henri IV",
+          "infos": {
+            "maneuverType": "turn",
+            "maneuverAction": "left"
+          },
+          "shapes": [
+            [
+              2.36815,
+              48.85292
+            ],
+            [
+              2.36849,
+              48.853
+            ]
+          ]
+        }
+      ],
+      "price": {
+        "value": 1.9,
+        "currency": "EUR",
+        "group": false
+      },
+      "note": 5.186520991955976
+    }
+  ]
+}

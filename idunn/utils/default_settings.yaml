@@ -1,10 +1,11 @@
+USER_AGENT: "Idunn/0.1"
 
 MIMIR_ES: http://localhost:9200/
 
 WIKI_ES:
 WIKI_ES_TIMEOUT: 0.5 # seconds
 WIKI_ES_MAX_RETRIES: 0
-WIKI_USER_AGENT: 'Idunn' # Used in requests to external wiki* APIs
+WIKI_USER_AGENT: "Idunn/0.1" # Used in requests to external wiki* APIs
 
 DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
 
@@ -70,3 +71,9 @@ KUZZLE_CLUSTER_URL:
 ## CORS
 
 CORS_OPTIONS_REQUESTS_ENABLED: False
+
+#######################
+## Directions
+QWANT_DIRECTIONS_API_BASE_URL:
+COMBIGO_API_BASE_URL: "https://maps2.combigo.com/v1"
+COMBIGO_API_KEY:

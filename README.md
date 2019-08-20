@@ -10,7 +10,7 @@
 - Why [Idunn](https://fr.wikipedia.org/wiki/Idunn) ? Because she is the wife of [Bragi](https://fr.wikipedia.org/wiki/Bragi) that is also [the main](https://github.com/CanalTP/mimirsbrunn/tree/master/libs/bragi) mimir API.
 - A simple workflow schema of Idunn is presented below.
 
-![Idunn workflow](./doc/idunn.png)
+![Idunn workflow](./doc/diagram.png)
 
 ## API
 
@@ -32,6 +32,9 @@ The main endpoints are:
 * `/v1/places?bbox={bbox}&raw_filter=class,subclass&size={size}` to get a list of all points of interest matching the given bbox (=left,bot,right,top e.g. `bbox=2,48,3,49`) and the raw filters (e.g. `raw_filter=*,restaurant&raw_filter=shop,*&raw_filter=bakery,bakery`)
 * `/v1/categories` to get the list of all the categories you can filter on.
 * `/v1/pois/{poi_id}?lang={lang}` is the **deprecated** route to get the details of a POI.
+* `/v1/directions` See [directions.md](./doc/directions.md) for details
+
+---
 * `/v1/status` to get the status of the API and associated ES cluster.
 * `/v1/metrics` to get some metrics on the API that give statistics on the number of requests received, the duration of requests... This endpoint can be scraped by Prometheus.
 
