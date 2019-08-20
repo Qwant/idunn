@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 class DirectionsClient:
     def __init__(self):
         self.qw_session = requests.Session()
-        self.qw_session.verify = False
-        self.qw_session.headers['User-Agent'] = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
+        self.qw_session.headers['User-Agent'] = settings['USER_AGENT']
 
         self.combigo_session = requests.Session()
         self.combigo_session.headers['x-api-key'] = settings['COMBIGO_API_KEY']
+        self.combigo_session.headers['User-Agent'] = settings['USER_AGENT']
 
     @property
     def QWANT_BASE_URL(self):
