@@ -25,7 +25,7 @@ class TransportMode(str, Enum):
     helicopter = 'HELICOPTER'
     funicular = 'FUNICULAR'
     shuttle = 'SHUTTLE'
-    unknown = 'UNKNOW'
+    unknown = 'UNKNOW' # sic, without 'N' as it is in Combigo docs (typo ?)
     wait = 'WAIT'
 
 
