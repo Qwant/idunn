@@ -11,9 +11,10 @@ from .utils import override_settings
 
 @pytest.fixture
 def mock_directions_car():
-    with override_settings(
-        {"QWANT_DIRECTIONS_API_BASE_URL": "http://api.qwant/directions"}
-    ):
+    with override_settings({
+        "QWANT_DIRECTIONS_API_BASE_URL": "http://api.qwant/directions",
+        "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,
+    }):
         fixture_path = os.path.join(
             os.path.dirname(__file__),
             "fixtures/directions",
@@ -86,7 +87,10 @@ def test_direction_public_transport(mock_directions_public_transport):
     )) == ['WALK', 'SUBWAY', 'WALK', 'SUBWAY', 'WALK']
 
 def test_directions_not_configured():
-    with override_settings({'QWANT_DIRECTIONS_API_BASE_URL': None}):
+    with override_settings({
+        "QWANT_DIRECTIONS_API_BASE_URL": None,
+        "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,
+    }):
         client = TestClient(app)
         response = client.get(
             "http://localhost/v1/directions/"
