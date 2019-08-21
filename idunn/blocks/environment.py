@@ -12,7 +12,17 @@ logger = logging.getLogger(__name__)
 class AirQuality(BaseBlock):
     BLOCK_TYPE = "air_quality"
 
-    air_quality = validators.Object(allow_null=True)
+    air_quality = validators.Object(properties={'PM10': validators.Object(allow_null=True),
+                                        'O3': validators.Object(allow_null=True),
+                                        'NO2': validators.Object(allow_null=True),
+                                        'SO2': validators.Object(allow_null=True),
+                                        'PM2_5': validators.Object(allow_null=True),
+                                        'date': validators.DateTime(),
+                                        'source': validators.String(allow_null=True),
+                                        'source_url': validators.String(allow_null=True),
+                                        'measurements_unit': validators.String(allow_null=True)
+                                    },
+                      additional_properties=True)
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -38,4 +48,5 @@ def get_air_quality(geobbox):
     air_quality_res = kuzzle_client.fetch_air_quality(geobbox)
 
     return air_quality_res
+
 
