@@ -141,12 +141,14 @@ def test_pollution_city(kuzzle_test_normal):
             Admin(testee),
             lang='en'
         )
+
         assert res == AirQuality(
              air_quality={
                  'PM10': {'value': 37.4, 'quality_index': 3},
                  'O3': {'value': 85.4, 'quality_index': 2},
                  'SO2': {'value': 509.6, 'quality_index': 5},
                  'NO2': {'value': 17.3, 'quality_index': 1},
+                 'PM2.5': {'value': 5.3, 'quality_index': 1},
                  'globalQuality': 5,
                  'date': "2019-08-06T10:00:00.000Z",
                  'source': 'EEA France',
