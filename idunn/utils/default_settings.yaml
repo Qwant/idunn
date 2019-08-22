@@ -74,6 +74,9 @@ CORS_OPTIONS_REQUESTS_ENABLED: False
 
 #######################
 ## Directions
+DIRECTIONS_TIMEOUT: 8 # seconds
 QWANT_DIRECTIONS_API_BASE_URL:
+MAPBOX_DIRECTIONS_API_BASE_URL: "https://api.mapbox.com/directions/v5/mapbox"
+MAPBOX_DIRECTIONS_ACCESS_TOKEN:
 COMBIGO_API_BASE_URL: "https://maps2.combigo.com/v1"
 COMBIGO_API_KEY:
