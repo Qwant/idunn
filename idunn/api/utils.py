@@ -1,11 +1,21 @@
-from apistar.exceptions import NotFound, BadRequest
+from apistar.exceptions import HTTPException, NotFound, BadRequest
 from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
 from idunn import settings
-from idunn.blocks import \
-    PhoneBlock, OpeningHourBlock, InformationBlock, \
-    WebSiteBlock, ContactBlock, ImagesBlock, WikiUndefinedException, GradesBlock, OpeningDayEvent, \
-    DescriptionEvent, AirQuality
+from idunn.blocks import (
+    AirQuality,
+    ContactBlock,
+    DescriptionEvent,
+    GradesBlock,
+    HappyHourBlock,
+    ImagesBlock,
+    InformationBlock,
+    OpeningDayEvent,
+    OpeningHourBlock,
+    PhoneBlock,
+    WebSiteBlock,
+    WikiUndefinedException,
+)
 from idunn.utils import prometheus
 import phonenumbers
 import requests
@@ -24,6 +34,7 @@ BLOCKS_BY_VERBOSITY = {
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
+        HappyHourBlock,
         PhoneBlock,
         InformationBlock,
         WebSiteBlock,
@@ -213,12 +224,16 @@ def fetch_es_place(id, es, indices, type) -> dict:
     else:
         index_name = indices.get(type)
 
-    es_places = es.search(index=index_name,
-        body={
-            "filter": {
-                "term": {"_id": id}
-            }
-        })
+    try:
+        es_places = es.search(index=index_name,
+            body={
+                "filter": {
+                    "term": {"_id": id}
+                }
+            })
+    except ElasticsearchException as error:
+        logger.warning(f"error with database: {error}")
+        raise HTTPException(detail='database issue', status_code=503)
 
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:

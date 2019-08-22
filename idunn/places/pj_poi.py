@@ -1,6 +1,70 @@
+from functools import lru_cache
 from .base import BasePlace
 from .place import PlaceMeta
 from ..api.constants import SOURCE_PAGESJAUNES
+
+DOCTORS = (
+    'Chiropracteur',
+    'Centre de radiologie',
+    'Cardiologue',
+    'Gynécologue',
+    'ORL',
+    'Radiologue',
+    'Ostéopathe',
+    'Chirurgien',
+    'Ophtalmologue',
+    'Médecin généraliste',
+    'Infirmier',
+    'kinésithérapeute',
+    'Psychologue',
+    'Ergothérapeute',
+)
+
+@lru_cache(maxsize=200)
+def get_class_subclass(raw_categories):
+    categories = [
+        {'raw': 'restaurants', 'class': 'restaurant'},
+        {'raw': 'hôtels', 'class': 'lodging'},
+        {'raw': 'salles de cinéma', 'class': 'cinema'},
+        {'raw': 'salles de concerts, de spectacles', 'class': 'theatre'},
+        {'raw': 'Pharmacie', 'class': 'pharmacy'},
+        {'raw': 'supermarchés, hypermarchés', 'class': 'grocery'},
+        {'raw': 'banques', 'class': 'bank'},
+        {'raw': 'cafés, bars', 'class': 'bar'},
+        {'raw': 'Chirurgien-dentiste', 'class': 'dentist'},
+        {'raw': 'musées', 'class': 'museum'},
+        {'raw': 'Hôpital', 'class': 'hospital'},
+        {'raw': 'garages automobiles', 'class': 'car', 'subclass': 'car_repair'},
+        {'raw': 'envoi, distribution de courrier, de colis', 'class': 'post_office'},
+        {'raw': 'mairies', 'class': 'town_hall'},
+        {'raw': 'services de gendarmerie, de police', 'class': 'police'},
+        {'raw': 'sapeurs-pompiers, centres de secours', 'class': 'fire_station'},
+        {'raw': 'infrastructures de sports et loisirs', 'class': 'sports_centre'},
+        {'raw': 'piscines (établissements)', 'class': 'sports_centre'},
+        {'raw': 'clubs de sport', 'class': 'sports_centre'},
+        {'raw': 'vétérinaires', 'class':'veterinary'},
+        {'class': 'school',
+         'func': lambda raw_categories: any(k in c
+                                            for c in raw_categories
+                                            for k in ('écoles ', 'collèges ', 'lycées '))},
+        {'class': 'college',
+         'func': lambda raw_categories: any('enseignement supérieur' in c for c in raw_categories)},
+        {'class': 'doctors',
+         'func': lambda raw_categories: any(k in c for c in raw_categories for k in DOCTORS)},
+    ]
+    for category in categories:
+        if 'raw' in category:
+            if category['raw'] in raw_categories:
+                class_name = category['class']
+                subclass_name = category.get('subclass') or class_name
+                return (class_name, subclass_name)
+        elif 'func' in category:
+            if category['func'](raw_categories):
+                class_name = category['class']
+                subclass_name = category.get('subclass') or class_name
+                return (class_name, subclass_name)
+    return (None, None)
+
 
 class PjPOI(BasePlace):
     PLACE_TYPE = 'poi'
@@ -27,33 +91,14 @@ class PjPOI(BasePlace):
         return self.get('WebsiteURL')
 
     def get_class_name(self):
-        raw_categories = set(self.get('Category', []))
-        if 'restaurants' in raw_categories:
-            return 'restaurant'
-        if 'hôtels' in raw_categories:
-            return 'lodging'
-        if 'musées' in raw_categories:
-            return 'museum'
-        if 'salles de cinéma' in raw_categories:
-            return 'cinema'
-        if 'salles de concerts, de spectacles' in raw_categories:
-            return 'theatre'
-        if 'Pharmacie' in raw_categories:
-            return 'pharmacy'
-        if 'supermarchés, hypermarchés' in raw_categories:
-            return 'grocery'
-        if 'banques' in raw_categories:
-            return 'bank'
-        if 'cafés, bars' in raw_categories:
-            return 'bar'
-        if any(k in c for c in raw_categories for k in ('écoles ','collèges ','lycées ')):
-            return 'school'
-        if any('enseignement supérieur' in c for c in raw_categories):
-            return 'college'
-        return None
+        raw_categories = frozenset(self.get('Category', []))
+        class_name, _ = get_class_subclass(raw_categories)
+        return class_name
 
     def get_subclass_name(self):
-        return self.get_class_name()
+        raw_categories = frozenset(self.get('Category', []))
+        _, subclass_name = get_class_subclass(raw_categories)
+        return subclass_name
 
     def get_raw_opening_hours(self):
         opening_hours_dict = self.get('OpeningHours', {})

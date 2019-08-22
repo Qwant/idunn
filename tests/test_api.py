@@ -1,5 +1,8 @@
 from app import app
 from apistar.test import TestClient
+import pytest
+from .utils import override_settings
+
 
 def test_basic_query():
     client = TestClient(app)
@@ -22,6 +25,7 @@ def test_basic_query():
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
 
+
 def test_lang():
     client = TestClient(app)
     response = client.get(
@@ -41,6 +45,7 @@ def test_lang():
     assert resp['blocks'][0]['type'] == 'opening_hours'
     assert resp['blocks'][1]['type'] == 'phone'
     assert resp['blocks'][0]['is_24_7'] == False
+
 
 def test_contact_phone():
     """
@@ -65,6 +70,7 @@ def test_contact_phone():
     assert resp['blocks'][1]['url'] == 'tel:+33140205229'
     assert resp['blocks'][1]['international_format'] == '+33 1 40 20 52 29'
     assert resp['blocks'][1]['local_format'] == '01 40 20 52 29'
+
 
 def test_block_null():
     """
@@ -101,11 +107,13 @@ def test_unknow_poi():
         "message": "poi 'an_unknown_poi_id' not found"
     }
 
+
 def test_schema():
     client = TestClient(app)
     response = client.get(url='http://localhost/schema')
 
     assert response.status_code == 200  # for the moment we check just that the schema is not empty
+
 
 def test_services_and_information():
     """
@@ -148,6 +156,7 @@ def test_services_and_information():
     }
     ]
 
+
 def test_exc_scenario():
     """
     A scenario with 2 consecutive requests that used to cause unhandled errors
@@ -158,3 +167,30 @@ def test_exc_scenario():
     assert response.status_code == 400
     response = client.get('http://localhost/v1/abcdef')
     assert response.status_code == 404
+
+
+@pytest.fixture(scope="function")
+def options_test_with_options():
+    with override_settings({'CORS_OPTIONS_REQUESTS_ENABLED': True}):
+        yield
+
+
+def test_options_requests(options_test_with_options):
+    client = TestClient(app)
+    response = client.options(
+        url=f'http://localhost/v1/places/35460343',
+    )
+
+    assert response.status_code == 200
+    assert response.headers.get('Access-Control-Allow-Origin') == '*'
+    assert response.headers.get('Access-Control-Allow-Headers') == '*'
+    assert response.headers.get('Access-Control-Allow-Methods') == 'GET'
+
+
+def test_options_requests_disabled():
+    client = TestClient(app)
+    response = client.options(
+        url=f'http://localhost/v1/places/35460343',
+    )
+
+    assert response.status_code == 405

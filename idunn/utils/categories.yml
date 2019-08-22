@@ -54,3 +54,43 @@ categories:
         raw_filters:
             - "bar,*"
             - "cafe,*"
+    museum:
+        pj_filters:
+            - "musées"
+        raw_filters:
+            - "museum,*"
+    health:
+        pj_filters:
+            - "Centre médico-social"
+            - "Chirurgien-dentiste"
+            - "Médecin généraliste"
+            - "Hôpital"
+        raw_filters:
+            - "clinic,*"
+            - "dentist,*"
+            - "doctors,*"
+            - "hospital,*"
+    service:
+        pj_filters:
+            - "plombiers"
+            - "garages automobiles"
+            - "envoi, distribution de courrier, de colis"
+            - "serrurerie, métallerie"
+            - "dépannage serrurerie"
+            - "mairies"
+            - "services de gendarmerie, de police"
+            - "sapeurs-pompiers, centres de secours"
+            - "préfectures, sous-préfectures"
+        raw_filters:
+            - "car_repair,*"
+            - "post_office,*"
+            - "townhall,*"
+            - "police,*"
+            - "fire_station,*"
+    fitness:
+        pj_filters:
+            - "infrastructures de sports et loisirs"
+            - "piscines (établissements)"
+            - "clubs de sport"
+        raw_filters:
+            - "sports_centre,*"

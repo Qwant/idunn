@@ -1,12 +1,11 @@
-from apistar.test import TestClient
 from idunn.blocks.environment import AirQuality
 from idunn.places import Admin
-import pytest
 import json
 import os
 import responses
 import re
-from .utils import override_settings
+
+from .utils import enable_kuzzle
 
 """
 In this module we test the air_quality blocks with kuzzle. Air quality appears when an admin (city or suburd)
@@ -80,7 +79,7 @@ testee_nok = {
       'type': 'MultiPolygon'
     },
     'bbox': [2.224122, 48.8155755, 2.4697602, 48.902156],
-    'zone_type': 'region',
+    'zone_type': 'state',
     'parent_id': 'admin:osm:relation:71525',
     'codes': [{
       'name': 'ref:FR:MGP',
@@ -108,92 +107,60 @@ testee_nok = {
     }
   }
 
-
-
-
-
-@pytest.fixture(scope="function")
-def kuzzle_test_normal():
-    """
-    We define here settings specific to tests.
-    We define kuzzle address and por
-    """
-    with override_settings({'KUZZLE_CLUSTER_ADDRESS': 'http://localhost', 'KUZZLE_CLUSTER_PORT': '7512'}):
-        yield
-
-
-def test_pollution_city(kuzzle_test_normal):
+@enable_kuzzle()
+def test_pollution_city():
     """
     Check result when place is a city
     """
     filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'kuzzle_air-quality_response.json')
 
     with open(filepath, "r") as f:
-            json_aq = json.load(f)
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        json_aq = json.load(f)
+
+    with responses.RequestsMock() as rsps:
         rsps.add('POST',
              re.compile(r'^http://localhost:7512/opendatasoft/air_quality/'),
              status=200,
-             json=json_aq)
-
+             json=json_aq
+        )
 
         res = AirQuality.from_es(
             Admin(testee),
             lang='en'
         )
 
-        assert res == AirQuality(
-             air_quality={
-                 'PM10': {'value': 37.4, 'quality_index': 3},
-                 'O3': {'value': 85.4, 'quality_index': 2},
-                 'SO2': {'value': 509.6, 'quality_index': 5},
-                 'NO2': {'value': 17.3, 'quality_index': 1},
-                 'PM2.5': {'value': 5.3, 'quality_index': 1},
-                 'globalQuality': 5,
-                 'date': "2019-08-06T10:00:00.000Z",
-                 'source': 'EEA France',
-                 'source_url': 'http://airindex.eea.europa.eu/',
-                 'measurements_unit': 'µg/m³'
-             }
-        )
+    assert res == AirQuality(**{
+        'CO': {'value': None, 'quality_index': None},
+        'PM10': {'value': 37.4, 'quality_index': 3},
+        'O3': {'value': 85.4, 'quality_index': 2},
+        'SO2': {'value': 509.6, 'quality_index': 5},
+        'NO2': {'value': 17.3, 'quality_index': 1},
+        'PM2_5': {'value': 5.3, 'quality_index': 1},
+        'date': "2019-08-06T10:00:00.000Z",
+        'source': 'EEA France',
+        'source_url': 'http://airindex.eea.europa.eu/',
+        'measurements_unit': 'µg/m³',
+        'quality_index': 5,
+    })
 
-def test_pollution_from_region(kuzzle_test_normal):
+
+@enable_kuzzle()
+def test_pollution_from_region():
     """
     Check result is none when place is not a city
     """
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'kuzzle_air-quality_response.json')
-
-    with open(filepath, "r") as f:
-        json_aq = json.load(f)
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-        rsps.add('POST',
-                 re.compile(r'^http://localhost:7512/eea/air_pollution/'),
-                 status=200,
-                 json=json_aq)
-
-        res = AirQuality.from_es(
-            Admin(testee_nok),
-            lang='en'
-        )
-        assert res == None
+    res = AirQuality.from_es(
+        Admin(testee_nok),
+        lang='en'
+    )
+    assert res == None
 
 def test_pollution_with_no_kuzzle():
     """
     Check the result None when kuzzle url is not set
     """
-    filepath = os.path.join(os.path.dirname(__file__), 'fixtures', 'kuzzle_air-quality_response.json')
-
-    with open(filepath, "r") as f:
-        json_aq = json.load(f)
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-        rsps.add('POST',
-                 re.compile(r'^http://localhost:7512/eea/air_pollution/'),
-                 status=200,
-                 json=json_aq)
-
-        res = AirQuality.from_es(
-            Admin(testee_nok),
-            lang='en'
-        )
-        assert res == None
-
+    res = AirQuality.from_es(
+        Admin(testee_nok),
+        lang='en'
+    )
+    assert res == None

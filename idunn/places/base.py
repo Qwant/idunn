@@ -149,6 +149,9 @@ class BasePlace(dict):
     def get_raw_opening_hours(self):
         return self.properties.get('opening_hours')
 
+    def get_raw_happy_hours(self):
+        return self.properties.get('happy_hours')
+
     def get_raw_wheelchair(self):
         return self.properties.get("wheelchair")
 
@@ -177,3 +180,6 @@ class BasePlace(dict):
 
     def get_reviews_url(self):
         return ""
+
+    def get_bbox(self):
+        raise NotImplementedError
