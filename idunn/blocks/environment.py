@@ -1,7 +1,9 @@
 import logging
-from apistar import validators
-from idunn.api.kuzzle import kuzzle_client
 from apistar.types import Type
+from apistar import validators
+
+from idunn import settings
+from idunn.api.kuzzle import kuzzle_client
 from .base import BaseBlock
 
 
@@ -31,6 +33,8 @@ class AirQuality(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
+        if not settings['BLOCK_AIR_QUALITY_ENABLED']:
+            return None
         if place.PLACE_TYPE != 'admin':
             return None
         if place.get('zone_type') not in ('city', 'city_district', 'suburb'):

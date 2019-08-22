@@ -18,7 +18,6 @@ from idunn.blocks import (
 )
 from idunn.utils import prometheus
 import phonenumbers
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,6 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock
     ],
     LIST: [
-        AirQuality,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,

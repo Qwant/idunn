@@ -1,5 +1,3 @@
-import os
-
 from apistar import Route
 from apistar_prometheus import expose_metrics, expose_metrics_multiprocess
 
@@ -10,8 +8,6 @@ from .places_list import get_places_bbox, get_events_bbox
 from .categories import get_all_categories
 from .closest import closest_address
 from .directions import get_directions
-
-
 
 
 def get_metric_handler(settings):

@@ -48,6 +48,11 @@ WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
 
 LIST_PLACES_MAX_SIZE: 50
 
+
+
+########################
+## Images
+
 BLOCK_IMAGES_ENABLED: True
 THUMBR_SALT:
 THUMBR_ENABLED: True # Set to False if you want to keep raw image urls instead of Thumbr
@@ -63,6 +68,8 @@ PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 
 #######################
 ## Data Publishing
+
+BLOCK_AIR_QUALITY_ENABLED: True
 
 # kuzzle Cluster
 KUZZLE_CLUSTER_URL:
