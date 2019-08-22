@@ -9,7 +9,7 @@ from .models import DirectionsResponse
 
 logger = logging.getLogger(__name__)
 
-COMBIGO_SUPPORTED_LANGUAGES = {'en','es','de','fr','it'}
+COMBIGO_SUPPORTED_LANGUAGES = {'en', 'es', 'de', 'fr', 'it'}
 
 class DirectionsClient:
     def __init__(self):
