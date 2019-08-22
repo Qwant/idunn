@@ -9,6 +9,7 @@ from .models import DirectionsResponse
 
 logger = logging.getLogger(__name__)
 
+COMBIGO_SUPPORTED_LANGUAGES = {'en','es','de','fr','it'}
 
 class DirectionsClient:
     def __init__(self):
@@ -110,6 +111,14 @@ class DirectionsClient:
 
         start_lon, start_lat = start
         end_lon, end_lat = end
+
+        if '_' in lang:
+            # Combigo does not handle long locale format
+            lang = lang[:lang.find('_')]
+
+        if lang not in COMBIGO_SUPPORTED_LANGUAGES:
+            lang = 'en'
+
         response = self.combigo_session.get(
             f'{self.COMBIGO_BASE_URL}/journey/{start_lat};{start_lon}/{end_lat};{end_lon}',
             params={
