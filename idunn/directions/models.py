@@ -39,8 +39,8 @@ class RouteManeuver(BaseModel):
 class TransportInfo(BaseModel):
     num: Optional[str]
     direction: Optional[str]
-    lineColor: str
-    network: str
+    lineColor: Optional[str]
+    network: Optional[str]
 
 
 class TransportStop(BaseModel):
