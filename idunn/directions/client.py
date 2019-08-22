@@ -128,18 +128,15 @@ class DirectionsClient:
 
 
     def get_directions(self, from_loc, to_loc, mode, lang, **extra):
-        default_method = self.directions_qwant
+        method = self.directions_qwant
         if self.MAPBOX_API_ENABLED:
-            default_method = self.directions_mapbox
+            method = self.directions_mapbox
 
         if mode in ('driving-traffic', 'driving', 'car'):
-            method = default_method
             mode = 'driving-traffic'
         elif mode in ('cycling',):
-            method = default_method
             mode = 'cycling'
         elif mode in ('walking', 'walk'):
-            method = default_method
             mode = 'walking'
         elif mode in ('publictransport', 'taxi', 'vtc', 'carpool'):
             method = self.directions_combigo
