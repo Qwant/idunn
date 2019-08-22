@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from copy import deepcopy
+import pytest
 
 from idunn import settings
 from idunn.api import places, places_list
@@ -30,3 +31,12 @@ def enable_pj_source():
         finally:
             places.pj_source = old_source
             places_list.pj_source = old_source
+
+@contextmanager
+def enable_kuzzle():
+    """
+    We define here settings specific to tests.
+    We define kuzzle address and port
+    """
+    with override_settings({'KUZZLE_CLUSTER_URL': 'http://localhost:7512'}):
+        yield

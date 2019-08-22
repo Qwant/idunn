@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 scale = {
     'CO': [5, 10, 25, 50],
-    'PM2.5': [10, 20, 25, 50],
+    'PM2_5': [10, 20, 25, 50],
     'PM10': [20, 35, 50, 100],
     'NO2': [40, 100, 200, 400],
     'O3': [80, 120, 180, 240],
@@ -20,13 +20,12 @@ def enrichRes(res):
     """
     enrichData = {}
     globalQuality = 0
-    numberElement = 0
     for particles, value in res.items():
         valueNumber = value.get("value")
         if valueNumber is None:
+            enrichData[particles] = {}
             continue
         scaleP = scale[particles]
-        numberElement += 1
         scaleIndiceLength = len(scaleP) - 1
         while scaleIndiceLength >= 0:
             if (valueNumber > scaleP[scaleIndiceLength]):
@@ -35,7 +34,7 @@ def enrichRes(res):
 
         enrichData[particles] = {"value": valueNumber, "quality_index": scaleIndiceLength + 2}
         globalQuality = max(globalQuality, scaleIndiceLength + 2)
-    enrichData['globalQuality'] = globalQuality
+    enrichData['quality_index'] = globalQuality
 
     return enrichData
 
@@ -46,10 +45,13 @@ def moreInfo(info):
     :return: object last update, source name, measurements_unit
     """
 
+    source = info[0].get('_source').get('source', '')
+    source_url = "http://airindex.eea.europa.eu/" if source.startswith("EEA") else ''
+
     return {
         "date": info[0].get('_source').get('update_at'),
-        "source": info[0].get('_source').get('source'),
-        "source_url": "http://airindex.eea.europa.eu/",
+        "source": source,
+        "source_url": source_url,
         "measurements_unit": info[0].get('_source').get('measurements_unit')
     }
 
@@ -58,6 +60,7 @@ def moreInfo(info):
 class KuzzleClient:
     def __init__(self):
         self.session = requests.Session()
+        self.request_timeout = float(settings['KUZZLE_REQUEST_TIMEOUT'])
 
     @property
     def kuzzle_url(self):
@@ -103,7 +106,7 @@ class KuzzleClient:
             },
             'size': size
         }
-        bbox_places = self.session.post(url_kuzzle, json=query)
+        bbox_places = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
         bbox_places.raise_for_status()
         try:
             bbox_places = bbox_places.json()
@@ -116,7 +119,7 @@ class KuzzleClient:
         return bbox_places
 
 
-    def fetch_air_quality(self, geobbox) -> list:
+    def fetch_air_quality(self, geobbox) -> dict:
         """
         fetch air_quality inside polygon
         :param geobbox: coordinate of the admin
@@ -147,6 +150,9 @@ class KuzzleClient:
                 }
             },
             "aggregations": {
+                "CO": {
+                    "avg": {"field": "CO"}
+                },
                 "PM10": {
                     "avg": {"field": "PM10"}
                 },
@@ -159,7 +165,7 @@ class KuzzleClient:
                 "SO2": {
                     "avg": {"field": "SO2"}
                 },
-                "PM2.5": {
+                "PM2_5": {
                     "avg": {"field": "PM2_5"}
                 }
             },
@@ -168,14 +174,16 @@ class KuzzleClient:
             }]
         }
 
-        res = requests.post(url_kuzzle, json=query)
+        res = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
+        res.raise_for_status()
         res = res.json()
-        globlalInfo = res.get('result', {}).get('hits', [])
+        globalInfo = res.get('result', {}).get('hits', [])
         res = res.get('result', {}).get('aggregations', {})
+        if all(v is None for v in res.values()):
+            return {}
 
         res = enrichRes(res)
-        res.update(moreInfo(globlalInfo))
-
+        res.update(moreInfo(globalInfo))
         return res
 
 kuzzle_client = KuzzleClient()

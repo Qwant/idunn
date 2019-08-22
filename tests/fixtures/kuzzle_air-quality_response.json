@@ -55,6 +55,9 @@
             }
         ],
         "aggregations": {
+            "CO": {
+                "value": null
+            },
             "PM10": {
                 "value": 37.4
             },
@@ -67,7 +70,7 @@
             "NO2": {
                 "value": 17.3
             },
-            "PM2.5": {
+            "PM2_5": {
                 "value": 5.3
             }
         },
