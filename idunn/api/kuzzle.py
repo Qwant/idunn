@@ -146,7 +146,12 @@ class KuzzleClient:
                                 "right": right
                             }
                         }
-                    }]
+                    }, {
+                        "range": {
+                            "update_at": {
+                                "gte": "now-5h/h"
+                            }
+                        }}]
                 }
             },
             "aggregations": {
