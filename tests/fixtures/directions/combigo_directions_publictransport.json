@@ -964,7 +964,8 @@
           "type": "WALK",
           "action": "Se diriger vers le sud sur le boulevard Beaumarchais",
           "infos": {
-            "maneuverType": "depart"
+            "maneuverType": "depart",
+            "num": "D 186"
           },
           "shapes": [
             [
