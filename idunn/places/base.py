@@ -180,3 +180,6 @@ class BasePlace(dict):
 
     def get_reviews_url(self):
         return ""
+
+    def get_bbox(self):
+        raise NotImplementedError

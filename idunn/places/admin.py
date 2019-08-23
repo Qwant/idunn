@@ -1,5 +1,4 @@
 from .base import BasePlace
-
 class Admin(BasePlace):
     PLACE_TYPE = 'admin'
 
@@ -14,6 +13,9 @@ class Admin(BasePlace):
 
     def get_name(self, lang):
         return self.get('names', {}).get(lang) or self.get_local_name()
+
+    def get_bbox(self):
+        return self.get('bbox')
 
     def get_class_name(self):
         return self.get('zone_type')

@@ -1,24 +1,15 @@
 from apistar.test import TestClient
-import pytest
 import os
 import re
 import json
 import responses
-from .utils import override_settings
+from.utils import enable_kuzzle
 
 from app import app
 
-@pytest.fixture(scope="function")
-def kuzzle_test_normal():
-    """
-    We define here settings specific to tests.
-    We define kuzzle address and port
-    """
-    with override_settings({'KUZZLE_CLUSTER_URL': 'http://localhost:7512'}):
-        yield
 
-
-def test_kuzzle_event_ok(kuzzle_test_normal):
+@enable_kuzzle()
+def test_kuzzle_event_ok():
     """
     Check the result of events contained in bbox
     """

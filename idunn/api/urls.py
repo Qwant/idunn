@@ -1,5 +1,3 @@
-import os
-
 from apistar import Route
 from apistar_prometheus import expose_metrics, expose_metrics_multiprocess
 
