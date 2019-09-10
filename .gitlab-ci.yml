@@ -99,6 +99,7 @@ stop review:
   script: stop
   when: manual
 
+
 delayed stop review:
   extends: stop review
   when: delayed
