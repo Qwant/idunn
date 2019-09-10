@@ -54,7 +54,7 @@ deploy review:
 
 
 deploy development:
-  extends: .deploy_operation
+  extends: "deploy review"
   stage: development
   environment:
     name: development
@@ -100,63 +100,3 @@ delayed stop review:
   extends: stop review
   when: delayed
   start_in: 1 day
-
-#
-# .script:
-#   - &docker_build   docker-compose build --pull
-#   - &docker_login   docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY <<< $CI_REGISTRY_PASSWORD
-#   - &docker_push    docker-compose push
-#   - &docker_deploy  docker stack deploy --compose-file docker-compose.yml --with-registry-auth "$STACK"
-#
-# .docker: &docker
-#   image: registry.qwant.ninja/product/maps/kartotherian_docker/docker:34471
-#   tags:
-#   - light-docker
-#
-# .action: &action
-#   allow_failure: true
-#   when: manual
-#
-# push redis image:
-#   <<: *action
-#   stage: deploy
-#   variables:
-#       COMPOSE_FILE: "docker-compose.build.yml"
-#       COMPOSE_PROJECT_NAME: *product_ref_slug
-#   script:
-#   - *docker_build
-#   - *docker_login
-#   - *docker_push
-#   tags:
-#   - light
-
-# deploy services:
-#   <<: [*docker, *action]
-#   stage: deploy
-#   environment:
-#     name: *environment
-#     on_stop: "stop services"
-#     url: "http://maps.dev.qwant.ninja/maps"
-#   variables: &deploy_variables
-#     DOCKER_HOST: *docker_host
-#     STACK: *product_ref_slug
-#   script:
-#   - *docker_login
-#   - *docker_deploy
-#   - docker service update --network-add ${STACK}_default product-maps-traefik_traefik || true
-#   - docker service update --network-add ${STACK}_default 1216_kuzzle || true
-#   - sleep 5m
-
-# stop services:
-#   <<: [*docker, *action]
-#   stage: deploy
-#   environment:
-#     action: "stop"
-#     name: *environment
-#   variables:
-#     <<: *deploy_variables
-#     GIT_STRATEGY: none
-#   before_script: []
-#   script:
-#   - docker service update --network-rm ${STACK}_default product-maps-traefik_traefik
-#   - docker stack rm "$STACK"
