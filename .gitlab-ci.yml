@@ -1,66 +1,162 @@
+stages:
+  - build
+  - development 
+  - prelive
+  - production
+  - stop
+
+
+.deploy_operation:
+  image: registry.qwant.ninja/docker/dood:18.03
+  variables:
+    GIT_STRATEGY: none
+    COMPOSE_FILE: "docker-compose.yml:ci/development/docker-compose.yml"
+    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
+    DOCKER_HOST: "tcp://10.100.31.132:2375"
+    DOCKER_STACK: "$CI_PROJECT_ID-$CI_ENVIRONMENT_SLUG"
+    ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
+    KUZZLE_SERVICE_NAME: "1216_kuzzle"
+  tags:
+    - light-docker
+  when: manual
+
+
 before_script:
   - source ci/bootstrap.sh
+  - docker login 
+    --username "$CI_REGISTRY_USER"
+    --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
 
-.values:
-  - &docker_host            "tcp://10.100.31.132:2375"
-  - &environment            "$CI_COMMIT_REF_SLUG"
-  - &product_ref_slug       "$CI_PRODUCT_SLUG-$CI_COMMIT_REF_SLUG"
 
-.script:
-  - &docker_build   docker-compose build --pull
-  - &docker_login   docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY <<< $CI_REGISTRY_PASSWORD
-  - &docker_push    docker-compose push
-  - &docker_deploy  docker stack deploy --compose-file docker-compose.yml --with-registry-auth "$STACK"
-
-.docker: &docker
-  image: registry.qwant.ninja/product/maps/kartotherian_docker/docker:34471
+build:
+  stage: build
   tags:
-  - light-docker
-
-.action: &action
+    - light
+  script:
+    - docker-compose build --pull
+    - docker-compose push
+  variables:
+    COMPOSE_FILE: "docker-compose.build.yml"
+    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
   allow_failure: true
   when: manual
 
-push redis image:
-  <<: *action
-  stage: deploy
-  variables:
-      COMPOSE_FILE: "docker-compose.build.yml"
-      COMPOSE_PROJECT_NAME: *product_ref_slug
-  script:
-  - *docker_build
-  - *docker_login
-  - *docker_push
-  tags:
-  - light
 
-deploy services:
-  <<: [*docker, *action]
-  stage: deploy
+deploy review:
+  extends: .deploy_operation
+  stage: development
   environment:
-    name: *environment
-    on_stop: "stop services"
-    url: "http://maps.dev.qwant.ninja/maps"
-  variables: &deploy_variables
-    DOCKER_HOST: *docker_host
-    STACK: *product_ref_slug
+    name: &review-environment "review/$CI_COMMIT_REF_NAME"
+    on_stop: "stop review"
+    url: "http://$CI_COMMIT_REF_SLUG.maps.dev.qwant.ninja/maps"
   script:
-  - *docker_login
-  - *docker_deploy
-  - docker service update --network-add ${STACK}_default product-maps-traefik_traefik || true
-  - docker service update --network-add ${STACK}_default 1216_kuzzle || true
-  - sleep 5m
+    - deploy
 
-stop services:
-  <<: [*docker, *action]
-  stage: deploy
+
+deploy development:
+  extends: .deploy_operation
+  stage: development
+  environment:
+    name: development
+    url: "http://maps.dev.qwant.ninja/maps"
+  variables:
+    DOCKER_STACK: "$CI_PROJECT_ID"
+
+
+deploy prelive:
+  extends: "deploy development"
+  stage: prelive
+  environment:
+    name: prelive
+    url: "https://www.qwant.plive/maps"
+  variables:
+    DOCKER_HOST: "tcp://10.103.9.1:2375"
+
+
+deploy production:
+  extends: "deploy production"
+  stage: production
+  environment:
+    name: production
+    url: "https://www.qwant.com/maps"
+  variables:
+    DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
+    DOCKER_TLS_VERIFY: "1"
+    ROUTER_SERVICE_NAME: "${DOCKER_STACK}_traefik"
+
+
+stop review:
+  extends: .deploy_operation
+  before_script:
+    - source ci/bootstrap.sh
+  stage: stop
   environment:
     action: "stop"
-    name: *environment
-  variables:
-    <<: *deploy_variables
-    GIT_STRATEGY: none
-  before_script: []
-  script:
-  - docker service update --network-rm ${STACK}_default product-maps-traefik_traefik
-  - docker stack rm "$STACK"
+    name: *review-environment
+  script: stop
+  when: manual
+
+delayed stop review:
+  extends: stop review
+  when: delayed
+  start_in: 1 day
+
+#
+# .script:
+#   - &docker_build   docker-compose build --pull
+#   - &docker_login   docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY <<< $CI_REGISTRY_PASSWORD
+#   - &docker_push    docker-compose push
+#   - &docker_deploy  docker stack deploy --compose-file docker-compose.yml --with-registry-auth "$STACK"
+#
+# .docker: &docker
+#   image: registry.qwant.ninja/product/maps/kartotherian_docker/docker:34471
+#   tags:
+#   - light-docker
+#
+# .action: &action
+#   allow_failure: true
+#   when: manual
+#
+# push redis image:
+#   <<: *action
+#   stage: deploy
+#   variables:
+#       COMPOSE_FILE: "docker-compose.build.yml"
+#       COMPOSE_PROJECT_NAME: *product_ref_slug
+#   script:
+#   - *docker_build
+#   - *docker_login
+#   - *docker_push
+#   tags:
+#   - light
+
+# deploy services:
+#   <<: [*docker, *action]
+#   stage: deploy
+#   environment:
+#     name: *environment
+#     on_stop: "stop services"
+#     url: "http://maps.dev.qwant.ninja/maps"
+#   variables: &deploy_variables
+#     DOCKER_HOST: *docker_host
+#     STACK: *product_ref_slug
+#   script:
+#   - *docker_login
+#   - *docker_deploy
+#   - docker service update --network-add ${STACK}_default product-maps-traefik_traefik || true
+#   - docker service update --network-add ${STACK}_default 1216_kuzzle || true
+#   - sleep 5m
+
+# stop services:
+#   <<: [*docker, *action]
+#   stage: deploy
+#   environment:
+#     action: "stop"
+#     name: *environment
+#   variables:
+#     <<: *deploy_variables
+#     GIT_STRATEGY: none
+#   before_script: []
+#   script:
+#   - docker service update --network-rm ${STACK}_default product-maps-traefik_traefik
+#   - docker stack rm "$STACK"
