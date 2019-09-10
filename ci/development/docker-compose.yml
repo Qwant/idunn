@@ -1,4 +1,5 @@
 version: '3.3'
+
 services:
   idunn:
     environment:
@@ -18,3 +19,5 @@ services:
       - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA # development token
       - no_proxy=es,wiki-es,1216_kuzzle
+    extra_hosts:
+      - "wiki-es:10.100.31.26"

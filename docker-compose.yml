@@ -33,8 +33,6 @@ services:
           memory: 2.72g
       restart_policy:
         condition: on-failure
-    extra_hosts:
-      - "wiki-es:10.100.31.26"
     networks:
       - bridge
       - default

@@ -1,0 +1,33 @@
+version: '3.3'
+
+services:
+  idunn:
+    deploy:
+      replicas: 8
+      placement:
+        constraints:
+          - node.role != manager
+      resources:
+        limits:
+          cpus: "4"
+    environment:
+      - http_proxy=http://10.100.9.1:2001
+      - https_proxy=http://10.100.9.1:2001
+      - IDUNN_LOG_JSON=1
+      - IDUNN_MIMIR_ES=http://es:9200
+      - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
+      - IDUNN_WIKI_ES=http://wiki-es:9200
+      - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
+      - IDUNN_THUMBR_SALT=${QMAPS_THUMBR_SECRET_PROD}
+      - IDUNN_THUMBR_URLS=https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr
+      - IDUNN_PJ_ES=http://wiki-es:9200
+      - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
+      - no_proxy=es,wiki-es
+    extra_hosts:
+      - "wiki-es:10.100.8.40"
+
+  idunn-redis:
+    deploy:
+      placement:
+        constraints:
+          - node.role != manager
