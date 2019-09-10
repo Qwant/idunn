@@ -74,7 +74,7 @@ deploy prelive:
 
 
 deploy production:
-  extends: "deploy production"
+  extends: "deploy prelive"
   stage: production
   environment:
     name: production
