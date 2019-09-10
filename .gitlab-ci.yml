@@ -58,6 +58,7 @@ deploy development:
   stage: development
   environment:
     name: development
+    on_stop: null
     url: "http://maps.dev.qwant.ninja/maps"
   variables:
     DOCKER_STACK: "$CI_PROJECT_ID"
