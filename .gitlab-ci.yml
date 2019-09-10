@@ -1,6 +1,6 @@
 stages:
   - build
-  - development 
+  - development
   - prelive
   - production
   - stop
@@ -23,7 +23,7 @@ stages:
 
 before_script:
   - source ci/bootstrap.sh
-  - docker login 
+  - docker login
     --username "$CI_REGISTRY_USER"
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
 
@@ -71,6 +71,7 @@ deploy prelive:
     name: prelive
     url: "https://www.qwant.plive/maps"
   variables:
+    COMPOSE_FILE: "docker-compose.yml:ci/prelive/docker-compose.yml"
     DOCKER_HOST: "tcp://10.103.9.1:2375"
 
 
@@ -81,6 +82,7 @@ deploy production:
     name: production
     url: "https://www.qwant.com/maps"
   variables:
+    COMPOSE_FILE: "docker-compose.yml:ci/production/docker-compose.yml"
     DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
     DOCKER_TLS_VERIFY: "1"
     ROUTER_SERVICE_NAME: "${DOCKER_STACK}_traefik"

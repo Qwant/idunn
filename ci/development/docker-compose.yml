@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  idunn:
+    environment:
+      - http_proxy=http://10.100.9.1:2001
+      - https_proxy=http://10.100.9.1:2001
+      - IDUNN_LOG_JSON=1
+      - IDUNN_MIMIR_ES=http://es:9200
+      - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
+      - IDUNN_WIKI_ES=http://wiki-es:9200
+      - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
+      - IDUNN_THUMBR_SALT=${QMAPS_THUMBR_SECRET_DEV}
+      - IDUNN_THUMBR_URLS=http://10.100.33.211:8080
+      - IDUNN_PJ_ES=http://wiki-es:9200
+      - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
+      - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
+      - IDUNN_CORS_OPTIONS_REQUESTS_ENABLED=true  # Allow cross-origin requests with custom headers (for development only)
+      - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key
+      - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA # development token
+      - no_proxy=es,wiki-es,1216_kuzzle
