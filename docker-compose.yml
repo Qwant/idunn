@@ -10,7 +10,7 @@ networks:
 
 services:
   idunn:
-    image: qwantresearch/idunn:latest
+    image: "$DOCKER_IMAGE:$DOCKER_IMAGE_TAG"
     labels: &ci_labels
       com.qwant.ci.job_id: ${CI_JOB_ID}
       com.qwant.ci.pipeline_id: ${CI_PIPELINE_ID}

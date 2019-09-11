@@ -28,7 +28,7 @@ before_script:
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
 
 
-build:
+build redis:
   stage: build
   tags:
     - light
@@ -40,6 +40,18 @@ build:
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
   allow_failure: true
   when: manual
+
+build idunn:
+  stage: build
+  tags:
+    - light
+  script:
+    - echo "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG"
+    # - docker-content-digest "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG"
+  # artifacts:
+  #   expire_in: 2 weeks
+  #   paths:
+
 
 
 deploy review:
