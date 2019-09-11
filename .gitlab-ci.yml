@@ -41,17 +41,18 @@ build redis:
   allow_failure: true
   when: manual
 
+
 build idunn:
   stage: build
   tags:
     - light
   script:
     - source .env
-    - docker-content-digest "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG"
-  # artifacts:
-  #   expire_in: 2 weeks
-  #   paths:
-
+    - docker-content-digest "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG" > idunn.digest
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - idunn.digest
 
 
 deploy review:
@@ -63,6 +64,8 @@ deploy review:
     url: "http://$CI_COMMIT_REF_SLUG.maps.dev.qwant.ninja/maps"
   script:
     - deploy
+  dependencies:
+    - "build idunn"
 
 
 deploy development:
