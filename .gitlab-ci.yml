@@ -9,7 +9,6 @@ stages:
 .deploy_operation:
   image: registry.qwant.ninja/docker/dood:18.03
   variables:
-    GIT_STRATEGY: none
     COMPOSE_FILE: "docker-compose.yml:ci/development/docker-compose.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     DOCKER_HOST: "tcp://10.100.31.132:2375"
