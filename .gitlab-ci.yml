@@ -47,8 +47,7 @@ build idunn:
     - light
   script:
     - source .env
-    - echo "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG"
-    # - docker-content-digest "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG"
+    - docker-content-digest "$DOCKER_IMAGE" "$DOCKER_IMAGE_TAG"
   # artifacts:
   #   expire_in: 2 weeks
   #   paths:

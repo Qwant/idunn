@@ -1,0 +1,38 @@
+#!/bin/bash
+set -ueo pipefail
+
+# -----------------------------------------------------------------------------
+# Request the Docker Hub registry for the content digest of an image
+# -----------------------------------------------------------------------------
+# usage: docker-content-digest <image> <tag>
+
+registry_url="registry-1.docker.io"
+auth_service="https://auth.docker.io/token?service=registry.docker.io"
+
+function auth
+{
+    curl -m 2 "$auth_service&scope=repository:$image:$tag,pull" \
+         --header "Content-Type: application/json" \
+         --location \
+         --show-error \
+         --silent |
+    jq -r '.token'
+}
+
+function digest # <image> <tag>
+{
+    local image="$1"
+    local tag="$2"
+
+    curl -m 2 "https://$registry_url/v2/$image/manifests/$tag" \
+         --head \
+         --header "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+         --header "Authorization: Bearer $(auth)" \
+         --location \
+         --request HEAD \
+         --show-error \
+         --silent |
+    grep -Pio '(?<=Docker-Content-Digest: )sha256:\w+'
+}
+
+digest "$1" "$2"
