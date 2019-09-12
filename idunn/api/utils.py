@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, Elastic
 import logging
 from idunn import settings
 from idunn.blocks import (
+    Weather,
     AirQuality,
     ContactBlock,
     DescriptionEvent,
@@ -29,6 +30,7 @@ DEFAULT_VERBOSITY_LIST = LIST
 
 BLOCKS_BY_VERBOSITY = {
     LONG: [
+        Weather,
         AirQuality,
         OpeningDayEvent,
         DescriptionEvent,
@@ -42,6 +44,8 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock
     ],
     LIST: [
+        Weather,
+        AirQuality,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
