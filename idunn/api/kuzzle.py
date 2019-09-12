@@ -1,7 +1,7 @@
 import requests
 import logging
 from apistar.exceptions import HTTPException
-
+from deepmerge import always_merger
 from idunn import settings
 logger = logging.getLogger(__name__)
 
@@ -70,14 +70,14 @@ class KuzzleClient:
     def enabled(self):
         return bool(self.kuzzle_url)
 
-    def fetch_event_places(self, bbox, size) -> list:
+    def fetch_event_places(self, bbox, outing_types, collection, size) -> list:
         if not self.enabled:
             raise Exception('Kuzzle is not enabled')
 
         left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
-        url_kuzzle = f'{self.kuzzle_url}/opendatasoft/events/_search'
-        query = {
+        url_kuzzle = f'{self.kuzzle_url}/opendatasoft/{collection}/_search'
+        query_simple = {
             'query': {
                 'bool': {
                     'filter': {
@@ -93,19 +93,38 @@ class KuzzleClient:
                                 }
                             }
                         }
-                    },
-                    'must': {
-                        'range': {
-                            'date_end': {
-                                'gte': 'now/d',
-                                'lte': 'now+31d/d'
-                            }
-                        }
                     }
                 }
             },
             'size': size
         }
+        if outing_types is None:
+            query_outing = {}
+        else:
+            query_outing = {
+                'query': {
+                    'bool': {
+                        'must': [{
+                            'multi_match': {
+                                'query': outing_types,
+                                'type': 'best_fields',
+                                'fields': ['tag^5', 'free_text^4', 'title^4', 'description^3'],
+                                'tie_breaker': 0.7,
+                            },
+                        }],
+                        'should': [{
+                            'multi_match': {
+                                'query': outing_types,
+                                'type': 'phrase',
+                                'fields': ['tag^5', 'free_text^4', 'title^4', 'description^3'],
+                            }
+                        }]
+                    }
+                }
+            }
+                
+        query = always_merger.merge(query_simple, query_outing)
+
         bbox_places = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
         bbox_places.raise_for_status()
         try:
@@ -117,7 +136,6 @@ class KuzzleClient:
 
         bbox_places = bbox_places.get('result', {}).get('hits', [])
         return bbox_places
-
 
     def fetch_air_quality(self, geobbox) -> dict:
         """

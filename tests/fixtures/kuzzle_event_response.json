@@ -19,7 +19,7 @@
             {
                 "_index": "opendatasoft",
                 "_type": "events",
-                "_id": "AWq7SKu1zO6rOIP0fiwG",
+                "_id": "openagenda_92106271",
                 "_score": 1,
                 "_source": {
                     "address": "30 Avenue Corentin Cariou, Paris",
@@ -41,7 +41,7 @@
                     "image_thumb":"http://cibul.s3.amazonaws.com/evtbevent_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg",
                     "image":"http://cibul.s3.amazonaws.com/event_conference-casse-croute-le-fonds-ancien-de-la-mediatheque-centre-ville_347092.jpg",
                     "title": "Quand les livres expliquent la science",
-                    "uid": "92106271",
+                    "id_events": "openagenda_92106271",
                     "updated_at": "2019-03-18T09:15:15.000Z"
                 },
                 "_meta": {
