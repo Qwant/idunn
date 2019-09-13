@@ -53,7 +53,7 @@ class DescriptionEvent(BaseBlock):
     description = validators.String(allow_null=True)
     free_text = validators.String(allow_null=True)
     price = validators.String(allow_null=True)
-    tags = validators.String(allow_null=True)
+    tags = validators.Array()
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -63,7 +63,7 @@ class DescriptionEvent(BaseBlock):
         description = es_poi.get('description')
         free_text =  es_poi.get('free_text')
         price = es_poi.get('pricing_info')
-        tags = es_poi.get('tags')
+        tags = es_poi.get('tags', '').split(';')
 
         if not description:
             return None

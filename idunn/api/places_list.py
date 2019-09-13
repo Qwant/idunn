@@ -37,7 +37,7 @@ def get_outing_types():
 
 
 ALL_CATEGORIES = get_categories()
-ALL_OUTING_TYPES = get_outing_types()
+ALL_OUTING_CATEGORIES = get_outing_types()
 
 
 class CommonQueryParam(BaseModel):
@@ -112,14 +112,14 @@ class PlacesQueryParam(CommonQueryParam):
 
 
 class EventQueryParam(CommonQueryParam):
-    outing_types: str = None
+    outing_category: str = None
 
-    @validator('outing_types')
-    def valid_outing_types(cls, v):
-        if v not in ALL_OUTING_TYPES:
-            raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_TYPES.keys())}")
+    @validator('outing_category')
+    def valid_outing_categories(cls, v):
+        if v not in ALL_OUTING_CATEGORIES:
+            raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}")
         else:
-            v = ALL_OUTING_TYPES.get(v, {})
+            v = ALL_OUTING_CATEGORIES.get(v, {})
         return v
 
 
@@ -194,17 +194,15 @@ def get_events_bbox(bbox, query_params: http.QueryParams):
             detail={"message": e.errors()}
         )
 
-    print(params.outing_types)
-    current_outing_lang = params.outing_types
+    current_outing_lang = params.outing_category
 
-    if params.outing_types:
-        lang = params.lang.split(',')[0]
-        current_outing_lang = params.outing_types.get(lang)
-    print(current_outing_lang)
+    if params.outing_category:
+        current_outing_lang = params.outing_category.get('fr')
+
     bbox_places = kuzzle_client.fetch_event_places(
         bbox=params.bbox,
         collection='events',
-        outing_types=current_outing_lang,
+        outing_category=current_outing_lang,
         size=params.size
     )
 

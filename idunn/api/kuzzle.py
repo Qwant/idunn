@@ -18,25 +18,25 @@ def enrichRes(res):
     """
     Return pollutantes value with pollution indice and global air_quality indice
     """
-    enrichData = {}
-    globalQuality = 0
+    enrich_data = {}
+    global_quality = 0
     for particles, value in res.items():
-        valueNumber = value.get("value")
-        if valueNumber is None:
-            enrichData[particles] = {}
+        value_number = value.get("value")
+        if value_number is None:
+            enrich_data[particles] = {}
             continue
-        scaleP = scale[particles]
-        scaleIndiceLength = len(scaleP) - 1
-        while scaleIndiceLength >= 0:
-            if (valueNumber > scaleP[scaleIndiceLength]):
+        scale_p = scale[particles]
+        scale_indice_length = len(scale_p) - 1
+        while scale_indice_length >= 0:
+            if value_number > scale_p[scale_indice_length]:
                 break
-            scaleIndiceLength -= 1
+            scale_indice_length -= 1
 
-        enrichData[particles] = {"value": valueNumber, "quality_index": scaleIndiceLength + 2}
-        globalQuality = max(globalQuality, scaleIndiceLength + 2)
-    enrichData['quality_index'] = globalQuality
+        enrich_data[particles] = {"value": value_number, "quality_index": scale_indice_length + 2}
+        global_quality = max(global_quality, scale_indice_length + 2)
+    enrich_data['quality_index'] = global_quality
 
-    return enrichData
+    return enrich_data
 
 def moreInfo(info):
     """
@@ -70,7 +70,7 @@ class KuzzleClient:
     def enabled(self):
         return bool(self.kuzzle_url)
 
-    def fetch_event_places(self, bbox, outing_types, collection, size) -> list:
+    def fetch_event_places(self, bbox, outing_category, collection, size) -> list:
         if not self.enabled:
             raise Exception('Kuzzle is not enabled')
 
@@ -93,12 +93,23 @@ class KuzzleClient:
                                 }
                             }
                         }
-                    }
+                    },
+                     'must': {
+                        'range': {
+                            'date_end': {
+                                'gte': 'now/d',
+                                'lte': 'now+31d/d'
+                            },
+                            'date_start': {
+                                'lte': 'now+7d/d'
+                            }
+                        }
+                     }
                 }
             },
             'size': size
         }
-        if outing_types is None:
+        if outing_category is None:
             query_outing = {}
         else:
             query_outing = {
@@ -106,7 +117,7 @@ class KuzzleClient:
                     'bool': {
                         'must': [{
                             'multi_match': {
-                                'query': outing_types,
+                                'query': outing_category,
                                 'type': 'best_fields',
                                 'fields': ['tag^5', 'free_text^4', 'title^4', 'description^3'],
                                 'tie_breaker': 0.7,
@@ -114,9 +125,9 @@ class KuzzleClient:
                         }],
                         'should': [{
                             'multi_match': {
-                                'query': outing_types,
+                                'query': outing_category,
                                 'type': 'phrase',
-                                'fields': ['tag^5', 'free_text^4', 'title^4', 'description^3'],
+                                'fields': ['tags^5', 'category^5', 'free_text^4', 'title^4', 'description^3'],
                             }
                         }]
                     }

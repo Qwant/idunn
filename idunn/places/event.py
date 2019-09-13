@@ -4,12 +4,12 @@ from .place import PlaceMeta
 
 class Event(BasePlace):
     PLACE_TYPE = 'event'
-    # EVENT_SOURCE = self.get('id_events').split('_')[0]
+
     def get_local_name(self):
         return self.get('title', '')
 
     def get_id(self):
-        event_id = self.get('id_events', 'no id')
+        event_id = self.get('id_events')
         if event_id:
             return f'event:{event_id}'
         return None
