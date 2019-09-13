@@ -88,15 +88,16 @@ class BasePlace(dict):
         name = raw_address.get("name")
         housenumber = raw_address.get("house_number")
         label = raw_address.get("label")
+        street = self.build_street()
 
         return {
             "id": id,
-            "name": name,
+            "name": name or street.get('name'),
             "housenumber": housenumber,
             "postcode": postcodes,
-            "label": label,
+            "label": label or street.get('label'),
             "admin": self.build_admin(lang),
-            "street": self.build_street(),
+            "street": street,
             "admins": self.build_admins(),
         }
 

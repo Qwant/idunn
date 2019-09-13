@@ -28,6 +28,15 @@ def test_place_latlon():
     assert response_data['address']['label'] == "4 Rue du Moulin (Val-d'Ornain)"
 
 
+def test_place_latlon_with_street_as_closest_address():
+    client = TestClient(app)
+    response = client.get('http://localhost/v1/places/latlon:53.8478:10.6646915')
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data['id'] == 'latlon:53.84780:10.66469'
+    assert response_data['address']['label'] == "Birnenweg (Label)"
+
 def test_place_latlon_no_address():
     client = TestClient(app)
     response = client.get('http://localhost/v1/places/latlon:-48.810273:35.108632')
