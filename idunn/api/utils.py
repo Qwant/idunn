@@ -8,6 +8,7 @@ from elasticsearch import (
 import logging
 from idunn import settings
 from idunn.blocks import (
+    Weather,
     AirQuality,
     ContactBlock,
     DescriptionEvent,
@@ -35,6 +36,7 @@ DEFAULT_VERBOSITY_LIST = LIST
 BLOCKS_BY_VERBOSITY = {
     LONG: [
         AirQuality,
+        Weather,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,

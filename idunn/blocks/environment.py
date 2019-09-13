@@ -62,7 +62,42 @@ class AirQuality(BaseBlock):
         return cls(**air_quality)
 
 
+class Weather(BaseBlock):
+    BLOCK_TYPE = 'weather'
+
+    temperature = validators.Number(allow_null=True)
+    weatherPic = validators.String(allow_null=True)
+
+    @classmethod
+    def from_es(cls, place, lang):
+        if place.PLACE_TYPE != 'admin':
+            return None
+        if place.get('zone_type') not in ('city', 'city_district', 'suburd'):
+            return None
+
+        coord = place.get_coord()
+        if not coord:
+            return None
+
+        try:
+            weather = get_local_weather(coord)
+        except Exception:
+            logger.warning('Failed to fetch weather for %s', place.get_id(), exc_info=True)
+            return None
+
+        if not weather:
+            return None
+
+        return cls(**weather)
+
+
 def get_air_quality(geobbox):
     if not kuzzle_client.enabled:
         return None
     return kuzzle_client.fetch_air_quality(geobbox)
+
+
+def get_local_weather(coord):
+    if not weather_client.enabled:
+        return None
+    return weather_client.fetch_weather_places(coord)
