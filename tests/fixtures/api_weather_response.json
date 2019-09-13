@@ -1,0 +1,15 @@
+{
+    "coord": {"lon": 2.35, "lat": 48.86},
+    "weather": [{"id": 800, "main": "Clear", "description": "ciel dégagé", "icon": "01d"}],
+    "base": "stations",
+    "main": {"temp": 291.89, "pressure": 1013, "humidity": 34, "temp_min": 290.37, "temp_max": 293.15},
+    "visibility": 10000,
+    "wind": {"speed": 2.6, "deg": 230},
+    "clouds": {"all": 0},
+    "dt": 1568044180,
+    "sys": {"type": 1, "id": 6540, "message": 0.0078, "country": "FR", "sunrise": 1568006291, "sunset": 1568053101},
+    "timezone": 7200,
+    "id": 2978048,
+    "name": "Saint-Merri",
+    "cod": 200
+}
