@@ -72,7 +72,7 @@ PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 BLOCK_AIR_QUALITY_ENABLED: True
 
 # kuzzle Cluster
-KUZZLE_CLUSTER_URL: 'http://localhost:7512'
+KUZZLE_CLUSTER_URL:
 KUZZLE_REQUEST_TIMEOUT: "0.5" # seconds
 
 # weather API
