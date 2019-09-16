@@ -42,7 +42,6 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock
     ],
     LIST: [
-        AirQuality,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,

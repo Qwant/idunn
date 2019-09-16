@@ -75,7 +75,7 @@ def test_event_information_missing_fields():
         description="15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
         free_text=None,
         price="Gratuit",
-        tags=['']
+        tags=[]
     )
 
 
