@@ -96,7 +96,7 @@ def test_event_day_missing_fields():
     test OpeningDayEvent with ano space_time_info and no timetable
     """
     ode_block = get_event_day_missing_fields()
-    print(ode_block)
+
     assert ode_block == OpeningDayEvent(
         date_start="2019-03-23T00:00:00.000Z",
         date_end="2019-05-25T00:00:00.000Z",

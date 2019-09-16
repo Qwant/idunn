@@ -66,7 +66,10 @@ class Weather(BaseBlock):
     BLOCK_TYPE = 'weather'
 
     temperature = validators.Number(allow_null=True)
-    weatherPic = validators.String(allow_null=True)
+    icon = validators.String(
+        allow_null=True,
+        enum=['11d', '09d', '10d', '13d', '50d', '01d', '01n', '02d', '03d', '04d', '02n', '03n', '04n']
+    )
 
     @classmethod
     def from_es(cls, place, lang):

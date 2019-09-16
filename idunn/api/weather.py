@@ -39,7 +39,7 @@ class WeatherClient:
                          f'Got {weather_town.content}', exc_info=True)
             raise HTTPException(detail='weather error', status_code=503)
 
-        weather_info = { 'temperature': weather_town.get('main').get('temp'), 'weatherPic': weather_town.get('weather')[0].get('icon')}
+        weather_info = { 'temperature': weather_town.get('main').get('temp'), 'icon': weather_town.get('weather')[0].get('icon')}
         return weather_info
 
 
