@@ -1,10 +1,12 @@
+from apistar.exceptions import ValidationError
+from pytest import raises
+
 from idunn.blocks.environment import Weather
 from idunn.places import Admin
 import json
 import os
 import responses
 import re
-
 from .utils import enable_weather_api
 
 """
@@ -131,8 +133,20 @@ def test_weather_city():
 
     assert res == Weather(**{
         'temperature': 291.89,
-        'weatherPic': '01d',
+        'icon': '01d',
     })
+
+@enable_weather_api()
+def test_wrong_icon_value():
+    """
+    Raise exception when icon is wrong value
+    """
+    with raises(ValidationError):
+        Weather(**{
+            'temperature': 291.89,
+            'icon': '01g',
+        })
+
 
 
 @enable_weather_api()
