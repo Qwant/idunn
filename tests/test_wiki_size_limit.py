@@ -4,15 +4,11 @@ import responses
 import pytest
 
 from .utils import override_settings
-from idunn.blocks.wikipedia import SizeLimiter
 
 @pytest.fixture(scope="function")
 def wiki_max_size():
     with override_settings({'WIKI_DESC_MAX_SIZE': 10}):
-        SizeLimiter._max_wiki_desc_size = None
         yield
-    SizeLimiter._max_wiki_desc_size = None
-
 
 @pytest.fixture(scope='module', autouse=True)
 def mock_long_wikipedia_response():
