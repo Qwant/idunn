@@ -136,9 +136,8 @@ class KuzzleClient:
                     }
                 }
             }
-                
+
         query = always_merger.merge(query_simple, query_outing)
-        print(query)
         bbox_places = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
         bbox_places.raise_for_status()
         try:
