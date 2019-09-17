@@ -38,4 +38,4 @@ class Event(BasePlace):
         }
 
     def get_meta(self):
-        return PlaceMeta(source=self.get('id_events').split('_')[0])
+        return PlaceMeta(source=self.get('id_events', '').split('_')[0])
