@@ -49,10 +49,10 @@ def moreInfo(info):
     source_url = "http://airindex.eea.europa.eu/" if source.startswith("EEA") else ''
 
     return {
-        "date": info[0].get('_source').get('update_at'),
+        "date": info[0].get('_source', {}).get('update_at'),
         "source": source,
         "source_url": source_url,
-        "measurements_unit": info[0].get('_source').get('measurements_unit')
+        "measurements_unit": info[0].get('_source', {}).get('measurements_unit')
     }
 
 
