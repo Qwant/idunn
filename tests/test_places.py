@@ -76,8 +76,8 @@ def test_full_query_street():
     assert resp == {
         "type": "street",
         "id": "35460343",
-        "name": "9a Birnenweg",
-        "local_name": "9a Birnenweg",
+        "name": "Birnenweg",
+        "local_name": "Birnenweg",
         "class_name": "street",
         "subclass_name": "street",
         "geometry": {
@@ -88,14 +88,14 @@ def test_full_query_street():
         "address": {
             "admin": None,
             "id": None,
-            "label": None,
-            "name": None,
+            "label": "Birnenweg (Label)",
+            "name": "Birnenweg",
             "housenumber": None,
             "postcode": "77777",
             "street": {
                 "id": '35460343',
-                "name": '9a Birnenweg',
-                "label": '9a Birnenweg (Label)',
+                "name": 'Birnenweg',
+                "label": 'Birnenweg (Label)',
                 "postcodes": ["77777"]
             },
             "admins": [
@@ -281,7 +281,7 @@ def test_type_query_street():
     resp = response.json()
 
     assert resp["id"] == "35460343"
-    assert resp["name"] == "9a Birnenweg"
+    assert resp["name"] == "Birnenweg"
 
 def test_type_query_address():
     client = TestClient(app)
