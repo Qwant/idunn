@@ -70,7 +70,7 @@ class KuzzleClient:
     def enabled(self):
         return bool(self.kuzzle_url)
 
-    def fetch_event_places(self, bbox, outing_category, collection, size) -> list:
+    def fetch_event_places(self, bbox, category, collection, size) -> list:
         if not self.enabled:
             raise Exception('Kuzzle is not enabled')
 
@@ -94,22 +94,25 @@ class KuzzleClient:
                             }
                         }
                     },
-                     'must': {
+                    'must': [{
                         'range': {
                             'date_end': {
                                 'gte': 'now/d',
                                 'lte': 'now+31d/d'
-                            },
+                            }
+                        }
+                     }, {
+                        'range': {
                             'date_start': {
                                 'lte': 'now+7d/d'
                             }
                         }
-                     }
+                     }]
                 }
             },
             'size': size
         }
-        if outing_category is None:
+        if category is None:
             query_outing = {}
         else:
             query_outing = {
@@ -117,7 +120,7 @@ class KuzzleClient:
                     'bool': {
                         'must': [{
                             'multi_match': {
-                                'query': outing_category,
+                                'query': category,
                                 'type': 'best_fields',
                                 'fields': ['tag^5', 'free_text^4', 'title^4', 'description^3'],
                                 'tie_breaker': 0.7,
@@ -125,7 +128,7 @@ class KuzzleClient:
                         }],
                         'should': [{
                             'multi_match': {
-                                'query': outing_category,
+                                'query': category,
                                 'type': 'phrase',
                                 'fields': ['tags^5', 'category^5', 'free_text^4', 'title^4', 'description^3'],
                             }
@@ -135,7 +138,7 @@ class KuzzleClient:
             }
                 
         query = always_merger.merge(query_simple, query_outing)
-
+        print(query)
         bbox_places = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
         bbox_places.raise_for_status()
         try:

@@ -112,10 +112,10 @@ class PlacesQueryParam(CommonQueryParam):
 
 
 class EventQueryParam(CommonQueryParam):
-    outing_category: str = None
+    category: str = None
 
-    @validator('outing_category')
-    def valid_outing_categories(cls, v):
+    @validator('category')
+    def valid_categories(cls, v):
         if v not in ALL_OUTING_CATEGORIES:
             raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}")
         else:
@@ -194,15 +194,15 @@ def get_events_bbox(bbox, query_params: http.QueryParams):
             detail={"message": e.errors()}
         )
 
-    current_outing_lang = params.outing_category
+    current_outing_lang = params.category
 
-    if params.outing_category:
-        current_outing_lang = params.outing_category.get('fr')
+    if params.category:
+        current_outing_lang = params.category.get('fr')
 
     bbox_places = kuzzle_client.fetch_event_places(
         bbox=params.bbox,
         collection='events',
-        outing_category=current_outing_lang,
+        category=current_outing_lang,
         size=params.size
     )
 
