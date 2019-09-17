@@ -5,16 +5,13 @@ from .place import PlaceMeta
 class Event(BasePlace):
     PLACE_TYPE = 'event'
 
-    # For now, only "openagenda" events are fetched
-    EVENT_SOURCE_OPENAGENDA = 'openagenda'
-
     def get_local_name(self):
         return self.get('title', '')
 
     def get_id(self):
-        event_id = self.get('uid')
+        event_id = self.get('id_events')
         if event_id:
-            return f'event:{self.EVENT_SOURCE_OPENAGENDA}:{event_id}'
+            return f'event:{event_id}'
         return None
 
     def get_coord(self):
@@ -41,4 +38,4 @@ class Event(BasePlace):
         }
 
     def get_meta(self):
-        return PlaceMeta(source=self.EVENT_SOURCE_OPENAGENDA)
+        return PlaceMeta(source=self.get('id_events').split('_')[0])

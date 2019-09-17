@@ -4,6 +4,7 @@ from apistar import validators
 
 from idunn import settings
 from idunn.api.kuzzle import kuzzle_client
+from apistar.types import Type
 from .base import BaseBlock
 
 
@@ -54,7 +55,6 @@ class AirQuality(BaseBlock):
             return None
 
         return cls(**air_quality)
-
 
 def get_air_quality(geobbox):
     if not kuzzle_client.enabled:

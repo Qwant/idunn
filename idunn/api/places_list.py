@@ -20,16 +20,25 @@ from typing import List, Optional, Any
 
 logger = logging.getLogger(__name__)
 
-MAX_WIDTH = 1.0 # max bbox longitude in degrees
+MAX_WIDTH = 1.0   # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 
 ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
+
 
 def get_categories():
     categories_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
     return _load_yaml_file(categories_path)['categories']
 
+
+def get_outing_types():
+    outing_types_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml")
+    return _load_yaml_file(outing_types_path)['outing_types']
+
+
 ALL_CATEGORIES = get_categories()
+ALL_OUTING_CATEGORIES = get_outing_types()
+
 
 class CommonQueryParam(BaseModel):
     bbox: str
@@ -69,8 +78,8 @@ class CommonQueryParam(BaseModel):
 
 
 class PlacesQueryParam(CommonQueryParam):
-    raw_filter: List[str] = None
     category: List[Any] = []
+    raw_filter: List[str] = None
     source: Optional[str] = None
     q: Optional[str] = None
 
@@ -103,7 +112,15 @@ class PlacesQueryParam(CommonQueryParam):
 
 
 class EventQueryParam(CommonQueryParam):
-    pass
+    category: str = None
+
+    @validator('category')
+    def valid_categories(cls, v):
+        if v not in ALL_OUTING_CATEGORIES:
+            raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}")
+        else:
+            v = ALL_OUTING_CATEGORIES.get(v, {})
+        return v
 
 
 def get_raw_params(query_params):
@@ -177,10 +194,18 @@ def get_events_bbox(bbox, query_params: http.QueryParams):
             detail={"message": e.errors()}
         )
 
+    current_outing_lang = params.category
+
+    if params.category:
+        current_outing_lang = params.category.get('fr')
+
     bbox_places = kuzzle_client.fetch_event_places(
         bbox=params.bbox,
+        collection='events',
+        category=current_outing_lang,
         size=params.size
     )
+
     events_list = [Event(p['_source']) for p in bbox_places]
 
     return {

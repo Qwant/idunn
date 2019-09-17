@@ -94,3 +94,29 @@ categories:
             - "clubs de sport"
         raw_filters:
             - "sports_centre,*"
+outing_types:
+    concert:
+        en:
+            "concert"
+        fr:
+            "concert"
+    exhibition:
+        en:
+            "exhibition"
+        fr:
+            "exposition"
+    show:
+        en:
+            "show"
+        fr:
+            "spectacle"
+    sport:
+        en:
+            "sport"
+        fr:
+            "sport"
+    entertainment:
+        en:
+            "entertainment"
+        fr:
+            "animation"

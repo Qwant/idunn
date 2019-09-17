@@ -1,7 +1,7 @@
 import requests
 import logging
 from apistar.exceptions import HTTPException
-
+from deepmerge import always_merger
 from idunn import settings
 logger = logging.getLogger(__name__)
 
@@ -18,25 +18,25 @@ def enrichRes(res):
     """
     Return pollutantes value with pollution indice and global air_quality indice
     """
-    enrichData = {}
-    globalQuality = 0
+    enrich_data = {}
+    global_quality = 0
     for particles, value in res.items():
-        valueNumber = value.get("value")
-        if valueNumber is None:
-            enrichData[particles] = {}
+        value_number = value.get("value")
+        if value_number is None:
+            enrich_data[particles] = {}
             continue
-        scaleP = scale[particles]
-        scaleIndiceLength = len(scaleP) - 1
-        while scaleIndiceLength >= 0:
-            if (valueNumber > scaleP[scaleIndiceLength]):
+        scale_p = scale[particles]
+        scale_indice_length = len(scale_p) - 1
+        while scale_indice_length >= 0:
+            if value_number > scale_p[scale_indice_length]:
                 break
-            scaleIndiceLength -= 1
+            scale_indice_length -= 1
 
-        enrichData[particles] = {"value": valueNumber, "quality_index": scaleIndiceLength + 2}
-        globalQuality = max(globalQuality, scaleIndiceLength + 2)
-    enrichData['quality_index'] = globalQuality
+        enrich_data[particles] = {"value": value_number, "quality_index": scale_indice_length + 2}
+        global_quality = max(global_quality, scale_indice_length + 2)
+    enrich_data['quality_index'] = global_quality
 
-    return enrichData
+    return enrich_data
 
 def moreInfo(info):
     """
@@ -70,14 +70,14 @@ class KuzzleClient:
     def enabled(self):
         return bool(self.kuzzle_url)
 
-    def fetch_event_places(self, bbox, size) -> list:
+    def fetch_event_places(self, bbox, category, collection, size) -> list:
         if not self.enabled:
             raise Exception('Kuzzle is not enabled')
 
         left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
-        url_kuzzle = f'{self.kuzzle_url}/opendatasoft/events/_search'
-        query = {
+        url_kuzzle = f'{self.kuzzle_url}/opendatasoft/{collection}/_search'
+        query_simple = {
             'query': {
                 'bool': {
                     'filter': {
@@ -94,18 +94,50 @@ class KuzzleClient:
                             }
                         }
                     },
-                    'must': {
+                    'must': [{
                         'range': {
                             'date_end': {
                                 'gte': 'now/d',
                                 'lte': 'now+31d/d'
                             }
                         }
-                    }
+                     }, {
+                        'range': {
+                            'date_start': {
+                                'lte': 'now+7d/d'
+                            }
+                        }
+                     }]
                 }
             },
             'size': size
         }
+        if category is None:
+            query_outing = {}
+        else:
+            query_outing = {
+                'query': {
+                    'bool': {
+                        'must': [{
+                            'multi_match': {
+                                'query': category,
+                                'type': 'best_fields',
+                                'fields': ['tag^5', 'free_text^4', 'title^4', 'description^3'],
+                                'tie_breaker': 0.7,
+                            },
+                        }],
+                        'should': [{
+                            'multi_match': {
+                                'query': category,
+                                'type': 'phrase',
+                                'fields': ['tags^5', 'category^5', 'free_text^4', 'title^4', 'description^3'],
+                            }
+                        }]
+                    }
+                }
+            }
+
+        query = always_merger.merge(query_simple, query_outing)
         bbox_places = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
         bbox_places.raise_for_status()
         try:
@@ -117,7 +149,6 @@ class KuzzleClient:
 
         bbox_places = bbox_places.get('result', {}).get('hits', [])
         return bbox_places
-
 
     def fetch_air_quality(self, geobbox) -> dict:
         """

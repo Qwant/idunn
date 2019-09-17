@@ -23,7 +23,9 @@ from .events import (
     OpeningDayEvent,
     DescriptionEvent,
 )
-from .environment import AirQuality
+from .environment import (
+    AirQuality,
+)
 
 ALL_BLOCKS = [
     OpeningHourBlock,

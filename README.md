@@ -33,7 +33,10 @@ The main endpoints are:
 * `/v1/categories` to get the list of all the categories you can filter on.
 * `/v1/pois/{poi_id}?lang={lang}` is the **deprecated** route to get the details of a POI.
 * `/v1/directions` See [directions.md](./doc/directions.md) for details
-
+* `/v1/events?bbox={bbox}&category=<category_name>&size={size}` to get a list of all events matching the given bbox and outing_category
+    * `bbox`: left,bot,right,top e.g. `bbox=2.0,48.0,3.0,49.0`
+    * `category`: one value is accepted (e.g. `category=concert | show | exhibition | sport | entertainment`)
+    * `size`: maximum number of events in the response
 ---
 * `/v1/status` to get the status of the API and associated ES cluster.
 * `/v1/metrics` to get some metrics on the API that give statistics on the number of requests received, the duration of requests... This endpoint can be scraped by Prometheus.

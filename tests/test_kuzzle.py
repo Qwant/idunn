@@ -34,7 +34,7 @@ def test_kuzzle_event_ok():
         resp = response.json()
         firstEventData = resp['events'][0]
 
-        assert firstEventData['id'] == 'event:openagenda:92106271'
+        assert firstEventData['id'] == 'event:openagenda_92106271'
         assert firstEventData['name'] == "Quand les livres expliquent la science"
         assert firstEventData['local_name'] == "Quand les livres expliquent la science"
         assert firstEventData['class_name'] == 'event'
