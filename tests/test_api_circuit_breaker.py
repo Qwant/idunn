@@ -3,9 +3,8 @@ import pytest
 import responses
 from app import app
 from time import sleep
-from freezegun import freeze_time
 from apistar.test import TestClient
-from idunn.blocks.wikipedia import WikipediaBreaker
+from idunn.blocks.wikipedia import WikipediaSession
 
 @pytest.fixture()
 def breaker_test():
@@ -15,7 +14,7 @@ def breaker_test():
     any waste of time with real timeout and
     failmax
     """
-    wiki_breaker = WikipediaBreaker.get_breaker()
+    wiki_breaker = WikipediaSession.circuit_breaker
     wiki_breaker.fail_max = 3
     wiki_breaker.reset_timeout = 1
     wiki_breaker.close()

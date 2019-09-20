@@ -7,9 +7,11 @@ from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, ConnectionError as RedisConnectionError, TimeoutError, RedisError
 from redis_rate_limit import RateLimiter, TooManyRequests
 
-from .base import BaseBlock
+from idunn import settings
 from idunn.utils import prometheus
 from idunn.utils.redis import get_redis_pool, RedisNotConfigured
+from idunn.utils.circuit_breaker import IdunnCircuitBreaker
+from .base import BaseBlock
 
 
 GET_WIKI_INFO = "get_wiki_info"
@@ -20,10 +22,8 @@ DISABLED_STATE = object() # Used to flag rate-limiter or cache as disabled by se
 
 logger = logging.getLogger(__name__)
 
-class WikiUndefinedException(Exception):
-    pass
 
-class HTTPError40X(HTTPError):
+class WikiUndefinedException(Exception):
     pass
 
 class WikipediaLimiter:
@@ -32,7 +32,6 @@ class WikipediaLimiter:
     @classmethod
     def get_limiter(cls):
         if cls._limiter is None:
-            from app import settings
             try:
                 redis_pool = get_redis_pool(settings, db=settings['WIKI_API_REDIS_DB'])
             except RedisNotConfigured:
@@ -77,61 +76,6 @@ class WikipediaLimiter:
             return f(*args, **kwargs)
         return wrapper
 
-class LogListener(pybreaker.CircuitBreakerListener):
-
-    def state_change(self, cb, old_state, new_state):
-        msg = "State Change: CB: {0}, From: {1} to New State: {2}".format(cb.name, old_state, new_state)
-        logger.warning(msg)
-
-
-class WikipediaBreaker:
-    _breaker = None
-
-    @classmethod
-    def init_breaker(cls):
-        from app import settings
-        cls._breaker = pybreaker.CircuitBreaker(
-            fail_max = settings['WIKI_API_CIRCUIT_MAXFAIL'],
-            reset_timeout = settings['WIKI_API_CIRCUIT_TIMEOUT'],
-            exclude = [HTTPError40X],
-            listeners=[LogListener()]
-        )
-
-    @classmethod
-    def get_breaker(cls):
-        if cls._breaker is None:
-            cls.init_breaker()
-        return cls._breaker
-
-    @classmethod
-    def handle_requests_error(cls, f):
-        def wrapped_f(*args, **kwargs):
-            breaker = cls.get_breaker()
-            try:
-                return WikipediaLimiter.request(breaker(f))(*args, **kwargs)
-            except pybreaker.CircuitBreakerError:
-                prometheus.exception("CircuitBreakerError")
-                logger.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
-            except HTTPError:
-                prometheus.exception("HTTPError")
-                logger.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
-            except Timeout:
-                prometheus.exception("RequestsTimeout")
-                logger.warning("External API timed out in {}".format(f.__name__), exc_info=True)
-            except RequestException:
-                prometheus.exception("RequestException")
-                logger.error("Got Request exception in {}".format(f.__name__), exc_info=True)
-            except TooManyRequests:
-                prometheus.exception("TooManyRequests")
-                logger.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
-            except RedisConnectionError:
-                prometheus.exception("RedisConnectionError")
-                logger.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
-            except TimeoutError:
-                prometheus.exception("RedisTimeoutError")
-                logger.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
-        return wrapped_f
-
 
 class CacheNotAvailable(Exception):
     pass
@@ -160,7 +104,6 @@ class WikipediaCache:
 
     @classmethod
     def init_cache(cls):
-        from app import settings
         cls._expire = int(settings['WIKI_CACHE_TIMEOUT'])  # seconds
         redis_db = settings['WIKI_CACHE_REDIS_DB']
         try:
@@ -210,16 +153,47 @@ class WikipediaSession:
     API_V1_BASE_PATTERN = "https://{lang}.wikipedia.org/api/rest_v1"
     API_PHP_BASE_PATTERN = "https://{lang}.wikipedia.org/w/api.php"
 
+    circuit_breaker = IdunnCircuitBreaker(name='wikipedia_api_breaker')
+
+    class Helpers:
+        @staticmethod
+        def handle_requests_error(f):
+            def wrapped_f(*args, **kwargs):
+                try:
+                    return WikipediaLimiter.request(f)(*args, **kwargs)
+                except pybreaker.CircuitBreakerError:
+                    prometheus.exception("CircuitBreakerError")
+                    logger.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
+                except HTTPError:
+                    prometheus.exception("HTTPError")
+                    logger.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
+                except Timeout:
+                    prometheus.exception("RequestsTimeout")
+                    logger.warning("External API timed out in {}".format(f.__name__), exc_info=True)
+                except RequestException:
+                    prometheus.exception("RequestException")
+                    logger.error("Got Request exception in {}".format(f.__name__), exc_info=True)
+                except TooManyRequests:
+                    prometheus.exception("TooManyRequests")
+                    logger.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+                except RedisConnectionError:
+                    prometheus.exception("RedisConnectionError")
+                    logger.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+                except TimeoutError:
+                    prometheus.exception("RedisTimeoutError")
+                    logger.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
+            return wrapped_f
+
     @property
     def session(self):
         if self._session is None:
-            from app import settings
             user_agent = settings['WIKI_USER_AGENT']
             self._session = requests.Session()
             self._session.headers.update({"User-Agent": user_agent})
         return self._session
 
-    @WikipediaBreaker.handle_requests_error
+    @Helpers.handle_requests_error
+    @circuit_breaker
     def get_summary(self, title, lang):
         url = "{base_url}/page/summary/{title}".format(
             base_url=self.API_V1_BASE_PATTERN.format(lang=lang), title=title
@@ -232,12 +206,11 @@ class WikipediaSession:
                 timeout=self.timeout
             )
 
-        if 400 <= resp.status_code < 500:
-            raise HTTPError40X
         resp.raise_for_status()
         return resp.json()
 
-    @WikipediaBreaker.handle_requests_error
+    @Helpers.handle_requests_error
+    @circuit_breaker
     def get_title_in_language(self, title, source_lang, dest_lang):
         url = self.API_PHP_BASE_PATTERN.format(lang=source_lang)
 
@@ -255,8 +228,6 @@ class WikipediaSession:
                 timeout=self.timeout,
             )
 
-        if 400 <= resp.status_code < 500:
-            raise HTTPError40X
         resp.raise_for_status()
         resp_data = resp.json()
         resp_pages = resp_data.get("query", {}).get("pages", [])
@@ -272,21 +243,13 @@ class WikipediaSession:
         return None
 
 class SizeLimiter:
-    _max_wiki_desc_size = None
-
-    @classmethod
-    def init_max_size(cls):
-        if cls._max_wiki_desc_size is None:
-            from app import settings
-            cls._max_wiki_desc_size = settings.get('WIKI_DESC_MAX_SIZE')
-
     @classmethod
     def limit_size(cls, content):
         """
         Just cut a string if its length > max_size
         """
-        cls.init_max_size()
-        return (content[:cls._max_wiki_desc_size] + '...') if len(content) > cls._max_wiki_desc_size else content
+        max_wiki_desc_size = settings['WIKI_DESC_MAX_SIZE']
+        return (content[:max_wiki_desc_size] + '...') if len(content) > max_wiki_desc_size else content
 
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"

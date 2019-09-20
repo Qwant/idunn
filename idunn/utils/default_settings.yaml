@@ -9,9 +9,6 @@ WIKI_USER_AGENT: "Idunn/0.1" # Used in requests to external wiki* APIs
 
 DEFAULT_LANGUAGE: 'en' # Fallback when no 'lang' in request
 
-WIKI_API_CIRCUIT_TIMEOUT: 120 # seconds
-WIKI_API_CIRCUIT_MAXFAIL: 50
-
 ES_WIKI_LANG: "de,en,es,fr,it" # the (comma separated) list of languages existing in the WIKI_ES
 
 WIKI_API_RL_MAX_CALLS: 100 # Max number of external calls allowed by the rate limiter
@@ -48,6 +45,10 @@ WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
 
 LIST_PLACES_MAX_SIZE: 50
 
+########################
+## Circuit Breaker
+CIRCUIT_BREAKER_TIMEOUT: 120 # timeout period in seconds
+CIRCUIT_BREAKER_MAXFAIL: 20 # consecutive failures before breaking
 
 
 ########################
