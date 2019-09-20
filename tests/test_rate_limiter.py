@@ -1,11 +1,10 @@
 import responses
 import pytest
 import re
-from time import sleep
 from freezegun import freeze_time
 from app import app, settings
 from apistar.test import TestClient
-from idunn.blocks.wikipedia import WikipediaLimiter
+from idunn.blocks.wikipedia import WikipediaSession, WikipediaCache
 from .utils import override_settings
 
 from redis import RedisError
@@ -13,7 +12,13 @@ from redis_rate_limit import RateLimiter
 from functools import wraps
 
 @pytest.fixture(scope="function")
-def limiter_test_normal(redis):
+def disable_wikipedia_cache():
+    WikipediaCache.disable()
+    yield
+    WikipediaCache._connection = None
+
+@pytest.fixture(scope="function")
+def limiter_test_normal(redis, disable_wikipedia_cache):
     """
     We define here settings specific to tests.
     We define low max calls limits to avoid
@@ -21,12 +26,12 @@ def limiter_test_normal(redis):
     """
     with override_settings({'WIKI_API_RL_PERIOD': 5, 'WIKI_API_RL_MAX_CALLS': 6, 'WIKI_API_REDIS_URL': redis}):
         # To force settings overriding we need to set to None the limiter
-        WikipediaLimiter._limiter = None
+        WikipediaSession._rate_limiter = None
         yield
-    WikipediaLimiter._limiter = None
+    WikipediaSession._rate_limiter = None
 
 @pytest.fixture(scope="function")
-def limiter_test_interruption(redis):
+def limiter_test_interruption(redis, disable_wikipedia_cache):
     """
     In the 'Redis interruption' test below
     we made more requests than the limits
@@ -34,9 +39,9 @@ def limiter_test_interruption(redis):
     So we need another specific fixture.
     """
     with override_settings({'WIKI_API_RL_PERIOD': 5, 'WIKI_API_RL_MAX_CALLS': 100, 'WIKI_API_REDIS_URL': redis}):
-        WikipediaLimiter._limiter = None
+        WikipediaSession._rate_limiter = None
         yield
-    WikipediaLimiter._limiter = None
+    WikipediaSession._rate_limiter = None
 
 @pytest.fixture(scope='function')
 def mock_wikipedia(redis):
@@ -155,7 +160,7 @@ def restart_wiki_redis(docker_services):
     port = docker_services.port_for("wiki_redis", 6379)
     url = f'{docker_services.docker_ip}:{port}'
     settings._settings['WIKI_API_REDIS_URL'] = url
-    WikipediaLimiter._limiter = None
+    WikipediaSession._rate_limiter = None
 
 def test_rate_limiter_with_redisError(limiter_test_interruption, mock_wikipedia, monkeypatch):
     """
