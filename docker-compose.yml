@@ -6,7 +6,7 @@ services:
     command: "--workers=4"
     environment:
      - IDUNN_MIMIR_ES=
-     - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
+     - IDUNN_REDIS_URL=redis://idunn-redis:6379
      - IDUNN_LOG_JSON=1
 
   idunn-redis:
