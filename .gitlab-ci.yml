@@ -3,21 +3,6 @@ stages:
   - development
   - prelive
   - production
-  - stop
-
-
-.deploy_operation:
-  image: registry.qwant.ninja/docker/dood:18.03
-  variables:
-    COMPOSE_FILE: "docker-compose.yml:ci/development/docker-compose.yml"
-    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
-    DOCKER_HOST: "tcp://10.100.31.132:2375"
-    DOCKER_STACK: "$CI_PROJECT_ID-$CI_ENVIRONMENT_SLUG"
-    ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
-    KUZZLE_SERVICE_NAME: "1216_kuzzle"
-  tags:
-    - light-docker
-  when: manual
 
 
 before_script:
@@ -54,28 +39,35 @@ build redis:
   when: manual
 
 
-deploy review:
-  extends: .deploy_operation
-  stage: development
-  environment:
-    name: &review-environment "review/$CI_COMMIT_REF_NAME"
-    on_stop: "stop review"
-    url: "http://$CI_COMMIT_REF_SLUG.maps.dev.qwant.ninja/maps"
-  script:
-    - deploy
-  dependencies:
-    - "build idunn"
+.deploy:
+  image: registry.qwant.ninja/docker/dood:18.03
+  tags:
+    - light-docker
+  before_script:
+    - source ci/bootstrap.sh
+    - docker login
+      --username "$CI_DEPLOY_USER"
+      --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
+  variables:
+    COMPOSE_FILE: "docker-compose.yml:ci/development/docker-compose.yml"
+    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
+    DOCKER_HOST: "tcp://10.100.31.132:2375"
+    STACK_NAME: "$CI_PROJECT_ID"
+    ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
+    KUZZLE_SERVICE_NAME: "1216_kuzzle"
+  when: manual
 
 
 deploy development:
-  extends: "deploy review"
+  extends: .deploy
   stage: development
+  dependencies:
+    - "build idunn"
   environment:
     name: development
-    on_stop: null
     url: "http://maps.dev.qwant.ninja/maps"
-  variables:
-    DOCKER_STACK: "$CI_PROJECT_ID"
+  script:
+    - deploy
 
 
 deploy prelive:
@@ -99,22 +91,4 @@ deploy production:
     COMPOSE_FILE: "docker-compose.yml:ci/production/docker-compose.yml"
     DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
     DOCKER_TLS_VERIFY: "1"
-    ROUTER_SERVICE_NAME: "${DOCKER_STACK}_traefik"
-
-
-stop review:
-  extends: .deploy_operation
-  before_script:
-    - source ci/bootstrap.sh
-  stage: stop
-  environment:
-    action: "stop"
-    name: *review-environment
-  script: stop
-  when: manual
-
-
-delayed stop review:
-  extends: stop review
-  when: delayed
-  start_in: 1 day
+    ROUTER_SERVICE_NAME: "product-maps-production_traefik"

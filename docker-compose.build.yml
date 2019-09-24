@@ -4,8 +4,8 @@ services:
   idunn-redis:
     build:
       args:
-      - http_proxy
-      - https_proxy
-      - no_proxy
+        - http_proxy
+        - https_proxy
+        - no_proxy
       context: redis
-    image: $CI_REGISTRY_IMAGE/idunn-redis:$CI_PIPELINE_ID
+    image: ${CI_REGISTRY_IMAGE}/idunn-redis:latest

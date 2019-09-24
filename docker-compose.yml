@@ -38,6 +38,8 @@ services:
       - default
 
   idunn-redis:
+    image: ${CI_REGISTRY_IMAGE}/idunn-redis:latest@${REDIS_IMAGE_DIGEST}
+    labels: *ci_labels
     deploy:
       labels: *ci_labels
       resources:
@@ -51,5 +53,3 @@ services:
         condition: on-failure
     environment:
       REDIS_ALIAS: "{{.Service.Name}}.{{.Task.Slot}}"
-    image: $CI_REGISTRY_IMAGE/idunn-redis:43722
-    labels: *ci_labels
