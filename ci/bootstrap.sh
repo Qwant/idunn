@@ -49,8 +49,10 @@ function deploy
     local STACK_FILE='docker-stack.yml'
 
     export DOCKER_IMAGE_DIGEST="$(cat idunn.digest)"
+
+    echo "$CI_PROJECT_PATH/idunn-redis"
     export REDIS_IMAGE_DIGEST="$(docker-content-digest \
-        "$CI_PROJECT_PATH/idunn-redis" "latest")"
+        "${CI_PROJECT_PATH}/idunn-redis" "latest")"
 
     guess ENVIRONMENT from CI_JOB_NAME
     guess APP_HOST from CI_ENVIRONMENT_URL
