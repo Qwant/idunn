@@ -1,0 +1,31 @@
+#!/bin/bash
+set -ueo pipefail
+
+# -----------------------------------------------------------------------------
+# Request the docker registry for the content digest of an image
+# -----------------------------------------------------------------------------
+# usage: docker-content-digest <image> <tag>
+
+image="$1"
+tag="$2"
+
+function auth
+{
+    curl "https://git.qwant.ninja/jwt/auth?service=container_registry&scope=repository:$image:$tag,pull" \
+         --header "Content-Type: application/json" \
+         --location \
+         --show-error \
+         --silent \
+         --user "$CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD" |
+    jq -r .token
+}
+
+curl "https://$CI_REGISTRY/v2/${image,,}/manifests/$tag" \
+     --head \
+     --header "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+     --header "Authorization: Bearer $(auth)" \
+     --location \
+     --request HEAD \
+     --show-error \
+     --silent |
+grep -Pio '(?<=Docker-Content-Digest: )sha256:\w+'
