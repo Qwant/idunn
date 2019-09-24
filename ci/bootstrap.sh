@@ -56,15 +56,15 @@ function deploy
     guess APP_HOST from CI_ENVIRONMENT_URL
 
     docker-compose config | tee "$STACK_FILE"
-    docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$DOCKER_STACK"
-    docker service update --network-add "${DOCKER_STACK}_default" "$ROUTER_SERVICE_NAME" || true
-    docker service update --network-add "${DOCKER_STACK}_default" "$KUZZLE_SERVICE_NAME" || true
-    docker-stack-wait -t 600 "$DOCKER_STACK"
+    docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$STACK_NAME"
+    docker service update --network-add "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
+    docker service update --network-add "${STACK_NAME}_default" "$KUZZLE_SERVICE_NAME" || true
+    docker-stack-wait -t 600 "$STACK_NAME"
 }
 
 function stop
 {
-    docker service update --network-rm "${DOCKER_STACK}_default" "$ROUTER_SERVICE_NAME" || true
-    docker service update --network-rm "${DOCKER_STACK}_default" "$KUZZLE_SERVICE_NAME" || true
-    docker stack rm "$DOCKER_STACK"
+    docker service update --network-rm "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
+    docker service update --network-rm "${STACK_NAME}_default" "$KUZZLE_SERVICE_NAME" || true
+    docker stack rm "$STACK_NAME"
 }
