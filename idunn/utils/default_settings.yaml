@@ -14,7 +14,6 @@ ES_WIKI_LANG: "de,en,es,fr,it" # the (comma separated) list of languages existin
 WIKI_API_RL_MAX_CALLS: 100 # Max number of external calls allowed by the rate limiter
 WIKI_API_RL_PERIOD: 1 # Duration (in seconds) of the period where no more than the max number of external calls are expected
 WIKI_API_REDIS_URL: # DEPRECATED. Use REDIS_URL instead
-WIKI_API_REDIS_DB: 0
 WIKI_CACHE_REDIS_DB: 1
 WIKI_CACHE_TIMEOUT: 86400 # seconds
 
