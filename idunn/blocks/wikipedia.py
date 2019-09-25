@@ -4,13 +4,13 @@ import requests
 import pybreaker
 from apistar import validators
 from requests.exceptions import HTTPError, RequestException, Timeout
-from redis import Redis, ConnectionError as RedisConnectionError, TimeoutError, RedisError
-from redis_rate_limit import RateLimiter, TooManyRequests
+from redis import Redis, RedisError
 
 from idunn import settings
 from idunn.utils import prometheus
 from idunn.utils.redis import get_redis_pool, RedisNotConfigured
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
+from idunn.utils.rate_limiter import IdunnRateLimiter, TooManyRequestsException
 from .base import BaseBlock
 
 
@@ -18,64 +18,13 @@ GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
 GET_SUMMARY = "get_summary"
 
-DISABLED_STATE = object() # Used to flag rate-limiter or cache as disabled by settings
+DISABLED_STATE = object() # Used to flag cache as disabled by settings
 
 logger = logging.getLogger(__name__)
 
 
 class WikiUndefinedException(Exception):
     pass
-
-class WikipediaLimiter:
-    _limiter = None
-
-    @classmethod
-    def get_limiter(cls):
-        if cls._limiter is None:
-            try:
-                redis_pool = get_redis_pool(settings, db=settings['WIKI_API_REDIS_DB'])
-            except RedisNotConfigured:
-                logger.warning("Redis URL not configured: rate limiter not started")
-                cls._limiter = DISABLED_STATE
-            else:
-                """
-                If a redis is configured,
-                then we use the corresponding redis
-                service in the rate limiter.
-                """
-                max_calls = int(settings['WIKI_API_RL_MAX_CALLS'])
-                redis_period = int(settings['WIKI_API_RL_PERIOD'])
-                cls._limiter = RateLimiter(
-                    resource='WikipediaAPI',
-                    max_requests=max_calls,
-                    expire=redis_period,
-                    redis_pool=redis_pool
-                )
-        return cls._limiter
-
-    @classmethod
-    def request(cls, f):
-        def wrapper(*args, **kwargs):
-            limiter = cls.get_limiter()
-
-            if limiter is not DISABLED_STATE:
-                """
-                We use the RateLimiter since
-                the redis service url has been provided
-                """
-                try:
-                    with limiter.limit(client="Idunn"):
-                        return f(*args, **kwargs)
-                except RedisError:
-                    logger.error("Got a RedisError in {}".format(f.__name__), exc_info=True)
-                    return None
-            """
-            No redis service has been set, so we
-            bypass the "redis-based" rate limiter
-            """
-            return f(*args, **kwargs)
-        return wrapper
-
 
 class CacheNotAvailable(Exception):
     pass
@@ -107,7 +56,7 @@ class WikipediaCache:
         cls._expire = int(settings['WIKI_CACHE_TIMEOUT'])  # seconds
         redis_db = settings['WIKI_CACHE_REDIS_DB']
         try:
-            redis_pool = get_redis_pool(settings, db=redis_db)
+            redis_pool = get_redis_pool(db=redis_db)
         except RedisNotConfigured:
             logger.warning("No Redis URL has been set for caching", exc_info=True)
             cls._connection = DISABLED_STATE
@@ -145,9 +94,14 @@ class WikipediaCache:
             return f(*args, **kwargs)
         return with_cache
 
+    @classmethod
+    def disable(cls):
+        cls._connection = DISABLED_STATE
+
 
 class WikipediaSession:
     _session = None
+    _rate_limiter = None
     timeout = 1. # seconds
 
     API_V1_BASE_PATTERN = "https://{lang}.wikipedia.org/api/rest_v1"
@@ -160,7 +114,8 @@ class WikipediaSession:
         def handle_requests_error(f):
             def wrapped_f(*args, **kwargs):
                 try:
-                    return WikipediaLimiter.request(f)(*args, **kwargs)
+                    with WikipediaSession.get_rate_limiter().limit(client='idunn') as limit:
+                        return f(*args, **kwargs)
                 except pybreaker.CircuitBreakerError:
                     prometheus.exception("CircuitBreakerError")
                     logger.error("Got CircuitBreakerError in {}".format(f.__name__), exc_info=True)
@@ -173,15 +128,12 @@ class WikipediaSession:
                 except RequestException:
                     prometheus.exception("RequestException")
                     logger.error("Got Request exception in {}".format(f.__name__), exc_info=True)
-                except TooManyRequests:
+                except TooManyRequestsException:
                     prometheus.exception("TooManyRequests")
                     logger.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
-                except RedisConnectionError:
-                    prometheus.exception("RedisConnectionError")
+                except RedisError:
+                    prometheus.exception("RedisError")
                     logger.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
-                except TimeoutError:
-                    prometheus.exception("RedisTimeoutError")
-                    logger.warning("Got redis TimeoutError{}".format(f.__name__), exc_info=True)
             return wrapped_f
 
     @property
@@ -191,6 +143,16 @@ class WikipediaSession:
             self._session = requests.Session()
             self._session.headers.update({"User-Agent": user_agent})
         return self._session
+
+    @classmethod
+    def get_rate_limiter(cls):
+        if cls._rate_limiter is None:
+            cls._rate_limiter = IdunnRateLimiter(
+                resource='WikipediaAPI',
+                max_requests=int(settings['WIKI_API_RL_MAX_CALLS']),
+                expire=int(settings['WIKI_API_RL_PERIOD'])
+            )
+        return cls._rate_limiter
 
     @Helpers.handle_requests_error
     @circuit_breaker
