@@ -119,12 +119,18 @@ class DirectionsClient:
         if lang not in COMBIGO_SUPPORTED_LANGUAGES:
             lang = 'en'
 
-        response = self.combigo_session.get(
-            f'{self.COMBIGO_BASE_URL}/journey/{start_lat};{start_lon}/{end_lat};{end_lon}',
+        response = self.combigo_session.post(
+            f'{self.COMBIGO_BASE_URL}/journey',
             params={
                 'lang': lang,
-                'type_include': mode,
-                'dTime': (datetime.utcnow() + timedelta(minutes=1)).isoformat(timespec='seconds')
+            },
+            json={
+                "locations":[
+                    {"lat": start_lat, "lng": start_lon},
+                    {"lat": end_lat, "lng": end_lon}
+                ],
+                "type_include": mode,
+                "dTime": (datetime.utcnow() + timedelta(minutes=1)).isoformat(timespec='seconds')
             },
             timeout=self.request_timeout,
         )
