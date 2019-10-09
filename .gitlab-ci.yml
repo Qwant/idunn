@@ -53,7 +53,6 @@ build redis:
     DOCKER_HOST: "tcp://10.100.31.132:2375"
     STACK_NAME: "$CI_PROJECT_ID"
     ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
-    KUZZLE_SERVICE_NAME: "1216_kuzzle"
   when: manual
 
 
@@ -67,6 +66,9 @@ deploy development:
     url: "http://maps.dev.qwant.ninja/maps"
   script:
     - deploy
+  variables:
+    KUZZLE_SERVICE_NAME: "1216_kuzzle"
+
 
 
 deploy prelive:
@@ -78,6 +80,7 @@ deploy prelive:
   variables:
     COMPOSE_FILE: "docker-compose.yml:ci/prelive/docker-compose.yml"
     DOCKER_HOST: "tcp://10.103.9.1:2375"
+    KUZZLE_SERVICE_NAME: "1216_kuzzle"
 
 
 deploy production:
