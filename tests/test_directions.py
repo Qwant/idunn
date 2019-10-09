@@ -40,8 +40,8 @@ def mock_directions_public_transport():
         )
         with responses.RequestsMock() as rsps:
             rsps.add(
-                "GET",
-                re.compile(r"^http://api.test/journey/"),
+                "POST",
+                re.compile(r"^http://api.test/journey"),
                 status=200,
                 json=json.load(open(fixture_path)),
             )
