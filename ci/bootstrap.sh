@@ -62,13 +62,17 @@ function deploy
     docker-compose config | tee "$STACK_FILE"
     docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$STACK_NAME"
     docker service update --network-add "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
-    docker service update --network-add "${STACK_NAME}_default" "$KUZZLE_SERVICE_NAME" || true
+    if [ ! -z ${KUZZLE_SERVICE_NAME+x} ]; then
+        docker service update --network-add "${STACK_NAME}_default" "$KUZZLE_SERVICE_NAME" || true
+    fi
     docker-stack-wait -t 600 "$STACK_NAME"
 }
 
 function stop
 {
     docker service update --network-rm "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
-    docker service update --network-rm "${STACK_NAME}_default" "$KUZZLE_SERVICE_NAME" || true
+    if [ ! -z ${KUZZLE_SERVICE_NAME+x} ]; then
+        docker service update --network-rm "${STACK_NAME}_default" "$KUZZLE_SERVICE_NAME" || true
+    fi
     docker stack rm "$STACK_NAME"
 }
