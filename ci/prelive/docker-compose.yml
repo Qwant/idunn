@@ -22,3 +22,10 @@ services:
       - no_proxy=es,wiki-es
     extra_hosts:
       - "wiki-es:10.100.33.34"
+    networks:
+      - 1216_kuzzle
+
+
+networks:
+  1216_kuzzle:
+    external: true
