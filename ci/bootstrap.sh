@@ -61,7 +61,7 @@ function deploy
 
     docker-compose config | tee "$STACK_FILE"
     docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$STACK_NAME"
-    docker service update --network-add "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
+    # docker service update --network-add "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
     docker-stack-wait -t 600 "$STACK_NAME"
 }
 
