@@ -60,9 +60,6 @@ deploy development:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
   script:
-    - docker login
-      --username "$CI_DEPLOY_USER"
-      --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
     - deploy
   variables:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
