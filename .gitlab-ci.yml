@@ -42,11 +42,6 @@ build redis:
   image: registry.qwant.ninja/docker/dood:18.03
   tags:
     - light-docker
-  before_script:
-    - source ci/bootstrap.sh
-    - docker login
-      --username "$CI_DEPLOY_USER"
-      --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
   variables:
     COMPOSE_FILE: "docker-compose.yml:ci/development/docker-compose.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
@@ -65,6 +60,9 @@ deploy development:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
   script:
+    - docker login
+      --username "$CI_DEPLOY_USER"
+      --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
     - deploy
   variables:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
