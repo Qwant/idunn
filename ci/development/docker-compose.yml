@@ -23,8 +23,11 @@ services:
       - "wiki-es:10.100.31.26"
     networks:
       - 1216_default
+      - product-maps-development_default
 
 
 networks:
   1216_default:
+    external: true
+  product-maps-development_default:
     external: true
