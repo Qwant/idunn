@@ -27,5 +27,5 @@ services:
 
 
 networks:
-  1216_kuzzle:
+  1216_default:
     external: true
