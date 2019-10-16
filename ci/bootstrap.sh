@@ -56,8 +56,7 @@ function deploy
     guess APP_HOST from CI_ENVIRONMENT_URL
 
     # docker-service-network config "${STACK_NAME}_idunn" > docker-networks.yml
-
-    COMPOSE_FILE="$COMPOSE_FILE:docker-networks.yml"
+    # COMPOSE_FILE="$COMPOSE_FILE:docker-networks.yml"
 
     docker-compose config | tee "$STACK_FILE"
     docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$STACK_NAME"
