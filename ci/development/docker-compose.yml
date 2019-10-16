@@ -22,7 +22,7 @@ services:
     extra_hosts:
       - "wiki-es:10.100.31.26"
     networks:
-      - 1216_kuzzle
+      - 1216_default
 
 
 networks:
