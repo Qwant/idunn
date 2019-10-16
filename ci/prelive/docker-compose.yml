@@ -29,3 +29,5 @@ services:
 networks:
   1216_default:
     external: true
+  product-maps-prelive_default:
+    external: true
