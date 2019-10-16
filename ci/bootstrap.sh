@@ -55,7 +55,7 @@ function deploy
     guess ENVIRONMENT from CI_JOB_NAME
     guess APP_HOST from CI_ENVIRONMENT_URL
 
-    docker-service-network config "${STACK_NAME}_idunn" > docker-networks.yml
+    # docker-service-network config "${STACK_NAME}_idunn" > docker-networks.yml
 
     COMPOSE_FILE="$COMPOSE_FILE:docker-networks.yml"
 
