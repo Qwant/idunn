@@ -1,13 +1,5 @@
 version: '3.5'
 
-networks:
-  bridge:
-    external:
-      name: bridge
-  default:
-    attachable: true
-    driver: overlay
-
 services:
   idunn:
     image: "$DOCKER_IMAGE:$DOCKER_IMAGE_TAG@$DOCKER_IMAGE_DIGEST"
@@ -33,9 +25,6 @@ services:
           memory: 2.72g
       restart_policy:
         condition: on-failure
-    networks:
-      - bridge
-      - default
 
   idunn-redis:
     image: ${CI_REGISTRY_IMAGE}/idunn-redis:latest@${REDIS_IMAGE_DIGEST}
