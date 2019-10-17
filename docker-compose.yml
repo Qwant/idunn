@@ -20,7 +20,7 @@ services:
       labels:
         <<: *ci_labels
         traefik.frontend.entryPoints: "public"
-        traefik.docker.network: "${STACK}_default"
+        traefik.docker.network: "${STACK_NAME}_default"
         traefik.frontend.rule: "PathPrefixStrip:/maps/detail/"
         traefik.port: "5000"
       mode: replicated
