@@ -36,8 +36,8 @@ def log_place_request(place: BasePlace, headers: Headers):
     custom_data = {
         'id': place.get_id(),
         'name': place.get_local_name(),
-        'class': place.get_class_name(),
-        'subclass': place.get_subclass_name(),
+        'class_name': place.get_class_name(),
+        'subclass_name': place.get_subclass_name(),
     }
 
     # Filter out irrelevant fields
