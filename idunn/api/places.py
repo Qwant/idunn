@@ -40,11 +40,6 @@ def log_place_request(place: BasePlace, headers: Headers):
         'subclass_name': place.get_subclass_name(),
     }
 
-    # Filter out irrelevant fields
-    for key in custom_data.keys():
-        if not custom_data[key]:
-            del custom_data[key]
-
     if 'X-QwantMaps-FocusPosition' in headers:
         pos = headers.get('X-QwantMaps-FocusPosition', '').split(';')
         if len(pos) == 3:
