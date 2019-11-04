@@ -48,7 +48,7 @@ class TransportInfo(BaseModel):
         super().__init__(**data)
 
 class TransportStop(BaseModel):
-    name: str
+    name: Optional[str]
     location: Tuple[float, float] = Schema(..., description='[lon, lat]')
 
     def __init__(self, **data):
