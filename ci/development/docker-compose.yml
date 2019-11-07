@@ -10,8 +10,8 @@ services:
       - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
       - IDUNN_WIKI_ES=http://wiki-es:9200
       - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
-      - IDUNN_THUMBR_SALT=${QMAPS_THUMBR_SECRET_DEV}
-      - IDUNN_THUMBR_URLS=http://10.100.33.211:8080
+      - IDUNN_THUMBR_SALT=${QMAPS_THUMBR_SECRET_PLIVE}
+      - IDUNN_THUMBR_URLS=https://s1.qwant.plive/thumbr,https://s2.qwant.plive/thumbr
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
