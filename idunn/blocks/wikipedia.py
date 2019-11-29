@@ -26,8 +26,10 @@ logger = logging.getLogger(__name__)
 class WikiUndefinedException(Exception):
     pass
 
+
 class CacheNotAvailable(Exception):
     pass
+
 
 class WikipediaCache:
     _expire = None
@@ -70,8 +72,8 @@ class WikipediaCache:
         It requires a prefix string to identify the name
         of the function cached.
         """
-        if WikipediaCache._connection is None:
-            WikipediaCache.init_cache()
+        if cls._connection is None:
+            cls.init_cache()
 
         def with_cache(*args, **kwargs):
             """
@@ -212,6 +214,7 @@ class SizeLimiter:
         """
         max_wiki_desc_size = settings['WIKI_DESC_MAX_SIZE']
         return (content[:max_wiki_desc_size] + '...') if len(content) > max_wiki_desc_size else content
+
 
 class WikipediaBlock(BaseBlock):
     BLOCK_TYPE = "wikipedia"
