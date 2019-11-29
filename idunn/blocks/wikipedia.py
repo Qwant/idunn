@@ -73,8 +73,8 @@ class WikipediaCache:
         It requires a prefix string to identify the name
         of the function cached.
         """
-        if WikipediaCache._connection is None:
-            WikipediaCache.init_cache()
+        if cls._connection is None:
+            cls.init_cache()
 
         def with_cache(*args, **kwargs):
             """
