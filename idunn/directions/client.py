@@ -105,7 +105,7 @@ class DirectionsClient:
         return DirectionsResponse(**response.json()).dict()
 
 
-    def directions_combigo(self, start, end, mode, lang, **kwargs):
+    def directions_combigo(self, start, end, mode, lang):
         if not self.COMBIGO_BASE_URL:
             raise HTTPException(f"Directions API is currently unavailable for mode {mode}", status_code=501)
 
@@ -142,7 +142,7 @@ class DirectionsClient:
         ).dict()
 
 
-    def get_directions(self, from_loc, to_loc, mode, lang, **extra):
+    def get_directions(self, from_loc, to_loc, mode, lang):
         method = self.directions_qwant
         if self.MAPBOX_API_ENABLED:
             method = self.directions_mapbox
@@ -159,7 +159,15 @@ class DirectionsClient:
         else:
             raise BadRequest(f'unknown mode {mode}')
 
-        return method(from_loc, to_loc, mode, lang, **extra)
+        method_name = method.__name__
+        logger.info(f"Calling directions API '{method_name}'", extra={
+            "method": method_name,
+            "mode": mode,
+            "lang": lang,
+            "from": from_loc,
+            "to": to_loc,
+        })
+        return method(from_loc, to_loc, mode, lang)
 
 
 directions_client = DirectionsClient()
