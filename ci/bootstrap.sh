@@ -48,7 +48,8 @@ function deploy
 {
     local STACK_FILE='docker-stack.yml'
 
-    export DOCKER_IMAGE_DIGEST="$(cat idunn.digest)"
+    export IDUNN_IMAGE_DIGEST="$(docker-content-digest \
+        "$IDUNN_IMAGE_NAME" "$IDUNN_IMAGE_TAG")"
     export REDIS_IMAGE_DIGEST=$(docker-content-digest-qwant \
         "${CI_PROJECT_PATH}/idunn-redis" "latest")
 
