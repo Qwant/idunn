@@ -45,26 +45,30 @@ The main endpoints are:
 
 - The dependencies are managed with [Pipenv](https://github.com/pypa/pipenv).
 - To run the api you need to do:
-```shell
-pipenv install
-```
+  ```shell
+  pipenv install
+  ```
+
 - and then:
-```shell
-IDUNN_MIMIR_ES=<url_to_MIMIR_ES> IDUNN_WIKI_ES=<url_to_WIKI_ES> pipenv run python app.py
-```
+  ```shell
+  IDUNN_MIMIR_ES=<url_to_MIMIR_ES> IDUNN_WIKI_ES=<url_to_WIKI_ES> pipenv run python app.py
+  ```
+
 - you can query the API on port 5000:
-```shell
-curl localhost:5000/v1/places/toto?lang=fr&type=poi
-```
+  ```shell
+  curl localhost:5000/v1/places/toto?lang=fr&type=poi
+  ```
 
 ### Configuration
 
 The configuration can be given from different ways:
- 1. a default settings is available in utils/default_settings.yaml
- 2. a yaml settings file can be given with an env var IDUNN_CONFIG_FILE
+ 1. a default settings is available in `utils/default_settings.yaml`
+ 2. a yaml settings file can be given with an env var `IDUNN_CONFIG_FILE`
     (the default settings is still loaded and overriden)
  3. specific variable can be overriden with env var. They need to be given like "IDUNN_{var_name}={value}"
     eg IDUNN_MIMIR_ES=...
+
+Please note that you will need an API key from [openweathermap](https://openweathermap.org/) in order to use the `Weather` block. You can then set it into the `IDUNN_WEATHER_API_KEY` environment variable or directly into the `WEATHER_API_KEY` inside the `utils/default_settings.yaml` file.
 
 ## How to contribute ?
 
