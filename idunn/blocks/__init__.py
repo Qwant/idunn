@@ -8,7 +8,6 @@ from .wikipedia import (
     WikipediaBlock,
     WikiUndefinedException,
     GET_WIKI_INFO,
-    WikipediaCache,
 )
 from .images import ImagesBlock
 from .services_and_information import (

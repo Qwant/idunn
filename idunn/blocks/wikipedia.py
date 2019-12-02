@@ -7,7 +7,7 @@ from redis import Redis, RedisError
 
 from idunn import settings
 from idunn.utils import prometheus
-from idunn.utils.redis import get_redis_pool, RedisNotConfigured
+from idunn.utils.redis import RedisWrapper
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 from idunn.utils.rate_limiter import IdunnRateLimiter, TooManyRequestsException
 from .base import BaseBlock
@@ -19,88 +19,11 @@ GET_WIKI_INFO = "get_wiki_info"
 GET_TITLE_IN_LANGUAGE = "get_title_in_language"
 GET_SUMMARY = "get_summary"
 
-DISABLED_STATE = object()  # Used to flag cache as disabled by settings
-
 logger = logging.getLogger(__name__)
 
 
 class WikiUndefinedException(Exception):
     pass
-
-
-class CacheNotAvailable(Exception):
-    pass
-
-
-class WikipediaCache:
-    _expire = None
-    _connection = None
-
-    @classmethod
-    def set_value(cls, key, json_result):
-        try:
-            cls._connection.set(key, json_result, ex=cls._expire)
-        except RedisError:
-            prometheus.exception("RedisError")
-            logging.exception("Got a RedisError")
-
-    @classmethod
-    def get_value(cls, key):
-        try:
-            value_stored = cls._connection.get(key)
-            return value_stored
-        except RedisError as exc:
-            prometheus.exception("RedisError")
-            logging.exception("Got a RedisError")
-            raise CacheNotAvailable from exc
-
-    @classmethod
-    def init_cache(cls):
-        cls._expire = int(settings["WIKI_CACHE_TIMEOUT"])  # seconds
-        redis_db = settings["WIKI_CACHE_REDIS_DB"]
-        try:
-            redis_pool = get_redis_pool(db=redis_db)
-        except RedisNotConfigured:
-            logger.warning("No Redis URL has been set for caching", exc_info=True)
-            cls._connection = DISABLED_STATE
-        else:
-            cls._connection = Redis(connection_pool=redis_pool)
-
-    @classmethod
-    def cache_it(cls, key, f):
-        """
-        Takes function f and put its result in a redis cache.
-        It requires a prefix string to identify the name
-        of the function cached.
-        """
-        if cls._connection is None:
-            cls.init_cache()
-
-        def with_cache(*args, **kwargs):
-            """
-            If the redis is up we use the cache,
-            otherwise we bypass it
-            """
-            if cls._connection is not DISABLED_STATE:
-                try:
-                    value_stored = cls.get_value(key)
-                except CacheNotAvailable:
-                    # Cache is not reachable: we don't want to execute 'f'
-                    # (and fetch wikipedia content, possibly very often)
-                    return None
-                if value_stored is not None:
-                    return json.loads(value_stored.decode("utf-8"))
-                result = f(*args, **kwargs)
-                json_result = json.dumps(result)
-                cls.set_value(key, json_result)
-                return result
-            return f(*args, **kwargs)
-
-        return with_cache
-
-    @classmethod
-    def disable(cls):
-        cls._connection = DISABLED_STATE
 
 
 class WikipediaSession:
@@ -240,9 +163,7 @@ class WikipediaBlock(BaseBlock):
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = WikipediaCache.cache_it(key, es_poi.get_wiki_info)(
-                        wikidata_id, wiki_index
-                    )
+                    wiki_poi_info = RedisWrapper.cache_it(key, es_poi.get_wiki_info)(wikidata_id, wiki_index)
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -270,15 +191,15 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
                     key = GET_TITLE_IN_LANGUAGE + "_" + wiki_title + "_" + wiki_lang + "_" + lang
-                    wiki_title = WikipediaCache.cache_it(
-                        key, cls._wiki_session.get_title_in_language
-                    )(title=wiki_title, source_lang=wiki_lang, dest_lang=lang)
+                    wiki_title = RedisWrapper.cache_it(key, cls._wiki_session.get_title_in_language)(
+                        title=wiki_title,
+                        source_lang=wiki_lang,
+                        dest_lang=lang
+                    )
 
         if wiki_title:
             key = GET_SUMMARY + "_" + wiki_title + "_" + lang
-            wiki_summary = WikipediaCache.cache_it(key, cls._wiki_session.get_summary)(
-                wiki_title, lang=lang
-            )
+            wiki_summary = RedisWrapper.cache_it(key, cls._wiki_session.get_summary)(wiki_title, lang=lang)
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),

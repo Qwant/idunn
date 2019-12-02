@@ -1,6 +1,7 @@
 USER_AGENT: "Idunn/0.1"
 
 MIMIR_ES: http://localhost:9200/
+MIMIR_ES_VERIFY_HTTPS: True
 
 WIKI_ES:
 WIKI_ES_TIMEOUT: 0.5 # seconds
@@ -85,7 +86,7 @@ KUZZLE_CLUSTER_URL:
 KUZZLE_REQUEST_TIMEOUT: "0.5" # seconds
 
 # weather API
-WEATHER_API_URL:
+WEATHER_API_URL: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&APPID={appid}"
 WEATHER_API_KEY:
 WEATHER_REQUEST_TIMEOUT: "0.5" #seconds
 

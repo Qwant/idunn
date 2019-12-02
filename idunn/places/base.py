@@ -1,7 +1,8 @@
 import logging
 
 from idunn.api.utils import WikidataConnector, get_geom, build_blocks
-from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO, WikipediaCache
+from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
+from idunn.utils.redis import RedisWrapper
 from .place import Place, PlaceMeta
 
 
@@ -33,9 +34,7 @@ class BasePlace(dict):
                 if wiki_index is not None:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
                     try:
-                        self._wiki_resp[lang] = WikipediaCache.cache_it(
-                            key, WikidataConnector.get_wiki_info
-                        )(wikidata_id, wiki_index)
+                        self._wiki_resp[lang] = RedisWrapper.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, wiki_index)
                     except WikiUndefinedException:
                         logger.info(
                             "WIKI_ES variable has not been set: cannot fetch wikidata images"

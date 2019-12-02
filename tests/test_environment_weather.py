@@ -107,7 +107,8 @@ testee_nok = {
       'es': 'París (75000-75116), Isla de Francia, Francia',
       'it': 'Parigi (75000-75116), Isola di Francia, Francia'
     }
-  }
+}
+
 
 @enable_weather_api()
 def test_weather_city():
@@ -136,6 +137,7 @@ def test_weather_city():
         'icon': '01d',
     })
 
+
 @enable_weather_api()
 def test_wrong_icon_value():
     """
@@ -148,7 +150,6 @@ def test_wrong_icon_value():
         })
 
 
-
 @enable_weather_api()
 def test_weather_from_region():
     """
@@ -159,6 +160,7 @@ def test_weather_from_region():
         lang='en'
     )
     assert res == None
+
 
 def test_weather_with_no_kuzzle():
     """

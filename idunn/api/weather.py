@@ -6,7 +6,6 @@ from idunn import settings
 logger = logging.getLogger(__name__)
 
 
-
 class WeatherClient:
     def __init__(self):
         self.session = requests.Session()
@@ -28,9 +27,10 @@ class WeatherClient:
         if not self.enabled:
             raise Exception('API is not enabled')
 
-        url_weather_api = self.weather_url.format(lat=coord.get('lat'), lon=coord.get('lon'), appid=self.weather_key, lang="fr")
+        url_weather_api = self.weather_url.format(lat=coord.get('lat'), lon=coord.get('lon'), appid=self.weather_key)
 
-        weather_town = self.session.get(url_weather_api, timeout=self.request_timeout)
+        weather_town = self.session.get(url_weather_api + '&units=metric',
+                                        timeout=self.request_timeout)
         weather_town.raise_for_status()
         try:
             weather_town = weather_town.json()
@@ -39,7 +39,13 @@ class WeatherClient:
                          f'Got {weather_town.content}', exc_info=True)
             raise HTTPException(detail='weather error', status_code=503)
 
-        weather_info = { 'temperature': weather_town.get('main').get('temp'), 'icon': weather_town.get('weather')[0].get('icon')}
+        weather_info = {
+            'temperature': weather_town.get('main', {}).get('temp'),
+            'humidity': weather_town.get('main', {}).get('humidity'),
+            'pressure': weather_town.get('main', {}).get('pressure'),
+            'icon': weather_town.get('weather', [{}])[0].get('icon'),
+            'wind': weather_town.get('wind')
+        }
         return weather_info
 
 
