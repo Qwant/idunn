@@ -44,8 +44,6 @@ build redis:
 deploy development:
   extends: .deploy
   stage: development
-  dependencies:
-    - "build idunn"
   environment:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
