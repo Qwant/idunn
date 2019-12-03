@@ -49,15 +49,15 @@ function deploy
     local STACK_FILE='docker-stack.yml'
 
     export IDUNN_IMAGE_DIGEST="$(docker-content-digest \
-        "$IDUNN_IMAGE_NAME" "$IDUNN_IMAGE_TAG")"
-    export REDIS_IMAGE_DIGEST=$(docker-content-digest-qwant \
-        "${CI_PROJECT_PATH}/idunn-redis" "latest")
+        "docker" "$IDUNN_IMAGE_NAME" "$IDUNN_IMAGE_TAG")"
+    export REDIS_IMAGE_DIGEST=$(docker-content-digest \
+        "qwant" "${CI_PROJECT_PATH}/idunn-redis" "latest")
 
     guess ENVIRONMENT from CI_JOB_NAME
     guess APP_HOST from CI_ENVIRONMENT_URL
 
-    # docker-service-network config "${STACK_NAME}_idunn" > docker-networks.yml
-    # COMPOSE_FILE="$COMPOSE_FILE:docker-networks.yml"
+    docker-service-network config "${STACK_NAME}_idunn" > docker-networks.yml
+    COMPOSE_FILE="$COMPOSE_FILE:docker-networks.yml"
 
     docker-compose config | tee "$STACK_FILE"
     docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$STACK_NAME"
