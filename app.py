@@ -7,7 +7,7 @@ from idunn.utils.logging import init_logging, LogErrorHook
 from idunn.utils.cors import CORSHeaders
 from idunn.utils.app import IdunnApp
 from idunn.api.urls import get_api_urls
-from apistar_prometheus import PrometheusComponent, PrometheusHooks
+from idunn.utils.prometheus import PrometheusComponent, PrometheusHooks
 
 init_logging(settings)
 

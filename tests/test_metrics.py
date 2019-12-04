@@ -9,4 +9,4 @@ def test_v1_metrics_ok():
 
     assert response.status_code == 200
 
-    assert b'apistar_prometheus.handlers.expose_metrics' in response.content
+    assert b'prometheus.expose_metrics' in response.content
