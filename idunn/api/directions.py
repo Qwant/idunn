@@ -1,4 +1,4 @@
-from apistar.http import QueryParams, Request
+from apistar.http import JSONResponse, QueryParams, Request
 from apistar.exceptions import BadRequest
 
 from idunn import settings
@@ -11,7 +11,9 @@ rate_limiter = IdunnRateLimiter(
     expire=int(settings['DIRECTIONS_RL_EXPIRE'])
 )
 
-def get_directions(f_lon, f_lat, t_lon, t_lat, params: QueryParams, request: Request):
+def get_directions(
+    f_lon, f_lat, t_lon, t_lat, params: QueryParams, request: Request
+) -> JSONResponse:
     rate_limiter.check_limit_per_client(request)
 
     from_position = (f_lon, f_lat)
@@ -23,6 +25,12 @@ def get_directions(f_lon, f_lat, t_lon, t_lat, params: QueryParams, request: Req
     if not mode:
         raise BadRequest('"type" query param is required')
 
-    return directions_client.get_directions(
+    headers = {
+        'cache-control': 'max-age={}'.format(settings['DIRECTIONS_CLIENT_CACHE'])
+     }
+
+    data = directions_client.get_directions(
         from_position, to_position, mode=mode, lang=lang
     )
+
+    return JSONResponse(data, headers=headers)
