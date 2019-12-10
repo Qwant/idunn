@@ -126,6 +126,7 @@ class WikidataConnector:
 
         return wiki
 
+
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
     @deprecated by fetch_es_place()
@@ -206,6 +207,7 @@ def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
     return bbox_places
 
+
 def fetch_es_place(id, es, indices, type) -> dict:
     """Returns the raw Place data
 
@@ -240,6 +242,7 @@ def fetch_es_place(id, es, indices, type) -> dict:
         logger.warning("Got multiple places with id %s", id)
 
     return es_place[0]
+
 
 def fetch_closest(lat, lon, max_distance, es):
     es_addrs = es.search(index=','.join([PLACE_ADDRESS_INDEX,PLACE_STREET_INDEX]),
@@ -284,6 +287,7 @@ def fetch_closest(lat, lon, max_distance, es):
         raise HTTPException(status_code=404, detail=f"nothing around {lat}:{lon} within {max_distance}m...")
     return es_addrs[0]
 
+
 def build_blocks(es_poi, lang, verbosity):
     """Returns the list of blocks we want
     depending on the verbosity.
@@ -296,6 +300,7 @@ def build_blocks(es_poi, lang, verbosity):
         if block is not None:
             blocks.append(block)
     return blocks
+
 
 def get_geom(es_place):
     """Return the correct geometry from the elastic response
@@ -328,6 +333,7 @@ def get_geom(es_place):
             if 'bbox' in es_place:
                 geom['bbox'] = es_place.get('bbox')
     return geom
+
 
 def get_name(properties, lang):
     """Return the Place name from the properties field of the elastic response
