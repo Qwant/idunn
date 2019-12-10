@@ -9,7 +9,7 @@ from starlette.requests import Request
 from idunn import settings
 from idunn.utils import prometheus
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.utils.index_names import IndexNames
+from idunn.utils.index_names import INDICES
 from idunn.places import Place, Admin, Street, Address, POI, Latlon
 from idunn.places.base import BasePlace
 from idunn.api.utils import fetch_es_place, DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
@@ -75,8 +75,8 @@ def log_place_request(place: BasePlace, headers):
     )
 
 
-def get_place(id: str, indices: IndexNames, request: Request,
-              lang=None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
+def get_place(id: str, request: Request,
+              lang: str = None, type=None, verbosity=DEFAULT_VERBOSITY) -> Place:
     """Main handler that returns the requested place"""
     es = get_elasticsearch()
     verbosity = validate_verbosity(verbosity)
@@ -89,7 +89,7 @@ def get_place(id: str, indices: IndexNames, request: Request,
         return pj_place.load_place(lang, verbosity)
 
     # Otherwise handle places from the ES db
-    es_place = fetch_es_place(id, es, indices, type)
+    es_place = fetch_es_place(id, es, INDICES, type)
 
     places = {
         "admin": Admin,

@@ -6,7 +6,7 @@ from fastapi import HTTPException, Query
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.settings import _load_yaml_file
-from idunn.utils.index_names import IndexNames
+from idunn.utils.index_names import INDICES
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
 from idunn.places.event import Event
@@ -140,7 +140,7 @@ def get_raw_params(category, raw_filter, source, q):
 
 
 def get_places_bbox(
-    bbox, indices: IndexNames,
+    bbox,
     category: List[str] = Query(None),
     raw_filter: List[str] = Query(None),
     source: str = Query(None),
@@ -181,7 +181,7 @@ def get_places_bbox(
 
         bbox_places = fetch_bbox_places(
             es,
-            indices,
+            INDICES,
             raw_filters=raw_filters,
             bbox=params.bbox,
             max_size=params.size

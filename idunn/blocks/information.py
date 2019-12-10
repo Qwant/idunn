@@ -9,7 +9,9 @@ from typing import ClassVar
 class InformationBlock(BaseBlock):
     BLOCK_TYPE: ClassVar = "information"
 
-    blocks = BlocksValidator(allowed_blocks=[WikipediaBlock, ServicesAndInformationBlock])
+    blocks: ClassVar = BlocksValidator(
+        allowed_blocks=[WikipediaBlock, ServicesAndInformationBlock]
+    )
 
     @classmethod
     def from_es(cls, es_poi, lang):
