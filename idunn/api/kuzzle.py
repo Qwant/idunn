@@ -1,8 +1,11 @@
 import requests
 import logging
-from apistar.exceptions import HTTPException
+from fastapi import HTTPException
 from deepmerge import always_merger
+
 from idunn import settings
+
+
 logger = logging.getLogger(__name__)
 
 scale = {

@@ -1,6 +1,16 @@
-from apistar import App
+from fastapi import FastAPI
 
-class IdunnApp(App):
+
+COMPONENTS = None
+EVENT_HOOKS = None
+
+
+class IdunnApp(FastAPI):
+    def __init__(self, routes=None, components=None, event_hooks=None):
+        super().__init__(routes=routes)
+        COMPONENTS = components
+        EVENT_HOOKS = event_hooks
+
     def __call__(self, environ, start_response):
         def get_default_state():
             return {

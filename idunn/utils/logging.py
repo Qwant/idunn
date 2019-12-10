@@ -1,7 +1,7 @@
 import json
 import logging
 
-from apistar import http
+from starlette.requests import Request
 from .settings import Settings
 from idunn.utils import prometheus
 from pythonjsonlogger import jsonlogger
@@ -32,8 +32,8 @@ def init_logging(settings: Settings):
     logging.getLogger().handlers = [logHandler]
 
 
-class LogErrorHook:
-    def on_error(self, request: http.Request):
-        prometheus.exception("unhandled_error")
-        logging.getLogger('idunn.error')\
-            .exception("An unhandled error was raised.", extra={'url': request.url})
+def handle_errors(request: Request, exception):
+    prometheus.exception("unhandled_error")
+    logging.getLogger('idunn.error')\
+        .exception("An unhandled error was raised.",
+            extra={'url': request.url, 'exception': exception})

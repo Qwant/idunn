@@ -1,5 +1,5 @@
 import logging
-from apistar.exceptions import HTTPException
+from fastapi import HTTPException
 from contextlib import contextmanager
 from redis import RedisError
 from redis_rate_limit import RateLimiter, TooManyRequests
@@ -10,13 +10,16 @@ logger = logging.getLogger(__name__)
 
 TooManyRequestsException = TooManyRequests
 
+
 @contextmanager
 def dummy_limit():
     yield
 
+
 class HTTPTooManyRequests(HTTPException):
     default_status_code = 429
     default_detail = 'Too Many Requests'
+
 
 class IdunnRateLimiter:
     def __init__(self, resource, max_requests, expire):

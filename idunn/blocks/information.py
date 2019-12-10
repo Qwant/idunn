@@ -3,8 +3,11 @@ from .base import BaseBlock, BlocksValidator
 from idunn.blocks.services_and_information import ServicesAndInformationBlock
 from idunn.blocks.wikipedia import WikipediaBlock
 
+from typing import ClassVar
+
+
 class InformationBlock(BaseBlock):
-    BLOCK_TYPE = "information"
+    BLOCK_TYPE: ClassVar = "information"
 
     blocks = BlocksValidator(allowed_blocks=[WikipediaBlock, ServicesAndInformationBlock])
 

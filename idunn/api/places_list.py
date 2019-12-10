@@ -1,10 +1,11 @@
 import os
 import logging
-from elasticsearch import Elasticsearch
-from apistar.exceptions import BadRequest, HTTPException
+
+from fastapi import HTTPException, Query
 
 from idunn import settings
-from idunn.utils.settings import Settings, _load_yaml_file
+from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.settings import _load_yaml_file
 from idunn.utils.index_names import IndexNames
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
@@ -13,10 +14,9 @@ from .pages_jaunes import pj_source
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
 from .kuzzle import kuzzle_client
 
-from apistar import http
-
 from pydantic import BaseModel, ValidationError, validator
 from typing import List, Optional, Any
+
 
 logger = logging.getLogger(__name__)
 
@@ -86,9 +86,10 @@ class PlacesQueryParam(CommonQueryParam):
     def __init__(self, **data: Any):
         super().__init__(**data)
         if not self.raw_filter and not self.category and not self.q:
-            raise BadRequest({
-                "message": "One of 'category', 'raw_filter' or 'q' parameter is required"
-            })
+            raise HTTPException(
+                status_code=400,
+                detail="One of 'category', 'raw_filter' or 'q' parameter is required"
+            )
 
     @validator('source')
     def valid_source(cls, v):
@@ -123,26 +124,37 @@ class EventQueryParam(CommonQueryParam):
         return v
 
 
-def get_raw_params(query_params):
-    raw_params = dict(query_params)
-    if 'category' in query_params:
-        raw_params['category'] = query_params.get_list('category')
-    if 'raw_filter' in query_params:
-        raw_params['raw_filter'] = query_params.get_list('raw_filter')
+def get_raw_params(category, raw_filter, source, q):
+    raw_params = {
+        'category': category,
+        'raw_filter': raw_filter,
+        'source': source,
+        'q': q,
+    }
     if raw_params.get('raw_filter') and raw_params.get('category'):
-        raise BadRequest(
-            detail={"message": "Both \'raw_filter\' and \'category\' parameters cannot be provided together"}
+        raise HTTPException(
+            status_code=400,
+            detail="Both \'raw_filter\' and \'category\' parameters cannot be provided together"
         )
     return raw_params
 
-def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
-    raw_params = get_raw_params(query_params)
+
+def get_places_bbox(
+    bbox, indices: IndexNames,
+    category: List[str] = Query(None),
+    raw_filter: List[str] = Query(None),
+    source: str = Query(None),
+    q: str = Query(None)
+):
+    es = get_elasticsearch()
+    raw_params = get_raw_params(category, raw_filter, source, q)
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
-        raise BadRequest(
-            detail={"message": e.errors()}
+        raise HTTPException(
+            status_code=400,
+            detail=e.errors()
         )
 
     source = params.source
@@ -182,16 +194,20 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     }
 
 
-def get_events_bbox(bbox, query_params: http.QueryParams):
+def get_events_bbox(bbox, category: List[str] = Query(None),):
     if not kuzzle_client.enabled:
-        raise HTTPException("Kuzzle client is not available", status_code=501)
+        raise HTTPException(
+            status_code=501,
+            detail="Kuzzle client is not available"
+        )
 
     try:
-        params = EventQueryParam(**query_params)
+        params = EventQueryParam(**{'category': category})
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
-        raise BadRequest(
-            detail={"message": e.errors()}
+        raise HTTPException(
+            status_code=400,
+            detail=e.errors()
         )
 
     current_outing_lang = params.category

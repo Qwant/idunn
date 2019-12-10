@@ -1,11 +1,12 @@
 import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, UTC
-from apistar import validators, types
 from tzwhere import tzwhere
 import humanized_opening_hours as hoh
 from humanized_opening_hours.exceptions import HOHError
 from lark.exceptions import LarkError
+from pydantic import BaseModel, conint, constr
+from typing import ClassVar, List, Optional
 
 from .base import BaseBlock
 
@@ -17,6 +18,7 @@ We load the tz structure once when Idunn starts since it's a time consuming step
 """
 tz = tzwhere.tzwhere(forceTZ=True)
 
+
 def get_tz(poi_tzname, lat, lon):
     """
     Returns the timezone corresponding to the coordinates of the POI.
@@ -24,6 +26,7 @@ def get_tz(poi_tzname, lat, lon):
     if lon is not None and lat is not None:
         return timezone(poi_tzname)
     return None
+
 
 def get_coord(es_poi):
     """
@@ -37,16 +40,16 @@ def get_coord(es_poi):
     return None
 
 
-class OpeningHoursType(types.Type):
-    beginning = validators.String()
-    end = validators.String()
+class OpeningHoursType(BaseModel):
+    beginning: str
+    end: str
 
 
-class DaysType(types.Type):
-    dayofweek = validators.Integer(minimum=1, maximum=7)
-    local_date = validators.Date()
-    status = validators.String(enum=['open', 'closed'])
-    opening_hours = validators.Array(items=OpeningHoursType)
+class DaysType(BaseModel):
+    dayofweek: conint(ge=1, le=7)
+    local_date: date
+    status: constr(regex='(open|closed)')
+    opening_hours = List[OpeningHoursType]
 
 
 def parse_time_block(cls, es_poi, lang, raw):
@@ -106,14 +109,17 @@ def parse_time_block(cls, es_poi, lang, raw):
 
     return cls.init_class(status, next_transition_datetime, time_before_next, oh, poi_dt, raw)
 
+
 def round_dt_to_minute(dt):
     dt += timedelta(seconds=30)
     return dt.replace(second=0, microsecond=0)
+
 
 def round_time_to_minute(t):
     dt = datetime.combine(date(2000,1,1), t)
     rounded = round_dt_to_minute(dt)
     return rounded.time()
+
 
 def get_days(cls, oh_parser, dt):
     last_monday = dt.date() - timedelta(days=dt.weekday())
@@ -144,15 +150,15 @@ def get_days(cls, oh_parser, dt):
 
 
 class OpeningHourBlock(BaseBlock):
-    BLOCK_TYPE = 'opening_hours'
-    STATUSES = ['open', 'closed']
+    BLOCK_TYPE: ClassVar = 'opening_hours'
+    STATUSES: ClassVar = ['open', 'closed']
 
-    status = validators.String(enum=STATUSES)
-    next_transition_datetime = validators.String(allow_null=True)
-    seconds_before_next_transition = validators.Integer(allow_null=True)
-    is_24_7 = validators.Boolean()
-    raw = validators.String()
-    days = validators.Array(items=DaysType)
+    status: constr(regex='({})'.format('|'.join(STATUSES)))
+    next_transition_datetime: Optional[str]
+    seconds_before_next_transition: Optional[int]
+    is_24_7: bool
+    raw: str
+    days: List[DaysType]
 
     @classmethod
     def init_class(cls, status, next_transition_datetime, time_before_next, oh, poi_dt, raw):

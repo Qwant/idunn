@@ -1,35 +1,35 @@
 import logging
-from apistar.types import Type
-from apistar import validators
+from pydantic import BaseModel, conint
+from datetime import datetime
+from typing import ClassVar, Optional
 
 from idunn import settings
 from idunn.api.kuzzle import kuzzle_client
-from apistar.types import Type
 from .base import BaseBlock
 
 
 logger = logging.getLogger(__name__)
 
 
-class ParticleType(Type):
-    value = validators.Number(allow_null=True)
-    quality_index = validators.Integer(minimum=1, maximum=5, allow_null=True)
+class ParticleType(BaseModel):
+    value: float
+    quality_index: Optional[conint(ge=1, le=5)]
 
 
 class AirQuality(BaseBlock):
-    BLOCK_TYPE = 'air_quality'
+    BLOCK_TYPE: ClassVar = 'air_quality'
 
-    CO = ParticleType
-    PM10 = ParticleType
-    O3 = ParticleType
-    NO2 = ParticleType
-    SO2 = ParticleType
-    PM2_5 = ParticleType
-    quality_index = validators.Integer(minimum=1, maximum=5)
-    date = validators.DateTime()
-    source = validators.String()
-    source_url = validators.String()
-    measurements_unit = validators.String(allow_null=True)
+    CO: ParticleType
+    PM10: ParticleType
+    O3: ParticleType
+    NO2: ParticleType
+    SO2: ParticleType
+    PM2_5: ParticleType
+    quality_index: conint(ge=1, le=5)
+    date: datetime
+    source: str
+    source_url: str
+    measurements_unit: Optional[str]
 
 
     @classmethod
@@ -55,6 +55,7 @@ class AirQuality(BaseBlock):
             return None
 
         return cls(**air_quality)
+
 
 def get_air_quality(geobbox):
     if not kuzzle_client.enabled:

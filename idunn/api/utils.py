@@ -1,4 +1,4 @@
-from apistar.exceptions import HTTPException, NotFound, BadRequest
+from fastapi import HTTPException
 from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
 from idunn import settings
@@ -142,7 +142,7 @@ def fetch_es_poi(id, es) -> dict:
 
     es_poi = es_pois.get('hits', {}).get('hits', [])
     if len(es_poi) == 0:
-        raise NotFound(detail={'message': f"poi '{id}' not found"})
+        raise HTTPException(status_code=404, detail=f"poi '{id}' not found")
     return es_poi[0]['_source']
 
 def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
@@ -215,9 +215,9 @@ def fetch_es_place(id, es, indices, type) -> dict:
     if type is None:
         index_name = PLACE_DEFAULT_INDEX
     elif type not in indices:
-        raise BadRequest(
+        raise HTTPException(
             status_code=400,
-            detail={"message": f"Wrong type parameter: type={type}"}
+            detail=f"Wrong type parameter: type={type}"
         )
     else:
         index_name = indices.get(type)
@@ -235,7 +235,7 @@ def fetch_es_place(id, es, indices, type) -> dict:
 
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:
-        raise NotFound(detail={'message': f"place {id} not found with type={type}"})
+        raise HTTPException(status_code=404, detail=f"place {id} not found with type={type}")
     if len(es_place) > 1:
         logger.warning("Got multiple places with id %s", id)
 
@@ -281,7 +281,7 @@ def fetch_closest(lat, lon, max_distance, es):
     )
     es_addrs = es_addrs.get('hits', {}).get('hits', [])
     if len(es_addrs) == 0:
-        raise NotFound(detail={'message': f"nothing around {lat}:{lon} within {max_distance}m..."})
+        raise HTTPException(status_code=404, detail=f"nothing around {lat}:{lon} within {max_distance}m...")
     return es_addrs[0]
 
 def build_blocks(es_poi, lang, verbosity):
