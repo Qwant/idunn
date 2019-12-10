@@ -1,39 +1,31 @@
-from apistar import Include
-
 from idunn import settings
-from idunn.utils.index_names import IndexNamesSettingsComponent
-from idunn.utils.es_wrapper import ElasticSearchComponent
-from idunn.utils.logging import init_logging, LogErrorHook
-from idunn.utils.cors import CORSHeaders
+from idunn.utils.logging import init_logging, handle_errors
 from idunn.utils.app import IdunnApp
 from idunn.api.urls import get_api_urls
-from idunn.utils.prometheus import PrometheusComponent, PrometheusHooks
+
+from fastapi import FastAPI, HTTPException
+
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.errors import ServerErrorMiddleware
+from starlette.routing import Mount
+
+from starlette_prometheus import PrometheusMiddleware
+
+import uvicorn
+
 
 init_logging(settings)
 
 routes = [
-    Include('/v1', name='v1', routes=get_api_urls(settings)),
+    Mount('/v1', routes=get_api_urls(settings)),
 ]
 
-components = [
-    settings,
-    ElasticSearchComponent(),
-    IndexNamesSettingsComponent(),
-    PrometheusComponent()
-]
+app = FastAPI(routes=routes, title="Idunn", debug=True)
 
-# WARNING: using Classes (and not instances) in hooks list causes a memory leak.
-# See https://github.com/encode/apistar/issues/606 for more details
-event_hooks = [LogErrorHook(), CORSHeaders(), PrometheusHooks()]
-
-
-app = IdunnApp(
-    routes=routes,
-    schema_url='/schema',
-    components=components,
-    event_hooks=event_hooks
-)
+app.add_middleware(CORSMiddleware, allow_origins=['*'])
+app.add_middleware(PrometheusMiddleware)
+app.add_exception_handler(HTTPException, handle_errors)
 
 
 if __name__ == '__main__':
-    app.serve('127.0.0.1', 5000, debug=True)
+    uvicorn.run(app, host="127.0.0.1", port=5000, log_level="debug")

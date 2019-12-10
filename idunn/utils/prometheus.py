@@ -1,8 +1,7 @@
 import contextlib
 import time
 
-from apistar.http import Response
-from apistar import Component, Route, http, exceptions
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, generate_latest, multiprocess
@@ -88,20 +87,6 @@ class Prometheus:
         REQUESTS_INPROGRESS.labels(method, handler_name).dec()
 
 
-class PrometheusComponent(Component):
-    def resolve(self) -> Prometheus:
-        return Prometheus()
-
-
-class PrometheusHooks:
-    def on_request(self, prometheus: Prometheus, method: http.Method, route: Route) -> None:
-        prometheus.track_request_start(method, route and route.handler)
-
-    def on_response(self, prometheus: Prometheus, method: http.Method, route: Route, response: http.Response, exc: Exception) -> None:
-        if exc is None:
-            prometheus.track_request_end(method, route and route.handler, response.status_code)
-        else:
-            prometheus.track_request_end(method, route and route.handler, exc.status_code)
-
-    def on_error(self, prometheus: Prometheus, method: http.Method, route: Route, response: http.Response) -> None:
-        prometheus.track_request_end(method, route and route.handler, 500)
+# class PrometheusComponent(Component):
+#     def resolve(self) -> Prometheus:
+#         return Prometheus()

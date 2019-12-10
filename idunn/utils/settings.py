@@ -3,7 +3,6 @@ import yaml
 from typing import Any
 from inspect import Parameter
 import logging
-from apistar import Component
 
 
 def _load_yaml_file(file):
@@ -20,9 +19,9 @@ class Settings(dict):
     """
 
 
-class SettingsComponent(Component):
+class SettingsComponent:
     """
-    APIStar component to load settings
+    Component to load settings
 
     It merges settings from different sources:
     - the settings found in the default_settings.yaml

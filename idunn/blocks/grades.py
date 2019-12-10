@@ -1,14 +1,13 @@
-from apistar import validators
-
 from .base import BaseBlock
+from typing import ClassVar, Optional
 
 
 class GradesBlock(BaseBlock):
-    BLOCK_TYPE = "grades"
+    BLOCK_TYPE: ClassVar = "grades"
 
-    total_grades_count = validators.Integer()
-    global_grade = validators.Number()
-    url = validators.String(allow_null=True)
+    total_grades_count: int
+    global_grade: float
+    url: Optional[str]
 
     @classmethod
     def from_es(cls, es_poi, lang):

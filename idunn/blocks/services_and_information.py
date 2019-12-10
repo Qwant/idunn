@@ -1,20 +1,22 @@
-from apistar import types, validators
+from pydantic import BaseModel, constr
+from typing import ClassVar, List
+
 from .base import BaseBlock, BlocksValidator
 
 
 class AccessibilityBlock(BaseBlock):
-    BLOCK_TYPE = "accessibility"
+    BLOCK_TYPE: ClassVar = "accessibility"
 
-    STATUS_OK = "yes"
-    STATUS_KO = "no"
-    STATUS_LIMITED = "partial"
-    STATUS_UNKNOWN = "unknown"
+    STATUS_OK: ClassVar = "yes"
+    STATUS_KO: ClassVar = "no"
+    STATUS_LIMITED: ClassVar = "partial"
+    STATUS_UNKNOWN: ClassVar = "unknown"
 
-    wheelchair = validators.String(
-        enum=[STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]
+    wheelchair: constr(
+        regex='({})'.format('|'.join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
     )
-    toilets_wheelchair = validators.String(
-        enum=[STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]
+    toilets_wheelchair: constr(
+        regex='({})'.format('|'.join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
     )
 
     @classmethod
@@ -55,9 +57,9 @@ class AccessibilityBlock(BaseBlock):
 
 
 class InternetAccessBlock(BaseBlock):
-    BLOCK_TYPE = "internet_access"
+    BLOCK_TYPE: ClassVar = "internet_access"
 
-    wifi = validators.Boolean()
+    wifi: bool
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -73,14 +75,14 @@ class InternetAccessBlock(BaseBlock):
         return cls(wifi=has_wifi)
 
 
-class Beer(types.Type):
-    name = validators.String()
+class Beer(BaseModel):
+    name: str
 
 
 class BreweryBlock(BaseBlock):
-    BLOCK_TYPE = "brewery"
+    BLOCK_TYPE: ClassVar = "brewery"
 
-    beers = validators.Array(items=Beer)
+    beers: List[Beer]
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -103,32 +105,30 @@ def get_diet_status(diet_kind, data):
     }.get(info, CuisineBlock.STATUS_UNKNOWN)
 
 
-class Cuisine(types.Type):
-    name = validators.String()
+class Cuisine(BaseModel):
+    name: str
 
 
 class CuisineBlock(BaseBlock):
-    BLOCK_TYPE = "cuisine"
-    SUPPORTED_DIETS = ("vegetarian", "vegan", "gluten_free")
-    STATUS_YES = "yes"
-    STATUS_NO = "no"
-    STATUS_ONLY = "only"
-    STATUS_UNKNOWN = "unknown"
+    BLOCK_TYPE: ClassVar = "cuisine"
+    SUPPORTED_DIETS: ClassVar = ("vegetarian", "vegan", "gluten_free")
+    STATUS_YES: ClassVar = "yes"
+    STATUS_NO: ClassVar = "no"
+    STATUS_ONLY: ClassVar = "only"
+    STATUS_UNKNOWN: ClassVar = "unknown"
 
-    cuisines = validators.Array(items=Cuisine)
-    vegetarian = validators.String()
-    vegan = validators.String()
-    gluten_free = validators.String()
+    cuisines: List[Cuisine]
+    vegetarian: str
+    vegan: str
+    gluten_free: str
 
     @classmethod
     def from_es(cls, es_poi, lang):
         cuisine = es_poi.get("properties", {}).get("cuisine")
 
-
         vegetarian = get_diet_status("vegetarian", es_poi)
         vegan = get_diet_status("vegan", es_poi)
         gluten_free = get_diet_status("gluten_free", es_poi)
-
 
         cuisines = []
         if cuisine is not None:
@@ -145,7 +145,7 @@ class CuisineBlock(BaseBlock):
 
 
 class ServicesAndInformationBlock(BaseBlock):
-    BLOCK_TYPE = "services_and_information"
+    BLOCK_TYPE: ClassVar = "services_and_information"
 
     blocks = BlocksValidator(
         allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]

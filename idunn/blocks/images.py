@@ -4,12 +4,15 @@ import hashlib
 import posixpath
 import urllib.parse
 from urllib.parse import urlsplit, unquote
+from pydantic import BaseModel
+from typing import ClassVar, List
 
-from apistar import types, validators
 from idunn import settings
 from .base import BaseBlock
 
+
 logger = logging.getLogger(__name__)
+
 
 class ThumbrHelper:
     def __init__(self):
@@ -55,16 +58,17 @@ class ThumbrHelper:
         return base_url + "/" + size + "/" + hashURLpart + "/" + filename + "?" + params
 
 
-class Image(types.Type):
-    url = validators.String()
-    alt = validators.String()
-    credits = validators.String(default="")
-    source_url = validators.String()
+class Image(BaseModel):
+    url: str
+    alt: str
+    credits: str = ""
+    source_url: str
+
 
 class ImagesBlock(BaseBlock):
-    BLOCK_TYPE = "images"
-    images = validators.Array(items=Image)
+    BLOCK_TYPE: ClassVar = "images"
 
+    images: List[Image]
     _thumb_helper = None
 
     @classmethod

@@ -1,11 +1,12 @@
-from apistar import validators
 from .base import BaseBlock
+
+from typing import ClassVar
 
 
 class WebSiteBlock(BaseBlock):
-    BLOCK_TYPE = "website"
+    BLOCK_TYPE: ClassVar = "website"
 
-    url = validators.String()
+    url: str
 
     @classmethod
     def from_es(cls, es_poi, lang):

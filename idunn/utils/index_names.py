@@ -1,5 +1,4 @@
 from inspect import Parameter
-from apistar import Component
 from .settings import Settings
 from elasticsearch import Elasticsearch
 
@@ -8,7 +7,7 @@ class IndexNames(dict):
         Class to handle the names of the indices from the settings
     """
 
-class IndexNamesSettingsComponent(Component):
+class IndexNamesSettingsComponent:
     def __init__(self) -> None:
         self._indices = None
 
