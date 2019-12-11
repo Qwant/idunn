@@ -31,10 +31,10 @@ def get_api_urls(settings):
         APIRoute('/pois/{id}', get_poi),
 
         # Werkzeug syntax is used to allow negative floats
+        APIRoute('/places', get_places_bbox),
         APIRoute(f'/places/latlon:<{sfloat}:lat>:<{sfloat}:lon>', get_place_latlon),
         APIRoute('/places/{id}', handle_option, methods=['OPTIONS']),
         APIRoute('/places/{id}', get_place),
-        APIRoute('/places', get_places_bbox),
 
         APIRoute('/categories', get_all_categories),
 

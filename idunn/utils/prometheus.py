@@ -2,6 +2,7 @@ import contextlib
 import time
 
 from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.responses import Response
 
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, generate_latest, multiprocess

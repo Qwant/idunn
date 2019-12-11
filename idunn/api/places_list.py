@@ -15,7 +15,7 @@ from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
 from .kuzzle import kuzzle_client
 
 from pydantic import BaseModel, ValidationError, validator
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -41,10 +41,10 @@ ALL_OUTING_CATEGORIES = get_outing_types()
 
 
 class CommonQueryParam(BaseModel):
-    bbox: str
-    size: Optional[int] = None
+    bbox: Tuple[float, float, float, float] = None
+    size: int = None
     lang: str = None
-    verbosity: str = DEFAULT_VERBOSITY_LIST
+    verbosity: str = None
 
     @validator('lang', pre=True, always=True)
     def valid_lang(cls, v):
@@ -54,17 +54,19 @@ class CommonQueryParam(BaseModel):
 
     @validator('verbosity', pre=True, always=True)
     def valid_verbosity(cls, v):
+        if v is None:
+            v = DEFAULT_VERBOSITY_LIST
         if v not in ALL_VERBOSITY_LEVELS:
             raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
         return v
 
-    @validator('size', always=True)
+    @validator('size', pre=True, always=True)
     def max_size(cls, v):
         max_size = settings['LIST_PLACES_MAX_SIZE']
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
-    @validator('bbox')
+    @validator('bbox', pre=True, always=True)
     def valid_bbox(cls, v):
         v = v.split(',')
         if len(v) != 4:
@@ -78,10 +80,10 @@ class CommonQueryParam(BaseModel):
 
 
 class PlacesQueryParam(CommonQueryParam):
-    category: List[Any] = []
-    raw_filter: List[str] = None
-    source: Optional[str] = None
-    q: Optional[str] = None
+    category: Optional[dict]
+    raw_filter: List[str]
+    source: Optional[str]
+    q: Optional[str]
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -91,20 +93,26 @@ class PlacesQueryParam(CommonQueryParam):
                 detail="One of 'category', 'raw_filter' or 'q' parameter is required"
             )
 
-    @validator('source')
+    @validator('source', pre=True, always=True)
     def valid_source(cls, v):
+        if not v:
+            return None
         if v not in ALL_SOURCES:
             raise ValueError(f"unknown source: '{v}'")
         return v
 
-    @validator('raw_filter')
+    @validator('raw_filter', pre=True, always=True)
     def valid_raw_filter(cls, v):
+        if not v:
+            return []
         if "," not in v:
             raise ValueError(f"raw_filter \'{v}\' is invalid")
         return v
 
-    @validator('category')
+    @validator('category', pre=True, always=True)
     def valid_category(cls, v):
+        if not v:
+            return None
         if v not in ALL_CATEGORIES:
             raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
         else:
@@ -113,9 +121,9 @@ class PlacesQueryParam(CommonQueryParam):
 
 
 class EventQueryParam(CommonQueryParam):
-    category: str = None
+    category: str
 
-    @validator('category')
+    @validator('category', pre=True, always=True)
     def valid_categories(cls, v):
         if v not in ALL_OUTING_CATEGORIES:
             raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}")
@@ -124,8 +132,9 @@ class EventQueryParam(CommonQueryParam):
         return v
 
 
-def get_raw_params(category, raw_filter, source, q):
+def get_raw_params(bbox, category, raw_filter, source, q):
     raw_params = {
+        'bbox': bbox,
         'category': category,
         'raw_filter': raw_filter,
         'source': source,
@@ -140,14 +149,14 @@ def get_raw_params(category, raw_filter, source, q):
 
 
 def get_places_bbox(
-    bbox,
-    category: List[str] = Query(None),
-    raw_filter: List[str] = Query(None),
-    source: str = Query(None),
-    q: str = Query(None)
+    bbox: Any,
+    category: Optional[str] = Query(None),
+    raw_filter: Optional[str] = Query(None),
+    source: Optional[str] = Query(None),
+    q: Optional[str] = Query(None)
 ):
     es = get_elasticsearch()
-    raw_params = get_raw_params(category, raw_filter, source, q)
+    raw_params = get_raw_params(bbox, category, raw_filter, source, q)
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
@@ -163,7 +172,7 @@ def get_places_bbox(
             # PJ is currently the only source that accepts arbitrary queries
             source = SOURCE_PAGESJAUNES
         elif params.category \
-            and all(c.get('pj_filters') for c in params.category) \
+            and params.category.get('pj_filters') \
             and pj_source.bbox_is_covered(params.bbox):
             source = SOURCE_PAGESJAUNES
         else:
@@ -177,7 +186,7 @@ def get_places_bbox(
         if params.raw_filter:
             raw_filters = params.raw_filter
         else:
-            raw_filters = [f for c in params.category for f in c['raw_filters']]
+            raw_filters = params.category.get('raw_filters')
 
         bbox_places = fetch_bbox_places(
             es,
@@ -194,7 +203,7 @@ def get_places_bbox(
     }
 
 
-def get_events_bbox(bbox, category: List[str] = Query(None),):
+def get_events_bbox(bbox: str, category: str):
     if not kuzzle_client.enabled:
         raise HTTPException(
             status_code=501,
@@ -202,7 +211,7 @@ def get_events_bbox(bbox, category: List[str] = Query(None),):
         )
 
     try:
-        params = EventQueryParam(**{'category': category})
+        params = EventQueryParam(**{'category': category, 'bbox': bbox})
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
         raise HTTPException(
