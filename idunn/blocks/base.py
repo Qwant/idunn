@@ -53,7 +53,6 @@ class TypedBlockValidator:
 
         return block_class.validate(value=value, definitions=definitions,
                                     allow_coerce=allow_coerce)
-        return value
 
 
 class BlocksValidator(BaseModel):
