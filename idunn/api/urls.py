@@ -22,7 +22,6 @@ def get_api_urls(settings):
     and handlers to build response
     """
     metric_handler = get_metric_handler(settings)
-    sfloat = 'float(signed=True)' # Werkzeug rule to allow negative floats
     return [
         APIRoute('/metrics', metric_handler),
         APIRoute('/status', get_status),
@@ -32,7 +31,7 @@ def get_api_urls(settings):
 
         # Werkzeug syntax is used to allow negative floats
         APIRoute('/places', get_places_bbox),
-        APIRoute(f'/places/latlon:<{sfloat}:lat>:<{sfloat}:lon>', get_place_latlon),
+        APIRoute('/places/latlon:{lat}:{lon}', get_place_latlon),
         APIRoute('/places/{id}', handle_option, methods=['OPTIONS']),
         APIRoute('/places/{id}', get_place),
 
@@ -40,13 +39,13 @@ def get_api_urls(settings):
 
 
         # Werkzeug syntax is used to allow negative floats
-        APIRoute(f'/reverse/<{sfloat}:lat>:<{sfloat}:lon>', closest_address),
+        APIRoute('/reverse/{lat}:{lon}', closest_address),
 
         # Kuzzle events
         APIRoute('/events', get_events_bbox),
 
         # Directions
-        APIRoute(f'/directions/<{sfloat}:f_lon>,<{sfloat}:f_lat>;<{sfloat}:t_lon>,<{sfloat}:t_lat>',
+        APIRoute('/directions/{f_lon},{f_lat};{t_lon},{t_lat}',
             get_directions
         )
     ]
