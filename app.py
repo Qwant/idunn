@@ -3,7 +3,7 @@ from idunn.utils.logging import init_logging, handle_errors
 from idunn.utils.app import IdunnApp
 from idunn.api.urls import get_api_urls
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
@@ -24,7 +24,7 @@ app = FastAPI(routes=routes, title="Idunn", debug=True)
 
 app.add_middleware(CORSMiddleware, allow_origins=['*'])
 app.add_middleware(PrometheusMiddleware)
-app.add_exception_handler(HTTPException, handle_errors)
+app.add_exception_handler(Exception, handle_errors)
 
 
 if __name__ == '__main__':
