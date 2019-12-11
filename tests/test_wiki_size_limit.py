@@ -1,4 +1,4 @@
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from app import app
 import responses
 import pytest

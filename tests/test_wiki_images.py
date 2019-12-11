@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 
 INDICES = {
     "admin": "munin_admin",
