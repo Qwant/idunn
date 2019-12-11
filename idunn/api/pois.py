@@ -6,7 +6,8 @@ from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.settings import Settings
 from idunn.api.utils import fetch_es_poi, DEFAULT_VERBOSITY
 
-def get_poi(id: str, lang: str =None) -> POI:
+
+def get_poi(id: str, lang: str = None) -> POI:
     """Handler that returns points-of-interest"""
     es = get_elasticsearch()
     if not lang:

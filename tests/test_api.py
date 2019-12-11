@@ -1,5 +1,5 @@
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 import pytest
 from .utils import override_settings
 

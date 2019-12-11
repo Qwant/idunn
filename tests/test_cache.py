@@ -3,7 +3,7 @@ import re
 from unittest import mock
 from redis import Redis, RedisError
 from app import app, settings
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from idunn.blocks.wikipedia import WikipediaCache
 from .test_wiki_ES import basket_ball_wiki_es
 from .test_rate_limiter import mock_wikipedia
