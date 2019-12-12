@@ -53,8 +53,7 @@ def test_undefined_wheelchairs():
     assert resp['local_name'] == "Boulangerie Patisserie Peron"
     assert resp['class_name'] == 'bakery'
     assert resp['subclass_name'] == 'bakery'
-    # TODO: check why there is no blocks field returned
-    # assert resp['blocks'] == []
+    assert resp['blocks'] == []
 
 
 def test_wheelchair():
