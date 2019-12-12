@@ -7,6 +7,7 @@ from fastapi import FastAPI
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
+from starlette.requests import Request
 from starlette.routing import Mount
 
 from starlette_prometheus import PrometheusMiddleware
@@ -22,7 +23,20 @@ routes = [
 
 app = FastAPI(routes=routes, title="Idunn", debug=True)
 
-app.add_middleware(CORSMiddleware, allow_origins=['*'])
+
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=['*'],
+#     allow_methods=['*'],
+#     allow_headers=["*"],
+#     allow_credentials=True,
+# )
 app.add_middleware(PrometheusMiddleware)
 app.add_exception_handler(Exception, handle_errors)
 
