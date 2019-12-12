@@ -43,8 +43,8 @@ def test_undefined_wheelchairs():
     )
 
     assert response.status_code == 200
-    # TODO check why it's failing (it only has: {'content-length': '1138', 'content-type': 'application/json'})
-    # assert response.headers.get('Access-Control-Allow-Origin') == '*'
+    print(response.headers)
+    assert response.headers.get('Access-Control-Allow-Origin') == '*'
 
     resp = response.json()
 
