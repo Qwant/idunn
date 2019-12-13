@@ -1,4 +1,4 @@
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 import os
 import re
 import json

@@ -146,6 +146,7 @@ def fetch_es_poi(id, es) -> dict:
         raise HTTPException(status_code=404, detail=f"poi '{id}' not found")
     return es_poi[0]['_source']
 
+
 def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 

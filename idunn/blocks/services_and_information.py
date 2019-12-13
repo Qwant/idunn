@@ -147,7 +147,7 @@ class CuisineBlock(BaseBlock):
 class ServicesAndInformationBlock(BaseBlock):
     BLOCK_TYPE: ClassVar = "services_and_information"
 
-    blocks: ClassVar = BlocksValidator(
+    blocks: List[BaseBlock] = BlocksValidator(
         allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]
     )
 

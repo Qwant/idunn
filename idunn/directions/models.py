@@ -159,7 +159,7 @@ class RoutePrice(BaseModel):
 class DirectionsRoute(BaseModel):
     duration: int = Schema(..., description='duration in seconds')
     distance: Optional[int] = Schema(..., description='distance in meters')
-    carbon: Optional[float] = Schema(..., description='value in gEC')
+    carbon: Optional[float] = None # Schema(..., description='value in gEC')
     summary: Optional[List[RouteSummaryPart]]
     price: Optional[RoutePrice]
     legs: List[RouteLeg]

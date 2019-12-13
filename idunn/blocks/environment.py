@@ -19,17 +19,17 @@ class ParticleType(BaseModel):
 class AirQuality(BaseBlock):
     BLOCK_TYPE: ClassVar = 'air_quality'
 
-    CO: ParticleType
-    PM10: ParticleType
-    O3: ParticleType
-    NO2: ParticleType
-    SO2: ParticleType
-    PM2_5: ParticleType
+    CO: Optional[ParticleType]
+    PM10: Optional[ParticleType]
+    O3: Optional[ParticleType]
+    NO2: Optional[ParticleType]
+    SO2: Optional[ParticleType]
+    PM2_5: Optional[ParticleType]
     quality_index: conint(ge=1, le=5)
     date: datetime
     source: str
     source_url: str
-    measurements_unit: Optional[str]
+    measurements_unit: Optional[str] = None
 
 
     @classmethod
@@ -53,6 +53,13 @@ class AirQuality(BaseBlock):
 
         if not air_quality:
             return None
+        for x in ['CO', 'PM10', 'O3', 'NO2', 'SO2', 'PM2_5']:
+            if x not in air_quality:
+                continue
+            entry = air_quality.get(x)
+            print(entry)
+            if entry == {} or (entry['value'] is None and entry['quality_index'] is None):
+                air_quality[x] = None
 
         return cls(**air_quality)
 

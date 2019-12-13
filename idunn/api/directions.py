@@ -24,7 +24,7 @@ def get_directions(
     from_position = (f_lon, f_lat)
     to_position = (t_lon, t_lat)
 
-    if not mode:
+    if not type:
         raise HTTPException(status_code=401, detail='"type" query param is required')
 
     headers = {
@@ -33,7 +33,7 @@ def get_directions(
 
     return JSONResponse(
         content=directions_client.get_directions(
-            from_position, to_position, mode=type, lang=language
+            from_position, to_position, type, language
         ),
         headers=headers,
     )
