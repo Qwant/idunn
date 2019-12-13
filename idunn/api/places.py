@@ -121,8 +121,8 @@ def get_place_latlon(lat: float, lon: float, lang: str = None, verbosity=DEFAULT
 
 
 def handle_option(id, request: Request):
+    response = Response()
     if settings.get('CORS_OPTIONS_REQUESTS_ENABLED', False) is True:
-        response = Response()
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Headers'] = request.headers.get('Access-Control-Request-Headers', '*')
         response.headers['Access-Control-Allow-Methods'] = 'GET'

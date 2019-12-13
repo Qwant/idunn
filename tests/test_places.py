@@ -1,6 +1,6 @@
 import urllib
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from freezegun import freeze_time
 from elasticsearch import ElasticsearchException
 

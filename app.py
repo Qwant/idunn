@@ -4,10 +4,12 @@ from idunn.utils.app import IdunnApp
 from idunn.api.urls import get_api_urls
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.requests import Request
+from starlette.responses import PlainTextResponse
 from starlette.routing import Mount
 
 from starlette_prometheus import PrometheusMiddleware
@@ -29,6 +31,12 @@ async def db_session_middleware(request: Request, call_next):
     response = await call_next(request)
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return PlainTextResponse(f'Invalid parameter received: {str(exc)}', status_code=404)
+
 
 # app.add_middleware(
 #     CORSMiddleware,

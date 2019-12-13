@@ -81,7 +81,7 @@ class CommonQueryParam(BaseModel):
 
 class PlacesQueryParam(CommonQueryParam):
     category: Optional[dict]
-    raw_filter: List[str]
+    raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
 
@@ -105,8 +105,9 @@ class PlacesQueryParam(CommonQueryParam):
     def valid_raw_filter(cls, v):
         if not v:
             return []
-        if "," not in v:
-            raise ValueError(f"raw_filter \'{v}\' is invalid")
+        for x in v:
+            if "," not in x:
+                raise ValueError(f"raw_filter \'{x}\' is invalid from \'{v}\'")
         return v
 
     @validator('category', pre=True, always=True)
@@ -151,7 +152,7 @@ def get_raw_params(bbox, category, raw_filter, source, q):
 def get_places_bbox(
     bbox: Any,
     category: Optional[str] = Query(None),
-    raw_filter: Optional[str] = Query(None),
+    raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
     q: Optional[str] = Query(None)
 ):

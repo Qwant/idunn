@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 MAX_DISTANCE_IN_METERS = 500
 
-def get_closest_place(lat: float, lon: float, es = get_elasticsearch()):
+def get_closest_place(lat: float, lon: float, es = None):
+    if es is None:
+        es = get_elasticsearch()
     es_addr = fetch_closest(lat, lon, es=es, max_distance=MAX_DISTANCE_IN_METERS)
 
     places = {
