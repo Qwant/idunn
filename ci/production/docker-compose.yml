@@ -25,9 +25,16 @@ services:
       - no_proxy=es,wiki-es
     extra_hosts:
       - "wiki-es:10.100.8.40"
+    networks:
+      - product-maps-production_default
 
   idunn-redis:
     deploy:
       placement:
         constraints:
           - node.role != manager
+
+
+networks:
+  product-maps-production_default:
+    external: true

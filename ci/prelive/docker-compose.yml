@@ -23,11 +23,9 @@ services:
     extra_hosts:
       - "wiki-es:10.100.33.34"
     networks:
-      - 1216_default
+      - product-maps-prelive_default
 
 
 networks:
-  1216_default:
-    external: true
   product-maps-prelive_default:
     external: true
