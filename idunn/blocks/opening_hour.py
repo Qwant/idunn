@@ -49,7 +49,7 @@ class DaysType(BaseModel):
     dayofweek: conint(ge=1, le=7)
     local_date: date
     status: constr(regex='(open|closed)')
-    opening_hours = List[OpeningHoursType]
+    opening_hours: List[OpeningHoursType]
 
 
 def parse_time_block(cls, es_poi, lang, raw):
@@ -184,7 +184,6 @@ class OpeningHourBlock(BaseBlock):
             raw=oh.field,
             days=get_days(cls, oh, poi_dt)
         )
-
 
     @classmethod
     def from_es(cls, es_poi, lang):

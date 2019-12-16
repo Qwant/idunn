@@ -28,7 +28,7 @@ class HappyHourBlock(BaseBlock):
     status: constr(regex='({})'.format('|'.join(STATUSES)))
     next_transition_datetime: Optional[str]
     seconds_before_next_transition: Optional[int]
-    raw: int
+    raw: str
     days: List[DaysType]
 
     @classmethod

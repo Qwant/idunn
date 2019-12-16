@@ -129,8 +129,8 @@ def test_pollution_city():
             lang='en'
         )
 
-    assert res == AirQuality(**{
-        'CO': {'value': None, 'quality_index': None},
+    res2 = AirQuality(**{
+        'CO': None,
         'PM10': {'value': 37.4, 'quality_index': 3},
         'O3': {'value': 85.4, 'quality_index': 2},
         'SO2': {'value': 509.6, 'quality_index': 5},
@@ -142,6 +142,7 @@ def test_pollution_city():
         'measurements_unit': 'µg/m³',
         'quality_index': 5,
     })
+    assert res == res2
 
 
 @enable_kuzzle()
