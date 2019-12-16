@@ -18,7 +18,7 @@ def test_full():
 
     resp = response.json()
 
-    # TODO
+    # TODO ("local_date" issue)
     # assert resp == {
     #     "type": "poi",
     #     "id": "osm:way:7777778",

@@ -35,8 +35,7 @@ def test_place_latlon_with_street_as_closest_address():
     assert response.status_code == 200
     response_data = response.json()
     assert response_data['id'] == 'latlon:53.84780:10.66469'
-    # TODO
-    # assert response_data['address']['label'] == "Birnenweg (Label)"
+    assert response_data['address']['label'] == "Birnenweg (Label)"
 
 def test_place_latlon_no_address():
     client = TestClient(app)

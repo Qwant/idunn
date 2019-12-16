@@ -27,7 +27,7 @@ def test_bbox():
 
     resp = response.json()
 
-    # TODO: to be updated
+    # TODO: to be updated ("local_date" issue as well)
     # assert resp == {
     #     'source': 'osm',
     #     'places': [
@@ -269,7 +269,7 @@ def test_size_list():
 
     resp = response.json()
 
-    # TODO: update test
+    # TODO: update test ("local_date")
     # assert resp == {
     #     "source": "osm",
     #     "places": [
@@ -336,91 +336,91 @@ def test_single_raw_filter():
 
     resp = response.json()
 
-    # TODO: update test
-    # assert resp == {
-    #     "source": "osm",
-    #     "places": [
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:way:55984117',
-    #             'name': 'Église Notre-Dame-des-Blancs-Manteaux',
-    #             'local_name': 'Église Notre-Dame-des-Blancs-Manteaux',
-    #             'class_name': 'place_of_worship',
-    #             'subclass_name': 'place_of_worship',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.3577366716253647, 48.858955519212905], 'center': [2.3577366716253647, 48.858955519212905]},
-    #             'address': {
-    #                 'id': '4574400',
-    #                 'name': 'Rue Aubriot',
-    #                 'housenumber': None,
-    #                 'postcode': '75004',
-    #                 'label': 'Rue Aubriot (Paris)',
-    #                 'admin': None,
-    #                 'street': {
-    #                     'id': '4574400',
-    #                     'name': "Rue Aubriot",
-    #                     'label': "Rue Aubriot (Paris)",
-    #                     'postcodes': ['75004']
-    #                 },
-    #                 'admins': [
-    #                     {
-    #                         'id': 'admin:osm:relation:2172741',
-    #                         'label': 'Quartier Saint-Gervais (75004), Paris 4e Arrondissement, Paris, Île-de-France, France',
-    #                         'name': 'Quartier Saint-Gervais',
-    #                         'class_name': "suburb",
-    #                         'postcodes': ['75004']
-    #                     },
-    #                     {
-    #                         'id': 'admin:osm:relation:7444',
-    #                         'label': 'Paris (75000-75116), Île-de-France, France',
-    #                         'name': 'Paris',
-    #                         'class_name': "city",
-    #                         'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']
-    #                     },
-    #                     {
-    #                         'id': 'admin:osm:relation:71525',
-    #                         'label': 'Paris, Île-de-France, France',
-    #                         'name': 'Paris',
-    #                         'class_name': "state_district",
-    #                         'postcodes': []
-    #                     },
-    #                     {
-    #                         'id': 'admin:osm:relation:8649',
-    #                         'label': 'Île-de-France, France',
-    #                         'name': 'Île-de-France',
-    #                         'class_name': "state",
-    #                         'postcodes': []
-    #                     }, {
-    #                         'id': 'admin:osm:relation:9597',
-    #                         'label': 'Paris 4e Arrondissement (75004), Paris, Île-de-France, France',
-    #                         'name': 'Paris 4e Arrondissement',
-    #                         'class_name': "city_district",
-    #                         'postcodes': ['75004']
-    #                     },
-    #                     {
-    #                         'id': 'admin:osm:relation:2202162',
-    #                         'label': 'France',
-    #                         'name': 'France',
-    #                         'class_name': "country",
-    #                         'postcodes': []
-    #                     }
-    #                 ]
-    #             },
-    #             'blocks': [
-    #                 {
-    #                     'international_format': '+33 1 42 72 09 37',
-    #                     'local_format': '01 42 72 09 37',
-    #                     'type': 'phone',
-    #                     'url': 'tel:+33142720937'
-    #                 },
-    #                 {
-    #                     'type': 'website',
-    #                     'url': 'http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html'
-    #                 }
-    #             ],
-    #             'meta': ANY
-    #         }
-    #     ]
-    # }
+    assert resp == {
+        "source": "osm",
+        "places": [
+            {
+                'type': 'poi',
+                'id': 'osm:way:55984117',
+                'name': 'Église Notre-Dame-des-Blancs-Manteaux',
+                'local_name': 'Église Notre-Dame-des-Blancs-Manteaux',
+                'class_name': 'place_of_worship',
+                'subclass_name': 'place_of_worship',
+                'geometry': {'type': 'Point', 'coordinates': [2.3577366716253647, 48.858955519212905], 'center': [2.3577366716253647, 48.858955519212905]},
+                'address': {
+                    'id': '4574400',
+                    'name': 'Rue Aubriot',
+                    'housenumber': None,
+                    'postcode': '75004',
+                    'label': 'Rue Aubriot (Paris)',
+                    'admin': None,
+                    'street': {
+                        'id': '4574400',
+                        'name': "Rue Aubriot",
+                        'label': "Rue Aubriot (Paris)",
+                        'postcodes': ['75004']
+                    },
+                    'admins': [
+                        {
+                            'id': 'admin:osm:relation:2172741',
+                            'label': 'Quartier Saint-Gervais (75004), Paris 4e Arrondissement, Paris, Île-de-France, France',
+                            'name': 'Quartier Saint-Gervais',
+                            'class_name': "suburb",
+                            'postcodes': ['75004']
+                        },
+                        {
+                            'id': 'admin:osm:relation:7444',
+                            'label': 'Paris (75000-75116), Île-de-France, France',
+                            'name': 'Paris',
+                            'class_name': "city",
+                            'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']
+                        },
+                        {
+                            'id': 'admin:osm:relation:71525',
+                            'label': 'Paris, Île-de-France, France',
+                            'name': 'Paris',
+                            'class_name': "state_district",
+                            'postcodes': []
+                        },
+                        {
+                            'id': 'admin:osm:relation:8649',
+                            'label': 'Île-de-France, France',
+                            'name': 'Île-de-France',
+                            'class_name': "state",
+                            'postcodes': []
+                        }, {
+                            'id': 'admin:osm:relation:9597',
+                            'label': 'Paris 4e Arrondissement (75004), Paris, Île-de-France, France',
+                            'name': 'Paris 4e Arrondissement',
+                            'class_name': "city_district",
+                            'postcodes': ['75004']
+                        },
+                        {
+                            'id': 'admin:osm:relation:2202162',
+                            'label': 'France',
+                            'name': 'France',
+                            'class_name': "country",
+                            'postcodes': []
+                        }
+                    ]
+                },
+                'blocks': [
+                    {
+                        'international_format': '+33 1 42 72 09 37',
+                        'local_format': '01 42 72 09 37',
+                        'type': 'phone',
+                        'url': 'tel:+33142720937'
+                    },
+                    {
+                        'type': 'website',
+                        'url': 'http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html'
+                    }
+                ],
+                'meta': ANY
+            }
+        ]
+    }
+
 
 def test_raw_filter_with_class_subclass():
     client = TestClient(app)
@@ -432,9 +432,9 @@ def test_raw_filter_with_class_subclass():
 
     resp = response.json()
 
-    # TODO: for some reasons, it returns actually 50 places
-    # assert len(resp['places']) == 1
-    # assert resp['places'][0]['name'] ==  'Louvre Museum'
+    assert len(resp['places']) == 1
+    assert resp['places'][0]['name'] ==  'Louvre Museum'
+
 
 def test_invalid_bbox():
     """
@@ -529,24 +529,24 @@ def test_valid_category():
 
     resp = response.json()
 
-    # TODO: update test
-    # assert resp == {
-    #     'source': 'osm',
-    #     'places': [
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:node:36153811',
-    #             'name': 'Multiplexe Liberté',
-    #             'local_name': 'Multiplexe Liberté',
-    #             'class_name': 'cinema',
-    #             'subclass_name': 'cinema',
-    #             'geometry': ANY,
-    #             'address': ANY,
-    #             'blocks': [],
-    #             'meta': {'source': 'osm'}
-    #         }
-    #     ]
-    # }
+    assert resp == {
+        'source': 'osm',
+        'places': [
+            {
+                'type': 'poi',
+                'id': 'osm:node:36153811',
+                'name': 'Multiplexe Liberté',
+                'local_name': 'Multiplexe Liberté',
+                'class_name': 'cinema',
+                'subclass_name': 'cinema',
+                'geometry': ANY,
+                'address': ANY,
+                'blocks': [],
+                'meta': {'source': 'osm'}
+            }
+        ]
+    }
+
 
 @enable_pj_source()
 def test_places_with_explicit_source_osm():
@@ -561,24 +561,23 @@ def test_places_with_explicit_source_osm():
     assert response.status_code == 200
     resp = response.json()
 
-    # TODO: update test
-    # assert resp == {
-    #     'source': 'osm',
-    #     'places': [
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:node:36153811',
-    #             'name': 'Multiplexe Liberté',
-    #             'local_name': 'Multiplexe Liberté',
-    #             'class_name': 'cinema',
-    #             'subclass_name': 'cinema',
-    #             'geometry': ANY,
-    #             'address': ANY,
-    #             'blocks': [],
-    #             'meta': {'source': 'osm'}
-    #         }
-    #     ]
-    # }
+    assert resp == {
+        'source': 'osm',
+        'places': [
+            {
+                'type': 'poi',
+                'id': 'osm:node:36153811',
+                'name': 'Multiplexe Liberté',
+                'local_name': 'Multiplexe Liberté',
+                'class_name': 'cinema',
+                'subclass_name': 'cinema',
+                'geometry': ANY,
+                'address': ANY,
+                'blocks': [],
+                'meta': {'source': 'osm'}
+            }
+        ]
+    }
 
 
 def test_invalid_category():
