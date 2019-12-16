@@ -198,6 +198,7 @@ def test_full_query_poi():
     assert response.status_code == 200
     assert response.headers.get('Access-Control-Allow-Origin') == '*'
 
+    import pdb;pdb.set_trace()
     resp = response.json()
 
     assert resp == {

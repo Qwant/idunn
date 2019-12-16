@@ -54,7 +54,7 @@ class DescriptionEvent(BaseBlock):
     description: Optional[str]
     free_text: Optional[str]
     price: Optional[str]
-    tags: Optional[str]
+    tags: List[str]
 
     @classmethod
     def from_es(cls, es_poi, lang):
