@@ -27,231 +27,230 @@ def test_bbox():
 
     resp = response.json()
 
-    # TODO: to be updated ("local_date" issue as well)
-    # assert resp == {
-    #     'source': 'osm',
-    #     'places': [
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:way:63178753',
-    #             'name': "Musee d'Orsay",
-    #             'local_name': "Musée d'Orsay",
-    #             'class_name': 'museum',
-    #             'subclass_name': 'museum',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875],
-    #                          'center': [2.3265827716099623, 48.859917803575875]},
-    #             'address': {
-    #                 'id': 'addr_poi:osm:way:63178753',
-    #                 'name': "1 Rue de la Légion d'Honneur",
-    #                 'housenumber': '1',
-    #                 'postcode': '75007',
-    #                 'label': "1 Rue de la Légion d'Honneur (Paris)",
-    #                 'admin': None,
-    #                 'street': {
-    #                     'id': 'street_poi:osm:way:63178753',
-    #                     'name': "Rue de la Légion d'Honneur",
-    #                     'label': "Rue de la Légion d'Honneur (Paris)",
-    #                     'postcodes': ['75007']
-    #                 },
-    #                 'admins': [
-    #                     {
-    #                         'id': 'admin:osm:relation:2188567',
-    #                         'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
-    #                         'name': "Quartier Saint-Thomas-d'Aquin",
-    #                         'class_name': "suburb",
-    #                         'postcodes': ['75007']
-    #                     },
-    #                     ANY, ANY, ANY, ANY, ANY
-    #                 ]
-    #             },
-    #             'blocks': [
-    #                 {
-    #                     'type': 'opening_hours',
-    #                     'status': 'open',
-    #                     'next_transition_datetime': '2018-06-14T21:45:00+02:00',
-    #                     'seconds_before_next_transition': 40500,
-    #                     'is_24_7': False,
-    #                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
-    #                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
-    #                           {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
-    #                           {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]
-    #                 },
-    #                 {
-    #                     'type': 'phone',
-    #                     'international_format': '+33 1 40 49 48 14',
-    #                     'local_format': '01 40 49 48 14',
-    #                     'url': 'tel:+33140494814'
-    #                 },
-    #                 {
-    #                     'type': 'website',
-    #                     'url': 'http://www.musee-orsay.fr'
-    #                 }
-    #             ],
-    #             'meta': {
-    #                 'source': 'osm'
-    #             }
-    #         },
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:way:55984117',
-    #             'name': 'Église Notre-Dame-des-Blancs-Manteaux',
-    #             'local_name': 'Église Notre-Dame-des-Blancs-Manteaux',
-    #             'class_name': 'place_of_worship',
-    #             'subclass_name': 'place_of_worship',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.3577366716253647, 48.858955519212905],
-    #                          'center': [2.3577366716253647, 48.858955519212905]},
-    #             'address': ANY,
-    #             'blocks': [
-    #                 {
-    #                     'international_format': '+33 1 42 72 09 37',
-    #                     'local_format': '01 42 72 09 37',
-    #                     'type': 'phone',
-    #                     'url': 'tel:+33142720937'
-    #                 },
-    #                 {
-    #                     'type': 'website',
-    #                     'url': 'http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html'
-    #                 }
-    #             ],
-    #             'meta': {
-    #                 'source': 'osm'
-    #             }
-    #         },
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:relation:7515426',
-    #             'name': 'Louvre Museum',
-    #             'local_name': 'Musée du Louvre',
-    #             'class_name': 'museum',
-    #             'subclass_name': 'museum',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.338027583323689, 48.86114726113347],
-    #                          'center': [2.338027583323689, 48.86114726113347]},
-    #             'address': ANY,
-    #             'blocks': [
-    #                 {
-    #                     'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T18:00:00+02:00',
-    #                     'seconds_before_next_transition': 27000, 'is_24_7': False,
-    #                     'raw': 'Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off',
-    #                     'days': [
-    #                         {'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'open',
-    #                          'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
-    #                         {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'closed', 'opening_hours': []},
-    #                         {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
-    #                          'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]},
-    #                         {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
-    #                          'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
-    #                         {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
-    #                          'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]},
-    #                         {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
-    #                          'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
-    #                         {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
-    #                          'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}
-    #                     ]
-    #                 },
-    #                 {
-    #                     'international_format': '+33 1 40 20 52 29',
-    #                     'local_format': '01 40 20 52 29',
-    #                     'type': 'phone',
-    #                     'url': 'tel:+33140205229'
-    #                 },
-    #                 {
-    #                     'type': 'website',
-    #                     'url': 'http://www.louvre.fr'
-    #                 }
-    #             ],
-    #             'meta': {
-    #                 'source': 'osm'
-    #             }
-    #         },
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:way:7777777',
-    #             'name': 'Fake All',
-    #             'local_name': 'Fake All',
-    #             'class_name': 'museum',
-    #             'subclass_name': 'museum',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007],
-    #                          'center': [2.3250037768187326, 48.86618482685007]},
-    #             'address': ANY,
-    #             'blocks': [
-    #                 {
-    #                     'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
-    #                     'seconds_before_next_transition': 40500, 'is_24_7': False,
-    #                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
-    #                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
-    #                           {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
-    #                           {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}
-    #                     ]
-    #                 },
-    #                 ANY,
-    #                 ANY
-    #             ],
-    #             'meta': {
-    #                 'source': 'osm'
-    #             }
-    #         },
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:way:7777778',
-    #             'name': 'Fake All',
-    #             'local_name': 'Fake All',
-    #             'class_name': 'museum',
-    #             'subclass_name': 'museum',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007],
-    #                          'center': [2.3250037768187326, 48.86618482685007]},
-    #             'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': '62B',
-    #                         'postcode': '75007;75008', 'label': '62B Rue de Lille (Paris)', 'admin': None,
-    #                         'street': {'id': 'street:553660044C', 'name': 'Rue de Lille',
-    #                                    'label': 'Rue de Lille (Paris)', 'postcodes': ['75007', '75008']}, 'admins': []},
-    #             'blocks': [
-    #                 {
-    #                     'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
-    #                     'seconds_before_next_transition': 40500, 'is_24_7': False,
-    #                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
-    #                     'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
-    #                           {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
-    #                           {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                           {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
-    #                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}
-    #                     ]
-    #                 },
-    #                 ANY,
-    #                 ANY
-    #             ],
-    #             'meta': {
-    #                 'source': 'osm'
-    #             }
-    #         }
-    #     ]
-    # }
+    assert resp == {
+        'source': 'osm',
+        'places': [
+            {
+                'type': 'poi',
+                'id': 'osm:way:63178753',
+                'name': "Musee d'Orsay",
+                'local_name': "Musée d'Orsay",
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875],
+                             'center': [2.3265827716099623, 48.859917803575875]},
+                'address': {
+                    'id': 'addr_poi:osm:way:63178753',
+                    'name': "1 Rue de la Légion d'Honneur",
+                    'housenumber': '1',
+                    'postcode': '75007',
+                    'label': "1 Rue de la Légion d'Honneur (Paris)",
+                    'admin': None,
+                    'street': {
+                        'id': 'street_poi:osm:way:63178753',
+                        'name': "Rue de la Légion d'Honneur",
+                        'label': "Rue de la Légion d'Honneur (Paris)",
+                        'postcodes': ['75007']
+                    },
+                    'admins': [
+                        {
+                            'id': 'admin:osm:relation:2188567',
+                            'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
+                            'name': "Quartier Saint-Thomas-d'Aquin",
+                            'class_name': "suburb",
+                            'postcodes': ['75007']
+                        },
+                        ANY, ANY, ANY, ANY, ANY
+                    ]
+                },
+                'blocks': [
+                    {
+                        'type': 'opening_hours',
+                        'status': 'open',
+                        'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                        'seconds_before_next_transition': 40500,
+                        'is_24_7': False,
+                        'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                        'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]
+                    },
+                    {
+                        'type': 'phone',
+                        'international_format': '+33 1 40 49 48 14',
+                        'local_format': '01 40 49 48 14',
+                        'url': 'tel:+33140494814'
+                    },
+                    {
+                        'type': 'website',
+                        'url': 'http://www.musee-orsay.fr'
+                    }
+                ],
+                'meta': {
+                    'source': 'osm'
+                }
+            },
+            {
+                'type': 'poi',
+                'id': 'osm:way:55984117',
+                'name': 'Église Notre-Dame-des-Blancs-Manteaux',
+                'local_name': 'Église Notre-Dame-des-Blancs-Manteaux',
+                'class_name': 'place_of_worship',
+                'subclass_name': 'place_of_worship',
+                'geometry': {'type': 'Point', 'coordinates': [2.3577366716253647, 48.858955519212905],
+                             'center': [2.3577366716253647, 48.858955519212905]},
+                'address': ANY,
+                'blocks': [
+                    {
+                        'international_format': '+33 1 42 72 09 37',
+                        'local_format': '01 42 72 09 37',
+                        'type': 'phone',
+                        'url': 'tel:+33142720937'
+                    },
+                    {
+                        'type': 'website',
+                        'url': 'http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html'
+                    }
+                ],
+                'meta': {
+                    'source': 'osm'
+                }
+            },
+            {
+                'type': 'poi',
+                'id': 'osm:relation:7515426',
+                'name': 'Louvre Museum',
+                'local_name': 'Musée du Louvre',
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.338027583323689, 48.86114726113347],
+                             'center': [2.338027583323689, 48.86114726113347]},
+                'address': ANY,
+                'blocks': [
+                    {
+                        'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T18:00:00+02:00',
+                        'seconds_before_next_transition': 27000, 'is_24_7': False,
+                        'raw': 'Mo,Th,Sa,Su 09:00-18:00; We,Fr 09:00-21:45; Tu off; Jan 1,May 1,Dec 25: off',
+                        'days': [
+                            {'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'open',
+                             'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
+                            {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'closed', 'opening_hours': []},
+                            {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                             'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]},
+                            {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                             'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
+                            {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                             'opening_hours': [{'beginning': '09:00', 'end': '21:45'}]},
+                            {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                             'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]},
+                            {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                             'opening_hours': [{'beginning': '09:00', 'end': '18:00'}]}
+                        ]
+                    },
+                    {
+                        'international_format': '+33 1 40 20 52 29',
+                        'local_format': '01 40 20 52 29',
+                        'type': 'phone',
+                        'url': 'tel:+33140205229'
+                    },
+                    {
+                        'type': 'website',
+                        'url': 'http://www.louvre.fr'
+                    }
+                ],
+                'meta': {
+                    'source': 'osm'
+                }
+            },
+            {
+                'type': 'poi',
+                'id': 'osm:way:7777777',
+                'name': 'Fake All',
+                'local_name': 'Fake All',
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007],
+                             'center': [2.3250037768187326, 48.86618482685007]},
+                'address': ANY,
+                'blocks': [
+                    {
+                        'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                        'seconds_before_next_transition': 40500, 'is_24_7': False,
+                        'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                        'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}
+                        ]
+                    },
+                    ANY,
+                    ANY
+                ],
+                'meta': {
+                    'source': 'osm'
+                }
+            },
+            {
+                'type': 'poi',
+                'id': 'osm:way:7777778',
+                'name': 'Fake All',
+                'local_name': 'Fake All',
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3250037768187326, 48.86618482685007],
+                             'center': [2.3250037768187326, 48.86618482685007]},
+                'address': {'id': 'addr:2.326285;48.859635', 'name': '62B Rue de Lille', 'housenumber': '62B',
+                            'postcode': '75007;75008', 'label': '62B Rue de Lille (Paris)', 'admin': None,
+                            'street': {'id': 'street:553660044C', 'name': 'Rue de Lille',
+                                       'label': 'Rue de Lille (Paris)', 'postcodes': ['75007', '75008']}, 'admins': []},
+                'blocks': [
+                    {
+                        'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                        'seconds_before_next_transition': 40500, 'is_24_7': False,
+                        'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                        'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                              {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                              {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                              {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                               'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}
+                        ]
+                    },
+                    ANY,
+                    ANY
+                ],
+                'meta': {
+                    'source': 'osm'
+                }
+            }
+        ]
+    }
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_size_list():
