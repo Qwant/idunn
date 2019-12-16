@@ -67,15 +67,14 @@ def test_wheelchair():
         url=f'http://localhost/v1/pois/osm:node:36153811?lang=fr',
     )
 
-    # TODO: understand why this is returning 404...
-    # assert response.status_code == 200
-    # assert response.headers.get('Access-Control-Allow-Origin') == '*'
+    assert response.status_code == 200
+    assert response.headers.get('Access-Control-Allow-Origin') == '*'
 
-    # resp = response.json()
+    resp = response.json()
 
-    # assert resp['id'] == 'osm:node:36153811'
-    # assert resp['name'] == "Multiplexe Liberté"
-    # assert resp['local_name'] == "Multiplexe Liberté"
-    # assert resp['class_name'] == 'cinema'
-    # assert resp['subclass_name'] == 'cinema'
-    # assert resp['blocks'] == [{'blocks': [{'blocks': [{'toilets_wheelchair': 'yes', 'type': 'accessibility', 'wheelchair': 'yes'}], 'type': 'services_and_information'}], 'type': 'information'}]
+    assert resp['id'] == 'osm:node:36153811'
+    assert resp['name'] == "Multiplexe Liberté"
+    assert resp['local_name'] == "Multiplexe Liberté"
+    assert resp['class_name'] == 'cinema'
+    assert resp['subclass_name'] == 'cinema'
+    assert resp['blocks'] == [{'blocks': [{'blocks': [{'toilets_wheelchair': 'yes', 'type': 'accessibility', 'wheelchair': 'yes'}], 'type': 'services_and_information'}], 'type': 'information'}]

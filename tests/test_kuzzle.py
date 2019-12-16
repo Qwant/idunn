@@ -28,7 +28,7 @@ def test_kuzzle_event_ok():
             url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5',
         )
 
-        # TODO
+        # TODO (none found, might be because of the mock)
         # assert len(rsps.calls) == 1
 
         # resp = response.json()

@@ -123,33 +123,31 @@ def test_services_and_information():
 
     resp = response.json()
 
-    # TODO: why is it not returning internet_access and brewery? The object receive doesn't
-    #       have the needed info in idunn...
-    # assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
-    # {
-    #     "type": "accessibility",
-    #     "wheelchair": "yes",
-    #     "toilets_wheelchair": "unknown"
-    # },
-    # {
-    #     "type": "internet_access",
-    #     "wifi": True
-    # },
-    # {
-    #     "type": "brewery",
-    #     "beers": [
-    #         {
-    #             "name": "Tripel Karmeliet"
-    #         },
-    #         {
-    #             "name": "Delirium"
-    #         },
-    #         {
-    #             "name": "Chouffe"
-    #         },
-    #     ]
-    # }
-    # ]
+    assert resp.get('blocks')[2].get('blocks')[0].get('blocks') == [
+    {
+        "type": "accessibility",
+        "wheelchair": "yes",
+        "toilets_wheelchair": "unknown"
+    },
+    {
+        "type": "internet_access",
+        "wifi": True
+    },
+    {
+        "type": "brewery",
+        "beers": [
+            {
+                "name": "Tripel Karmeliet"
+            },
+            {
+                "name": "Delirium"
+            },
+            {
+                "name": "Chouffe"
+            },
+        ]
+    }
+    ]
 
 
 def test_exc_scenario():
