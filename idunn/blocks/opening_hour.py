@@ -47,7 +47,7 @@ class OpeningHoursType(BaseModel):
 
 class DaysType(BaseModel):
     dayofweek: conint(ge=1, le=7)
-    local_date: date
+    local_date: str # should be date but for some reason, fastapi jsonable_encoder just don't care
     status: constr(regex='(open|closed)')
     opening_hours: List[OpeningHoursType]
 

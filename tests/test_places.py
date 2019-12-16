@@ -201,48 +201,45 @@ def test_full_query_poi():
     resp = response.json()
 
     # TODO: "local_date" is FakeDate type and gets removed by fastapi...
-    # assert resp == {
-    #     'type': 'poi',
-    #     'id': 'osm:way:63178753',
-    #     'name': "Musée d'Orsay",
-    #     'local_name': "Musée d'Orsay",
-    #     'class_name': 'museum',
-    #     'subclass_name': 'museum',
-    #     'geometry': {
-    #         'type': 'Point',
-    #         'coordinates': [2.3265827716099623, 48.859917803575875],
-    #         'center': [2.3265827716099623, 48.859917803575875]
-    #     },
-    #     'address': {
-    #         'admin': None,
-    #         'id': 'addr_poi:osm:way:63178753',
-    #         'label': '1 Rue de la Légion d\'Honneur (Paris)',
-    #         'name': '1 Rue de la Légion d\'Honneur',
-    #         'housenumber': '1',
-    #         'postcode': '75007',
-    #         'street': {
-    #             'id': 'street_poi:osm:way:63178753',
-    #             'name': 'Rue de la Légion d\'Honneur',
-    #             'label': 'Rue de la Légion d\'Honneur (Paris)',
-    #             'postcodes': ['75007']
-    #         },
-    #         'admins': [
-    #             {'id': 'admin:osm:relation:2188567', 'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France", 'name': "Quartier Saint-Thomas-d'Aquin", 'class_name': "suburb", 'postcodes': ['75007']},
-    #             {'id': 'admin:osm:relation:9521', 'label': 'Paris 7e Arrondissement (75007), Paris, Île-de-France, France', 'name': 'Paris 7e Arrondissement', 'class_name': "city_district", 'postcodes': ['75007']},
-    #             {'id': 'admin:osm:relation:7444', 'label': 'Paris (75000-75116), Île-de-France, France', 'name': 'Paris', 'class_name': "city", 'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']},
-    #             {'id': 'admin:osm:relation:71525', 'label': 'Paris, Île-de-France, France', 'name': 'Paris', 'class_name': "state_district", 'postcodes': []},
-    #             {'id': 'admin:osm:relation:8649', 'label': 'Île-de-France, France', 'name': 'Île-de-France', 'class_name': "state", 'postcodes': []},
-    #             {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': "country", 'postcodes': []}
-    #         ]
-    #     },
-    #     'blocks': [
-    #         {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]},
-    #         {'type': 'phone', 'url': 'tel:+33140494814', 'international_format': '+33 1 40 49 48 14', 'local_format': '01 40 49 48 14'},
-    #         {'type': 'information', 'blocks': [{'type': 'services_and_information', 'blocks': [{'type': 'accessibility', 'wheelchair': 'yes', 'toilets_wheelchair': 'unknown'}, {'type': 'internet_access', 'wifi': True}, {'type': 'brewery', 'beers': [{'name': 'Tripel Karmeliet'}, {'name': 'Delirium'}, {'name': 'Chouffe'}]}]}]},
-    #         {'type': 'website', 'url': 'http://www.musee-orsay.fr'}
-    #     ],
-    #     'meta': {'source': 'osm'}
-    # }
+    assert resp['type'] == 'poi'
+    assert resp['id'] == 'osm:way:63178753'
+    assert resp['name'] == "Musée d'Orsay"
+    assert resp['local_name'] == "Musée d'Orsay"
+    assert resp['class_name'] == 'museum'
+    assert resp['subclass_name'] == 'museum'
+    assert resp['geometry'] == {
+        'type': 'Point',
+        'coordinates': [2.3265827716099623, 48.859917803575875],
+        'center': [2.3265827716099623, 48.859917803575875]
+    }
+    assert resp['address'] == {
+        'admin': None,
+        'id': 'addr_poi:osm:way:63178753',
+        'label': '1 Rue de la Légion d\'Honneur (Paris)',
+        'name': '1 Rue de la Légion d\'Honneur',
+        'housenumber': '1',
+        'postcode': '75007',
+        'street': {
+            'id': 'street_poi:osm:way:63178753',
+            'name': 'Rue de la Légion d\'Honneur',
+            'label': 'Rue de la Légion d\'Honneur (Paris)',
+            'postcodes': ['75007']
+        },
+        'admins': [
+            {'id': 'admin:osm:relation:2188567', 'label': "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France", 'name': "Quartier Saint-Thomas-d'Aquin", 'class_name': "suburb", 'postcodes': ['75007']},
+            {'id': 'admin:osm:relation:9521', 'label': 'Paris 7e Arrondissement (75007), Paris, Île-de-France, France', 'name': 'Paris 7e Arrondissement', 'class_name': "city_district", 'postcodes': ['75007']},
+            {'id': 'admin:osm:relation:7444', 'label': 'Paris (75000-75116), Île-de-France, France', 'name': 'Paris', 'class_name': "city", 'postcodes': ['75000', '75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020', '75116']},
+            {'id': 'admin:osm:relation:71525', 'label': 'Paris, Île-de-France, France', 'name': 'Paris', 'class_name': "state_district", 'postcodes': []},
+            {'id': 'admin:osm:relation:8649', 'label': 'Île-de-France, France', 'name': 'Île-de-France', 'class_name': "state", 'postcodes': []},
+            {'id': 'admin:osm:relation:2202162', 'label': 'France', 'name': 'France', 'class_name': "country", 'postcodes': []}
+        ]
+    }
+    assert resp['blocks'] == [
+        {'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00', 'seconds_before_next_transition': 40500, 'is_24_7': False, 'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45', 'days': [{'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []}, {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]}, {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}, {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open', 'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}]},
+        {'type': 'phone', 'url': 'tel:+33140494814', 'international_format': '+33 1 40 49 48 14', 'local_format': '01 40 49 48 14'},
+        {'type': 'information', 'blocks': [{'type': 'services_and_information', 'blocks': [{'type': 'accessibility', 'wheelchair': 'yes', 'toilets_wheelchair': 'unknown'}, {'type': 'internet_access', 'wifi': True}, {'type': 'brewery', 'beers': [{'name': 'Tripel Karmeliet'}, {'name': 'Delirium'}, {'name': 'Chouffe'}]}]}]},
+        {'type': 'website', 'url': 'http://www.musee-orsay.fr'}
+    ]
 
 
 def test_type_query_admin():
