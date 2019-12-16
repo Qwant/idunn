@@ -269,56 +269,55 @@ def test_size_list():
 
     resp = response.json()
 
-    # TODO: update test ("local_date")
-    # assert resp == {
-    #     "source": "osm",
-    #     "places": [
-    #         {
-    #             'type': 'poi',
-    #             'id': 'osm:way:63178753',
-    #             'name': "Musee d'Orsay",
-    #             'local_name': "Musée d'Orsay",
-    #             'class_name': 'museum',
-    #             'subclass_name': 'museum',
-    #             'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875],
-    #                          'center': [2.3265827716099623, 48.859917803575875]},
-    #             'address': ANY,
-    #             'blocks': [
-    #                 {
-    #                     'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
-    #                     'seconds_before_next_transition': 40500, 'is_24_7': False,
-    #                     'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
-    #                     'days': [
-    #                         {'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
-    #                         {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
-    #                         'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                         {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
-    #                         'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                         {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
-    #                         'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
-    #                         {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
-    #                         'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                         {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
-    #                         'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
-    #                         {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
-    #                         'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}
-    #                     ]
-    #                 },
-    #                 {
-    #                     'international_format': '+33 1 40 49 48 14',
-    #                     'local_format': '01 40 49 48 14',
-    #                     'type': 'phone',
-    #                     'url': 'tel:+33140494814'
-    #                 },
-    #                 {
-    #                     'type': 'website',
-    #                     'url': 'http://www.musee-orsay.fr'
-    #                 }
-    #             ],
-    #             'meta': ANY
-    #         }
-    #     ]
-    # }
+    assert resp == {
+        "source": "osm",
+        "places": [
+            {
+                'type': 'poi',
+                'id': 'osm:way:63178753',
+                'name': "Musee d'Orsay",
+                'local_name': "Musée d'Orsay",
+                'class_name': 'museum',
+                'subclass_name': 'museum',
+                'geometry': {'type': 'Point', 'coordinates': [2.3265827716099623, 48.859917803575875],
+                             'center': [2.3265827716099623, 48.859917803575875]},
+                'address': ANY,
+                'blocks': [
+                    {
+                        'type': 'opening_hours', 'status': 'open', 'next_transition_datetime': '2018-06-14T21:45:00+02:00',
+                        'seconds_before_next_transition': 40500, 'is_24_7': False,
+                        'raw': 'Tu-Su 09:30-18:00; Th 09:30-21:45',
+                        'days': [
+                            {'dayofweek': 1, 'local_date': '2018-06-11', 'status': 'closed', 'opening_hours': []},
+                            {'dayofweek': 2, 'local_date': '2018-06-12', 'status': 'open',
+                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                            {'dayofweek': 3, 'local_date': '2018-06-13', 'status': 'open',
+                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                            {'dayofweek': 4, 'local_date': '2018-06-14', 'status': 'open',
+                            'opening_hours': [{'beginning': '09:30', 'end': '21:45'}]},
+                            {'dayofweek': 5, 'local_date': '2018-06-15', 'status': 'open',
+                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                            {'dayofweek': 6, 'local_date': '2018-06-16', 'status': 'open',
+                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]},
+                            {'dayofweek': 7, 'local_date': '2018-06-17', 'status': 'open',
+                            'opening_hours': [{'beginning': '09:30', 'end': '18:00'}]}
+                        ]
+                    },
+                    {
+                        'international_format': '+33 1 40 49 48 14',
+                        'local_format': '01 40 49 48 14',
+                        'type': 'phone',
+                        'url': 'tel:+33140494814'
+                    },
+                    {
+                        'type': 'website',
+                        'url': 'http://www.musee-orsay.fr'
+                    }
+                ],
+                'meta': ANY
+            }
+        ]
+    }
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_single_raw_filter():

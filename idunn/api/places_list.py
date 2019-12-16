@@ -84,6 +84,7 @@ class PlacesQueryParam(CommonQueryParam):
     raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
+    size: Optional[int]
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -133,13 +134,14 @@ class EventQueryParam(CommonQueryParam):
         return v
 
 
-def get_raw_params(bbox, category, raw_filter, source, q):
+def get_raw_params(bbox, category, raw_filter, source, q, size):
     raw_params = {
         'bbox': bbox,
         'category': category,
         'raw_filter': raw_filter,
         'source': source,
         'q': q,
+        'size': size,
     }
     if raw_params.get('raw_filter') and raw_params.get('category'):
         raise HTTPException(
@@ -154,10 +156,11 @@ def get_places_bbox(
     category: Optional[str] = Query(None),
     raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
-    q: Optional[str] = Query(None)
+    q: Optional[str] = Query(None),
+    size: Optional[int] = Query(None)
 ):
     es = get_elasticsearch()
-    raw_params = get_raw_params(bbox, category, raw_filter, source, q)
+    raw_params = get_raw_params(bbox, category, raw_filter, source, q, size)
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
@@ -204,7 +207,7 @@ def get_places_bbox(
     }
 
 
-def get_events_bbox(bbox: str, category: str):
+def get_events_bbox(bbox: str, category: str, size: int = Query(None)):
     if not kuzzle_client.enabled:
         raise HTTPException(
             status_code=501,
@@ -212,7 +215,7 @@ def get_events_bbox(bbox: str, category: str):
         )
 
     try:
-        params = EventQueryParam(**{'category': category, 'bbox': bbox})
+        params = EventQueryParam(**{'category': category, 'bbox': bbox, 'size': size})
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
         raise HTTPException(
