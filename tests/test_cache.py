@@ -65,68 +65,68 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
     client = TestClient(app)
 
     # TODO: failing because of 404
-    # with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-    #     """
-    #     We mock all wikipedia requests since
-    #     the information are expected to be in
-    #     the Wiki ES
-    #     """
-    #     rsps.add('GET',
-    #          re.compile(r'^https://.*\.wikipedia.org/'),
-    #          status=200)
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        """
+        We mock all wikipedia requests since
+        the information are expected to be in
+        the Wiki ES
+        """
+        rsps.add('GET',
+             re.compile(r'^https://.*\.wikipedia.org/'),
+             status=200)
 
-    #     response = client.get(
-    #         url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
-    #     )
+        response = client.get(
+            url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
+        )
 
-    #     assert response.status_code == 200
-    #     resp = response.json()
-    #     """
-    #     We should have a "wikipedia" block in the
-    #     answer
-    #     """
-    #     assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
+        assert response.status_code == 200
+        resp = response.json()
+        """
+        We should have a "wikipedia" block in the
+        answer
+        """
+        assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
 
-    #     with monkeypatch.context() as m:
-    #         """
-    #         Now that the "basket ball" request should be
-    #         in the cache, we test that the same request
-    #         will not invoke the WikidataConnector
+        with monkeypatch.context() as m:
+            """
+            Now that the "basket ball" request should be
+            in the cache, we test that the same request
+            will not invoke the WikidataConnector
 
-    #         So we change the method used by the WikidataConnector
-    #         by a fake method to be sure the real method is not
-    #         called
-    #         """
-    #         from idunn.api.utils import WikidataConnector
+            So we change the method used by the WikidataConnector
+            by a fake method to be sure the real method is not
+            called
+            """
+            from idunn.api.utils import WikidataConnector
 
-    #         @wraps(WikidataConnector.get_wiki_info)
-    #         def fake_get_wiki_info():
-    #             """
-    #             Fake method for test
+            @wraps(WikidataConnector.get_wiki_info)
+            def fake_get_wiki_info():
+                """
+                Fake method for test
 
-    #             This method should never be called
-    #             """
-    #             raise Exception
+                This method should never be called
+                """
+                raise Exception
 
-    #         m.setattr(WikidataConnector, "get_wiki_info", fake_get_wiki_info)
+            m.setattr(WikidataConnector, "get_wiki_info", fake_get_wiki_info)
 
-    #         """
-    #         We make 10 requests to the basket_ball POI
-    #         and we should still have the wikipedia block
-    #         in the answer but without call to wikidata
-    #         neither wikipedia
+            """
+            We make 10 requests to the basket_ball POI
+            and we should still have the wikipedia block
+            in the answer but without call to wikidata
+            neither wikipedia
 
-    #         Without the cache the request would fail
-    #         in the "get_wiki_info()" method
-    #         """
-    #         for i in range(10):
-    #             response = client.get(
-    #                 url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
-    #             )
-    #             resp = response.json()
-    #             assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block
+            Without the cache the request would fail
+            in the "get_wiki_info()" method
+            """
+            for i in range(10):
+                response = client.get(
+                    url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
+                )
+                resp = response.json()
+                assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block
 
-    #         assert len(rsps.calls) == 0 # Wikipedia API has never been called
+            assert len(rsps.calls) == 0 # Wikipedia API has never been called
 
 
 def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia):
