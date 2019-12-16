@@ -200,7 +200,6 @@ def test_full_query_poi():
 
     resp = response.json()
 
-    # TODO: "local_date" is FakeDate type and gets removed by fastapi...
     assert resp['type'] == 'poi'
     assert resp['id'] == 'osm:way:63178753'
     assert resp['name'] == "Musée d'Orsay"
