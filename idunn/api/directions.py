@@ -25,7 +25,7 @@ def get_directions(
     to_position = (t_lon, t_lat)
 
     if not type:
-        raise HTTPException(status_code=401, detail='"type" query param is required')
+        raise HTTPException(status_code=400, detail='"type" query param is required')
 
     headers = {
         'cache-control': 'max-age={}'.format(settings['DIRECTIONS_CLIENT_CACHE'])

@@ -9,7 +9,6 @@ class ContactBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        print(es_poi.properties)
         mail = es_poi.properties.get('email') or es_poi.properties.get('contact:email')
         if not mail:
             return None

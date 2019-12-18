@@ -33,7 +33,6 @@ def init_logging(settings: Settings):
 
 
 async def handle_errors(request: Request, exception):
-    print('hello!')
     prometheus.exception("unhandled_error")
     logging.getLogger('idunn.error')\
         .exception("An unhandled error was raised.",

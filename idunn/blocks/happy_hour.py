@@ -1,3 +1,4 @@
+from enum import Enum
 import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, UTC
@@ -14,10 +15,15 @@ from .opening_hour import get_tz, get_coord, tz, parse_time_block, get_days, Ope
 logger = logging.getLogger(__name__)
 
 
+class YesNoAnswer(str, Enum):
+    yes = 'yes'
+    no = 'no'
+
+
 class DaysType(BaseModel):
     dayofweek: conint(ge=1, le=7)
     local_date: date
-    status: constr(regex='(yes|no)')
+    status: YesNoAnswer
     happy_hours: List[OpeningHoursType]
 
 
@@ -25,7 +31,7 @@ class HappyHourBlock(BaseBlock):
     BLOCK_TYPE: ClassVar = 'happy_hours'
     STATUSES: ClassVar = ['yes', 'no']
 
-    status: constr(regex='({})'.format('|'.join(STATUSES)))
+    status: YesNoAnswer # bound to STATUSES
     next_transition_datetime: Optional[str]
     seconds_before_next_transition: Optional[int]
     raw: str

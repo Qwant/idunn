@@ -86,8 +86,3 @@ class Prometheus:
 
         REQUEST_COUNT.labels(method, handler_name, status_code).inc()
         REQUESTS_INPROGRESS.labels(method, handler_name).dec()
-
-
-# class PrometheusComponent(Component):
-#     def resolve(self) -> Prometheus:
-#         return Prometheus()

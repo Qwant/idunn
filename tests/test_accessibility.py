@@ -43,7 +43,6 @@ def test_undefined_wheelchairs():
     )
 
     assert response.status_code == 200
-    print(response.headers)
     assert response.headers.get('Access-Control-Allow-Origin') == '*'
 
     resp = response.json()
