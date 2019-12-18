@@ -80,7 +80,7 @@ class CommonQueryParam(BaseModel):
 
 
 class PlacesQueryParam(CommonQueryParam):
-    category: Optional[dict]
+    category: List[Any]
     raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
@@ -113,13 +113,14 @@ class PlacesQueryParam(CommonQueryParam):
 
     @validator('category', pre=True, always=True)
     def valid_category(cls, v):
+        ret = []
         if not v:
-            return None
-        if v not in ALL_CATEGORIES:
-            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
-        else:
-            v = ALL_CATEGORIES.get(v)
-        return v
+            return ret
+        for x in v:
+            if x not in ALL_CATEGORIES:
+                raise ValueError(f"Category \'{x}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
+            ret.append(ALL_CATEGORIES.get(x))
+        return ret
 
 
 class EventQueryParam(CommonQueryParam):
@@ -153,7 +154,7 @@ def get_raw_params(bbox, category, raw_filter, source, q, size):
 
 def get_places_bbox(
     bbox: Any,
-    category: Optional[str] = Query(None),
+    category: Optional[List[str]] = Query(None),
     raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
     q: Optional[str] = Query(None),
@@ -176,7 +177,7 @@ def get_places_bbox(
             # PJ is currently the only source that accepts arbitrary queries
             source = SOURCE_PAGESJAUNES
         elif params.category \
-            and params.category.get('pj_filters') \
+            and all(c.get('pj_filters') for c in params.category) \
             and pj_source.bbox_is_covered(params.bbox):
             source = SOURCE_PAGESJAUNES
         else:
@@ -190,7 +191,7 @@ def get_places_bbox(
         if params.raw_filter:
             raw_filters = params.raw_filter
         else:
-            raw_filters = params.category.get('raw_filters')
+            raw_filters = [f for c in params.category for f in c['raw_filters']]
 
         bbox_places = fetch_bbox_places(
             es,
@@ -207,7 +208,7 @@ def get_places_bbox(
     }
 
 
-def get_events_bbox(bbox: str, category: str, size: int = Query(None)):
+def get_events_bbox(bbox: str, category: str = Query(None), size: int = Query(None)):
     if not kuzzle_client.enabled:
         raise HTTPException(
             status_code=501,

@@ -92,4 +92,4 @@ def test_kuzzle_event_nok():
         )
 
 
-        assert response.status_code == 404
+        assert response.status_code == 501

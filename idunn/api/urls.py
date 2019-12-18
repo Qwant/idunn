@@ -29,7 +29,6 @@ def get_api_urls(settings):
         # Deprecated
         APIRoute('/pois/{id}', get_poi),
 
-        # Werkzeug syntax is used to allow negative floats
         APIRoute('/places', get_places_bbox),
         APIRoute('/places/latlon:{lat}:{lon}', get_place_latlon),
         APIRoute('/places/{id}', handle_option, methods=['OPTIONS']),
@@ -37,8 +36,6 @@ def get_api_urls(settings):
 
         APIRoute('/categories', get_all_categories),
 
-
-        # Werkzeug syntax is used to allow negative floats
         APIRoute('/reverse/{lat}:{lon}', closest_address),
 
         # Kuzzle events
