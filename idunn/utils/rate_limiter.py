@@ -20,6 +20,12 @@ class HTTPTooManyRequests(HTTPException):
 
 class IdunnRateLimiter:
     def __init__(self, resource, max_requests, expire):
+        self.resource = resource
+        self.max_requests = max_requests
+        self.expire = expire
+        self._init_limiter()
+
+    def _init_limiter(self):
         try:
             redis_pool = get_redis_pool(db=settings['RATE_LIMITER_REDIS_DB'])
         except RedisNotConfigured:
@@ -32,9 +38,9 @@ class IdunnRateLimiter:
             service in the rate limiter.
             """
             self._limiter = RateLimiter(
-                resource=resource,
-                max_requests=max_requests,
-                expire=expire,
+                resource=self.resource,
+                max_requests=self.max_requests,
+                expire=self.expire,
                 redis_pool=redis_pool
             )
 
