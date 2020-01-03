@@ -123,10 +123,12 @@ class PlacesQueryParam(CommonQueryParam):
 
 
 class EventQueryParam(CommonQueryParam):
-    category: str
+    category: Optional[str]
 
     @validator('category', pre=True, always=True)
     def valid_categories(cls, v):
+        if v is None:
+            return None
         if v not in ALL_OUTING_CATEGORIES:
             raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}")
         else:
@@ -213,7 +215,7 @@ def get_places_bbox(
 
 def get_events_bbox(
     bbox: str,
-    category: str = Query(None),
+    category: Optional[str] = Query(None),
     size: int = Query(None),
     lang: Optional[str] = Query(None),
     verbosity: Optional[str] = Query(None),

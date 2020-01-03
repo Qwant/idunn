@@ -1,6 +1,7 @@
 from idunn import settings
 from idunn.utils.logging import init_logging, handle_errors
 from idunn.api.urls import get_api_urls
+from idunn.utils.encoders import override_datetime_encoder
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -38,7 +39,7 @@ async def validation_exception_handler(request, exc):
 
 app.add_middleware(PrometheusMiddleware)
 app.add_exception_handler(Exception, handle_errors)
-
+override_datetime_encoder()
 
 if __name__ == '__main__':
     uvicorn.run(app, host="127.0.0.1", port=5000, log_level="debug")
