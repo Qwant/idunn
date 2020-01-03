@@ -84,7 +84,6 @@ class PlacesQueryParam(CommonQueryParam):
     raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
-    size: Optional[int]
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -135,7 +134,7 @@ class EventQueryParam(CommonQueryParam):
         return v
 
 
-def get_raw_params(bbox, category, raw_filter, source, q, size):
+def get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity):
     raw_params = {
         'bbox': bbox,
         'category': category,
@@ -143,6 +142,8 @@ def get_raw_params(bbox, category, raw_filter, source, q, size):
         'source': source,
         'q': q,
         'size': size,
+        'lang': lang,
+        'verbosity': verbosity,
     }
     if raw_params.get('raw_filter') and raw_params.get('category'):
         raise HTTPException(
@@ -158,10 +159,12 @@ def get_places_bbox(
     raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
     q: Optional[str] = Query(None),
-    size: Optional[int] = Query(None)
+    size: Optional[int] = Query(None),
+    lang: Optional[str] = Query(None),
+    verbosity: Optional[str] = Query(None),
 ):
     es = get_elasticsearch()
-    raw_params = get_raw_params(bbox, category, raw_filter, source, q, size)
+    raw_params = get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity)
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
@@ -208,7 +211,13 @@ def get_places_bbox(
     }
 
 
-def get_events_bbox(bbox: str, category: str = Query(None), size: int = Query(None)):
+def get_events_bbox(
+    bbox: str,
+    category: str = Query(None),
+    size: int = Query(None),
+    lang: Optional[str] = Query(None),
+    verbosity: Optional[str] = Query(None),
+):
     if not kuzzle_client.enabled:
         raise HTTPException(
             status_code=501,
@@ -216,7 +225,13 @@ def get_events_bbox(bbox: str, category: str = Query(None), size: int = Query(No
         )
 
     try:
-        params = EventQueryParam(**{'category': category, 'bbox': bbox, 'size': size})
+        params = EventQueryParam(**{
+            'category': category,
+            'bbox': bbox,
+            'size': size,
+            'lang': lang,
+            'verbosity': verbosity,
+        })
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
         raise HTTPException(

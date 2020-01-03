@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 MAX_DISTANCE_IN_METERS = 500
 
+
 def get_closest_place(lat: float, lon: float, es = None):
     if es is None:
         es = get_elasticsearch()
@@ -25,6 +26,7 @@ def get_closest_place(lat: float, lon: float, es = None):
     loader = places.get(es_addr.get('_type'))
 
     if loader is None:
+        logger.warning("Found a place with the wrong type")
         prometheus.exception("FoundPlaceWithWrongType")
         raise HTTPException(
             status_code=404,
