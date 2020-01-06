@@ -70,7 +70,7 @@ class DirectionsClient:
         return DirectionsResponse(
             status='success',
             data=response.json()
-        ).dict()
+        )
 
 
     def directions_qwant(self, start, end, mode, lang, extra=None):
@@ -102,7 +102,7 @@ class DirectionsClient:
                 status_code=response.status_code,
             )
         response.raise_for_status()
-        return DirectionsResponse(**response.json()).dict()
+        return DirectionsResponse(**response.json())
 
 
     def directions_combigo(self, start, end, mode, lang):
@@ -135,11 +135,10 @@ class DirectionsClient:
             timeout=self.request_timeout,
         )
         response.raise_for_status()
-
         return DirectionsResponse(
             status='success',
             data=response.json()
-        ).dict()
+        )
 
 
     def get_directions(self, from_loc, to_loc, mode, lang):
@@ -167,7 +166,7 @@ class DirectionsClient:
             "from": from_loc,
             "to": to_loc,
         })
-        return method(from_loc, to_loc, mode, lang)
+        return method(from_loc, to_loc, mode, lang).dict(by_alias=True)
 
 
 directions_client = DirectionsClient()

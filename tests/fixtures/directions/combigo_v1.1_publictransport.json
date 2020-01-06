@@ -155,34 +155,27 @@
           ],
           "shapeEstimated": true,
           "from": {
+            "id": "1:4:43789",
             "lat": 48.889738,
             "lng": 2.339149,
             "address": "",
-            "name": "Lamarck-Caulaincourt (Paris)",
+            "name": "Lamarck-Caulaincourt",
             "city": "Paris 18e Arrondissement"
           },
           "to": {
+            "id": "1:4:43790",
             "lat": 48.865489,
             "lng": 2.321412,
             "address": "",
-            "name": "Concorde (Paris)",
+            "name": "Concorde",
             "city": "Paris 8e Arrondissement"
           },
           "stops": [
             {
               "stop": {
-                "lat": 48.889738,
-                "lng": 2.339149,
-                "name": "Lamarck-Caulaincourt (Paris)"
-              },
-              "dTime": 1570453440000,
-              "aTime": 1570454040000
-            },
-            {
-              "stop": {
                 "lat": 48.8844,
                 "lng": 2.338399,
-                "name": "Abbesses (Paris)"
+                "name": "Abbesses"
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -191,7 +184,7 @@
               "stop": {
                 "lat": 48.882027,
                 "lng": 2.337214,
-                "name": "Pigalle (Paris)"
+                "name": "Pigalle"
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -200,7 +193,7 @@
               "stop": {
                 "lat": 48.878594,
                 "lng": 2.337827,
-                "name": "Saint-Georges (Paris)"
+                "name": "Saint-Georges"
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -209,7 +202,7 @@
               "stop": {
                 "lat": 48.876051,
                 "lng": 2.337909,
-                "name": "Notre-Dame de Lorette (Paris)"
+                "name": "Notre-Dame de Lorette"
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -218,7 +211,7 @@
               "stop": {
                 "lat": 48.876329,
                 "lng": 2.331805,
-                "name": "Trinité-d'Estienne d'Orves (Paris)"
+                "name": "Trinité-d'Estienne d'Orves "
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -227,7 +220,7 @@
               "stop": {
                 "lat": 48.875421,
                 "lng": 2.326695,
-                "name": "Saint-Lazare (Paris)"
+                "name": "Saint-Lazare"
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -236,16 +229,7 @@
               "stop": {
                 "lat": 48.869795,
                 "lng": 2.324612,
-                "name": "Madeleine (Paris)"
-              },
-              "dTime": 1570453440000,
-              "aTime": 1570454040000
-            },
-            {
-              "stop": {
-                "lat": 48.865489,
-                "lng": 2.321412,
-                "name": "Concorde (Paris)"
+                "name": "Madeleine"
               },
               "dTime": 1570453440000,
               "aTime": 1570454040000
@@ -358,14 +342,14 @@
             "lat": 48.865678,
             "lng": 2.321194,
             "address": "",
-            "name": "Concorde (Paris)",
+            "name": "Concorde",
             "city": "Paris 8e Arrondissement"
           },
           "to": {
             "lat": 48.852976,
             "lng": 2.369219,
             "address": "",
-            "name": "Bastille (Paris)",
+            "name": "Bastille",
             "city": "Quartier des Quinze-Vingts"
           },
           "stops": [
@@ -373,7 +357,7 @@
               "stop": {
                 "lat": 48.865678,
                 "lng": 2.321194,
-                "name": "Concorde (Paris)"
+                "name": "Concorde"
               },
               "dTime": 1570454520000,
               "aTime": 1570455120000
@@ -390,7 +374,7 @@
               "stop": {
                 "lat": 48.862372,
                 "lng": 2.336574,
-                "name": "Palais-Royal (Musée du Louvre) (Paris)"
+                "name": "Palais-Royal (Musée du Louvre)"
               },
               "dTime": 1570454520000,
               "aTime": 1570455120000
@@ -399,7 +383,7 @@
               "stop": {
                 "lat": 48.86088,
                 "lng": 2.340973,
-                "name": "Louvre-Rivoli (Paris)"
+                "name": "Louvre-Rivoli"
               },
               "dTime": 1570454520000,
               "aTime": 1570455120000
@@ -408,7 +392,7 @@
               "stop": {
                 "lat": 48.85857,
                 "lng": 2.347933,
-                "name": "Châtelet (Paris)"
+                "name": "Châtelet"
               },
               "dTime": 1570454520000,
               "aTime": 1570455120000
@@ -417,7 +401,7 @@
               "stop": {
                 "lat": 48.857356,
                 "lng": 2.352074,
-                "name": "Hôtel de Ville (Paris)"
+                "name": "Hôtel de Ville"
               },
               "dTime": 1570454520000,
               "aTime": 1570455120000
@@ -426,7 +410,7 @@
               "stop": {
                 "lat": 48.855134,
                 "lng": 2.361334,
-                "name": "Saint-Paul (le Marais) (Paris)"
+                "name": "Saint-Paul (le Marais)"
               },
               "dTime": 1570454520000,
               "aTime": 1570455120000
@@ -447,7 +431,7 @@
             "numLong": "Château de Vincennes - La Défense",
             "lineColor": "FFCD00",
             "transporterName": "RATP",
-            "direction": "Château de Vincennes (Paris)",
+            "direction": "Château de Vincennes",
             "wheelchair": false
           }
         },
@@ -999,14 +983,14 @@
             "lat": 48.887832,
             "lng": 2.34937,
             "address": "",
-            "name": "Château Rouge (Paris)",
+            "name": "Château Rouge",
             "city": "Paris 18e Arrondissement"
           },
           "to": {
             "lat": 48.8635,
             "lng": 2.370329,
             "address": "",
-            "name": "Oberkampf - Richard Lenoir (Paris)",
+            "name": "Oberkampf - Richard Lenoir",
             "city": "Paris 11e Arrondissement"
           },
           "stops": [
@@ -1014,7 +998,7 @@
               "stop": {
                 "lat": 48.887832,
                 "lng": 2.34937,
-                "name": "Château Rouge (Paris)"
+                "name": "Château Rouge"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1023,7 +1007,7 @@
               "stop": {
                 "lat": 48.884094,
                 "lng": 2.349288,
-                "name": "Barbes - Rochechouart (Paris)"
+                "name": "Barbes - Rochechouart"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1032,7 +1016,7 @@
               "stop": {
                 "lat": 48.880876,
                 "lng": 2.351726,
-                "name": "Magenta - Maubeuge - Gare du Nord (Paris)"
+                "name": "Magenta - Maubeuge - Gare du Nord"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1041,7 +1025,7 @@
               "stop": {
                 "lat": 48.878916,
                 "lng": 2.35347,
-                "name": "La Fayette - Magenta - Gare du Nord (Paris)"
+                "name": "La Fayette - Magenta - Gare du Nord"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1050,7 +1034,7 @@
               "stop": {
                 "lat": 48.875851,
                 "lng": 2.356166,
-                "name": "Magenta-Gare de l'Est (Paris)"
+                "name": "Magenta-Gare de l'Est"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1059,7 +1043,7 @@
               "stop": {
                 "lat": 48.871114,
                 "lng": 2.360483,
-                "name": "Jacques Bonsergent (Paris)"
+                "name": "Jacques Bonsergent"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1068,7 +1052,7 @@
               "stop": {
                 "lat": 48.869011,
                 "lng": 2.362431,
-                "name": "République - Magenta (Paris)"
+                "name": "République - Magenta"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1077,7 +1061,7 @@
               "stop": {
                 "lat": 48.867141,
                 "lng": 2.364936,
-                "name": "République (Paris)"
+                "name": "République"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1086,7 +1070,7 @@
               "stop": {
                 "lat": 48.866359,
                 "lng": 2.365494,
-                "name": "République - Voltaire (Paris)"
+                "name": "République - Voltaire"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1095,7 +1079,7 @@
               "stop": {
                 "lat": 48.864965,
                 "lng": 2.36785,
-                "name": "Jean-Pierre Timbaud (Paris)"
+                "name": "Jean-Pierre Timbaud"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1104,7 +1088,7 @@
               "stop": {
                 "lat": 48.8635,
                 "lng": 2.370329,
-                "name": "Oberkampf - Richard Lenoir (Paris)"
+                "name": "Oberkampf - Richard Lenoir"
               },
               "dTime": 1570453980000,
               "aTime": 1570455300000
@@ -1116,7 +1100,7 @@
             "numLong": "Porte de Clignancourt - Château de Vincennes",
             "lineColor": "A0006E",
             "transporterName": "RATP",
-            "direction": "Château de Vincennes (Paris)",
+            "direction": "Château de Vincennes",
             "wheelchair": true
           }
         },

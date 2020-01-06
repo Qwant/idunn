@@ -48,6 +48,7 @@ class TransportInfo(BaseModel):
         super().__init__(**data)
 
 class TransportStop(BaseModel):
+    id: Optional[str]
     name: Optional[str]
     location: Tuple[float, float] = Schema(..., description='[lon, lat]')
 
@@ -103,6 +104,8 @@ class RouteLeg(BaseModel):
     stops: List[TransportStop] = []
     info: Optional[TransportInfo]
     mode: TransportMode = TransportMode.unknown
+    from_: Optional[TransportStop] = Schema(..., alias='from')
+    to: Optional[TransportStop]
 
     def __init__(self, **data):
         if data.get('infos'):
