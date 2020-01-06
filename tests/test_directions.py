@@ -120,6 +120,19 @@ def test_direction_public_transport(mock_directions_public_transport):
     assert summary[1]['info']['lineColor'] == "007852"
     assert summary[1]['info']['network'] == "RATP"
 
+    # Subway leg
+    leg = route['legs'][1]
+    assert leg['from'] == {
+        "id": "1:4:43789",
+        "name": "Lamarck-Caulaincourt",
+        "location": [2.339149, 48.889738]
+    }
+    assert leg['to'] == {
+        "id": "1:4:43790",
+        "name": "Concorde",
+        "location": [2.321412, 48.865489]
+    }
+    assert len(leg['stops']) == 7
 
 def test_directions_not_configured():
     with override_settings({
