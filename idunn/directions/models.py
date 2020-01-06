@@ -99,13 +99,13 @@ class RouteStep(BaseModel):
 
 class RouteLeg(BaseModel):
     duration: int = Field(..., description='duration in seconds')
-    distance: Optional[int] = Field(..., description='distance in meters')
+    distance: Optional[int] = Field(None, description='distance in meters')
     summary: str
     steps: List[RouteStep] = []
     stops: List[TransportStop] = []
     info: Optional[TransportInfo]
     mode: TransportMode = TransportMode.unknown
-    from_: Optional[TransportStop] = Field(..., alias='from')
+    from_: Optional[TransportStop] = Field(None, alias='from')
     to: Optional[TransportStop]
 
     def __init__(self, **data):
@@ -162,7 +162,7 @@ class RoutePrice(BaseModel):
 
 class DirectionsRoute(BaseModel):
     duration: int = Field(..., description='duration in seconds')
-    distance: Optional[int] = Field(..., description='distance in meters')
+    distance: Optional[int] = Field(None, description='distance in meters')
     carbon: Optional[float] = Field(None, description='value in gEC')
     summary: Optional[List[RouteSummaryPart]]
     price: Optional[RoutePrice]
