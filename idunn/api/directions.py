@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-
 from idunn import settings
 from idunn.utils.rate_limiter import IdunnRateLimiter
 from ..directions.client import directions_client

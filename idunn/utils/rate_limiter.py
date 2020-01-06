@@ -16,11 +16,6 @@ def dummy_limit():
     yield
 
 
-class HTTPTooManyRequests(HTTPException):
-    default_status_code = 429
-    default_detail = 'Too Many Requests'
-
-
 class IdunnRateLimiter:
     def __init__(self, resource, max_requests, expire):
         self.resource = resource
@@ -74,4 +69,4 @@ class IdunnRateLimiter:
             with self.limit(client=client_id, ignore_redis_error=True):
                 pass
         except TooManyRequestsException:
-            raise HTTPTooManyRequests
+            raise HTTPException(status_code=429, detail='Too Many Requests')
