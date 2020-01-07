@@ -1,11 +1,12 @@
 import logging
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, constr
 from datetime import datetime
 from typing import ClassVar, Optional
 from redis import Redis, RedisError
 
 from idunn import settings
 from idunn.api.kuzzle import kuzzle_client
+from idunn.api.weather import weather_client
 from .base import BaseBlock
 
 from idunn.utils.redis import get_redis_pool, RedisWrapper
@@ -74,14 +75,11 @@ def get_air_quality(geobbox):
 
 
 class Weather(BaseBlock):
-    BLOCK_TYPE = 'weather'
+    BLOCK_TYPE: ClassVar = 'weather'
 
-    temperature = validators.Number(allow_null=True)
-    icon = validators.String(
-        allow_null=True,
-        enum=['11d', '09d', '10d', '13d', '50d', '01d', '01n', '02d', '03d', '04d', '02n', '03n', '04n']
-    )
-    _connection = None
+    temperature: Optional[float] = None
+    icon: Optional[constr(regex='11d|09d|10d|13d|50d|01d|01n|02d|03d|04d|02n|03n|04n')]
+    _connection: ClassVar = None
 
     @classmethod
     def from_es(cls, place, lang):

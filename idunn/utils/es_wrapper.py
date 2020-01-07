@@ -1,5 +1,5 @@
 from elasticsearch import Elasticsearch, RequestsHttpConnection
-from .settings import Settings
+from idunn import settings
 
 ES_CONNECTION = None
 

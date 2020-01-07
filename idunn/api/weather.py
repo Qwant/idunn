@@ -1,6 +1,7 @@
 import requests
 import logging
-from apistar.exceptions import HTTPException
+from fastapi import HTTPException
+
 
 from idunn import settings
 logger = logging.getLogger(__name__)

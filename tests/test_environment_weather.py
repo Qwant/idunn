@@ -1,4 +1,4 @@
-from apistar.exceptions import ValidationError
+from pydantic import ValidationError
 from pytest import raises
 
 from idunn.blocks.environment import Weather
