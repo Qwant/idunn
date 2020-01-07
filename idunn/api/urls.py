@@ -10,6 +10,7 @@ from ..utils.prometheus import (
     expose_metrics_multiprocess,
     MonitoredAPIRoute as APIRoute,
 )
+from .geocoder import get_autocomplete
 
 
 def get_metric_handler(settings):
@@ -38,5 +39,10 @@ def get_api_urls(settings):
         # Kuzzle events
         APIRoute("/events", get_events_bbox),
         # Directions
-        APIRoute("/directions/{f_lon},{f_lat};{t_lon},{t_lat}", get_directions),
+        APIRoute('/directions/{f_lon},{f_lat};{t_lon},{t_lat}',
+            get_directions
+        ),
+
+        # Geocoding
+        APIRoute('/autocomplete', get_autocomplete),
     ]
