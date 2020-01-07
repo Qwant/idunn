@@ -1,4 +1,4 @@
-from apistar import TestClient
+from starlette.testclient import TestClient
 
 from app import app
 
@@ -9,4 +9,4 @@ def test_v1_metrics_ok():
 
     assert response.status_code == 200
 
-    assert b'prometheus.expose_metrics' in response.content
+    assert b'requests_processing_time_seconds_bucket' in response.content

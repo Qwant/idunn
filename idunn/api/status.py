@@ -1,11 +1,15 @@
 import logging
-from elasticsearch import Elasticsearch, ConnectionError
+from elasticsearch import ConnectionError
+
+from idunn.utils.es_wrapper import get_elasticsearch
 
 ES_RUNNING_STATUS = ('green', 'yellow')
 
-def get_status(es: Elasticsearch):
+
+def get_status():
     """Returns the status of the elastic cluster
     """
+    es = get_elasticsearch()
     try:
         cluster_health = es.cluster.health()
     except ConnectionError as err:

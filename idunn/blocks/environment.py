@@ -1,35 +1,35 @@
 import logging
-from apistar.types import Type
-from apistar import validators
+from pydantic import BaseModel, conint
+from datetime import datetime
+from typing import ClassVar, Optional
 
 from idunn import settings
 from idunn.api.kuzzle import kuzzle_client
-from apistar.types import Type
 from .base import BaseBlock
 
 
 logger = logging.getLogger(__name__)
 
 
-class ParticleType(Type):
-    value = validators.Number(allow_null=True)
-    quality_index = validators.Integer(minimum=1, maximum=5, allow_null=True)
+class ParticleType(BaseModel):
+    value: float
+    quality_index: Optional[conint(ge=1, le=5)]
 
 
 class AirQuality(BaseBlock):
-    BLOCK_TYPE = 'air_quality'
+    BLOCK_TYPE: ClassVar = 'air_quality'
 
-    CO = ParticleType
-    PM10 = ParticleType
-    O3 = ParticleType
-    NO2 = ParticleType
-    SO2 = ParticleType
-    PM2_5 = ParticleType
-    quality_index = validators.Integer(minimum=1, maximum=5)
-    date = validators.DateTime()
-    source = validators.String()
-    source_url = validators.String()
-    measurements_unit = validators.String(allow_null=True)
+    CO: Optional[ParticleType] = None
+    PM10: Optional[ParticleType] = None
+    O3: Optional[ParticleType] = None
+    NO2: Optional[ParticleType] = None
+    SO2: Optional[ParticleType] = None
+    PM2_5: Optional[ParticleType] = None
+    quality_index: conint(ge=1, le=5)
+    date: datetime
+    source: str
+    source_url: str
+    measurements_unit: Optional[str] = None
 
 
     @classmethod
@@ -53,8 +53,15 @@ class AirQuality(BaseBlock):
 
         if not air_quality:
             return None
+        for x in ['CO', 'PM10', 'O3', 'NO2', 'SO2', 'PM2_5']:
+            if x not in air_quality:
+                continue
+            entry = air_quality.get(x)
+            if entry == {} or entry.get('value') is None:
+                air_quality[x] = None
 
         return cls(**air_quality)
+
 
 def get_air_quality(geobbox):
     if not kuzzle_client.enabled:

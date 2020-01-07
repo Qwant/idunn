@@ -3,7 +3,7 @@ import json
 import responses
 import re
 import pytest
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from app import app
 from idunn.api.directions import rate_limiter
 

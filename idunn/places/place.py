@@ -1,20 +1,21 @@
-from apistar import types, validators
-from idunn.blocks.base import BlocksValidator
+from idunn.blocks.base import BaseBlock, BlocksValidator
 from idunn.api.utils import LONG, BLOCKS_BY_VERBOSITY
+from pydantic import BaseModel
+from typing import ClassVar, List, Optional
 
 
-class PlaceMeta(types.Type):
-    source = validators.String(allow_null=True)
+class PlaceMeta(BaseModel):
+    source: Optional[str]
 
 
-class Place(types.Type):
-    type = validators.String()
-    id = validators.String(allow_null=True)
-    name = validators.String(allow_null=True)
-    local_name = validators.String(allow_null=True)
-    class_name = validators.String(allow_null=True)
-    subclass_name = validators.String(allow_null=True)
-    geometry = validators.Object(allow_null=True)
-    address = validators.Object(allow_null=True)
-    blocks = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
-    meta = PlaceMeta
+class Place(BaseModel):
+    type: str
+    id: Optional[str]
+    name: Optional[str]
+    local_name: Optional[str]
+    class_name: Optional[str]
+    subclass_name: Optional[str]
+    geometry: Optional[dict]
+    address: Optional[dict]
+    blocks: List[BaseBlock] = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
+    meta: PlaceMeta

@@ -1,4 +1,4 @@
-from apistar.exceptions import HTTPException, NotFound, BadRequest
+from fastapi import HTTPException
 from elasticsearch import Elasticsearch, ConnectionError, NotFoundError, ElasticsearchException
 import logging
 from idunn import settings
@@ -126,6 +126,7 @@ class WikidataConnector:
 
         return wiki
 
+
 def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
     @deprecated by fetch_es_place()
@@ -142,8 +143,9 @@ def fetch_es_poi(id, es) -> dict:
 
     es_poi = es_pois.get('hits', {}).get('hits', [])
     if len(es_poi) == 0:
-        raise NotFound(detail={'message': f"poi '{id}' not found"})
+        raise HTTPException(status_code=404, detail=f"poi '{id}' not found")
     return es_poi[0]['_source']
+
 
 def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
@@ -206,6 +208,7 @@ def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
     bbox_places = bbox_places.get('hits', {}).get('hits', [])
     return bbox_places
 
+
 def fetch_es_place(id, es, indices, type) -> dict:
     """Returns the raw Place data
 
@@ -215,9 +218,9 @@ def fetch_es_place(id, es, indices, type) -> dict:
     if type is None:
         index_name = PLACE_DEFAULT_INDEX
     elif type not in indices:
-        raise BadRequest(
+        raise HTTPException(
             status_code=400,
-            detail={"message": f"Wrong type parameter: type={type}"}
+            detail=f"Wrong type parameter: type={type}"
         )
     else:
         index_name = indices.get(type)
@@ -235,11 +238,12 @@ def fetch_es_place(id, es, indices, type) -> dict:
 
     es_place = es_places.get('hits', {}).get('hits', [])
     if len(es_place) == 0:
-        raise NotFound(detail={'message': f"place {id} not found with type={type}"})
+        raise HTTPException(status_code=404, detail=f"place {id} not found with type={type}")
     if len(es_place) > 1:
         logger.warning("Got multiple places with id %s", id)
 
     return es_place[0]
+
 
 def fetch_closest(lat, lon, max_distance, es):
     es_addrs = es.search(index=','.join([PLACE_ADDRESS_INDEX,PLACE_STREET_INDEX]),
@@ -281,8 +285,9 @@ def fetch_closest(lat, lon, max_distance, es):
     )
     es_addrs = es_addrs.get('hits', {}).get('hits', [])
     if len(es_addrs) == 0:
-        raise NotFound(detail={'message': f"nothing around {lat}:{lon} within {max_distance}m..."})
+        raise HTTPException(status_code=404, detail=f"nothing around {lat}:{lon} within {max_distance}m...")
     return es_addrs[0]
+
 
 def build_blocks(es_poi, lang, verbosity):
     """Returns the list of blocks we want
@@ -296,6 +301,7 @@ def build_blocks(es_poi, lang, verbosity):
         if block is not None:
             blocks.append(block)
     return blocks
+
 
 def get_geom(es_place):
     """Return the correct geometry from the elastic response
@@ -328,6 +334,7 @@ def get_geom(es_place):
             if 'bbox' in es_place:
                 geom['bbox'] = es_place.get('bbox')
     return geom
+
 
 def get_name(properties, lang):
     """Return the Place name from the properties field of the elastic response

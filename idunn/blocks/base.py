@@ -1,9 +1,12 @@
-from apistar import types, validators
+import pydantic
+from pydantic import BaseModel, conint, constr
+from typing import ClassVar, List, Optional
 
-class BaseBlock(types.Type):
-    BLOCK_TYPE = '' # To override in each subclass
 
-    type = validators.String()
+class BaseBlock(BaseModel):
+    BLOCK_TYPE: ClassVar = '' # To override in each subclass
+
+    type: str
 
     def __init__(self, *args, **kwargs):
         if not args:
@@ -24,7 +27,7 @@ class BaseBlock(types.Type):
         return True
 
 
-class TypedBlockValidator(validators.Object):
+class TypedBlockValidator:
     errors = {
         'missing_type': 'Must have a non-empty type',
         'unknown_type': 'Block must have a valid type',
@@ -52,7 +55,7 @@ class TypedBlockValidator(validators.Object):
                                     allow_coerce=allow_coerce)
 
 
-class BlocksValidator(validators.Array):
+class BlocksValidator(BaseModel):
     def __init__(self, *args, **kwargs):
         allowed_blocks = kwargs.pop('allowed_blocks', [])
         assert not kwargs.get('items'), "'items' should not be passed to BlocksValidator"

@@ -1,5 +1,5 @@
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from idunn.blocks.services_and_information import AccessibilityBlock
 from idunn.places import POI
 
@@ -31,6 +31,7 @@ def test_accessibility_unknown():
     )
     assert web_block is None
 
+
 def test_undefined_wheelchairs():
     """
     Test that when wheelchair and toilets_wheelchair are not
@@ -52,6 +53,7 @@ def test_undefined_wheelchairs():
     assert resp['class_name'] == 'bakery'
     assert resp['subclass_name'] == 'bakery'
     assert resp['blocks'] == []
+
 
 def test_wheelchair():
     """

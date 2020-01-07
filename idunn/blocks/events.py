@@ -1,20 +1,21 @@
-from apistar import validators, types
-
 from .base import BaseBlock
+from pydantic import BaseModel
+from datetime import datetime
+from typing import ClassVar, List, Optional
 
 
-class TimeTableItem(types.Type):
-    beginning = validators.DateTime()
-    end = validators.DateTime()
+class TimeTableItem(BaseModel):
+    beginning: datetime
+    end: datetime
 
 
 class OpeningDayEvent(BaseBlock):
-    BLOCK_TYPE = "event_opening_dates"
+    BLOCK_TYPE: ClassVar = "event_opening_dates"
 
-    date_start = validators.DateTime()
-    date_end = validators.DateTime()
-    space_time_info = validators.String(allow_null=True)
-    timetable = validators.Array(items=TimeTableItem)
+    date_start: datetime
+    date_end: datetime
+    space_time_info: Optional[str]
+    timetable: List[TimeTableItem]
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -48,12 +49,12 @@ class OpeningDayEvent(BaseBlock):
 
 
 class DescriptionEvent(BaseBlock):
-    BLOCK_TYPE = "event_description"
+    BLOCK_TYPE: ClassVar = "event_description"
 
-    description = validators.String(allow_null=True)
-    free_text = validators.String(allow_null=True)
-    price = validators.String(allow_null=True)
-    tags = validators.Array(allow_null=True)
+    description: Optional[str]
+    free_text: Optional[str]
+    price: Optional[str]
+    tags: List[str]
 
     @classmethod
     def from_es(cls, es_poi, lang):

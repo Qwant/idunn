@@ -36,6 +36,7 @@ def get_moscow_poi(opening_hours):
         lang='en'
     )
 
+
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)
 def test_opening_hour_open():
     """
@@ -102,6 +103,7 @@ def test_opening_hour_open():
         ]
     )
 
+
 @freeze_time("2018-06-14 21:30:00", tz_offset=0)
 def test_opening_hour_close():
     """
@@ -159,6 +161,7 @@ def test_opening_hour_open_until_midnight():
         end='00:00'
     )] for d in oh_block.days)
 
+
 @freeze_time("2018-01-04T23:00:00+03:00")
 def test_opening_hour_open_until_2am():
     oh_block = get_moscow_poi("Mo-Su 09:00-02:00")
@@ -178,6 +181,7 @@ def test_opening_hour_open_until_2am():
         end='02:00'
     )] for d in oh_block.days)
 
+
 @freeze_time("2018-10-26T15:00:00+03:00")
 def test_opening_hour_close_until_19pm():
     oh_block = get_moscow_poi("Mo-Su 12:00-14:30; Mo-Su,PH 19:00-22:30")
@@ -193,6 +197,7 @@ def test_opening_hour_close_until_19pm():
     assert len(oh_block.days) == 7
     assert all(d.status == 'open' for d in oh_block.days)
 
+
 @freeze_time("2018-06-15T21:00:00+03:00")
 def test_opening_hour_days_cycle():
     """
@@ -200,7 +205,7 @@ def test_opening_hour_days_cycle():
     to test if the "cycle" is parsed correctly.
     """
     oh_block = get_moscow_poi("We-Mo 11:00-19:00")
-    assert oh_block == dict(
+    assert oh_block == OpeningHourBlock(**dict(
         type='opening_hours',
         status='closed',
         next_transition_datetime='2018-06-16T11:00:00+03:00',
@@ -251,7 +256,8 @@ def test_opening_hour_days_cycle():
                 "opening_hours": [{"beginning": "11:00", "end": "19:00"}]
             },
         ]
-    )
+    ))
+
 
 @freeze_time("2018-06-30T11:00:00+03:00")
 def test_opening_hour_sunrise_sunset():
@@ -260,7 +266,7 @@ def test_opening_hour_sunrise_sunset():
     """
     oh_block = get_moscow_poi("sunrise-sunset")
 
-    assert dict(oh_block) == dict(
+    assert dict(oh_block) == OpeningHourBlock(**dict(
         type='opening_hours',
         status='open',
         next_transition_datetime="2018-06-30T21:18:00+03:00",
@@ -311,7 +317,8 @@ def test_opening_hour_sunrise_sunset():
                 "opening_hours": [{"beginning": "03:49", "end": "21:18"}]
             },
         ]
-    )
+    ))
+
 
 @freeze_time("2018-06-30T11:00:00+03:00")
 def test_opening_hour_24_7():
@@ -319,7 +326,7 @@ def test_opening_hour_24_7():
     Opening_hours 24/7.
     """
     oh_block = get_moscow_poi("24/7")
-    assert oh_block == dict(
+    assert oh_block == OpeningHourBlock(**dict(
         type='opening_hours',
         status='open',
         next_transition_datetime=None,
@@ -370,7 +377,8 @@ def test_opening_hour_24_7():
                 "opening_hours": [{"beginning": "00:00", "end": "00:00"}]
             },
         ]
-    )
+    ))
+
 
 @freeze_time("2019-02-10T11:00:00+03:00")
 def test_opening_hour_2_years():
@@ -388,15 +396,18 @@ def test_opening_hour_2_years():
         days=ANY
     )
 
+
 @freeze_time("2019-07-01T08:00:00")
 def test_oh_with_only_closed_rules():
     oh_block = get_moscow_poi("Apr 1-Sep 30: off")
     assert oh_block is None
 
+
 @freeze_time("2019-07-01T08:00:00")
 def test_oh_24_7_variant():
     oh_block = get_moscow_poi("Apr 1-Sep 30: off")
     assert oh_block is None
+
 
 @freeze_time("2019-07-01T08:00:00")
 def test_unsupported_rule_raises_no_exception():
@@ -405,6 +416,7 @@ def test_unsupported_rule_raises_no_exception():
         "Jul 14 off; May 1 off; PH 12:30-13:30 off"
     )
     assert oh_block is None
+
 
 @freeze_time("2019-07-01T08:00:00")
 def test_oh_all_rules_in_the_past():

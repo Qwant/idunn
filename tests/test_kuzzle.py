@@ -1,4 +1,4 @@
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 import os
 import re
 import json
@@ -28,7 +28,7 @@ def test_kuzzle_event_ok():
             url=f'http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5',
         )
 
-        # assert response.status_code == 501
+        # TODO (none found, might be because of the mock)
         assert len(rsps.calls) == 1
 
         resp = response.json()

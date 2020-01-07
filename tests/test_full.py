@@ -1,5 +1,5 @@
 import pytest
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from freezegun import freeze_time
 
 from app import app

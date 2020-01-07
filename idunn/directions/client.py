@@ -1,8 +1,8 @@
 import requests
 import logging
 from datetime import datetime, timedelta
-from apistar.http import JSONResponse
-from apistar.exceptions import BadRequest, HTTPException
+from starlette.responses import JSONResponse
+from fastapi import HTTPException
 from idunn import settings
 from .models import DirectionsResponse
 
@@ -10,6 +10,7 @@ from .models import DirectionsResponse
 logger = logging.getLogger(__name__)
 
 COMBIGO_SUPPORTED_LANGUAGES = {'en', 'es', 'de', 'fr', 'it'}
+
 
 class DirectionsClient:
     def __init__(self):
@@ -63,7 +64,7 @@ class DirectionsClient:
                 response.status_code, response.text
             )
             return JSONResponse(
-                response.json(),
+                content=response.json(),
                 status_code=response.status_code,
             )
         response.raise_for_status()
@@ -75,7 +76,10 @@ class DirectionsClient:
 
     def directions_qwant(self, start, end, mode, lang, extra=None):
         if not self.QWANT_BASE_URL:
-            raise HTTPException(f"Directions API is currently unavailable for mode {mode}", status_code=501)
+            raise HTTPException(
+                status_code=501,
+                detail=f"Directions API is currently unavailable for mode {mode}",
+            )
 
         if extra is None:
             extra = {}
@@ -98,7 +102,7 @@ class DirectionsClient:
         if 400 <= response.status_code < 500:
             # Proxy client errors
             return JSONResponse(
-                response.json(),
+                content=response.json(),
                 status_code=response.status_code,
             )
         response.raise_for_status()
@@ -107,7 +111,10 @@ class DirectionsClient:
 
     def directions_combigo(self, start, end, mode, lang):
         if not self.COMBIGO_BASE_URL:
-            raise HTTPException(f"Directions API is currently unavailable for mode {mode}", status_code=501)
+            raise HTTPException(
+                status_code=501,
+                detail=f"Directions API is currently unavailable for mode {mode}",
+            )
 
         start_lon, start_lat = start
         end_lon, end_lat = end
@@ -156,7 +163,10 @@ class DirectionsClient:
             method = self.directions_combigo
             mode = mode
         else:
-            raise BadRequest(f'unknown mode {mode}')
+            raise HTTPException(
+                status_code=400,
+                detail=f'unknown mode {mode}',
+            )
 
         method_name = method.__name__
         logger.info(f"Calling directions API '{method_name}'", extra={

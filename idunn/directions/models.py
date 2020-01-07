@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Optional, Tuple
-from pydantic import BaseModel, Schema, validator
+from pydantic import BaseModel, Field, validator
 
 
 class TransportMode(str, Enum):
@@ -30,7 +30,7 @@ class TransportMode(str, Enum):
 
 
 class RouteManeuver(BaseModel):
-    location: Tuple[float, float] = Schema(..., description='[lon, lat]')
+    location: Tuple[float, float] = Field(..., description='[lon, lat]')
     modifier: Optional[str]
     type: str = ""
     instruction: str
@@ -47,10 +47,11 @@ class TransportInfo(BaseModel):
             data['network'] = data['transporterName']
         super().__init__(**data)
 
+
 class TransportStop(BaseModel):
     id: Optional[str]
     name: Optional[str]
-    location: Tuple[float, float] = Schema(..., description='[lon, lat]')
+    location: Tuple[float, float] = Field(..., description='[lon, lat]')
 
     def __init__(self, **data):
         if 'stop' in data:
@@ -65,7 +66,7 @@ class RouteStep(BaseModel):
     maneuver: RouteManeuver
     duration: int
     distance: int
-    geometry: dict = Schema(..., description='GeoJSON')
+    geometry: dict = Field(..., description='GeoJSON')
     mode: TransportMode
 
     def __init__(self, **data):
@@ -97,14 +98,14 @@ class RouteStep(BaseModel):
 
 
 class RouteLeg(BaseModel):
-    duration: int = Schema(..., description='duration in seconds')
-    distance: Optional[int] = Schema(..., description='distance in meters')
+    duration: int = Field(..., description='duration in seconds')
+    distance: Optional[int] = Field(None, description='distance in meters')
     summary: str
     steps: List[RouteStep] = []
     stops: List[TransportStop] = []
     info: Optional[TransportInfo]
     mode: TransportMode = TransportMode.unknown
-    from_: Optional[TransportStop] = Schema(..., alias='from')
+    from_: Optional[TransportStop] = Field(None, alias='from')
     to: Optional[TransportStop]
 
     def __init__(self, **data):
@@ -142,8 +143,8 @@ class RouteLeg(BaseModel):
 class RouteSummaryPart(BaseModel):
     mode: TransportMode
     info: Optional[TransportInfo]
-    distance: int = Schema(..., description='distance in meters')
-    duration: int = Schema(..., description='duration in seconds')
+    distance: int = Field(..., description='distance in meters')
+    duration: int = Field(..., description='duration in seconds')
 
     def __init__(self, **data):
         if 'type' in data:
@@ -160,13 +161,13 @@ class RoutePrice(BaseModel):
 
 
 class DirectionsRoute(BaseModel):
-    duration: int = Schema(..., description='duration in seconds')
-    distance: Optional[int] = Schema(..., description='distance in meters')
-    carbon: Optional[float] = Schema(..., description='value in gEC')
+    duration: int = Field(..., description='duration in seconds')
+    distance: Optional[int] = Field(None, description='distance in meters')
+    carbon: Optional[float] = Field(None, description='value in gEC')
     summary: Optional[List[RouteSummaryPart]]
     price: Optional[RoutePrice]
     legs: List[RouteLeg]
-    geometry: dict = Schema({}, description='GeoJSON')
+    geometry: dict = Field({}, description='GeoJSON')
 
     def __init__(self, **data):
         if 'price' in data and data.get('price', {}).get('value') is None:

@@ -1,15 +1,15 @@
-from apistar import types, validators
-
 from .base import BaseBlock
 from ..api import utils
 
+from typing import ClassVar
+
 
 class PhoneBlock(BaseBlock):
-    BLOCK_TYPE = 'phone'
+    BLOCK_TYPE: ClassVar = 'phone'
 
-    url = validators.String()
-    international_format = validators.String()
-    local_format = validators.String()
+    url: str
+    international_format: str
+    local_format: str
 
     @classmethod
     def from_es(cls, es_poi, lang):

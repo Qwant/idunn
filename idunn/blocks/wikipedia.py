@@ -2,7 +2,6 @@ import json
 import logging
 import requests
 import pybreaker
-from apistar import validators
 from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, RedisError
 
@@ -12,6 +11,8 @@ from idunn.utils.redis import get_redis_pool, RedisNotConfigured
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 from idunn.utils.rate_limiter import IdunnRateLimiter, TooManyRequestsException
 from .base import BaseBlock
+
+from typing import ClassVar
 
 
 GET_WIKI_INFO = "get_wiki_info"
@@ -26,8 +27,10 @@ logger = logging.getLogger(__name__)
 class WikiUndefinedException(Exception):
     pass
 
+
 class CacheNotAvailable(Exception):
     pass
+
 
 class WikipediaCache:
     _expire = None
@@ -213,14 +216,15 @@ class SizeLimiter:
         max_wiki_desc_size = settings['WIKI_DESC_MAX_SIZE']
         return (content[:max_wiki_desc_size] + '...') if len(content) > max_wiki_desc_size else content
 
+
 class WikipediaBlock(BaseBlock):
-    BLOCK_TYPE = "wikipedia"
+    BLOCK_TYPE: ClassVar = "wikipedia"
 
-    url = validators.String()
-    title = validators.String()
-    description = validators.String()
+    url: str
+    title: str
+    description: str
 
-    _wiki_session = WikipediaSession()
+    _wiki_session: ClassVar = WikipediaSession()
 
     @classmethod
     def from_es(cls, es_poi, lang):

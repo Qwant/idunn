@@ -1,11 +1,12 @@
 import os
 import logging
-from elasticsearch import Elasticsearch
-from apistar.exceptions import BadRequest, HTTPException
+
+from fastapi import HTTPException, Query
 
 from idunn import settings
-from idunn.utils.settings import Settings, _load_yaml_file
-from idunn.utils.index_names import IndexNames
+from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.settings import _load_yaml_file
+from idunn.utils.index_names import INDICES
 from idunn.places import POI
 from idunn.api.utils import fetch_bbox_places, DEFAULT_VERBOSITY_LIST, ALL_VERBOSITY_LEVELS
 from idunn.places.event import Event
@@ -13,10 +14,9 @@ from .pages_jaunes import pj_source
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
 from .kuzzle import kuzzle_client
 
-from apistar import http
-
 from pydantic import BaseModel, ValidationError, validator
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Tuple
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +41,10 @@ ALL_OUTING_CATEGORIES = get_outing_types()
 
 
 class CommonQueryParam(BaseModel):
-    bbox: str
-    size: Optional[int] = None
+    bbox: Tuple[float, float, float, float] = None
+    size: int = None
     lang: str = None
-    verbosity: str = DEFAULT_VERBOSITY_LIST
+    verbosity: str = None
 
     @validator('lang', pre=True, always=True)
     def valid_lang(cls, v):
@@ -54,17 +54,19 @@ class CommonQueryParam(BaseModel):
 
     @validator('verbosity', pre=True, always=True)
     def valid_verbosity(cls, v):
+        if v is None:
+            v = DEFAULT_VERBOSITY_LIST
         if v not in ALL_VERBOSITY_LEVELS:
             raise ValueError(f"the verbosity: \'{v}\' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}")
         return v
 
-    @validator('size', always=True)
+    @validator('size', pre=True, always=True)
     def max_size(cls, v):
         max_size = settings['LIST_PLACES_MAX_SIZE']
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
-    @validator('bbox')
+    @validator('bbox', pre=True, always=True)
     def valid_bbox(cls, v):
         v = v.split(',')
         if len(v) != 4:
@@ -78,44 +80,55 @@ class CommonQueryParam(BaseModel):
 
 
 class PlacesQueryParam(CommonQueryParam):
-    category: List[Any] = []
-    raw_filter: List[str] = None
-    source: Optional[str] = None
-    q: Optional[str] = None
+    category: List[Any]
+    raw_filter: Optional[List[str]]
+    source: Optional[str]
+    q: Optional[str]
 
     def __init__(self, **data: Any):
         super().__init__(**data)
         if not self.raw_filter and not self.category and not self.q:
-            raise BadRequest({
-                "message": "One of 'category', 'raw_filter' or 'q' parameter is required"
-            })
+            raise HTTPException(
+                status_code=400,
+                detail="One of 'category', 'raw_filter' or 'q' parameter is required"
+            )
 
-    @validator('source')
+    @validator('source', pre=True, always=True)
     def valid_source(cls, v):
+        if not v:
+            return None
         if v not in ALL_SOURCES:
             raise ValueError(f"unknown source: '{v}'")
         return v
 
-    @validator('raw_filter')
+    @validator('raw_filter', pre=True, always=True)
     def valid_raw_filter(cls, v):
-        if "," not in v:
-            raise ValueError(f"raw_filter \'{v}\' is invalid")
+        if not v:
+            return []
+        for x in v:
+            if "," not in x:
+                raise ValueError(f"raw_filter \'{x}\' is invalid from \'{v}\'")
         return v
 
-    @validator('category')
+    @validator('category', pre=True, always=True)
     def valid_category(cls, v):
-        if v not in ALL_CATEGORIES:
-            raise ValueError(f"Category \'{v}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
-        else:
-            v = ALL_CATEGORIES.get(v)
-        return v
+        ret = []
+        if not v:
+            return ret
+        for x in v:
+            if x not in ALL_CATEGORIES:
+                raise ValueError(f"Category \'{x}\' is invalid since it does not belong to the set of possible categories: {list(ALL_CATEGORIES.keys())}")
+            ret.append(ALL_CATEGORIES.get(x))
+        return ret
 
 
 class EventQueryParam(CommonQueryParam):
-    category: str = None
+    category: Optional[str]
 
-    @validator('category')
+    @validator('category', pre=True, always=True)
     def valid_categories(cls, v):
+        if v is None:
+            return None
         if v not in ALL_OUTING_CATEGORIES:
             raise ValueError(f"outing_types \'{v}\' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}")
         else:
@@ -123,26 +136,44 @@ class EventQueryParam(CommonQueryParam):
         return v
 
 
-def get_raw_params(query_params):
-    raw_params = dict(query_params)
-    if 'category' in query_params:
-        raw_params['category'] = query_params.get_list('category')
-    if 'raw_filter' in query_params:
-        raw_params['raw_filter'] = query_params.get_list('raw_filter')
+def get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity):
+    raw_params = {
+        'bbox': bbox,
+        'category': category,
+        'raw_filter': raw_filter,
+        'source': source,
+        'q': q,
+        'size': size,
+        'lang': lang,
+        'verbosity': verbosity,
+    }
     if raw_params.get('raw_filter') and raw_params.get('category'):
-        raise BadRequest(
-            detail={"message": "Both \'raw_filter\' and \'category\' parameters cannot be provided together"}
+        raise HTTPException(
+            status_code=400,
+            detail="Both \'raw_filter\' and \'category\' parameters cannot be provided together"
         )
     return raw_params
 
-def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Settings, query_params: http.QueryParams):
-    raw_params = get_raw_params(query_params)
+
+def get_places_bbox(
+    bbox: Any,
+    category: Optional[List[str]] = Query(None),
+    raw_filter: Optional[List[str]] = Query(None),
+    source: Optional[str] = Query(None),
+    q: Optional[str] = Query(None),
+    size: Optional[int] = Query(None),
+    lang: Optional[str] = Query(None),
+    verbosity: Optional[str] = Query(None),
+):
+    es = get_elasticsearch()
+    raw_params = get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity)
     try:
         params = PlacesQueryParam(**raw_params)
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
-        raise BadRequest(
-            detail={"message": e.errors()}
+        raise HTTPException(
+            status_code=400,
+            detail=e.errors()
         )
 
     source = params.source
@@ -169,7 +200,7 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
 
         bbox_places = fetch_bbox_places(
             es,
-            indices,
+            INDICES,
             raw_filters=raw_filters,
             bbox=params.bbox,
             max_size=params.size
@@ -182,16 +213,32 @@ def get_places_bbox(bbox, es: Elasticsearch, indices: IndexNames, settings: Sett
     }
 
 
-def get_events_bbox(bbox, query_params: http.QueryParams):
+def get_events_bbox(
+    bbox: str,
+    category: Optional[str] = Query(None),
+    size: int = Query(None),
+    lang: Optional[str] = Query(None),
+    verbosity: Optional[str] = Query(None),
+):
     if not kuzzle_client.enabled:
-        raise HTTPException("Kuzzle client is not available", status_code=501)
+        raise HTTPException(
+            status_code=501,
+            detail="Kuzzle client is not available"
+        )
 
     try:
-        params = EventQueryParam(**query_params)
+        params = EventQueryParam(**{
+            'category': category,
+            'bbox': bbox,
+            'size': size,
+            'lang': lang,
+            'verbosity': verbosity,
+        })
     except ValidationError as e:
         logger.info(f"Validation Error: {e.json()}")
-        raise BadRequest(
-            detail={"message": e.errors()}
+        raise HTTPException(
+            status_code=400,
+            detail=e.errors()
         )
 
     current_outing_lang = params.category

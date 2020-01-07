@@ -1,7 +1,7 @@
 import pytest
 import responses
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 
 @pytest.fixture(scope='module', autouse=True)
 def mock_wikipedia_response():

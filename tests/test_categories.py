@@ -1,6 +1,6 @@
 from unittest.mock import ANY
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from freezegun import freeze_time
 
 from .utils import enable_pj_source
@@ -419,6 +419,7 @@ def test_single_raw_filter():
         ]
     }
 
+
 def test_raw_filter_with_class_subclass():
     client = TestClient(app)
     response = client.get(
@@ -431,6 +432,7 @@ def test_raw_filter_with_class_subclass():
 
     assert len(resp['places']) == 1
     assert resp['places'][0]['name'] ==  'Louvre Museum'
+
 
 def test_invalid_bbox():
     """
@@ -447,7 +449,7 @@ def test_invalid_bbox():
     resp = response.json()
 
     assert resp == {
-        'message': [
+        'detail': [
             {
                 'loc': [
                     'bbox'
@@ -467,7 +469,7 @@ def test_invalid_bbox():
     resp = response.json()
 
     assert resp == {
-        'message': [
+        'detail': [
             {
                 'loc': [
                     'bbox'
@@ -492,7 +494,7 @@ def test_category_and_raw_filter():
     assert response.status_code == 400
     resp = response.json()
     assert resp == {
-        'message': "Both 'raw_filter' and 'category' parameters cannot be provided together"
+        'detail': "Both 'raw_filter' and 'category' parameters cannot be provided together"
     }
 
 
@@ -508,7 +510,7 @@ def test_category_or_raw_filter():
 
     assert response.status_code == 400
     resp = response.json()
-    assert resp == {'message': ANY}
+    assert resp == {'detail': "One of 'category', 'raw_filter' or 'q' parameter is required"}
 
 
 def test_valid_category():
@@ -542,6 +544,7 @@ def test_valid_category():
             }
         ]
     }
+
 
 @enable_pj_source()
 def test_places_with_explicit_source_osm():
@@ -588,7 +591,7 @@ def test_invalid_category():
     assert response.status_code == 400
 
     resp = response.json()
-    assert resp['message'][0]['msg'].startswith("Category 'supppermarket' is invalid ")
+    assert resp['detail'][0]['msg'].startswith("Category 'supppermarket' is invalid ")
 
 
 def test_endpoint_categories():

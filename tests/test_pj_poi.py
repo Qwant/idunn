@@ -1,4 +1,4 @@
-from apistar import TestClient
+from starlette.testclient import TestClient
 from unittest import mock
 import json
 import os

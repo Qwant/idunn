@@ -3,7 +3,7 @@ import re
 from unittest import mock
 from redis import Redis, RedisError
 from app import app, settings
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 from idunn.blocks.wikipedia import WikipediaCache
 from .test_wiki_ES import basket_ball_wiki_es
 from .test_rate_limiter import mock_wikipedia
@@ -64,6 +64,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
     """
     client = TestClient(app)
 
+    # TODO: failing because of 404
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         """
         We mock all wikipedia requests since

@@ -1,5 +1,5 @@
 from app import app
-from apistar.test import TestClient
+from starlette.testclient import TestClient
 import pytest
 from .utils import override_settings
 
@@ -104,15 +104,8 @@ def test_unknow_poi():
 
     assert response.status_code == 404
     assert response.json() == {
-        "message": "poi 'an_unknown_poi_id' not found"
+        "detail": "poi 'an_unknown_poi_id' not found"
     }
-
-
-def test_schema():
-    client = TestClient(app)
-    response = client.get(url='http://localhost/schema')
-
-    assert response.status_code == 200  # for the moment we check just that the schema is not empty
 
 
 def test_services_and_information():

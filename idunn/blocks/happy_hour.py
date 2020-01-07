@@ -1,10 +1,12 @@
+from enum import Enum
 import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, UTC
-from apistar import validators, types
 from tzwhere import tzwhere
 import humanized_opening_hours as hoh
 from humanized_opening_hours.exceptions import HOHError
+from pydantic import BaseModel, conint, constr
+from typing import ClassVar, List, Optional
 
 from .base import BaseBlock
 from .opening_hour import get_tz, get_coord, tz, parse_time_block, get_days, OpeningHoursType
@@ -13,22 +15,27 @@ from .opening_hour import get_tz, get_coord, tz, parse_time_block, get_days, Ope
 logger = logging.getLogger(__name__)
 
 
-class DaysType(types.Type):
-    dayofweek = validators.Integer(minimum=1, maximum=7)
-    local_date = validators.Date()
-    status = validators.String(enum=['yes', 'no'])
-    happy_hours = validators.Array(items=OpeningHoursType)
+class YesNoAnswer(str, Enum):
+    yes = 'yes'
+    no = 'no'
+
+
+class DaysType(BaseModel):
+    dayofweek: conint(ge=1, le=7)
+    local_date: date
+    status: YesNoAnswer
+    happy_hours: List[OpeningHoursType]
 
 
 class HappyHourBlock(BaseBlock):
-    BLOCK_TYPE = 'happy_hours'
-    STATUSES = ['yes', 'no']
+    BLOCK_TYPE: ClassVar = 'happy_hours'
+    STATUSES: ClassVar = ['yes', 'no']
 
-    status = validators.String(enum=STATUSES)
-    next_transition_datetime = validators.String(allow_null=True)
-    seconds_before_next_transition = validators.Integer(allow_null=True)
-    raw = validators.String()
-    days = validators.Array(items=DaysType)
+    status: YesNoAnswer # bound to STATUSES
+    next_transition_datetime: Optional[str]
+    seconds_before_next_transition: Optional[int]
+    raw: str
+    days: List[DaysType]
 
     @classmethod
     def init_class(cls, status, next_transition_datetime, time_before_next, oh, poi_dt, raw):

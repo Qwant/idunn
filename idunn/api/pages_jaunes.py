@@ -1,6 +1,6 @@
 import logging
 from elasticsearch import Elasticsearch
-from apistar.exceptions import NotFound
+from fastapi import HTTPException
 
 from idunn import settings
 from idunn.places import PjPOI
@@ -73,7 +73,7 @@ class PjSource:
 
         es_place = es_places.get('hits', {}).get('hits', [])
         if len(es_place) == 0:
-            raise NotFound(detail={'message': f"place {id} not found"})
+            raise HTTPException(status_code=404, detail=f"place {id} not found")
         if len(es_place) > 1:
             logger.warning("Got multiple places with id %s", id)
         return PjPOI(es_place[0]['_source'])

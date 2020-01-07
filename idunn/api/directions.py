@@ -1,5 +1,7 @@
-from apistar.http import JSONResponse, QueryParams, Request
-from apistar.exceptions import BadRequest
+from fastapi import HTTPException
+
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from idunn import settings
 from idunn.utils.rate_limiter import IdunnRateLimiter
@@ -12,25 +14,25 @@ rate_limiter = IdunnRateLimiter(
 )
 
 def get_directions(
-    f_lon, f_lat, t_lon, t_lat, params: QueryParams, request: Request
-) -> JSONResponse:
+    f_lon: float, f_lat: float, t_lon: float, t_lat: float, # URL values
+    request: Request,
+    type: str = '', language: str = 'en' # query parameters
+):
     rate_limiter.check_limit_per_client(request)
 
     from_position = (f_lon, f_lat)
     to_position = (t_lon, t_lat)
-    params_dict = dict(params)
-    mode = params_dict.pop('type', '')
-    lang = params_dict.pop('language', '') or 'en'
 
-    if not mode:
-        raise BadRequest('"type" query param is required')
+    if not type:
+        raise HTTPException(status_code=400, detail='"type" query param is required')
 
     headers = {
         'cache-control': 'max-age={}'.format(settings['DIRECTIONS_CLIENT_CACHE'])
      }
 
-    data = directions_client.get_directions(
-        from_position, to_position, mode=mode, lang=lang
+    return JSONResponse(
+        content=directions_client.get_directions(
+            from_position, to_position, type, language
+        ),
+        headers=headers,
     )
-
-    return JSONResponse(data, headers=headers)
