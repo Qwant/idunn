@@ -44,5 +44,5 @@ def get_api_urls(settings):
         ),
 
         # Geocoding
-        APIRoute('/autocomplete', get_autocomplete),
+        APIRoute('/autocomplete', get_autocomplete, methods=['GET', 'POST']),
     ]
