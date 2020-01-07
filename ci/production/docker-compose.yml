@@ -22,6 +22,7 @@ services:
       - IDUNN_THUMBR_URLS=https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
+      - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_PROD
       - no_proxy=es,wiki-es
     extra_hosts:
       - "wiki-es:10.100.8.40"
