@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from json.decoder import JSONDecodeError
 
 from idunn import settings
+from ..utils.geocodejson import GeocodeJson
 
 
 logger = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ class GeocoderClient:
             )
             raise HTTPException(500)
 
-        return response.json()
+        return GeocodeJson.parse_obj(response.json())
 
 
 geocoder_client = GeocoderClient()

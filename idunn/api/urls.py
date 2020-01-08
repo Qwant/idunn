@@ -5,12 +5,13 @@ from .places_list import get_places_bbox, get_events_bbox
 from .categories import get_all_categories
 from .closest import closest_address
 from .directions import get_directions
+from .geocoder import get_autocomplete
+from ..utils.geocodejson import GeocodeJson
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
     MonitoredAPIRoute as APIRoute,
 )
-from .geocoder import get_autocomplete
 
 
 def get_metric_handler(settings):
@@ -44,5 +45,10 @@ def get_api_urls(settings):
         ),
 
         # Geocoding
-        APIRoute('/autocomplete', get_autocomplete, methods=['GET', 'POST']),
+        APIRoute(
+            '/autocomplete',
+            get_autocomplete,
+            methods=['GET', 'POST'],
+            response_model=GeocodeJson
+        ),
     ]

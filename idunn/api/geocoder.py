@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import Query
 from pydantic import BaseModel
 
 from idunn import settings
 from ..geocoder.client import geocoder_client
+from ..utils.geocodejson import GeocodeJson
 
 
 class ExtraParams(BaseModel):
@@ -18,5 +19,5 @@ def get_autocomplete(
     lat: Optional[float] = Query(None, ge=-90, le=90, title='longitude for the focus'),
     lang: str = Query(settings['DEFAULT_LANGUAGE'], title='language'),
     limit: int = Query(10, ge=1, title='maximum number of results'),
-):
+) -> GeocodeJson:
     return geocoder_client.autocomplete(query, lang, limit, lon, lat, extra.shape)
