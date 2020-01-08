@@ -3,7 +3,10 @@ from fastapi import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from shapely.geometry import Point
+
 from idunn import settings
+from idunn.utils.geometry import city_surrounds_polygons
 from idunn.utils.rate_limiter import IdunnRateLimiter
 from ..directions.client import directions_client
 
@@ -31,7 +34,24 @@ def get_directions(
     if not type:
         raise HTTPException(status_code=400, detail='"type" query param is required')
 
-    headers = {"cache-control": "max-age={}".format(settings["DIRECTIONS_CLIENT_CACHE"])}
+    if type in ('publictransport', 'taxi', 'vtc', 'carpool'):
+        allowed_zone = any(
+            all(
+                city_surrounds_polygons[city].contains(point)
+                for point in [Point(*from_position), Point(*to_position)]
+            )
+            for city in settings['PUBLIC_TRANSPORTS_ALLOWED_CITIES']
+        )
+
+        if not allowed_zone:
+            raise HTTPException(
+                status_code=403,
+                detail='requested path is not inside an allowed area for public transports'
+            )
+
+    headers = {
+        'cache-control': 'max-age={}'.format(settings['DIRECTIONS_CLIENT_CACHE'])
+     }
 
     return JSONResponse(
         content=directions_client.get_directions(

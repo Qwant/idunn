@@ -1,11 +1,16 @@
+import json
 import os
-from shapely.geometry import MultiPolygon, box
+from shapely.geometry import MultiPolygon, box, shape
 
 # Approximate shape of Metropolitan France (source: https://download.geofabrik.de/europe/france.html)
 france_poly_filename = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "./data/france.poly"
 )
 
+
+# Approximate shape of some cities surroundings. These shapes have been defined using the following
+# script: https://gist.github.com/remi-dupre/6c4a1d699e48c00e134657dc1164a2c9
+cities_surrounds_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./data/surroundings")
 
 def parse_poly(lines):
     """ Parse an Osmosis polygon filter file.
@@ -55,9 +60,20 @@ def parse_poly(lines):
     return MultiPolygon(coords)
 
 
+# Load shape for France
 with open(france_poly_filename) as france_file:
     france_polygon = parse_poly(france_file.readlines())
 
+# Load shape for some cities surrounding
+city_surrounds_polygons = dict()
+
+for filename in os.listdir(cities_surrounds_path):
+    city_name = os.path.splitext(filename)[0]
+    path = os.path.join(cities_surrounds_path, filename)
+
+    with open(path) as f:
+        city_shape = shape(json.load(f))
+        city_surrounds_polygons[city_name] = city_shape
 
 def bbox_inside_polygon(minx, miny, maxx, maxy, poly, threshold=0.75):
     rect = box(minx, miny, maxx, maxy)
