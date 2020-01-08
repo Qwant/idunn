@@ -1,6 +1,11 @@
+import logging
 import requests
+from fastapi import HTTPException
 
 from idunn import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 class GeocoderClient:
@@ -27,12 +32,19 @@ class GeocoderClient:
             response = self.session.post(
                 url,
                 params=params,
-                json={'shape': shape}
+                json={'shape': shape},
             )
         else:
             response = self.session.get(url, params=params)
 
-        response.raise_for_status() # TODO: catch errors in [400, 500[
+        if response.status_code != requests.codes.ok:
+            logger.error(
+                'Request to Bragi returned with unexpected status %d: "%s"',
+                response.status_code,
+                response.json()['long'],
+            )
+            raise HTTPException(500)
+
         return response.json()
 
 
