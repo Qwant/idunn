@@ -1,11 +1,13 @@
 import contextlib
 import time
 
-from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette.responses import Response
+from starlette.requests import Request
 
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, generate_latest, multiprocess
+
+from fastapi.routing import APIRoute
 
 
 """ The logic of the Prometheus metrics is defined in this module """
@@ -17,9 +19,9 @@ IDUNN_WIKI_REQUEST_DURATION = Histogram(
     ["target", "handler"],
 )
 
-IDUNN_WIKI_EXCEPTIONS_COUNT = Counter(
-    "idunn_wiki_exceptions_count",
-    "Number of exceptions caught in Idunn WikipediaBlock.",
+IDUNN_EXCEPTIONS_COUNT = Counter(
+    "idunn_exceptions_count",
+    "Number of exceptions caught in Idunn",
     ["exception_type"]
 )
 
@@ -30,7 +32,7 @@ def wiki_request_duration(target, handler):
         yield
 
 def exception(exception_type):
-    IDUNN_WIKI_EXCEPTIONS_COUNT.labels(exception_type).inc()
+    IDUNN_EXCEPTIONS_COUNT.labels(exception_type).inc()
 
 
 # code from apistar_prometheus
@@ -64,25 +66,27 @@ REQUESTS_INPROGRESS = Gauge(
 )
 
 
-class Prometheus:
-    def track_request_start(self, method, handler=None):
-        self.start_time = time.monotonic()
+class MonitoredAPIRoute(APIRoute):
+    def get_route_handler(self):
+        handler_name = self.name
+        original_handler = super().get_route_handler()
 
-        handler_name = "<builtin>"
-        if handler is not None:
-            handler_name = "%s.%s" % (handler.__module__, handler.__name__)
+        async def custom_handler(request: Request) -> Response:
+            method = request['method']
+            REQUESTS_INPROGRESS.labels(method=method, handler=handler_name).inc()
+            try:
+                before_time = time.monotonic()
+                response = await original_handler(request)
+                after_time = time.monotonic()
+            except Exception as e:
+                raise e from None
+            else:
+                REQUEST_DURATION.labels(method=method, handler=handler_name).observe(
+                    after_time - before_time
+                )
+                REQUEST_COUNT.labels(method=method, handler=handler_name, code=response.status_code).inc()
+            finally:
+                REQUESTS_INPROGRESS.labels(method=method, handler=handler_name).dec()
+            return response
 
-        REQUESTS_INPROGRESS.labels(method, handler_name).inc()
-
-    def track_request_end(self, method, handler, status_code):
-        handler_name = "<builtin>"
-        if handler is not None:
-            handler_name = "%s.%s" % (handler.__module__, handler.__name__)
-
-        start_time = getattr(self, "start_time", None)
-        if start_time is not None:
-            duration = time.monotonic() - start_time
-            REQUEST_DURATION.labels(method, handler_name).observe(duration)
-
-        REQUEST_COUNT.labels(method, handler_name, status_code).inc()
-        REQUESTS_INPROGRESS.labels(method, handler_name).dec()
+        return custom_handler

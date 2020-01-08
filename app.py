@@ -37,7 +37,6 @@ async def validation_exception_handler(request, exc):
     return PlainTextResponse(f'Invalid parameter received: {str(exc)}', status_code=404)
 
 
-app.add_middleware(PrometheusMiddleware)
 app.add_exception_handler(Exception, handle_errors)
 override_datetime_encoder()
 
