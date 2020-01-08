@@ -11,8 +11,7 @@ ipython = "*"
 responses = "*"
 
 [packages]
-fastapi="==0.44.*"
-starlette-prometheus="==0.5.*"
+fastapi="==0.45.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = ">=2.20.0"
 tzwhere = "*"
@@ -28,6 +27,7 @@ gunicorn = "*"
 uvicorn = "*"
 phonenumbers = "*"
 deepmerge = "*"
+prometheus-client = "*"
 
 [requires]
 python_version = "3.6"

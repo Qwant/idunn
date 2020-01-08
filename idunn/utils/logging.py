@@ -1,17 +1,60 @@
 import json
 import logging
+from logging.config import dictConfig
 
 from starlette.requests import Request
+from starlette.responses import PlainTextResponse
 from .settings import Settings
 from idunn.utils import prometheus
-from pythonjsonlogger import jsonlogger
+
+def get_logging_dict(settings: Settings):
+    return {
+        "version": 1,
+        "disable_existing_loggers": True,
+        "formatters": {
+            "json": {
+                "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+                "format": settings['LOG_FORMAT']
+            },
+            "simple":{
+                "format": settings['LOG_FORMAT']
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "json" if settings['LOG_JSON'] else "simple",
+                "stream": "ext://sys.stdout",
+            }
+        },
+        "loggers": {
+            "uvicorn": {
+                "level": "INFO",
+                "handlers": ["console"],
+                "propagate": False
+            },
+            "uvicorn.access": {
+                "level": "WARNING",
+                "handlers": ["console"],
+                "propagate": False,
+            },
+            "gunicorn": {
+                "level": "INFO",
+                "handlers": ["console"],
+                "propagate": False
+            }
+        },
+        "root": {
+            "level": "INFO",
+            "handlers": ["console"]
+        }
+    }
 
 def init_logging(settings: Settings):
     """
     init the logging for the server
     """
-    log_format = settings['LOG_FORMAT']
-    as_json = settings['LOG_JSON']
+    dictConfig(get_logging_dict(settings))
 
     levels = settings['LOG_LEVEL_BY_MODULE']
     for module, lvl in json.loads(levels).items():
@@ -21,19 +64,10 @@ def init_logging(settings: Settings):
         logger = logging.getLogger(module)
         logger.setLevel(log_level)
 
-    logHandler = logging.StreamHandler()
-    if as_json:
-        formatter = jsonlogger.JsonFormatter(log_format)
-        logHandler.setFormatter(formatter)
-    else:
-        logHandler.setFormatter(logging.Formatter(log_format))
-
-    # we set this handler to the main logger
-    logging.getLogger().handlers = [logHandler]
-
 
 async def handle_errors(request: Request, exception):
+    """
+    overrides the default error handler defined in ServerErrorMiddleware
+    """
     prometheus.exception("unhandled_error")
-    logging.getLogger('idunn.error')\
-        .exception("An unhandled error was raised.",
-            extra={'url': request.url, 'exception': exception})
+    return PlainTextResponse("Internal Server Error", status_code=500)

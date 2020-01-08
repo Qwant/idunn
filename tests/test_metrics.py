@@ -9,4 +9,4 @@ def test_v1_metrics_ok():
 
     assert response.status_code == 200
 
-    assert b'requests_processing_time_seconds_bucket' in response.content
+    assert b'http_requests_inprogress{handler="expose_metrics",method="GET"} 1.0' in response.content

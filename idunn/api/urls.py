@@ -1,5 +1,3 @@
-from fastapi.routing import APIRoute
-
 from .pois import get_poi
 from .places import get_place, get_place_latlon, handle_option
 from .status import get_status
@@ -7,7 +5,11 @@ from .places_list import get_places_bbox, get_events_bbox
 from .categories import get_all_categories
 from .closest import closest_address
 from .directions import get_directions
-from ..utils.prometheus import expose_metrics, expose_metrics_multiprocess
+from ..utils.prometheus import (
+    expose_metrics,
+    expose_metrics_multiprocess,
+    MonitoredAPIRoute as APIRoute,
+)
 
 
 def get_metric_handler(settings):
