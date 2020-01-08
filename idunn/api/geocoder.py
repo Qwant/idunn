@@ -13,10 +13,10 @@ class ExtraParams(BaseModel):
 
 def get_autocomplete(
     extra: ExtraParams = ExtraParams(),
-    query: str = Query(..., alias='q'),
-    lon: Optional[float] = None,
-    lat: Optional[float] = None,
-    lang: str = settings['DEFAULT_LANGUAGE'],
-    limit: int = 10,
+    query: str = Query(..., alias='q', title='query string'),
+    lon: Optional[float] = Query(None, ge=-180, le=180, title='latitude for the focus'),
+    lat: Optional[float] = Query(None, ge=-90, le=90, title='longitude for the focus'),
+    lang: str = Query(settings['DEFAULT_LANGUAGE'], title='language'),
+    limit: int = Query(10, ge=1, title='maximum number of results'),
 ):
     return geocoder_client.autocomplete(query, lang, limit, lon, lat, extra.shape)
