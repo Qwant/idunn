@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b5c1bb57a6c058a415ad6f50e2b3a512bd4feeaf7a8b7595ce3a1f1abfe0c29a"
+            "sha256": "901d5ef1e8dd82eee89569dee3d5d391d274267da4ca0cfbd8059a3444c37dd5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -78,11 +78,11 @@
         },
         "fastapi": {
             "hashes": [
-                "sha256:04afe17ceaaa6c07a0377c2d2cafde864672f0489b5be21030e3d6ca2e47b0ac",
-                "sha256:5e053824ffbdd7041812f4c77e6def17a557edc12f4fb061e00d7ee9a03aca3b"
+                "sha256:3f626eda9b6edaa17c90c21a4d0d1a97a2a2fcba43a55f8c425b6b37e832c8bb",
+                "sha256:44712863ca3899eb812a6869a2efe02d6be6ae972968c76a43d82ec472788f17"
             ],
             "index": "pypi",
-            "version": "==0.44.1"
+            "version": "==0.45.0"
         },
         "gunicorn": {
             "hashes": [
@@ -137,6 +137,7 @@
             "hashes": [
                 "sha256:71cd24a2b3eb335cb800c7159f423df1bd4dcd5171b234be15e3f31ec9f622da"
             ],
+            "index": "pypi",
             "version": "==0.7.1"
         },
         "pybreaker": {
@@ -248,14 +249,6 @@
                 "sha256:c2ac9a42e0e0328ad20fe444115ac5e3760c1ee2ac1ff8cdb5ec915c4a453411"
             ],
             "version": "==0.12.9"
-        },
-        "starlette-prometheus": {
-            "hashes": [
-                "sha256:121a8a6ba6e8d8287b278173a308e9f86a41e90433aaf3b81105987726960eb2",
-                "sha256:45159fcea625a251780ffc80d959bf227d11789130e23344d173ed48e46d3e32"
-            ],
-            "index": "pypi",
-            "version": "==0.5.0"
         },
         "tzwhere": {
             "hashes": [
