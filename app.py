@@ -2,27 +2,21 @@ from idunn import settings
 from idunn.utils.logging import init_logging, handle_errors
 from idunn.api.urls import get_api_urls
 from idunn.utils.encoders import override_datetime_encoder
-
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.exceptions import RequestValidationError
-
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
-from starlette.routing import Mount
-
-from starlette_prometheus import PrometheusMiddleware
-
 import uvicorn
 
 
 init_logging(settings)
+app = FastAPI(title="Idunn", debug=__name__ == '__main__')
 
-routes = [
-    Mount('/v1', routes=get_api_urls(settings)),
-]
-
-app = FastAPI(routes=routes, title="Idunn", debug=__name__ == '__main__')
-
+v1_routes = get_api_urls(settings)
+app.include_router(
+    APIRouter(v1_routes),
+    prefix='/v1'
+)
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
