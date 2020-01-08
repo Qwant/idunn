@@ -1,6 +1,7 @@
 import logging
 import requests
 from fastapi import HTTPException
+from json.decoder import JSONDecodeError
 
 from idunn import settings
 
@@ -12,7 +13,8 @@ class GeocoderClient:
     def __init__(self):
         self.session = requests.Session()
 
-    def autocomplete(self, query, lang, limit, lon=None, lat=None, shape=None):
+    @staticmethod
+    def build_params(query, lang, limit, lon=None, lat=None):
         params = {
             'q': query,
             'lang': lang,
@@ -25,7 +27,10 @@ class GeocoderClient:
                 'lat': lat,
             })
 
-        # Call Bragi
+        return params
+
+    def autocomplete(self, query, lang, limit, lon=None, lat=None, shape=None):
+        params = GeocoderClient.build_params(query, lang, limit, lon, lat)
         url = settings['BRAGI_BASE_URL'] + '/autocomplete'
 
         if shape:
@@ -38,10 +43,15 @@ class GeocoderClient:
             response = self.session.get(url, params=params)
 
         if response.status_code != requests.codes.ok:
+            try:
+                explain = response.json()['long']
+            except (IndexError, JSONDecodeError):
+                explain = 'unknown reason'
+
             logger.error(
                 'Request to Bragi returned with unexpected status %d: "%s"',
                 response.status_code,
-                response.json()['long'],
+                explain,
             )
             raise HTTPException(500)
 
