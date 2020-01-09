@@ -49,6 +49,7 @@ def get_api_urls(settings):
             '/autocomplete',
             get_autocomplete,
             methods=['GET', 'POST'],
-            response_model=GeocodeJson
+            response_model=GeocodeJson,
+            response_model_exclude_unset=True,
         ),
     ]
