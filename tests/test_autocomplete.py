@@ -15,7 +15,7 @@ BASE_URL = 'http://qwant.bragi'
 
 FIXTURE_PATH = os.path.join(
     os.path.dirname(__file__),
-    'fixtures/autocomplete.json'
+    'fixtures/autocomplete/paris.json'
 )
 
 
@@ -69,7 +69,17 @@ def assert_ok_with(client, params, extra=None):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data['features']) > 0
+
+    feature = data['features'][0]
+    assert feature['type'] == 'Feature'
+    assert len(feature['geometry']['coordinates']) == 2
+    assert feature['geometry']['type'] == 'Point'
+
+    properties = feature['properties']['geocoding']
+    assert properties['type'] == 'poi'
+    assert properties['name'] == 'pavillon Eiffel'
+    assert properties['label'] == 'pavillon Eiffel (Paris)'
+    assert properties['address']['label'] == '5 Avenue Anatole France (Paris)'
 
 
 def test_autocomplete_ok(mock_autocomplete_get):
