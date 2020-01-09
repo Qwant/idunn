@@ -3,10 +3,23 @@ Implement GeocodeJson specification as defined here:
  - https://github.com/geocoders/geocodejson-spec/tree/master/draft
  - https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs
 """
-from enum import Enum
-from typing import Any, List, Optional
+import json
 
-from pydantic import BaseModel, PositiveInt
+from enum import Enum
+from typing import Any, List, Optional, Tuple
+
+from pydantic import BaseModel, PositiveInt, confloat
+
+
+Lon = confloat(ge=-180, le=180)
+Lat = confloat(ge=-90, le=90)
+
+Rect = Tuple[Lon, Lat, Lon, Lat]
+
+
+class Coord(BaseModel):
+    lon: Lon
+    lat: Lat
 
 
 class PoiType(BaseModel):
@@ -34,6 +47,17 @@ class Code(BaseModel):
     value: str
 
 
+class ZoneType(str, Enum):
+    Suburb = 'suburb'
+    CityDistrict = 'city_district'
+    City = 'city'
+    StateDistrict = 'state_district'
+    State = 'state'
+    CountryRegion = 'country_region'
+    Country = 'country'
+    NonAdministrative = 'non_administrative'
+
+
 class AssociatedAdmin(BaseModel):
     id: str
     insee: str
@@ -41,9 +65,9 @@ class AssociatedAdmin(BaseModel):
     label: str
     name: str
     zip_codes: List[str]
-    coord: Any # NOTE: mimir::Coord
-    bbox: Optional[Any] # NOTE: geo_types::Rect<f64>
-    zone_type: Optional[Any] # NOTE: cosmogony: ZoneType
+    coord: Coord
+    bbox: Optional[Rect]
+    zone_type: Optional[ZoneType]
     parent_id: Optional[str]
     codes: List[Code]
 
@@ -109,7 +133,7 @@ class GeocodingResponse(BaseModel):
     timezone: Optional[str]
     codes: List[Code] = []
     feed_publishers: List[FeedPublished] = []
-    bbox: Any # NOTE: actualy of type geo_types::Rect<f64>
+    bbox: Optional[Rect]
     country_codes: List[str] = []
 
 GeocodingResponse.update_forward_refs()
