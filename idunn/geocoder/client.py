@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from json.decoder import JSONDecodeError
 
 from idunn import settings
-from ..utils.geocodejson import GeocodeJson
+from .models import GeocodeJson
 
 
 logger = logging.getLogger(__name__)

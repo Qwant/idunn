@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from idunn import settings
 from ..geocoder.client import geocoder_client
-from ..utils.geocodejson import GeocodeJson
+from ..geocoder.models import GeocodeJson
 
 
 class ExtraParams(BaseModel):

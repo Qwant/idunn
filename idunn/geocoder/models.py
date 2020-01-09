@@ -109,7 +109,6 @@ class GeocodingResponse(BaseModel):
     locality: Optional[str]
     postcode: Optional[str]
     city: Optional[str]
-    admin: dict = {}
     #  accuracy: Optional[PositiveInt]
     #  district: Optional[str]
     #  country: Optional[str]

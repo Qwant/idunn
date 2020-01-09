@@ -6,7 +6,7 @@ from .categories import get_all_categories
 from .closest import closest_address
 from .directions import get_directions
 from .geocoder import get_autocomplete
-from ..utils.geocodejson import GeocodeJson
+from ..geocoder.models import GeocodeJson
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
