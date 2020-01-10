@@ -176,7 +176,7 @@ class DirectionsRoute(BaseModel):
                 if "shapes" in leg:
                     feature = {
                         "type": "Feature",
-                        "geometry": {"coordinates": leg["shapes"], "type": "LineString",},
+                        "geometry": {"coordinates": leg["shapes"], "type": "LineString"},
                         "properties": {"leg_index": idx},
                     }
                     features_list.append(feature)

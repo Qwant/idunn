@@ -18,7 +18,7 @@ def read_fixture(filename):
 def test_pj_place():
     musee_picasso = read_fixture("musee_picasso.json")
     with mock.patch.object(
-        places.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso]}},
+        places.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso]}}
     ):
         client = TestClient(app)
         response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr",)
@@ -60,9 +60,7 @@ def test_pj_place():
 def test_pj_place_with_missing_data():
     musee_picasso_short = read_fixture("musee_picasso_short.json")
     with mock.patch.object(
-        places.pj_source.es,
-        "search",
-        new=lambda *x, **y: {"hits": {"hits": [musee_picasso_short]}},
+        places.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso_short]}}
     ):
         client = TestClient(app)
         response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr",)

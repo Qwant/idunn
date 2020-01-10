@@ -52,7 +52,7 @@ def log_place_request(place: BasePlace, headers):
                 custom_data["zoom"] = float(pos[2])
             except Exception:
                 logger.warning(
-                    'Invalid data given through "X-QwantMaps-FocusPosition" header', exc_info=True,
+                    'Invalid data given through "X-QwantMaps-FocusPosition" header', exc_info=True
                 )
     if "X-QwantMaps-Query" in headers:
         query = headers.get("X-QwantMaps-Query", "")
@@ -66,7 +66,7 @@ def log_place_request(place: BasePlace, headers):
                 custom_data["ranking"] = ranking
             except Exception:
                 logger.warning(
-                    'Invalid data given through "X-QwantMaps-SuggestionRank" header', exc_info=True,
+                    'Invalid data given through "X-QwantMaps-SuggestionRank" header', exc_info=True
                 )
     if "X-QwantMaps-QueryLang" in headers:
         lang = headers.get("X-QwantMaps-QueryLang", "")

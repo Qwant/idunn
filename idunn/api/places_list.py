@@ -254,7 +254,7 @@ def get_events_bbox(
         current_outing_lang = params.category.get("fr")
 
     bbox_places = kuzzle_client.fetch_event_places(
-        bbox=params.bbox, collection="events", category=current_outing_lang, size=params.size,
+        bbox=params.bbox, collection="events", category=current_outing_lang, size=params.size
     )
 
     events_list = [Event(p["_source"]) for p in bbox_places]

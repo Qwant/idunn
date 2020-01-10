@@ -97,7 +97,7 @@ class ImagesBlock(BaseBlock):
 
         # Use wikimedia commons media viewer when possible
         match = re.match(
-            r"^https://upload.wikimedia.org/wikipedia/commons/(?:.+/)?\w{1}/\w{2}/([^/]+)", raw_url,
+            r"^https://upload.wikimedia.org/wikipedia/commons/(?:.+/)?\w{1}/\w{2}/([^/]+)", raw_url
         )
         if match:
             commons_file_name = match.group(1)

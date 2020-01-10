@@ -127,11 +127,7 @@ def test_direction_public_transport(mock_directions_public_transport):
         "name": "Lamarck-Caulaincourt",
         "location": [2.339149, 48.889738],
     }
-    assert leg["to"] == {
-        "id": "1:4:43790",
-        "name": "Concorde",
-        "location": [2.321412, 48.865489],
-    }
+    assert leg["to"] == {"id": "1:4:43790", "name": "Concorde", "location": [2.321412, 48.865489]}
     assert len(leg["stops"]) == 7
 
 

@@ -114,7 +114,7 @@ class KuzzleClient:
                                 "multi_match": {
                                     "query": category,
                                     "type": "best_fields",
-                                    "fields": ["tag^5", "free_text^4", "title^4", "description^3",],
+                                    "fields": ["tag^5", "free_text^4", "title^4", "description^3"],
                                     "tie_breaker": 0.7,
                                 },
                             }

@@ -8,5 +8,5 @@ def test_internet_access_block():
     )
 
     assert web_block == BreweryBlock(
-        beers=[Beer(name="Tripel Karmeliet"), Beer(name="Delirium"), Beer(name="Chouffe"),]
+        beers=[Beer(name="Tripel Karmeliet"), Beer(name="Delirium"), Beer(name="Chouffe")]
     )

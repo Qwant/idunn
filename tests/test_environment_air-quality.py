@@ -50,7 +50,7 @@ testee = {
     "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
     "zone_type": "city",
     "parent_id": "admin:osm:relation:71525",
-    "codes": [{"name": "ref:FR:MGP", "value": "T1"}, {"name": "ref:INSEE", "value": "75056"},],
+    "codes": [{"name": "ref:FR:MGP", "value": "T1"}, {"name": "ref:INSEE", "value": "75056"}],
     "names": {
         "br": "Pariz",
         "ca": "París",
@@ -107,7 +107,7 @@ testee_nok = {
     "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
     "zone_type": "state",
     "parent_id": "admin:osm:relation:71525",
-    "codes": [{"name": "ref:FR:MGP", "value": "T1"}, {"name": "ref:INSEE", "value": "75056"},],
+    "codes": [{"name": "ref:FR:MGP", "value": "T1"}, {"name": "ref:INSEE", "value": "75056"}],
     "names": {
         "br": "Pariz",
         "ca": "París",

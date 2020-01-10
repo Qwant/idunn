@@ -23,10 +23,7 @@ def test_v1_status_es_red(mimir_es):
     response = client.get("http://localhost/v1/status")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "es": {"reachable": True, "running": False},
-        "ready": False,
-    }
+    assert response.json() == {"es": {"reachable": True, "running": False}, "ready": False}
 
 
 @patch.object(ClusterClient, "health")
@@ -37,7 +34,4 @@ def test_v1_status_es_unreachable(mock_es_health, mimir_es):
     response = client.get("http://localhost/v1/status")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "es": {"reachable": False, "running": False},
-        "ready": False,
-    }
+    assert response.json() == {"es": {"reachable": False, "running": False}, "ready": False}

@@ -101,7 +101,7 @@ class WikidataConnector:
             with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
                 resp = (
                     cls._wiki_es.search(
-                        index=wiki_index, body={"filter": {"term": {"wikibase_item": wikidata_id}}},
+                        index=wiki_index, body={"filter": {"term": {"wikibase_item": wikidata_id}}}
                     )
                     .get("hits", {})
                     .get("hits", [])
@@ -258,7 +258,7 @@ def fetch_closest(lat, lon, max_distance, es):
     es_addrs = es_addrs.get("hits", {}).get("hits", [])
     if len(es_addrs) == 0:
         raise HTTPException(
-            status_code=404, detail=f"nothing around {lat}:{lon} within {max_distance}m...",
+            status_code=404, detail=f"nothing around {lat}:{lon} within {max_distance}m..."
         )
     return es_addrs[0]
 

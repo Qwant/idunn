@@ -4,7 +4,7 @@ from idunn.places import POI
 
 def test_website_block():
     web_block = WebSiteBlock.from_es(
-        POI({"properties": {"contact:website": "http://www.pershinghall.com"}}), lang="en",
+        POI({"properties": {"contact:website": "http://www.pershinghall.com"}}), lang="en"
     )
 
     assert web_block == WebSiteBlock(url="http://www.pershinghall.com")
