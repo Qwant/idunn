@@ -1,2 +1,2 @@
-SOURCE_OSM = 'osm'
-SOURCE_PAGESJAUNES = 'pages_jaunes'
+SOURCE_OSM = "osm"
+SOURCE_PAGESJAUNES = "pages_jaunes"

@@ -3,7 +3,7 @@ from .base import BasePlace
 
 
 class Latlon(BasePlace):
-    PLACE_TYPE = 'latlon'
+    PLACE_TYPE = "latlon"
 
     def __init__(self, lat, lon, closest_address=None):
         self.lat = round(float(lat), 5)
@@ -17,13 +17,10 @@ class Latlon(BasePlace):
         return None
 
     def get_id(self):
-        return f'latlon:{self.lat:.5f}:{self.lon:.5f}'
+        return f"latlon:{self.lat:.5f}:{self.lon:.5f}"
 
     def get_local_name(self):
-        return f'{self.lat:.5f} : {self.lon:.5f}'
+        return f"{self.lat:.5f} : {self.lon:.5f}"
 
     def get_coord(self):
-        return {
-            'lat': self.lat,
-            'lon': self.lon
-        }
+        return {"lat": self.lat, "lon": self.lon}

@@ -9,15 +9,22 @@ from pydantic import BaseModel, conint, constr
 from typing import ClassVar, List, Optional
 
 from .base import BaseBlock
-from .opening_hour import get_tz, get_coord, tz, parse_time_block, get_days, OpeningHoursType
+from .opening_hour import (
+    get_tz,
+    get_coord,
+    tz,
+    parse_time_block,
+    get_days,
+    OpeningHoursType,
+)
 
 
 logger = logging.getLogger(__name__)
 
 
 class YesNoAnswer(str, Enum):
-    yes = 'yes'
-    no = 'no'
+    yes = "yes"
+    no = "no"
 
 
 class DaysType(BaseModel):
@@ -28,10 +35,10 @@ class DaysType(BaseModel):
 
 
 class HappyHourBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = 'happy_hours'
-    STATUSES: ClassVar = ['yes', 'no']
+    BLOCK_TYPE: ClassVar = "happy_hours"
+    STATUSES: ClassVar = ["yes", "no"]
 
-    status: YesNoAnswer # bound to STATUSES
+    status: YesNoAnswer  # bound to STATUSES
     next_transition_datetime: Optional[str]
     seconds_before_next_transition: Optional[int]
     raw: str
@@ -44,7 +51,7 @@ class HappyHourBlock(BaseBlock):
             next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
             raw=oh.field,
-            days=get_days(cls, oh, poi_dt)
+            days=get_days(cls, oh, poi_dt),
         )
 
     @classmethod

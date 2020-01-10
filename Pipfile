@@ -9,6 +9,7 @@ lovely-pytest-docker = "*"
 freezegun = "*"
 ipython = "*"
 responses = "*"
+black = "==19.10b0"
 
 [packages]
 fastapi="==0.45.*"

@@ -13,14 +13,16 @@ def get_event_information_complete_fields():
     returns an DescriptionEvent with all features (type, description, free_text, pricing_info)
     """
     return DescriptionEvent.from_es(
-        Event({
-            "type": "event_description",
-            "description": "15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
-            "free_text": "Lectures d'albums pour les plus petits (3-6 ans). À partir de 15h. Accès libre et gratuit \n\n**Batiment**: Niveau 0-Bibliothèque jeunesse \n\n**Thèmes**: Sciences et société \n\n**Activités**: Animation",
-            "pricing_info": "Gratuit",
-            "tags": "concert;jazz"
-        }),
-        lang='en'
+        Event(
+            {
+                "type": "event_description",
+                "description": "15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
+                "free_text": "Lectures d'albums pour les plus petits (3-6 ans). À partir de 15h. Accès libre et gratuit \n\n**Batiment**: Niveau 0-Bibliothèque jeunesse \n\n**Thèmes**: Sciences et société \n\n**Activités**: Animation",
+                "pricing_info": "Gratuit",
+                "tags": "concert;jazz",
+            }
+        ),
+        lang="en",
     )
 
 
@@ -29,12 +31,14 @@ def get_event_information_missing_fields():
     returns an DescriptionEvent with feature free_text missing
     """
     return DescriptionEvent.from_es(
-        Event({
-            "type": "event_description",
-            "description": "15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
-            "pricing_info": "Gratuit"
-        }),
-        lang='en'
+        Event(
+            {
+                "type": "event_description",
+                "description": "15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
+                "pricing_info": "Gratuit",
+            }
+        ),
+        lang="en",
     )
 
 
@@ -42,11 +46,7 @@ def get_event_information_no_fields():
     """
     returns an DescriptionEvent with no features
     """
-    return DescriptionEvent.from_es(
-        Event({
-        }),
-        lang='en'
-    )
+    return DescriptionEvent.from_es(Event({}), lang="en")
 
 
 def test_event_information_complete():
@@ -60,7 +60,7 @@ def test_event_information_complete():
         description="15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
         free_text="Lectures d'albums pour les plus petits (3-6 ans). À partir de 15h. Accès libre et gratuit \n\n**Batiment**: Niveau 0-Bibliothèque jeunesse \n\n**Thèmes**: Sciences et société \n\n**Activités**: Animation",
         price="Gratuit",
-        tags=['concert','jazz']
+        tags=["concert", "jazz"],
     )
 
 
@@ -75,7 +75,7 @@ def test_event_information_missing_fields():
         description="15h-16h [LECTURES D'ALBUMS] Pour les petits (3-6 ans). Accès libre et gratuit.",
         free_text=None,
         price="Gratuit",
-        tags=[]
+        tags=[],
     )
 
 

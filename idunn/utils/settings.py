@@ -6,7 +6,7 @@ import logging
 
 
 def _load_yaml_file(file):
-    with open(file, 'r') as default:
+    with open(file, "r") as default:
         return yaml.safe_load(default)
 
 
@@ -44,7 +44,9 @@ class SettingsComponent:
         """
         load the default config from a default_settings.yaml in the same directory
         """
-        default_config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'default_settings.yaml')
+        default_config_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "default_settings.yaml"
+        )
         self._settings.update(_load_yaml_file(default_config_path))
 
     def _load_specific_config(self, project_name):
@@ -52,7 +54,7 @@ class SettingsComponent:
         load settings from a yaml file whose pth in given
         with the env var {project}_CONFIG_FILE (eg. IDUNN_CONFIG_FILE for the IDUNN project)
         """
-        path = os.environ.get(f'{project_name}_CONFIG_FILE')
+        path = os.environ.get(f"{project_name}_CONFIG_FILE")
         if path:
             self._settings.update(_load_yaml_file(path))
 
@@ -63,11 +65,11 @@ class SettingsComponent:
         eg. IDUNN_ES to override the "ES" settings in the IDUNN project.
         """
         for k in self._settings.keys():
-            overridden_value = os.environ.get(f'{project_name}_{k}')
+            overridden_value = os.environ.get(f"{project_name}_{k}")
             if overridden_value:
-                if overridden_value.lower() == 'true':
+                if overridden_value.lower() == "true":
                     overridden_value = True
-                elif overridden_value.lower() == 'false':
+                elif overridden_value.lower() == "false":
                     overridden_value = False
                 self._settings[k] = overridden_value
 
@@ -86,4 +88,4 @@ class SettingsComponent:
         return self._settings[name]
 
 
-settings = SettingsComponent('IDUNN')
+settings = SettingsComponent("IDUNN")

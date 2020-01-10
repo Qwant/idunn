@@ -17,7 +17,7 @@ class ParticleType(BaseModel):
 
 
 class AirQuality(BaseBlock):
-    BLOCK_TYPE: ClassVar = 'air_quality'
+    BLOCK_TYPE: ClassVar = "air_quality"
 
     CO: Optional[ParticleType] = None
     PM10: Optional[ParticleType] = None
@@ -31,14 +31,13 @@ class AirQuality(BaseBlock):
     source_url: str
     measurements_unit: Optional[str] = None
 
-
     @classmethod
     def from_es(cls, place, lang):
-        if not settings['BLOCK_AIR_QUALITY_ENABLED']:
+        if not settings["BLOCK_AIR_QUALITY_ENABLED"]:
             return None
-        if place.PLACE_TYPE != 'admin':
+        if place.PLACE_TYPE != "admin":
             return None
-        if place.get('zone_type') not in ('city', 'city_district', 'suburb'):
+        if place.get("zone_type") not in ("city", "city_district", "suburb"):
             return None
 
         bbox = place.get_bbox()
@@ -48,16 +47,16 @@ class AirQuality(BaseBlock):
         try:
             air_quality = get_air_quality(bbox)
         except Exception:
-            logger.warning('Failed to fetch air quality for %s', place.get_id(), exc_info=True)
+            logger.warning("Failed to fetch air quality for %s", place.get_id(), exc_info=True)
             return None
 
         if not air_quality:
             return None
-        for x in ['CO', 'PM10', 'O3', 'NO2', 'SO2', 'PM2_5']:
+        for x in ["CO", "PM10", "O3", "NO2", "SO2", "PM2_5"]:
             if x not in air_quality:
                 continue
             entry = air_quality.get(x)
-            if entry == {} or entry.get('value') is None:
+            if entry == {} or entry.get("value") is None:
                 air_quality[x] = None
 
         return cls(**air_quality)

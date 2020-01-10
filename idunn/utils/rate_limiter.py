@@ -25,7 +25,7 @@ class IdunnRateLimiter:
 
     def _init_limiter(self):
         try:
-            redis_pool = get_redis_pool(db=settings['RATE_LIMITER_REDIS_DB'])
+            redis_pool = get_redis_pool(db=settings["RATE_LIMITER_REDIS_DB"])
         except RedisNotConfigured:
             logger.warning("Redis URL not configured: rate limiter not started")
             self._limiter = None
@@ -39,7 +39,7 @@ class IdunnRateLimiter:
                 resource=self.resource,
                 max_requests=self.max_requests,
                 expire=self.expire,
-                redis_pool=redis_pool
+                redis_pool=redis_pool,
             )
 
     def limit(self, client, ignore_redis_error=False):
@@ -54,8 +54,9 @@ class IdunnRateLimiter:
             except RedisError as e:
                 if ignore_redis_error:
                     logger.warning(
-                        'Ignoring RedisError in rate limiter for %s',
-                        self._limiter.resource, exc_info=True
+                        "Ignoring RedisError in rate limiter for %s",
+                        self._limiter.resource,
+                        exc_info=True,
                     )
                     yield
                 else:
@@ -64,9 +65,9 @@ class IdunnRateLimiter:
         return limit()
 
     def check_limit_per_client(self, request):
-        client_id = request.headers.get('x-client-hash') or 'default'
+        client_id = request.headers.get("x-client-hash") or "default"
         try:
             with self.limit(client=client_id, ignore_redis_error=True):
                 pass
         except TooManyRequestsException:
-            raise HTTPException(status_code=429, detail='Too Many Requests')
+            raise HTTPException(status_code=429, detail="Too Many Requests")

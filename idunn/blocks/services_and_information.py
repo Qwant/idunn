@@ -13,10 +13,10 @@ class AccessibilityBlock(BaseBlock):
     STATUS_UNKNOWN: ClassVar = "unknown"
 
     wheelchair: constr(
-        regex='({})'.format('|'.join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
+        regex="({})".format("|".join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
     )
     toilets_wheelchair: constr(
-        regex='({})'.format('|'.join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
+        regex="({})".format("|".join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
     )
 
     @classmethod
@@ -44,16 +44,10 @@ class AccessibilityBlock(BaseBlock):
         else:
             toilets_wheelchair = cls.STATUS_UNKNOWN
 
-        if all(
-            s == cls.STATUS_UNKNOWN
-            for s in (wheelchair, toilets_wheelchair)
-        ):
+        if all(s == cls.STATUS_UNKNOWN for s in (wheelchair, toilets_wheelchair)):
             return None
 
-        return cls(
-            wheelchair=wheelchair,
-            toilets_wheelchair=toilets_wheelchair,
-        )
+        return cls(wheelchair=wheelchair, toilets_wheelchair=toilets_wheelchair,)
 
 
 class InternetAccessBlock(BaseBlock):
@@ -101,7 +95,7 @@ def get_diet_status(diet_kind, data):
     return {
         CuisineBlock.STATUS_YES: CuisineBlock.STATUS_YES,
         CuisineBlock.STATUS_NO: CuisineBlock.STATUS_NO,
-        CuisineBlock.STATUS_ONLY: CuisineBlock.STATUS_ONLY
+        CuisineBlock.STATUS_ONLY: CuisineBlock.STATUS_ONLY,
     }.get(info, CuisineBlock.STATUS_UNKNOWN)
 
 
@@ -133,22 +127,21 @@ class CuisineBlock(BaseBlock):
         cuisines = []
         if cuisine is not None:
             cuisines = [Cuisine(name=b) for b in cuisine.split(";")]
-        elif (vegetarian == cls.STATUS_UNKNOWN and
-              vegan == cls.STATUS_UNKNOWN and
-              gluten_free == cls.STATUS_UNKNOWN):
+        elif (
+            vegetarian == cls.STATUS_UNKNOWN
+            and vegan == cls.STATUS_UNKNOWN
+            and gluten_free == cls.STATUS_UNKNOWN
+        ):
             return None
 
-        return cls(cuisines=cuisines,
-                   vegetarian=vegetarian,
-                   vegan=vegan,
-                   gluten_free=gluten_free)
+        return cls(cuisines=cuisines, vegetarian=vegetarian, vegan=vegan, gluten_free=gluten_free,)
 
 
 class ServicesAndInformationBlock(BaseBlock):
     BLOCK_TYPE: ClassVar = "services_and_information"
 
     blocks: List[BaseBlock] = BlocksValidator(
-        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]
+        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock,]
     )
 
     @classmethod

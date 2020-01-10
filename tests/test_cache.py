@@ -10,16 +10,17 @@ from .test_rate_limiter import mock_wikipedia
 from functools import wraps
 import pytest
 
+
 @pytest.fixture(scope="function")
 def cache_test_normal(redis):
     """
     We define here settings specific to the
     test of the Wikipedia/Wikidata cache
     """
-    settings._settings['REDIS_URL'] = redis
+    settings._settings["REDIS_URL"] = redis
     WikipediaCache._connection = None
     yield
-    settings._settings['REDIS_URL'] = None
+    settings._settings["REDIS_URL"] = None
     WikipediaCache._connection = None
 
 
@@ -33,15 +34,13 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia):
     """
     We make a first request for the louvre museum POI
     """
-    response = client.get(
-       url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
-    )
+    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es",)
     resp = response.json()
     """
     One request requires 2 wikipedia API calls
     """
     assert len(mock_wikipedia.calls) == 2
-    assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
+    assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
 
     """
     We make another request to the same POI which
@@ -49,13 +48,13 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia):
     As a result no more Wikipedia call should be
     made
     """
-    response = client.get(
-       url=f'http://localhost/v1/pois/osm:relation:7515426?lang=es',
-    )
+    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es",)
     resp = response.json()
 
-    assert len(mock_wikipedia.calls) == 2 # the same number of requests as before
-    assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have a wikipedia block
+    assert len(mock_wikipedia.calls) == 2  # the same number of requests as before
+    assert any(
+        b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks")
+    )  # we still have a wikipedia block
 
 
 def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
@@ -71,13 +70,9 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
         the information are expected to be in
         the Wiki ES
         """
-        rsps.add('GET',
-             re.compile(r'^https://.*\.wikipedia.org/'),
-             status=200)
+        rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(
-            url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
-        )
+        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
 
         assert response.status_code == 200
         resp = response.json()
@@ -85,7 +80,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
         We should have a "wikipedia" block in the
         answer
         """
-        assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
+        assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
 
         with monkeypatch.context() as m:
             """
@@ -120,13 +115,13 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             in the "get_wiki_info()" method
             """
             for i in range(10):
-                response = client.get(
-                    url=f'http://localhost/v1/pois/osm:way:7777777?lang=fr',
-                )
+                response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
                 resp = response.json()
-                assert any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks')) # we still have the wikipedia block
+                assert any(
+                    b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks")
+                )  # we still have the wikipedia block
 
-            assert len(rsps.calls) == 0 # Wikipedia API has never been called
+            assert len(rsps.calls) == 0  # Wikipedia API has never been called
 
 
 def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia):
@@ -134,17 +129,16 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia):
     Wikipedia should NOT be called if cache is enabled in settings,
     and redis is not reachable
     """
+
     def fake_get(*args):
         # A method 'get' for Redis,
         # that behaves as if redis is not available
         raise RedisError
 
-    with mock.patch.object(Redis, 'get', fake_get):
+    with mock.patch.object(Redis, "get", fake_get):
         client = TestClient(app)
-        response = client.get(
-            url='http://localhost/v1/pois/osm:relation:7515426?lang=es',
-        )
+        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es",)
         assert response.status_code == 200
         resp = response.json()
         assert len(mock_wikipedia.calls) == 0
-        assert not any(b['type'] == "wikipedia" for b in resp['blocks'][2].get('blocks'))
+        assert not any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))

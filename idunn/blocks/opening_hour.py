@@ -34,8 +34,8 @@ def get_coord(es_poi):
     """
     coord = es_poi.get_coord()
     if coord:
-        lon = coord.get('lon')
-        lat = coord.get('lat')
+        lon = coord.get("lon")
+        lat = coord.get("lat")
         return (lat, lon)
     return None
 
@@ -47,8 +47,8 @@ class OpeningHoursType(BaseModel):
 
 class DaysType(BaseModel):
     dayofweek: conint(ge=1, le=7)
-    local_date: str # should be date but for some reason, fastapi jsonable_encoder just don't care
-    status: constr(regex='(open|closed)')
+    local_date: str  # should be date but for some reason, fastapi jsonable_encoder just don't care
+    status: constr(regex="(open|closed)")
     opening_hours: List[OpeningHoursType]
 
 
@@ -64,19 +64,21 @@ def parse_time_block(cls, es_poi, lang, raw):
     poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
 
     if poi_tz is None:
-        logger.info("No timezone found for poi %s", es_poi.get('id'))
+        logger.info("No timezone found for poi %s", es_poi.get("id"))
         return None
 
     hoh_args = {}
-    if any(k in raw for k in ['sunset', 'sunrise', 'dawn', 'dusk']):
+    if any(k in raw for k in ["sunset", "sunrise", "dawn", "dusk"]):
         # Optimization: use astral location only when necessary
-        hoh_args['location'] = (poi_lat, poi_lon, poi_tzname, 24)
+        hoh_args["location"] = (poi_lat, poi_lon, poi_tzname, 24)
     try:
         oh = hoh.OHParser(raw, **hoh_args)
     except (HOHError, LarkError):
         logger.info(
             "Failed to parse happy_hours field, id:'%s' raw:'%s'",
-            es_poi.get_id(), raw, exc_info=True
+            es_poi.get_id(),
+            raw,
+            exc_info=True,
         )
         return None
 
@@ -87,7 +89,7 @@ def parse_time_block(cls, es_poi, lang, raw):
     else:
         status = cls.STATUSES[1]
 
-    if cls.BLOCK_TYPE == OpeningHourBlock.BLOCK_TYPE and (raw == '24/7' or oh.is_24_7):
+    if cls.BLOCK_TYPE == OpeningHourBlock.BLOCK_TYPE and (raw == "24/7" or oh.is_24_7):
         return cls.init_class(status, None, None, oh, poi_dt, raw)
 
     # The current version of the hoh lib doesn't allow to use the next_change() function
@@ -96,7 +98,11 @@ def parse_time_block(cls, es_poi, lang, raw):
     try:
         nt = oh.next_change(dt=poi_dt.replace(tzinfo=None))
     except HOHError:
-        logger.info("HOHError: Failed to compute next transition for poi %s", es_poi.get('id'), exc_info=True)
+        logger.info(
+            "HOHError: Failed to compute next transition for poi %s",
+            es_poi.get("id"),
+            exc_info=True,
+        )
         return None
 
     # Then we localize the next_change transition datetime in the local POI timezone.
@@ -116,7 +122,7 @@ def round_dt_to_minute(dt):
 
 
 def round_time_to_minute(t):
-    dt = datetime.combine(date(2000,1,1), t)
+    dt = datetime.combine(date(2000, 1, 1), t)
     rounded = round_dt_to_minute(dt)
     return rounded.time()
 
@@ -124,15 +130,15 @@ def round_time_to_minute(t):
 def get_days(cls, oh_parser, dt):
     last_monday = dt.date() - timedelta(days=dt.weekday())
     days = []
-    for x in range(0,7):
+    for x in range(0, 7):
         day = last_monday + timedelta(days=x)
         oh_day = oh_parser.get_day(day)
         periods = oh_day.opening_periods()
         day_value = {
-            'dayofweek': day.isoweekday(),
-            'local_date': day.isoformat(),
-            'status': cls.STATUSES[0] if len(periods) > 0 else cls.STATUSES[1],
-            cls.BLOCK_TYPE: []
+            "dayofweek": day.isoweekday(),
+            "local_date": day.isoformat(),
+            "status": cls.STATUSES[0] if len(periods) > 0 else cls.STATUSES[1],
+            cls.BLOCK_TYPE: [],
         }
         for beginning_dt, end_dt in periods:
             if beginning_dt.date() < day:
@@ -140,20 +146,17 @@ def get_days(cls, oh_parser, dt):
             beginning = round_time_to_minute(beginning_dt.time())
             end = round_time_to_minute(end_dt.time())
             day_value[cls.BLOCK_TYPE].append(
-                {
-                    'beginning': beginning.strftime('%H:%M'),
-                    'end': end.strftime('%H:%M')
-                }
+                {"beginning": beginning.strftime("%H:%M"), "end": end.strftime("%H:%M")}
             )
         days.append(day_value)
     return days
 
 
 class OpeningHourBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = 'opening_hours'
-    STATUSES: ClassVar = ['open', 'closed']
+    BLOCK_TYPE: ClassVar = "opening_hours"
+    STATUSES: ClassVar = ["open", "closed"]
 
-    status: constr(regex='({})'.format('|'.join(STATUSES)))
+    status: constr(regex="({})".format("|".join(STATUSES)))
     next_transition_datetime: Optional[str]
     seconds_before_next_transition: Optional[int]
     is_24_7: bool
@@ -162,17 +165,17 @@ class OpeningHourBlock(BaseBlock):
 
     @classmethod
     def init_class(cls, status, next_transition_datetime, time_before_next, oh, poi_dt, raw):
-        if raw == '24/7' or oh.is_24_7:
+        if raw == "24/7" or oh.is_24_7:
             return cls(
                 status=status,
                 next_transition_datetime=None,
                 seconds_before_next_transition=None,
                 is_24_7=True,
                 raw=oh.field,
-                days=get_days(cls, oh, poi_dt)
+                days=get_days(cls, oh, poi_dt),
             )
 
-        if all(r.status == 'closed' for r in oh.rules):
+        if all(r.status == "closed" for r in oh.rules):
             # Ignore opening_hours such as "Apr 1-Sep 30: off", causing overflow
             return None
 
@@ -182,7 +185,7 @@ class OpeningHourBlock(BaseBlock):
             seconds_before_next_transition=time_before_next,
             is_24_7=oh.is_24_7,
             raw=oh.field,
-            days=get_days(cls, oh, poi_dt)
+            days=get_days(cls, oh, poi_dt),
         )
 
     @classmethod
