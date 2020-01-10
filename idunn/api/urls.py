@@ -48,7 +48,7 @@ def get_api_urls(settings):
             "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
             get_directions,
             response_model=DirectionsResponse,
-            responses={400: {"description": "Requested Path Not Allowed."},},
+            responses={422: {"description": "Requested Path Not Allowed."}},
         ),
         # Geocoding
         APIRoute(

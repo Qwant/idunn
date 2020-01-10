@@ -44,7 +44,7 @@ def get_directions(
 
         if not allowed_zone:
             raise HTTPException(
-                status_code=400,
+                status_code=422,
                 detail="requested path is not inside an allowed area for public transports",
             )
 
