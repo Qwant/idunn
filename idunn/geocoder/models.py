@@ -109,12 +109,17 @@ class GeocodingResponse(BaseModel):
     locality: Optional[str]
     postcode: Optional[str]
     city: Optional[str]
-    #  accuracy: Optional[PositiveInt]
-    #  district: Optional[str]
-    #  country: Optional[str]
-    #  state: Optional[str]
-    #  country: Optional[str]
-    #  geohash: Optional[str]
+
+    # The following fields are part of the GeocodeJson specification but are
+    # currently disabled in Bragi:
+    # https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs#L194-L199
+    #
+    # accuracy: Optional[PositiveInt]
+    # district: Optional[str]
+    # country: Optional[str]
+    # state: Optional[str]
+    # country: Optional[str]
+    # geohash: Optional[str]
 
     # From CanalTP/mimirsbrunn:libs/bragi/src/model.rs
     id: str
@@ -135,8 +140,6 @@ class GeocodingResponse(BaseModel):
     bbox: Optional[Rect]
     country_codes: List[str] = []
 
-GeocodingResponse.update_forward_refs()
-
 
 class FeatureProperties(BaseModel):
     geocoding: GeocodingResponse
@@ -146,8 +149,6 @@ class Explaination(BaseModel):
     value: float
     description: str
     details: List['Explaination']
-
-Explaination.update_forward_refs()
 
 
 class Context(BaseModel):
@@ -175,3 +176,7 @@ class GeocodeJson(BaseModel):
     type: str = 'FeatureCollection'
     geocoding: Geocoding = Geocoding()
     features: List[Feature]
+
+
+GeocodingResponse.update_forward_refs()
+Explaination.update_forward_refs()
