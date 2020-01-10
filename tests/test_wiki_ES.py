@@ -68,7 +68,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
-            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"},
+            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
 
         for i in range(10):
@@ -88,11 +88,11 @@ def test_WIKI_ES_KO(wiki_client_ko):
         assert resp["blocks"][1]["type"] == "phone"
         assert resp["blocks"][0]["is_24_7"] == False
         assert resp.get("blocks")[2].get("blocks")[0].get("blocks") == [
-            {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown",},
+            {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown"},
             {"type": "internet_access", "wifi": True},
             {
                 "type": "brewery",
-                "beers": [{"name": "Tripel Karmeliet"}, {"name": "Delirium"}, {"name": "Chouffe"},],
+                "beers": [{"name": "Tripel Karmeliet"}, {"name": "Delirium"}, {"name": "Chouffe"}],
             },
         ]
 
@@ -125,7 +125,7 @@ def test_undefined_WIKI_ES(undefine_wiki_es):
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
-            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"},
+            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
 
         for i in range(10):
@@ -168,11 +168,11 @@ def test_POI_not_in_WIKI_ES():
         assert resp["blocks"][1]["type"] == "phone"
         assert resp["blocks"][0]["is_24_7"] == False
         assert resp.get("blocks")[2].get("blocks")[0].get("blocks") == [
-            {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown",},
+            {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown"},
             {"type": "internet_access", "wifi": True},
             {
                 "type": "brewery",
-                "beers": [{"name": "Tripel Karmeliet"}, {"name": "Delirium"}, {"name": "Chouffe"},],
+                "beers": [{"name": "Tripel Karmeliet"}, {"name": "Delirium"}, {"name": "Chouffe"}],
             },
         ]
 
@@ -186,7 +186,7 @@ def test_no_lang_WIKI_ES():
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
-            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"},
+            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
 
         """

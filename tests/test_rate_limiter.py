@@ -141,7 +141,7 @@ def test_rate_limiter_without_redis():
 
     with responses.RequestsMock() as rsps:
         rsps.add(
-            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"},
+            "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
         for i in range(10):
             response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es",)

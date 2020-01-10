@@ -78,7 +78,7 @@ def init_indices(mimir_client, wiki_client):
                 },
                 "poi_type": {
                     "properties": {
-                        "name": {"type": "string", "index_options": "docs", "analyzer": "word",}
+                        "name": {"type": "string", "index_options": "docs", "analyzer": "word"}
                     }
                 },
             },

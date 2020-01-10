@@ -655,7 +655,7 @@ def test_invalid_bbox():
     resp = response.json()
 
     assert resp == {
-        "detail": [{"loc": ["bbox"], "msg": "bbox dimensions are invalid", "type": "value_error",}]
+        "detail": [{"loc": ["bbox"], "msg": "bbox dimensions are invalid", "type": "value_error"}]
     }
 
     response = client.get(
@@ -667,9 +667,7 @@ def test_invalid_bbox():
     resp = response.json()
 
     assert resp == {
-        "detail": [
-            {"loc": ["bbox"], "msg": "bbox should contain 4 numbers", "type": "value_error",}
-        ]
+        "detail": [{"loc": ["bbox"], "msg": "bbox should contain 4 numbers", "type": "value_error"}]
     }
 
 
@@ -796,8 +794,5 @@ def test_endpoint_categories():
     categories = resp["categories"]
 
     assert len(categories) == 12
-    assert categories[0] == {
-        "name": "restaurant",
-        "raw_filters": ["restaurant,*", "fast_food,*"],
-    }
+    assert categories[0] == {"name": "restaurant", "raw_filters": ["restaurant,*", "fast_food,*"]}
     assert categories[1] == {"name": "hotel", "raw_filters": ["*,hotel"]}

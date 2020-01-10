@@ -24,7 +24,4 @@ def get_status():
     # the 'ready' is used as the readyness probe.
     # for the moment idunn is ready if ES is reachable
     ready = es_cluster_health
-    return {
-        "es": {"reachable": es_reachable, "running": es_cluster_health},
-        "ready": ready,
-    }
+    return {"es": {"reachable": es_reachable, "running": es_cluster_health}, "ready": ready}

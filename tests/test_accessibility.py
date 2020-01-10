@@ -6,7 +6,7 @@ from idunn.places import POI
 
 def test_accessibility_block():
     web_block = AccessibilityBlock.from_es(
-        POI({"properties": {"wheelchair": "limited", "toilets:wheelchair": "no"}}), lang="en",
+        POI({"properties": {"wheelchair": "limited", "toilets:wheelchair": "no"}}), lang="en"
     )
 
     assert web_block == AccessibilityBlock(wheelchair="partial", toilets_wheelchair="no")
@@ -62,7 +62,7 @@ def test_wheelchair():
             "blocks": [
                 {
                     "blocks": [
-                        {"toilets_wheelchair": "yes", "type": "accessibility", "wheelchair": "yes",}
+                        {"toilets_wheelchair": "yes", "type": "accessibility", "wheelchair": "yes"}
                     ],
                     "type": "services_and_information",
                 }

@@ -134,7 +134,7 @@ class CuisineBlock(BaseBlock):
         ):
             return None
 
-        return cls(cuisines=cuisines, vegetarian=vegetarian, vegan=vegan, gluten_free=gluten_free,)
+        return cls(cuisines=cuisines, vegetarian=vegetarian, vegan=vegan, gluten_free=gluten_free)
 
 
 class ServicesAndInformationBlock(BaseBlock):
