@@ -20,10 +20,8 @@ rate_limiter = IdunnRateLimiter(
 
 
 def get_directions(
-    f_lon: float,
-    f_lat: float,
-    t_lon: float,
-    t_lat: float,  # URL values
+    response: Response,
+    f_lon: float, f_lat: float, t_lon: float, t_lat: float, # URL values
     request: Request,
     type: constr(min_length=1),
     language: str = "en",  # query parameters
@@ -48,11 +46,10 @@ def get_directions(
                 detail="requested path is not inside an allowed area for public transports",
             )
 
-    headers = {"cache-control": "max-age={}".format(settings["DIRECTIONS_CLIENT_CACHE"])}
+    response.headers['cache-control'] = (
+        'max-age={}'.format(settings['DIRECTIONS_CLIENT_CACHE'])
+    )
 
-    return Response(
-        content=directions_client.get_directions(
-            from_position, to_position, type, language, params=request.query_params
-        ),
-        headers=headers,
+    return directions_client.get_directions(
+        from_position, to_position, type, language, params=request.query_params
     )
