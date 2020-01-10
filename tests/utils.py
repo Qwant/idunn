@@ -43,14 +43,17 @@ def enable_kuzzle():
     with override_settings({"KUZZLE_CLUSTER_URL": "http://localhost:7512"}):
         yield
 
+
 @contextmanager
 def enable_weather_api():
     """
     We define here settings specific to tests.
     We define kuzzle address and port
     """
-    with override_settings({
-        'WEATHER_API_URL': "http://api.openweathermap.org/data/2.5/weather?lat=48.5&lon=2.5&mode=json&appid=key&lang=fr",
-        'WEATHER_API_KEY': "key",
-        }):
+    with override_settings(
+        {
+            "WEATHER_API_URL": "http://api.openweathermap.org/data/2.5/weather?lat=48.5&lon=2.5&mode=json&appid=key&lang=fr",
+            "WEATHER_API_KEY": "key",
+        }
+    ):
         yield

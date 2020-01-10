@@ -163,7 +163,9 @@ class WikipediaBlock(BaseBlock):
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = RedisWrapper.cache_it(key, es_poi.get_wiki_info)(wikidata_id, wiki_index)
+                    wiki_poi_info = RedisWrapper.cache_it(key, es_poi.get_wiki_info)(
+                        wikidata_id, wiki_index
+                    )
                     if wiki_poi_info is not None:
                         return cls(
                             url=wiki_poi_info.get("url"),
@@ -191,15 +193,15 @@ class WikipediaBlock(BaseBlock):
                 wiki_lang = wiki_lang.lower()
                 if wiki_lang != lang:
                     key = GET_TITLE_IN_LANGUAGE + "_" + wiki_title + "_" + wiki_lang + "_" + lang
-                    wiki_title = RedisWrapper.cache_it(key, cls._wiki_session.get_title_in_language)(
-                        title=wiki_title,
-                        source_lang=wiki_lang,
-                        dest_lang=lang
-                    )
+                    wiki_title = RedisWrapper.cache_it(
+                        key, cls._wiki_session.get_title_in_language
+                    )(title=wiki_title, source_lang=wiki_lang, dest_lang=lang)
 
         if wiki_title:
             key = GET_SUMMARY + "_" + wiki_title + "_" + lang
-            wiki_summary = RedisWrapper.cache_it(key, cls._wiki_session.get_summary)(wiki_title, lang=lang)
+            wiki_summary = RedisWrapper.cache_it(key, cls._wiki_session.get_summary)(
+                wiki_title, lang=lang
+            )
             if wiki_summary:
                 return cls(
                     url=wiki_summary.get("content_urls", {}).get("desktop", {}).get("page", ""),

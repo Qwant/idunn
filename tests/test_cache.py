@@ -17,10 +17,10 @@ def cache_test_normal(redis):
     We define here settings specific to the
     test of the Wikipedia/Wikidata cache
     """
-    settings._settings['REDIS_URL'] = redis
+    settings._settings["REDIS_URL"] = redis
     RedisWrapper._connection = None
     yield
-    settings._settings['REDIS_URL'] = None
+    settings._settings["REDIS_URL"] = None
     RedisWrapper._connection = None
 
 

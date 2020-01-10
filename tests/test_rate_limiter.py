@@ -20,7 +20,6 @@ def disable_wikipedia_cache():
     RedisWrapper._connection = None
 
 
-
 @pytest.fixture(scope="function")
 def limiter_test_normal(redis, disable_wikipedia_cache):
     """
@@ -53,7 +52,7 @@ def limiter_test_interruption(redis, disable_wikipedia_cache):
     WikipediaSession._rate_limiter = None
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def mock_wikipedia(redis):
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
@@ -233,7 +232,6 @@ def test_rate_limiter_with_redisError(limiter_test_interruption, mock_wikipedia,
     Here the redis is on so the answer should contain the wikipedia block
     """
     assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
-
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)

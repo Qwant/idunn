@@ -7,7 +7,7 @@ from idunn.utils import prometheus
 logger = logging.getLogger(__name__)
 REDIS_TIMEOUT = float(settings["REDIS_TIMEOUT"])
 
-DISABLED_STATE = object() # Used to flag cache as disabled by settings
+DISABLED_STATE = object()  # Used to flag cache as disabled by settings
 
 
 class RedisNotConfigured(RedisError):
@@ -28,11 +28,7 @@ def get_redis_pool(db):
     if not redis_url.startswith("redis://"):
         redis_url = "redis://" + redis_url
 
-    return ConnectionPool.from_url(
-        url=redis_url,
-        socket_timeout=REDIS_TIMEOUT,
-        db=db
-    )
+    return ConnectionPool.from_url(url=redis_url, socket_timeout=REDIS_TIMEOUT, db=db)
 
 
 class CacheNotAvailable(Exception):
@@ -63,8 +59,8 @@ class RedisWrapper:
 
     @classmethod
     def init_cache(cls):
-        cls._expire = int(settings['WIKI_CACHE_TIMEOUT'])  # seconds
-        redis_db = settings['WIKI_CACHE_REDIS_DB']
+        cls._expire = int(settings["WIKI_CACHE_TIMEOUT"])  # seconds
+        redis_db = settings["WIKI_CACHE_REDIS_DB"]
         try:
             redis_pool = get_redis_pool(db=redis_db)
         except RedisNotConfigured:
@@ -96,12 +92,13 @@ class RedisWrapper:
                     # (and fetch wikipedia content, possibly very often)
                     return None
                 if value_stored is not None:
-                    return json.loads(value_stored.decode('utf-8'))
+                    return json.loads(value_stored.decode("utf-8"))
                 result = f(*args, **kwargs)
                 json_result = json.dumps(result)
                 cls.set_value(key, json_result)
                 return result
             return f(*args, **kwargs)
+
         return with_cache
 
     @classmethod
