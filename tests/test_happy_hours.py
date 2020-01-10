@@ -7,19 +7,18 @@ from idunn.places import POI
 Most of this code comes from test_opening_hours.py
 """
 
+
 def get_moscow_poi(happy_hours):
     return HappyHourBlock.from_es(
-        POI({
-            "coord": {
-                "lon": 37.588161523500276,
-                "lat": 55.74831406552745
-            },
-            "properties": {
-                "happy_hours": happy_hours
+        POI(
+            {
+                "coord": {"lon": 37.588161523500276, "lat": 55.74831406552745},
+                "properties": {"happy_hours": happy_hours},
             }
-        }),
-        lang='en'
+        ),
+        lang="en",
     )
+
 
 @freeze_time("2018-06-14 18:30:00", tz_offset=0)
 def test_happy_hour():
@@ -32,47 +31,47 @@ def test_happy_hour():
     hh_block = get_moscow_poi("Mo-Sa 20:00-22:00; Su 12:00-14:00, 20:00-22:00")
 
     assert hh_block == HappyHourBlock(
-        type='happy_hours',
-        status='yes',
-        next_transition_datetime='2018-06-14T22:00:00+03:00',
+        type="happy_hours",
+        status="yes",
+        next_transition_datetime="2018-06-14T22:00:00+03:00",
         seconds_before_next_transition=1800,
-        raw='Mo-Sa 20:00-22:00; Su 12:00-14:00,20:00-22:00',
+        raw="Mo-Sa 20:00-22:00; Su 12:00-14:00,20:00-22:00",
         days=[
             {
                 "dayofweek": 1,
                 "local_date": "2018-06-11",
                 "status": "yes",
-                "happy_hours": [{"beginning": "20:00", "end": "22:00"}]
+                "happy_hours": [{"beginning": "20:00", "end": "22:00"}],
             },
             {
                 "dayofweek": 2,
                 "local_date": "2018-06-12",
                 "status": "yes",
-                "happy_hours": [{"beginning": "20:00", "end": "22:00"}]
+                "happy_hours": [{"beginning": "20:00", "end": "22:00"}],
             },
             {
                 "dayofweek": 3,
                 "local_date": "2018-06-13",
                 "status": "yes",
-                "happy_hours": [{"beginning": "20:00", "end": "22:00"}]
+                "happy_hours": [{"beginning": "20:00", "end": "22:00"}],
             },
             {
                 "dayofweek": 4,
                 "local_date": "2018-06-14",
                 "status": "yes",
-                "happy_hours": [{"beginning": "20:00", "end": "22:00"}]
+                "happy_hours": [{"beginning": "20:00", "end": "22:00"}],
             },
             {
                 "dayofweek": 5,
                 "local_date": "2018-06-15",
                 "status": "yes",
-                "happy_hours": [{"beginning": "20:00", "end": "22:00"}]
+                "happy_hours": [{"beginning": "20:00", "end": "22:00"}],
             },
             {
                 "dayofweek": 6,
                 "local_date": "2018-06-16",
                 "status": "yes",
-                "happy_hours": [{"beginning": "20:00", "end": "22:00"}]
+                "happy_hours": [{"beginning": "20:00", "end": "22:00"}],
             },
             {
                 "dayofweek": 7,
@@ -81,10 +80,11 @@ def test_happy_hour():
                 "happy_hours": [
                     {"beginning": "12:00", "end": "14:00"},
                     {"beginning": "20:00", "end": "22:00"},
-                ]
+                ],
             },
-        ]
+        ],
     )
+
 
 @freeze_time("2018-06-14 21:30:00", tz_offset=0)
 def test_happy_hour_over():
@@ -94,9 +94,9 @@ def test_happy_hour_over():
     """
     hh_block = get_moscow_poi("Mo-Su 10:00-22:00")
 
-    assert hh_block.status == 'no'
-    assert hh_block.next_transition_datetime == '2018-06-15T10:00:00+03:00'
+    assert hh_block.status == "no"
+    assert hh_block.next_transition_datetime == "2018-06-15T10:00:00+03:00"
     assert hh_block.seconds_before_next_transition == 34200
-    assert hh_block.raw == 'Mo-Su 10:00-22:00'
+    assert hh_block.raw == "Mo-Su 10:00-22:00"
     assert len(hh_block.days) == 7
-    assert all(d.status == 'yes' for d in hh_block.days)
+    assert all(d.status == "yes" for d in hh_block.days)

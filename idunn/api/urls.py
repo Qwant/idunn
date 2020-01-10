@@ -14,7 +14,7 @@ from ..utils.prometheus import (
 
 def get_metric_handler(settings):
     """Select the prometheus multiprocess mode or not"""
-    if settings['PROMETHEUS_MULTIPROC']:
+    if settings["PROMETHEUS_MULTIPROC"]:
         return expose_metrics_multiprocess
     return expose_metrics
 
@@ -25,26 +25,18 @@ def get_api_urls(settings):
     """
     metric_handler = get_metric_handler(settings)
     return [
-        APIRoute('/metrics', metric_handler),
-        APIRoute('/status', get_status),
-
+        APIRoute("/metrics", metric_handler),
+        APIRoute("/status", get_status),
         # Deprecated
-        APIRoute('/pois/{id}', get_poi),
-
-        APIRoute('/places', get_places_bbox),
-        APIRoute('/places/latlon:{lat}:{lon}', get_place_latlon),
-        APIRoute('/places/{id}', handle_option, methods=['OPTIONS']),
-        APIRoute('/places/{id}', get_place),
-
-        APIRoute('/categories', get_all_categories),
-
-        APIRoute('/reverse/{lat}:{lon}', closest_address),
-
+        APIRoute("/pois/{id}", get_poi),
+        APIRoute("/places", get_places_bbox),
+        APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
+        APIRoute("/places/{id}", handle_option, methods=["OPTIONS"]),
+        APIRoute("/places/{id}", get_place),
+        APIRoute("/categories", get_all_categories),
+        APIRoute("/reverse/{lat}:{lon}", closest_address),
         # Kuzzle events
-        APIRoute('/events', get_events_bbox),
-
+        APIRoute("/events", get_events_bbox),
         # Directions
-        APIRoute('/directions/{f_lon},{f_lat};{t_lon},{t_lat}',
-            get_directions
-        )
+        APIRoute("/directions/{f_lon},{f_lat};{t_lon},{t_lat}", get_directions),
     ]

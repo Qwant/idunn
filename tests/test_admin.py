@@ -6,18 +6,13 @@ def test_admin():
     admin = Admin(
         {
             "zone_type": "city",
-            "codes": [
-                {
-                    "name": "wikidata",
-                    "value": "Q7652"
-                }
-            ],
+            "codes": [{"name": "wikidata", "value": "Q7652"}],
             "names": {
                 "de": "Dünkirchen",
                 "en": "Dunkirk",
                 "es": "Dunkerque",
                 "fr": "Dunkerque",
-                "it": "Dunkerque"
+                "it": "Dunkerque",
             },
             "labels": {
                 "br": "Dunkerque (59140-59640), Norzh-Pas-de-Calais, Krec'hioù-Frañs, Bro-C'hall",
@@ -25,11 +20,11 @@ def test_admin():
                 "de": "Dünkirchen (59140-59640), Nord, Nordfrankreich, Frankreich",
                 "en": "Dunkirk (59140-59640), Nord, Nord-Pas-de-Calais and Picardy, France",
                 "es": "Dunkerque (59140-59640), Norte, Alta Francia, Francia",
-                "it": "Dunkerque (59140-59640), Nord, Nord-Passo di Calais e Piccardia, Francia"
+                "it": "Dunkerque (59140-59640), Nord, Nord-Passo di Calais e Piccardia, Francia",
             },
         }
     )
 
-    assert admin.get_name('fr') == "Dunkerque"
-    assert admin.get_name('da') == ""
+    assert admin.get_name("fr") == "Dunkerque"
+    assert admin.get_name("da") == ""
     assert admin.wikidata_id == "Q7652"

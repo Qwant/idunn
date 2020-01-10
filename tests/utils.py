@@ -19,10 +19,11 @@ def override_settings(overrides):
     finally:
         settings._settings = old_settings
 
+
 @contextmanager
 def enable_pj_source():
     old_source = places.pj_source
-    with override_settings({'PJ_ES': 'http://pj_es.test'}):
+    with override_settings({"PJ_ES": "http://pj_es.test"}):
         new_source = PjSource()
         places.pj_source = new_source
         places_list.pj_source = new_source
@@ -32,11 +33,12 @@ def enable_pj_source():
             places.pj_source = old_source
             places_list.pj_source = old_source
 
+
 @contextmanager
 def enable_kuzzle():
     """
     We define here settings specific to tests.
     We define kuzzle address and port
     """
-    with override_settings({'KUZZLE_CLUSTER_URL': 'http://localhost:7512'}):
+    with override_settings({"KUZZLE_CLUSTER_URL": "http://localhost:7512"}):
         yield

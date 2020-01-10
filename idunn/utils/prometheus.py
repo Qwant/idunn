@@ -5,7 +5,12 @@ from starlette.responses import Response
 from starlette.requests import Request
 
 from prometheus_client import Counter, Gauge, Histogram
-from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, generate_latest, multiprocess
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    CollectorRegistry,
+    generate_latest,
+    multiprocess,
+)
 
 from fastapi.routing import APIRoute
 
@@ -20,9 +25,7 @@ IDUNN_WIKI_REQUEST_DURATION = Histogram(
 )
 
 IDUNN_EXCEPTIONS_COUNT = Counter(
-    "idunn_exceptions_count",
-    "Number of exceptions caught in Idunn",
-    ["exception_type"]
+    "idunn_exceptions_count", "Number of exceptions caught in Idunn", ["exception_type"]
 )
 
 
@@ -30,6 +33,7 @@ IDUNN_EXCEPTIONS_COUNT = Counter(
 def wiki_request_duration(target, handler):
     with IDUNN_WIKI_REQUEST_DURATION.labels(target, handler).time():
         yield
+
 
 def exception(exception_type):
     IDUNN_EXCEPTIONS_COUNT.labels(exception_type).inc()
@@ -50,9 +54,7 @@ def expose_metrics_multiprocess():
 
 
 REQUEST_DURATION = Histogram(
-    "http_request_duration_seconds",
-    "Time spent processing a request.",
-    ["method", "handler"],
+    "http_request_duration_seconds", "Time spent processing a request.", ["method", "handler"],
 )
 REQUEST_COUNT = Counter(
     "http_requests_total",
@@ -60,9 +62,7 @@ REQUEST_COUNT = Counter(
     ["method", "handler", "code"],
 )
 REQUESTS_INPROGRESS = Gauge(
-    "http_requests_inprogress",
-    "Requests in progress by method and handler",
-    ["method", "handler"],
+    "http_requests_inprogress", "Requests in progress by method and handler", ["method", "handler"],
 )
 
 
@@ -72,7 +72,7 @@ class MonitoredAPIRoute(APIRoute):
         original_handler = super().get_route_handler()
 
         async def custom_handler(request: Request) -> Response:
-            method = request['method']
+            method = request["method"]
             REQUESTS_INPROGRESS.labels(method=method, handler=handler_name).inc()
             try:
                 before_time = time.monotonic()
@@ -84,7 +84,9 @@ class MonitoredAPIRoute(APIRoute):
                 REQUEST_DURATION.labels(method=method, handler=handler_name).observe(
                     after_time - before_time
                 )
-                REQUEST_COUNT.labels(method=method, handler=handler_name, code=response.status_code).inc()
+                REQUEST_COUNT.labels(
+                    method=method, handler=handler_name, code=response.status_code
+                ).inc()
             finally:
                 REQUESTS_INPROGRESS.labels(method=method, handler=handler_name).dec()
             return response

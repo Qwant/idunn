@@ -4,15 +4,14 @@ from freezegun import freeze_time
 
 from app import app
 
+
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_full():
     """
     Exhaustive test that checks all possible blocks
     """
     client = TestClient(app)
-    response = client.get(
-        url=f'http://localhost/v1/pois/osm:way:7777778?lang=es',
-    )
+    response = client.get(url=f"http://localhost/v1/pois/osm:way:7777778?lang=es",)
 
     assert response.status_code == 200
 
@@ -26,15 +25,9 @@ def test_full():
         "class_name": "museum",
         "subclass_name": "museum",
         "geometry": {
-            "coordinates": [
-                2.3250037768187326,
-                48.86618482685007
-            ],
+            "coordinates": [2.3250037768187326, 48.86618482685007],
             "type": "Point",
-            "center": [
-                2.3250037768187326,
-                48.86618482685007
-            ]
+            "center": [2.3250037768187326, 48.86618482685007],
         },
         "address": {
             "admin": None,
@@ -48,8 +41,8 @@ def test_full():
                 "id": "street:553660044C",
                 "name": "Rue de Lille",
                 "label": "Rue de Lille (Paris)",
-                "postcodes": ["75007", "75008"]
-            }
+                "postcodes": ["75007", "75008"],
+            },
         },
         "blocks": [
             {
@@ -64,69 +57,51 @@ def test_full():
                         "dayofweek": 1,
                         "local_date": "2018-06-11",
                         "status": "closed",
-                        "opening_hours": []
+                        "opening_hours": [],
                     },
                     {
                         "dayofweek": 2,
                         "local_date": "2018-06-12",
                         "status": "open",
-                        "opening_hours": [{
-                            'beginning': '09:30',
-                            'end': '18:00'
-                        }]
+                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
                     },
                     {
                         "dayofweek": 3,
                         "local_date": "2018-06-13",
                         "status": "open",
-                        "opening_hours": [{
-                            'beginning': '09:30',
-                            'end': '18:00'
-                        }]
+                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
                     },
                     {
                         "dayofweek": 4,
                         "local_date": "2018-06-14",
                         "status": "open",
-                        "opening_hours": [{
-                            'beginning': '09:30',
-                            'end': '21:45'
-                        }]
+                        "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
                     },
                     {
                         "dayofweek": 5,
                         "local_date": "2018-06-15",
                         "status": "open",
-                        "opening_hours": [{
-                            'beginning': '09:30',
-                            'end': '18:00'
-                        }]
+                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
                     },
                     {
                         "dayofweek": 6,
                         "local_date": "2018-06-16",
                         "status": "open",
-                        "opening_hours": [{
-                            'beginning': '09:30',
-                            'end': '18:00'
-                        }]
+                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
                     },
                     {
                         "dayofweek": 7,
                         "local_date": "2018-06-17",
                         "status": "open",
-                        "opening_hours": [{
-                            'beginning': '09:30',
-                            'end': '18:00'
-                        }]
+                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
                     },
-                ]
+                ],
             },
             {
                 "type": "phone",
                 "url": "tel:+33140494814",
                 "international_format": "+33 1 40 49 48 14",
-                "local_format": "01 40 49 48 14"
+                "local_format": "01 40 49 48 14",
             },
             {
                 "type": "information",
@@ -137,51 +112,26 @@ def test_full():
                             {
                                 "type": "accessibility",
                                 "wheelchair": "yes",
-                                "toilets_wheelchair": "unknown"
+                                "toilets_wheelchair": "unknown",
                             },
-                            {
-                                "type": "internet_access",
-                                "wifi": True
-                            },
+                            {"type": "internet_access", "wifi": True},
                             {
                                 "type": "brewery",
-                                "beers": [
-                                    {
-                                        "name": "Kilkenny"
-                                    },
-                                    {
-                                        "name": "Guinness"
-                                    }
-                                ]
+                                "beers": [{"name": "Kilkenny"}, {"name": "Guinness"}],
                             },
                             {
                                 "type": "cuisine",
-                                "cuisines": [
-                                    {
-                                        "name": "Italian"
-                                    },
-                                    {
-                                        "name": "French"
-                                    }
-                                ],
+                                "cuisines": [{"name": "Italian"}, {"name": "French"}],
                                 "gluten_free": "only",
                                 "vegan": "unknown",
-                                "vegetarian": "unknown"
+                                "vegetarian": "unknown",
                             },
-                        ]
+                        ],
                     }
-                ]
+                ],
             },
-            {
-                "type": "website",
-                "url": "http://testing.test"
-            },
-            {
-                "type": "contact",
-                "url": "mailto:contact@example.com",
-            },
+            {"type": "website", "url": "http://testing.test"},
+            {"type": "contact", "url": "mailto:contact@example.com",},
         ],
-        "meta": {
-            "source": "osm"
-        }
+        "meta": {"source": "osm"},
     }

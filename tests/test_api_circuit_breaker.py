@@ -6,6 +6,7 @@ from time import sleep
 from starlette.testclient import TestClient
 from idunn.blocks.wikipedia import WikipediaSession
 
+
 @pytest.fixture()
 def breaker_test():
     """
@@ -20,6 +21,7 @@ def breaker_test():
     wiki_breaker.close()
     return wiki_breaker
 
+
 def test_circuit_breaker_500(breaker_test):
     """
     Test when the external service returns a
@@ -29,9 +31,7 @@ def test_circuit_breaker_500(breaker_test):
     """
     client = TestClient(app)
     with responses.RequestsMock() as rsps:
-        rsps.add('GET',
-             re.compile(r'^https://.*\.wikipedia.org/'),
-             status=500)
+        rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=500)
         """
         We mock 10 calls to wikipedia while the max number
         of failure is 3, so we test that after 3 calls
@@ -39,17 +39,15 @@ def test_circuit_breaker_500(breaker_test):
         calls sent).
         """
         for i in range(10):
-            response = client.get(
-                url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
-            )
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es",)
 
         assert response.status_code == 200
 
-        assert 'open' == breaker_test.current_state
+        assert "open" == breaker_test.current_state
         assert len(rsps.calls) == 3
 
         resp = response.json()
-        assert all(b['type'] != "wikipedia" for b in resp['blocks'])
+        assert all(b["type"] != "wikipedia" for b in resp["blocks"])
 
         """
         After the timeout the circuit should be half-open.
@@ -58,10 +56,9 @@ def test_circuit_breaker_500(breaker_test):
         sleep(1)
 
         for i in range(10):
-            response = client.get(
-                url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
-            )
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es",)
         assert len(rsps.calls) == 4
+
 
 def test_circuit_breaker_404(breaker_test):
     """
@@ -74,21 +71,17 @@ def test_circuit_breaker_404(breaker_test):
     """
     client = TestClient(app)
     with responses.RequestsMock() as rsps:
-        rsps.add('GET',
-                re.compile(r'^https://.*\.wikipedia.org/'),
-                status=404)
+        rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=404)
         """
         Even after more requests than the max number of
         failures of the circuit breaker the circuit should
         remained closed since the 404 is an exclude exception
         """
         for i in range(4):
-            response = client.get(
-               url=f'http://localhost/v1/pois/osm:way:7777777?lang=es',
-            )
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es",)
 
-        assert 'closed' == breaker_test.current_state
+        assert "closed" == breaker_test.current_state
         assert len(rsps.calls) == 4
 
         resp = response.json()
-        assert all(b['type'] != "wikipedia" for b in resp['blocks'])
+        assert all(b["type"] != "wikipedia" for b in resp["blocks"])

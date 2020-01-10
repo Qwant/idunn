@@ -1,7 +1,8 @@
 from .base import BasePlace
 
+
 class Street(BasePlace):
-    PLACE_TYPE = 'street'
+    PLACE_TYPE = "street"
 
     def get_raw_street(self):
         return self

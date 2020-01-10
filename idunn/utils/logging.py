@@ -7,6 +7,7 @@ from starlette.responses import PlainTextResponse
 from .settings import Settings
 from idunn.utils import prometheus
 
+
 def get_logging_dict(settings: Settings):
     return {
         "version": 1,
@@ -14,41 +15,25 @@ def get_logging_dict(settings: Settings):
         "formatters": {
             "json": {
                 "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-                "format": settings['LOG_FORMAT']
+                "format": settings["LOG_FORMAT"],
             },
-            "simple":{
-                "format": settings['LOG_FORMAT']
-            }
+            "simple": {"format": settings["LOG_FORMAT"]},
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "json" if settings['LOG_JSON'] else "simple",
+                "formatter": "json" if settings["LOG_JSON"] else "simple",
                 "stream": "ext://sys.stdout",
             }
         },
         "loggers": {
-            "uvicorn": {
-                "level": "INFO",
-                "handlers": ["console"],
-                "propagate": False
-            },
-            "uvicorn.access": {
-                "level": "WARNING",
-                "handlers": ["console"],
-                "propagate": False,
-            },
-            "gunicorn": {
-                "level": "INFO",
-                "handlers": ["console"],
-                "propagate": False
-            }
+            "uvicorn": {"level": "INFO", "handlers": ["console"], "propagate": False},
+            "uvicorn.access": {"level": "WARNING", "handlers": ["console"], "propagate": False,},
+            "gunicorn": {"level": "INFO", "handlers": ["console"], "propagate": False},
         },
-        "root": {
-            "level": "INFO",
-            "handlers": ["console"]
-        }
+        "root": {"level": "INFO", "handlers": ["console"]},
     }
+
 
 def init_logging(settings: Settings):
     """
@@ -56,7 +41,7 @@ def init_logging(settings: Settings):
     """
     dictConfig(get_logging_dict(settings))
 
-    levels = settings['LOG_LEVEL_BY_MODULE']
+    levels = settings["LOG_LEVEL_BY_MODULE"]
     for module, lvl in json.loads(levels).items():
         log_level = lvl.upper()
         log_level = logging.getLevelName(log_level)

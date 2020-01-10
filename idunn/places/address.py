@@ -1,7 +1,8 @@
 from .base import BasePlace
 
+
 class Address(BasePlace):
-    PLACE_TYPE = 'address'
+    PLACE_TYPE = "address"
 
     def get_raw_address(self):
         return self

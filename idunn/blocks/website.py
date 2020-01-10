@@ -13,6 +13,4 @@ class WebSiteBlock(BaseBlock):
         website = es_poi.get_website()
         if not website:
             return None
-        return cls(
-            url=website
-        )
+        return cls(url=website)

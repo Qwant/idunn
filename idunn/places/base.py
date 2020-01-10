@@ -9,14 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class BasePlace(dict):
-    PLACE_TYPE = ''
+    PLACE_TYPE = ""
 
     def __init__(self, d):
         if not self.PLACE_TYPE:
-            raise Exception(
-                'Missing PLACE_TYPE in class %s',
-                self.__class__.__name__
-            )
+            raise Exception("Missing PLACE_TYPE in class %s", self.__class__.__name__)
         super().__init__(d)
         self._wiki_resp = {}
         self.properties = {}
@@ -36,21 +33,25 @@ class BasePlace(dict):
                 if wiki_index is not None:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
                     try:
-                        self._wiki_resp[lang] = WikipediaCache.cache_it(key, WikidataConnector.get_wiki_info)(wikidata_id, wiki_index)
+                        self._wiki_resp[lang] = WikipediaCache.cache_it(
+                            key, WikidataConnector.get_wiki_info
+                        )(wikidata_id, wiki_index)
                     except WikiUndefinedException:
-                        logger.info("WIKI_ES variable has not been set: cannot fetch wikidata images")
+                        logger.info(
+                            "WIKI_ES variable has not been set: cannot fetch wikidata images"
+                        )
                         return None
         return self._wiki_resp.get(lang)
 
     @property
     def wikidata_id(self):
-        return self.properties.get('wikidata')
+        return self.properties.get("wikidata")
 
     def get_name(self, lang):
         return self.get_local_name()
 
     def get_local_name(self):
-        return self.get('name', '')
+        return self.get("name", "")
 
     def get_class_name(self):
         return self.PLACE_TYPE
@@ -59,11 +60,11 @@ class BasePlace(dict):
         return self.PLACE_TYPE
 
     def get_raw_address(self):
-        return self.get('address') or {}
+        return self.get("address") or {}
 
     def get_raw_street(self):
         raw_address = self.get_raw_address()
-        if raw_address.get('type') == 'street':
+        if raw_address.get("type") == "street":
             return raw_address
         return raw_address.get("street") or {}
 
@@ -82,7 +83,7 @@ class BasePlace(dict):
         postcodes = self.get_postcodes()
         if postcodes is not None:
             if isinstance(postcodes, list):
-                postcodes = ';'.join(postcodes)
+                postcodes = ";".join(postcodes)
 
         id = raw_address.get("id")
         name = raw_address.get("name")
@@ -92,10 +93,10 @@ class BasePlace(dict):
 
         return {
             "id": id,
-            "name": name or street.get('name'),
+            "name": name or street.get("name"),
             "housenumber": housenumber,
             "postcode": postcodes,
-            "label": label or street.get('label'),
+            "label": label or street.get("label"),
             "admin": self.build_admin(lang),
             "street": street,
             "admins": self.build_admins(),
@@ -114,7 +115,7 @@ class BasePlace(dict):
                     "label": raw_admin.get("label"),
                     "name": raw_admin.get("name"),
                     "class_name": raw_admin.get("zone_type"),
-                    "postcodes": raw_admin.get("zip_codes")
+                    "postcodes": raw_admin.get("zip_codes"),
                 }
                 admins.append(admin)
         return admins
@@ -125,11 +126,11 @@ class BasePlace(dict):
             "id": raw_street.get("id"),
             "name": raw_street.get("name"),
             "label": raw_street.get("label"),
-            "postcodes": raw_street.get("zip_codes")
+            "postcodes": raw_street.get("zip_codes"),
         }
 
     def get_id(self):
-        return self.get('id', '')
+        return self.get("id", "")
 
     def find_property_value(self, fallback_keys):
         for k in fallback_keys:
@@ -139,19 +140,19 @@ class BasePlace(dict):
         return None
 
     def get_phone(self):
-        return self.find_property_value(['phone', 'contact:phone'])
+        return self.find_property_value(["phone", "contact:phone"])
 
     def get_website(self):
-        return self.find_property_value(['contact:website', 'website', 'facebook'])
+        return self.find_property_value(["contact:website", "website", "facebook"])
 
     def get_coord(self):
-        return self.get('coord')
+        return self.get("coord")
 
     def get_raw_opening_hours(self):
-        return self.properties.get('opening_hours')
+        return self.properties.get("opening_hours")
 
     def get_raw_happy_hours(self):
-        return self.properties.get('happy_hours')
+        return self.properties.get("happy_hours")
 
     def get_raw_wheelchair(self):
         return self.properties.get("wheelchair")
@@ -170,7 +171,7 @@ class BasePlace(dict):
             geometry=get_geom(self),
             address=self.build_address(lang),
             blocks=build_blocks(self, lang, verbosity),
-            meta=self.get_meta()
+            meta=self.get_meta(),
         )
 
     def get_images_urls(self):
