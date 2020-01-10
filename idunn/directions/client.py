@@ -133,7 +133,9 @@ class DirectionsClient:
         response.raise_for_status()
         return DirectionsResponse(status="success", data=response.json())
 
-    def get_directions(self, from_loc, to_loc, mode, lang, params: QueryParams):
+    def get_directions(
+        self, from_loc, to_loc, mode, lang, params: QueryParams
+    ) -> DirectionsResponse:
         method = self.directions_qwant
         kwargs = {"extra": params}
         if self.MAPBOX_API_ENABLED:
@@ -155,17 +157,7 @@ class DirectionsClient:
             )
 
         method_name = method.__name__
-        logger.info(
-            f"Calling directions API '{method_name}'",
-            extra={
-                "method": method_name,
-                "mode": mode,
-                "lang": lang,
-                "from": from_loc,
-                "to": to_loc,
-            },
-        )
-        return method(from_loc, to_loc, mode, lang, **kwargs).dict(by_alias=True)
+        return method(from_loc, to_loc, mode, lang, **kwargs)
 
 
 directions_client = DirectionsClient()

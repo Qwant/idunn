@@ -1,9 +1,11 @@
 from fastapi import HTTPException
 
-from starlette.requests import Request
-from starlette.responses import JSONResponse
+from pydantic import constr
 
 from shapely.geometry import Point
+
+from starlette.requests import Request
+from starlette.responses import Response
 
 from idunn import settings
 from idunn.utils.geometry import city_surrounds_polygons
@@ -23,7 +25,7 @@ def get_directions(
     t_lon: float,
     t_lat: float,  # URL values
     request: Request,
-    type: str = "",
+    type: constr(min_length=1),
     language: str = "en",  # query parameters
 ):
     rate_limiter.check_limit_per_client(request)
@@ -31,29 +33,24 @@ def get_directions(
     from_position = (f_lon, f_lat)
     to_position = (t_lon, t_lat)
 
-    if not type:
-        raise HTTPException(status_code=400, detail='"type" query param is required')
-
-    if type in ('publictransport', 'taxi', 'vtc', 'carpool'):
+    if type in ("publictransport", "taxi", "vtc", "carpool"):
         allowed_zone = any(
             all(
                 city_surrounds_polygons[city].contains(point)
                 for point in [Point(*from_position), Point(*to_position)]
             )
-            for city in settings['PUBLIC_TRANSPORTS_ALLOWED_CITIES']
+            for city in settings["PUBLIC_TRANSPORTS_ALLOWED_CITIES"]
         )
 
         if not allowed_zone:
             raise HTTPException(
                 status_code=400,
-                detail='requested path is not inside an allowed area for public transports'
+                detail="requested path is not inside an allowed area for public transports",
             )
 
-    headers = {
-        'cache-control': 'max-age={}'.format(settings['DIRECTIONS_CLIENT_CACHE'])
-     }
+    headers = {"cache-control": "max-age={}".format(settings["DIRECTIONS_CLIENT_CACHE"])}
 
-    return JSONResponse(
+    return Response(
         content=directions_client.get_directions(
             from_position, to_position, type, language, params=request.query_params
         ),
