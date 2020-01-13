@@ -28,7 +28,7 @@ def mock_directions_car():
                 status=200,
                 json=json.load(open(fixture_path)),
             )
-            yield
+            yield rsps
 
 
 @pytest.fixture
@@ -53,14 +53,14 @@ def mock_directions_public_transport():
                 status=200,
                 json=json.load(open(fixture_path)),
             )
-            yield
+            yield rsps
 
 
 def test_direction_car(mock_directions_car):
     client = TestClient(app)
     response = client.get(
-        "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
-        params={"language": "fr", "type": "driving"},
+        "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+        params={"language": "fr", "type": "driving", "exclude": "ferry"},
     )
 
     assert response.status_code == 200
@@ -73,6 +73,7 @@ def test_direction_car(mock_directions_car):
     assert len(response_data["data"]["routes"][0]["legs"]) == 1
     assert len(response_data["data"]["routes"][0]["legs"][0]["steps"]) == 10
     assert response_data["data"]["routes"][0]["legs"][0]["mode"] == "CAR"
+    assert "exclude=ferry" in mock_directions_car.calls[0].request.url
 
 
 def test_direction_public_transport(mock_directions_public_transport):
