@@ -34,6 +34,8 @@ def get_directions(
     headers = {"cache-control": "max-age={}".format(settings["DIRECTIONS_CLIENT_CACHE"])}
 
     return JSONResponse(
-        content=directions_client.get_directions(from_position, to_position, type, language),
+        content=directions_client.get_directions(
+            from_position, to_position, type, language, params=request.query_params
+        ),
         headers=headers,
     )

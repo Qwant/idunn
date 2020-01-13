@@ -2,14 +2,25 @@ import requests
 import logging
 from datetime import datetime, timedelta
 from starlette.responses import JSONResponse
+from starlette.requests import QueryParams
 from fastapi import HTTPException
+from pydantic import BaseModel
+from typing import Optional
+
 from idunn import settings
 from .models import DirectionsResponse
-
 
 logger = logging.getLogger(__name__)
 
 COMBIGO_SUPPORTED_LANGUAGES = {"en", "es", "de", "fr", "it"}
+
+
+class MapboxAPIExtraParams(BaseModel):
+    steps: str = "true"
+    alternatives: str = "true"
+    overview: str = "full"
+    geometries: str = "geojson"
+    exclude: Optional[str]
 
 
 class DirectionsClient:
@@ -46,12 +57,8 @@ class DirectionsClient:
             f"{base_url}/{mode}/{start_lon},{start_lat};{end_lon},{end_lat}",
             params={
                 "language": lang,
-                "steps": "true",
-                "alternatives": "true",
-                "overview": "full",
-                "geometries": "geojson",
                 "access_token": settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"],
-                **extra,
+                **MapboxAPIExtraParams(**extra).dict(exclude_none=True),
             },
             timeout=self.request_timeout,
         )
@@ -77,16 +84,13 @@ class DirectionsClient:
             extra = {}
         start_lon, start_lat = start
         end_lon, end_lat = end
+
         response = self.session.get(
             f"{self.QWANT_BASE_URL}/{start_lon},{start_lat};{end_lon},{end_lat}",
             params={
                 "type": mode,
                 "language": lang,
-                "steps": "true",
-                "alternatives": "true",
-                "overview": "full",
-                "geometries": "geojson",
-                **extra,
+                **MapboxAPIExtraParams(**extra).dict(exclude_none=True),
             },
             timeout=self.request_timeout,
         )
@@ -129,8 +133,9 @@ class DirectionsClient:
         response.raise_for_status()
         return DirectionsResponse(status="success", data=response.json())
 
-    def get_directions(self, from_loc, to_loc, mode, lang):
+    def get_directions(self, from_loc, to_loc, mode, lang, params: QueryParams):
         method = self.directions_qwant
+        kwargs = {"extra": params}
         if self.MAPBOX_API_ENABLED:
             method = self.directions_mapbox
 
@@ -142,6 +147,7 @@ class DirectionsClient:
             mode = "walking"
         elif mode in ("publictransport", "taxi", "vtc", "carpool"):
             method = self.directions_combigo
+            kwargs = {}
             mode = mode
         else:
             raise HTTPException(
@@ -159,7 +165,7 @@ class DirectionsClient:
                 "to": to_loc,
             },
         )
-        return method(from_loc, to_loc, mode, lang).dict(by_alias=True)
+        return method(from_loc, to_loc, mode, lang, **kwargs).dict(by_alias=True)
 
 
 directions_client = DirectionsClient()
