@@ -40,15 +40,12 @@ def get_api_urls(settings):
         # Kuzzle events
         APIRoute("/events", get_events_bbox),
         # Directions
-        APIRoute('/directions/{f_lon},{f_lat};{t_lon},{t_lat}',
-            get_directions
-        ),
-
+        APIRoute("/directions/{f_lon},{f_lat};{t_lon},{t_lat}", get_directions),
         # Geocoding
         APIRoute(
-            '/autocomplete',
+            "/autocomplete",
             get_autocomplete,
-            methods=['GET', 'POST'],
+            methods=["GET", "POST"],
             response_model=GeocodeJson,
             response_model_exclude_unset=True,
         ),

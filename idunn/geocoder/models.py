@@ -48,14 +48,14 @@ class Code(BaseModel):
 
 
 class ZoneType(str, Enum):
-    Suburb = 'suburb'
-    CityDistrict = 'city_district'
-    City = 'city'
-    StateDistrict = 'state_district'
-    State = 'state'
-    CountryRegion = 'country_region'
-    Country = 'country'
-    NonAdministrative = 'non_administrative'
+    Suburb = "suburb"
+    CityDistrict = "city_district"
+    City = "city"
+    StateDistrict = "state_district"
+    State = "state"
+    CountryRegion = "country_region"
+    Country = "country"
+    NonAdministrative = "non_administrative"
 
 
 class AssociatedAdmin(BaseModel):
@@ -112,7 +112,7 @@ class GeocodingResponse(BaseModel):
 
     # The following fields are part of the GeocodeJson specification but are
     # currently disabled in Bragi:
-    # https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs#L194-L199
+    #  https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs#L194-L199
     #
     # accuracy: Optional[PositiveInt]
     # district: Optional[str]
@@ -129,7 +129,7 @@ class GeocodingResponse(BaseModel):
     administrative_regions: List[AssociatedAdmin]
     poi_types: List[PoiType] = []
     properties: List[GeocodingProperty] = []
-    address: Optional['GeocodingResponse']
+    address: Optional["GeocodingResponse"]
     commercial_modes: List[CommercialMode] = []
     comments: List[Comment] = []
     physical_modes: List[PhysicalMode] = []
@@ -148,7 +148,7 @@ class FeatureProperties(BaseModel):
 class Explaination(BaseModel):
     value: float
     description: str
-    details: List['Explaination']
+    details: List["Explaination"]
 
 
 class Context(BaseModel):
@@ -156,7 +156,7 @@ class Context(BaseModel):
 
 
 class Feature(BaseModel):
-    type: str = 'Feature'
+    type: str = "Feature"
     geometry: dict
     properties: FeatureProperties
 
@@ -166,14 +166,14 @@ class Feature(BaseModel):
 
 
 class Geocoding(BaseModel):
-    version: str = '0.1.0'
+    version: str = "0.1.0"
     licence: Optional[str]
     attribution: Optional[str]
     query: Optional[str]
 
 
 class GeocodeJson(BaseModel):
-    type: str = 'FeatureCollection'
+    type: str = "FeatureCollection"
     geocoding: Geocoding = Geocoding()
     features: List[Feature]
 

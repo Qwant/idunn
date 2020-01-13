@@ -17,37 +17,30 @@ class GeocoderClient:
     @staticmethod
     def build_params(query, lang, limit, lon=None, lat=None):
         params = {
-            'q': query,
-            'lang': lang,
-            'limit': limit,
+            "q": query,
+            "lang": lang,
+            "limit": limit,
         }
 
         if lon and lat:
-            params.update({
-                'lon': lon,
-                'lat': lat,
-            })
+            params.update({"lon": lon, "lat": lat})
 
         return params
 
     def autocomplete(self, query, lang, limit, lon=None, lat=None, shape=None):
         params = GeocoderClient.build_params(query, lang, limit, lon, lat)
-        url = settings['BRAGI_BASE_URL'] + '/autocomplete'
+        url = settings["BRAGI_BASE_URL"] + "/autocomplete"
 
         if shape:
-            response = self.session.post(
-                url,
-                params=params,
-                json={'shape': shape},
-            )
+            response = self.session.post(url, params=params, json={"shape": shape})
         else:
             response = self.session.get(url, params=params)
 
         if response.status_code != requests.codes.ok:
             try:
-                explain = response.json()['long']
+                explain = response.json()["long"]
             except (IndexError, JSONDecodeError):
-                explain = 'unknown reason'
+                explain = "unknown reason"
 
             logger.error(
                 'Request to Bragi returned with unexpected status %d: "%s"',
