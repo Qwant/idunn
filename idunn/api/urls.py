@@ -4,10 +4,10 @@ from .status import get_status
 from .places_list import get_places_bbox, get_events_bbox
 from .categories import get_all_categories
 from .closest import closest_address
-from .directions import get_directions
 from ..directions.models import DirectionsResponse
 from .geocoder import get_autocomplete
 from ..geocoder.models import GeocodeJson
+from .directions import get_directions_with_coordinates, get_directions
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
@@ -33,17 +33,25 @@ def get_api_urls(settings):
     return [
         APIRoute("/metrics", metric_handler),
         APIRoute("/status", get_status),
-        # Deprecated
-        APIRoute("/pois/{id}", get_poi),
+        APIRoute("/pois/{id}", get_poi, deprecated=True),
+        # Places
         APIRoute("/places", get_places_bbox),
         APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
         APIRoute("/places/{id}", handle_option, methods=["OPTIONS"]),
         APIRoute("/places/{id}", get_place),
+        # Categories
         APIRoute("/categories", get_all_categories),
+        # Reverse
         APIRoute("/reverse/{lat}:{lon}", closest_address),
         # Kuzzle events
         APIRoute("/events", get_events_bbox),
         # Directions
+        APIRoute(
+            "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
+            get_directions_with_coordinates,
+            response_model=DirectionsResponse,
+            responses={422: {"description": "Requested Path Not Allowed."}},
+        ),
         APIRoute(
             "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
             get_directions,

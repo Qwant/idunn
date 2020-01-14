@@ -1,10 +1,10 @@
 from contextlib import contextmanager
 from copy import deepcopy
-import pytest
 
 from idunn import settings
-from idunn.api import places, places_list
+from idunn.api import places_list
 from idunn.api.pages_jaunes import PjSource
+from idunn.places import utils as places_utils
 
 
 @contextmanager
@@ -22,15 +22,15 @@ def override_settings(overrides):
 
 @contextmanager
 def enable_pj_source():
-    old_source = places.pj_source
+    old_source = places_list.pj_source
     with override_settings({"PJ_ES": "http://pj_es.test"}):
         new_source = PjSource()
-        places.pj_source = new_source
+        places_utils.pj_source = new_source
         places_list.pj_source = new_source
         try:
             yield
         finally:
-            places.pj_source = old_source
+            places_utils.pj_source = old_source
             places_list.pj_source = old_source
 
 

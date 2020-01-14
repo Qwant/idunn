@@ -63,7 +63,6 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
     """
     client = TestClient(app)
 
-    # TODO: failing because of 404
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         """
         We mock all wikipedia requests since

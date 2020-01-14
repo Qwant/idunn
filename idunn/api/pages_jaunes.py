@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class PjSource:
-    PLACE_ID_PREFIX = "pj:"
+    PLACE_ID_NAMESPACE = "pj"
 
     es_index = settings.get("PJ_ES_INDEX")
     es_query_template = settings.get("PJ_ES_QUERY_TEMPLATE")
@@ -54,7 +54,7 @@ class PjSource:
         return [PjPOI(p["_source"]) for p in raw_places]
 
     def get_place(self, id):
-        internal_id = id.replace(self.PLACE_ID_PREFIX, "", 1)
+        internal_id = id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
 
         es_places = self.es.search(
             index=self.es_index, body={"filter": {"term": {"_id": internal_id}}}
