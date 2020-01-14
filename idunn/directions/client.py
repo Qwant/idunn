@@ -7,7 +7,9 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 from typing import Optional
 
+from shapely.geometry import Point
 from idunn import settings
+from idunn.utils.geometry import city_surrounds_polygons
 from .models import DirectionsResponse
 
 logger = logging.getLogger(__name__)
@@ -45,6 +47,19 @@ class DirectionsClient:
     @property
     def MAPBOX_API_ENABLED(self):
         return bool(settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"])
+
+    @staticmethod
+    def is_in_allowed_zone(mode: str, from_loc: (float, float), to_loc: (float, float)):
+        if mode in ("publictransport", "taxi", "vtc", "carpool"):
+            return any(
+                all(
+                    city_surrounds_polygons[city].contains(point)
+                    for point in [Point(*from_loc), Point(*to_loc)]
+                )
+                for city in settings["PUBLIC_TRANSPORTS_ALLOWED_CITIES"]
+            )
+
+        return True
 
     def directions_mapbox(self, start, end, mode, lang, extra=None):
         if extra is None:
@@ -136,6 +151,11 @@ class DirectionsClient:
     def get_directions(
         self, from_loc, to_loc, mode, lang, params: QueryParams
     ) -> DirectionsResponse:
+        if not DirectionsClient.is_in_allowed_zone(mode, from_loc, to_loc):
+            raise HTTPException(
+                status_code=422, detail="requested path is not inside an allowed area",
+            )
+
         method = self.directions_qwant
         kwargs = {"extra": params}
         if self.MAPBOX_API_ENABLED:

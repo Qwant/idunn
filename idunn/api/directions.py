@@ -2,8 +2,6 @@ from fastapi import HTTPException
 
 from pydantic import constr
 
-from shapely.geometry import Point
-
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -30,24 +28,8 @@ def get_directions(
     language: str = "en",  # query parameters
 ):
     rate_limiter.check_limit_per_client(request)
-
     from_position = (f_lon, f_lat)
     to_position = (t_lon, t_lat)
-
-    if type in ("publictransport", "taxi", "vtc", "carpool"):
-        allowed_zone = any(
-            all(
-                city_surrounds_polygons[city].contains(point)
-                for point in [Point(*from_position), Point(*to_position)]
-            )
-            for city in settings["PUBLIC_TRANSPORTS_ALLOWED_CITIES"]
-        )
-
-        if not allowed_zone:
-            raise HTTPException(
-                status_code=422,
-                detail="requested path is not inside an allowed area for public transports",
-            )
 
     response.headers["cache-control"] = "max-age={}".format(settings["DIRECTIONS_CLIENT_CACHE"])
     return directions_client.get_directions(
