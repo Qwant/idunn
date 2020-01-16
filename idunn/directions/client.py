@@ -127,18 +127,14 @@ class DirectionsClient:
         response.raise_for_status()
         return DirectionsResponse(**response.json())
 
-    def place_to_combigo_location(self, place):
+    def place_to_combigo_location(self, place, lang):
         location = {"lat": place.get_coord()["lat"], "lng": place.get_coord()["lon"]}
-
-        name = ""
         if place.PLACE_TYPE != "latlon":
-            name = place.get_name()
-        if name:
-            location["name"] = name
+            name = place.get_name(lang)
+            if name:
+                location["name"] = name
 
-        if place.PLACE_TYPE == "admin":
-            location["type"] = "city"
-        elif place.get_class_name() == "railway":
+        if place.get_class_name() in ("railway", "bus"):
             location["type"] = "publictransport"
 
         return location
@@ -161,8 +157,8 @@ class DirectionsClient:
             params={"lang": lang},
             json={
                 "locations": [
-                    self.place_to_combigo_location(start),
-                    self.place_to_combigo_location(end),
+                    self.place_to_combigo_location(start, lang),
+                    self.place_to_combigo_location(end, lang),
                 ],
                 "type_include": mode,
                 "dTime": (datetime.utcnow() + timedelta(minutes=1)).isoformat(timespec="seconds"),
