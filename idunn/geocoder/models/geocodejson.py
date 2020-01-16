@@ -3,12 +3,11 @@ Implement GeocodeJson specification as defined here:
  - https://github.com/geocoders/geocodejson-spec/tree/master/draft
  - https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs
 """
-import json
-
-from enum import Enum
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from pydantic import BaseModel, PositiveInt, confloat
+
+from .cosmogony import ZoneType
 
 
 Lon = confloat(ge=-180, le=180)
@@ -45,17 +44,6 @@ class Network(BaseModel):
 class Code(BaseModel):
     name: str
     value: str
-
-
-class ZoneType(str, Enum):
-    Suburb = "suburb"
-    CityDistrict = "city_district"
-    City = "city"
-    StateDistrict = "state_district"
-    State = "state"
-    CountryRegion = "country_region"
-    Country = "country"
-    NonAdministrative = "non_administrative"
 
 
 class AssociatedAdmin(BaseModel):

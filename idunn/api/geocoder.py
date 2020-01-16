@@ -1,23 +1,14 @@
 from typing import List, Optional
 
-from fastapi import Query
-from pydantic import BaseModel
+from fastapi import Query, Depends
+from pydantic import BaseModel, PositiveInt
 
 from idunn import settings
 from ..geocoder.client import geocoder_client
-from ..geocoder.models import GeocodeJson
-
-
-class ExtraParams(BaseModel):
-    shape: dict = Query(None, title="restrict search inside of a polygon")
+from ..geocoder.models import GeocodeJson, QueryParams, ExtraParams
 
 
 def get_autocomplete(
-    extra: ExtraParams = ExtraParams(),
-    query: str = Query(..., alias="q", title="query string"),
-    lon: Optional[float] = Query(None, ge=-180, le=180, title="latitude for the focus"),
-    lat: Optional[float] = Query(None, ge=-90, le=90, title="longitude for the focus"),
-    lang: str = Query(settings["DEFAULT_LANGUAGE"], title="language"),
-    limit: int = Query(10, ge=1, title="maximum number of results"),
+    query: QueryParams = Depends(QueryParams), extra: ExtraParams = ExtraParams()
 ) -> GeocodeJson:
-    return geocoder_client.autocomplete(query, lang, limit, lon, lat, extra.shape)
+    return geocoder_client.autocomplete(query, extra)
