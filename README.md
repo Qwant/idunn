@@ -76,3 +76,4 @@ The configuration can be given from different ways:
 	2. add a test in `./tests` for the new feature you propose
 	3. implement your feature
 	4. run pytest: `pipenv run pytest -vv -x`
+	5. if all your tests pass, then check the format: `pipenv run black --diff --check`
