@@ -18,9 +18,9 @@ class GeocoderClient:
         url = settings["BRAGI_BASE_URL"] + "/autocomplete"
 
         if extra.shape:
-            response = self.session.post(url, params=query.dict(), json=extra.dict())
+            response = self.session.post(url, params=query.bragi_query_dict(), json=extra.dict())
         else:
-            response = self.session.get(url, params=query.dict())
+            response = self.session.get(url, params=query.bragi_query_dict())
 
         if response.status_code != requests.codes.ok:
             try:

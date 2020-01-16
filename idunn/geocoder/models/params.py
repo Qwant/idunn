@@ -71,6 +71,17 @@ class QueryParams(BaseModel):
             _debug=_debug,
         )
 
+    def bragi_query_dict(self):
+        """
+        Return a dictionary similar to the result of self.dict() but rename
+        arguments of type list with the suffix "[]", which is how they
+        should be sent to bragi.
+        """
+        return {
+            (key if not isinstance(value, list) else key + "[]"): value
+            for (key, value) in self.dict().items()
+        }
+
 
 class ExtraParams(BaseModel):
     shape: dict = Query(None, title="restrict search inside of a polygon")
