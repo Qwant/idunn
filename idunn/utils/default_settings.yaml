@@ -104,4 +104,4 @@ COMBIGO_API_KEY:
 #######################
 ## Geocoding
 
-BRAGI_BASE_URL: "http://localhost:4000"
+BRAGI_BASE_URL: "http://bragi:4000"

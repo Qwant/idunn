@@ -107,4 +107,4 @@ def test_autocomplete_ok_shape(mock_autocomplete_post):
 def test_autocomplete_unavailable(mock_autocomplete_unavailable):
     client = TestClient(app)
     resp = client.get("http://localhost/v1/autocomplete", params={"q": "paris"})
-    assert resp.status_code == 500
+    assert resp.status_code == 503

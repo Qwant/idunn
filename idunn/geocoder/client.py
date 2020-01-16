@@ -40,14 +40,14 @@ class GeocoderClient:
             try:
                 explain = response.json()["long"]
             except (IndexError, JSONDecodeError):
-                explain = "unknown reason"
+                explain = response.text
 
             logger.error(
                 'Request to Bragi returned with unexpected status %d: "%s"',
                 response.status_code,
                 explain,
             )
-            raise HTTPException(500)
+            raise HTTPException(503, "Unexpected geocoder error")
 
         return GeocodeJson.parse_obj(response.json())
 
