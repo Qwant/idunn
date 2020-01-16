@@ -9,8 +9,8 @@ france_poly_filename = os.path.join(
 
 #  Approximate shape of some cities surroundings. These shapes have been defined using the following
 #  script: https://gist.github.com/remi-dupre/6c4a1d699e48c00e134657dc1164a2c9
-cities_surrounds_path = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "./data/surroundings"
+cities_surrounds_file = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "./data/surroundings.json"
 )
 
 
@@ -67,15 +67,10 @@ with open(france_poly_filename) as france_file:
     france_polygon = parse_poly(france_file.readlines())
 
 # Load shape for some cities surrounding
-city_surrounds_polygons = dict()
-
-for filename in os.listdir(cities_surrounds_path):
-    city_name = os.path.splitext(filename)[0]
-    path = os.path.join(cities_surrounds_path, filename)
-
-    with open(path) as f:
-        city_shape = shape(json.load(f))
-        city_surrounds_polygons[city_name] = city_shape
+with open(cities_surrounds_file, "r") as f:
+    city_surrounds_polygons = {
+        city_name: shape(geojson) for city_name, geojson in json.load(f).items()
+    }
 
 
 def bbox_inside_polygon(minx, miny, maxx, maxy, poly, threshold=0.75):
