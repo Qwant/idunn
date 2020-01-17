@@ -9,7 +9,7 @@ from idunn.api.kuzzle import kuzzle_client
 from idunn.api.weather import weather_client
 from .base import BaseBlock
 
-from idunn.utils.redis import get_redis_pool, RedisWrapper
+from idunn.utils.redis import get_redis_pool, RedisWrapperWeather
 
 
 logger = logging.getLogger(__name__)
@@ -111,4 +111,4 @@ def get_local_weather(coord):
     if not weather_client.enabled:
         return None
     key = "{}_{}_{}".format(Weather.BLOCK_TYPE, coord["lat"], coord["lon"])
-    return RedisWrapper.cache_it(key, inner)(coord)
+    return RedisWrapperWeather.cache_it(key, inner)(coord)

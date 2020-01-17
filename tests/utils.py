@@ -48,7 +48,6 @@ def enable_kuzzle():
 def enable_weather_api():
     """
     We define here settings specific to tests.
-    We define kuzzle address and port
     """
     with override_settings(
         {

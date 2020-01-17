@@ -58,8 +58,8 @@ class RedisWrapper:
             raise CacheNotAvailable from exc
 
     @classmethod
-    def init_cache(cls):
-        cls._expire = int(settings["WIKI_CACHE_TIMEOUT"])  # seconds
+    def init_cache(cls, expire):
+        cls._expire = int(expire)  # seconds
         redis_db = settings["WIKI_CACHE_REDIS_DB"]
         try:
             redis_pool = get_redis_pool(db=redis_db)
@@ -70,14 +70,14 @@ class RedisWrapper:
             cls._connection = Redis(connection_pool=redis_pool)
 
     @classmethod
-    def cache_it(cls, key, f):
+    def cache_it(cls, key, f, expire=settings["WIKI_CACHE_TIMEOUT"]):
         """
         Takes function f and put its result in a redis cache.
         It requires a prefix string to identify the name
         of the function cached.
         """
         if cls._connection is None:
-            cls.init_cache()
+            cls.init_cache(expire)
 
         def with_cache(*args, **kwargs):
             """
@@ -104,3 +104,11 @@ class RedisWrapper:
     @classmethod
     def disable(cls):
         cls._connection = DISABLED_STATE
+
+
+class RedisWrapperWeather(RedisWrapper):
+    _redis = RedisWrapper
+
+    @classmethod
+    def cache_it(cls, key, f):
+        return cls._redis.cache_it(key, f, settings["WEATHER_CACHE_TIMEOUT"])
