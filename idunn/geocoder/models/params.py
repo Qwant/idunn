@@ -6,14 +6,14 @@ from enum import Enum
 from typing import List, Optional
 
 from fastapi import Query
-from pydantic import BaseModel, PositiveInt, confloat, conint
+from pydantic import BaseModel, Field, PositiveInt, confloat, conint
 
 from idunn import settings
 from .cosmogony import ZoneType
 
 
 class Type(str, Enum):
-    City = "city"
+    # City = "city" # this field is available in Bragi but deprecated
     House = "house"
     Poi = "poi"
     StopArea = "public_transport:stop_area"
@@ -84,4 +84,4 @@ class QueryParams(BaseModel):
 
 
 class ExtraParams(BaseModel):
-    shape: dict = Query(None, title="restrict search inside of a polygon")
+    shape: dict = Field(None, title="restrict search inside of a polygon")
