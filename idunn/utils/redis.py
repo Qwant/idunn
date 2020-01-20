@@ -36,13 +36,12 @@ class CacheNotAvailable(Exception):
 
 
 class RedisWrapper:
-    _expire = None
     _connection = None
 
     @classmethod
-    def set_value(cls, key, json_result):
+    def set_value(cls, key, json_result, expire=settings["WIKI_CACHE_TIMEOUT"]):
         try:
-            cls._connection.set(key, json_result, ex=cls._expire)
+            cls._connection.set(key, json_result, ex=expire)
         except RedisError:
             prometheus.exception("RedisError")
             logging.exception("Got a RedisError")
@@ -58,8 +57,7 @@ class RedisWrapper:
             raise CacheNotAvailable from exc
 
     @classmethod
-    def init_cache(cls, expire):
-        cls._expire = int(expire)  # seconds
+    def init_cache(cls):
         redis_db = settings["WIKI_CACHE_REDIS_DB"]
         try:
             redis_pool = get_redis_pool(db=redis_db)
@@ -77,7 +75,7 @@ class RedisWrapper:
         of the function cached.
         """
         if cls._connection is None:
-            cls.init_cache(expire)
+            cls.init_cache()
 
         def with_cache(*args, **kwargs):
             """
@@ -95,7 +93,7 @@ class RedisWrapper:
                     return json.loads(value_stored.decode("utf-8"))
                 result = f(*args, **kwargs)
                 json_result = json.dumps(result)
-                cls.set_value(key, json_result)
+                cls.set_value(key, json_result, expire)
                 return result
             return f(*args, **kwargs)
 
