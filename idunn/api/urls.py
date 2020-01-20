@@ -5,6 +5,8 @@ from .places_list import get_places_bbox, get_events_bbox
 from .categories import get_all_categories
 from .closest import closest_address
 from .directions import get_directions
+from .geocoder import get_autocomplete
+from ..geocoder.models import GeocodeJson
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
@@ -39,4 +41,12 @@ def get_api_urls(settings):
         APIRoute("/events", get_events_bbox),
         # Directions
         APIRoute("/directions/{f_lon},{f_lat};{t_lon},{t_lat}", get_directions),
+        # Geocoding
+        APIRoute(
+            "/autocomplete",
+            get_autocomplete,
+            methods=["GET", "POST"],
+            response_model=GeocodeJson,
+            response_model_exclude_unset=True,
+        ),
     ]
