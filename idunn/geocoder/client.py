@@ -1,7 +1,9 @@
 import logging
 import requests
-from fastapi import HTTPException
 from json.decoder import JSONDecodeError
+
+import pydantic
+from fastapi import HTTPException
 
 from idunn import settings
 from .models import GeocodeJson, QueryParams, ExtraParams
@@ -35,7 +37,12 @@ class GeocoderClient:
             )
             raise HTTPException(503, "Unexpected geocoder error")
 
-        return GeocodeJson.parse_obj(response.json())
+        try:
+            results = GeocodeJson.parse_obj(response.json())
+        except (JSONDecodeError, pydantic.ValidationError):
+            raise HTTPException(503, "Invalid response from the geocoder")
+
+        return results
 
 
 geocoder_client = GeocoderClient()
