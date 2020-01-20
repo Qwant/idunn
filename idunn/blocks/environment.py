@@ -1,14 +1,20 @@
 import logging
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, constr
 from datetime import datetime
 from typing import ClassVar, Optional
+from redis import Redis, RedisError
 
 from idunn import settings
 from idunn.api.kuzzle import kuzzle_client
+from idunn.api.weather import weather_client
 from .base import BaseBlock
+
+from idunn.utils.redis import get_redis_pool, RedisWrapperWeather
 
 
 logger = logging.getLogger(__name__)
+
+DISABLED_STATE = object()  # Used to flag cache as disabled by settings
 
 
 class ParticleType(BaseModel):
@@ -66,3 +72,43 @@ def get_air_quality(geobbox):
     if not kuzzle_client.enabled:
         return None
     return kuzzle_client.fetch_air_quality(geobbox)
+
+
+class Weather(BaseBlock):
+    BLOCK_TYPE: ClassVar = "weather"
+
+    temperature: Optional[float] = None
+    icon: Optional[constr(regex="11d|09d|10d|13d|50d|01d|01n|02d|03d|04d|02n|03n|04n")]
+    _connection: ClassVar = None
+
+    @classmethod
+    def from_es(cls, place, lang):
+        if place.PLACE_TYPE != "admin":
+            return None
+        if place.get("zone_type") not in ("city", "city_district", "suburd"):
+            return None
+
+        coord = place.get_coord()
+        if not coord:
+            return None
+
+        try:
+            weather = get_local_weather(coord)
+        except Exception:
+            logger.warning("Failed to fetch weather for %s", place.get_id(), exc_info=True)
+            return None
+
+        if not weather:
+            return None
+
+        return cls(**weather)
+
+
+def get_local_weather(coord):
+    def inner(coord):
+        return weather_client.fetch_weather_places(coord)
+
+    if not weather_client.enabled:
+        return None
+    key = "{}_{}_{}".format(Weather.BLOCK_TYPE, coord["lat"], coord["lon"])
+    return RedisWrapperWeather.cache_it(key, inner)(coord)

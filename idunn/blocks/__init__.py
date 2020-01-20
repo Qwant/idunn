@@ -8,7 +8,6 @@ from .wikipedia import (
     WikipediaBlock,
     WikiUndefinedException,
     GET_WIKI_INFO,
-    WikipediaCache,
 )
 from .images import ImagesBlock
 from .services_and_information import (
@@ -23,7 +22,11 @@ from .events import (
     OpeningDayEvent,
     DescriptionEvent,
 )
-from .environment import AirQuality
+from .environment import (
+    AirQuality,
+    Weather,
+)
+
 
 ALL_BLOCKS = [
     OpeningHourBlock,
@@ -43,6 +46,7 @@ ALL_BLOCKS = [
     DescriptionEvent,
     CuisineBlock,
     AirQuality,
+    Weather,
 ]
 
 BLOCK_TYPE_TO_CLASS = {b.BLOCK_TYPE: b for b in ALL_BLOCKS}

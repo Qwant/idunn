@@ -4,7 +4,7 @@ from unittest import mock
 from redis import Redis, RedisError
 from app import app, settings
 from starlette.testclient import TestClient
-from idunn.blocks.wikipedia import WikipediaCache
+from idunn.utils.redis import RedisWrapper
 from .test_wiki_ES import basket_ball_wiki_es
 from .test_rate_limiter import mock_wikipedia
 from functools import wraps
@@ -18,10 +18,10 @@ def cache_test_normal(redis):
     test of the Wikipedia/Wikidata cache
     """
     settings._settings["REDIS_URL"] = redis
-    WikipediaCache._connection = None
+    RedisWrapper._connection = None
     yield
     settings._settings["REDIS_URL"] = None
-    WikipediaCache._connection = None
+    RedisWrapper._connection = None
 
 
 def test_wikipedia_cache(cache_test_normal, mock_wikipedia):
