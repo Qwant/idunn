@@ -132,6 +132,31 @@ def test_direction_public_transport(mock_directions_public_transport):
     assert len(leg["stops"]) == 7
 
 
+def test_directions_public_transport_restricted_areas():
+    client = TestClient(app)
+
+    # Paris - South Africa
+    response = client.get(
+        "http://localhost/v1/directions/2.3211757,48.8604893;22.1741215,-33.1565800",
+        params={"language": "fr", "type": "publictransport"},
+    )
+    assert response.status_code == 422
+
+    # Pekin
+    response = client.get(
+        "http://localhost/v1/directions/116.2945000,39.9148800;116.4998847,39.9091405",
+        params={"language": "fr", "type": "publictransport"},
+    )
+    assert response.status_code == 422
+
+    #  Washington - New York
+    response = client.get(
+        "http://localhost/v1/directions/-74.0308525,40.7697215;-77.0427329,38.8581794",
+        params={"language": "fr", "type": "publictransport"},
+    )
+    assert response.status_code == 422
+
+
 def test_directions_not_configured():
     with override_settings(
         {"QWANT_DIRECTIONS_API_BASE_URL": None, "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,}
