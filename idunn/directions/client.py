@@ -50,13 +50,13 @@ class DirectionsClient:
 
     @staticmethod
     def is_in_allowed_zone(mode: str, from_loc: (float, float), to_loc: (float, float)):
-        if mode in ("publictransport", "taxi", "vtc", "carpool"):
+        if mode == "publictransport" and settings["PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES"]:
             return any(
                 all(
                     city_surrounds_polygons[city].contains(point)
                     for point in [Point(*from_loc), Point(*to_loc)]
                 )
-                for city in settings["PUBLIC_TRANSPORTS_ALLOWED_CITIES"].split(",")
+                for city in settings["PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES"].split(",")
             )
 
         return True
