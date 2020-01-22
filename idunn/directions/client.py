@@ -177,6 +177,16 @@ class DirectionsClient:
             )
 
         method_name = method.__name__
+        logger.info(
+            f"Calling directions API '{method_name}'",
+            extra={
+                "method": method_name,
+                "mode": mode,
+                "lang": lang,
+                "from": from_loc,
+                "to": to_loc,
+            },
+        )
         return method(from_loc, to_loc, mode, lang, **kwargs)
 
 

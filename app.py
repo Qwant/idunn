@@ -1,7 +1,7 @@
 from idunn import settings
-from idunn.utils.logging import init_logging, handle_errors
 from idunn.api.urls import get_api_urls
 from idunn.utils.encoders import override_datetime_encoder
+from idunn.utils.prometheus import handle_errors
 from fastapi import FastAPI, APIRouter
 from fastapi.exceptions import RequestValidationError
 from starlette.requests import Request
@@ -9,7 +9,6 @@ from starlette.responses import PlainTextResponse
 import uvicorn
 
 
-init_logging(settings)
 app = FastAPI(title="Idunn", debug=__name__ == '__main__')
 
 v1_routes = get_api_urls(settings)

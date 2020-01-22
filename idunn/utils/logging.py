@@ -2,13 +2,8 @@ import json
 import logging
 from logging.config import dictConfig
 
-from starlette.requests import Request
-from starlette.responses import PlainTextResponse
-from .settings import Settings
-from idunn.utils import prometheus
 
-
-def get_logging_dict(settings: Settings):
+def get_logging_dict(settings):
     return {
         "version": 1,
         "disable_existing_loggers": True,
@@ -35,7 +30,7 @@ def get_logging_dict(settings: Settings):
     }
 
 
-def init_logging(settings: Settings):
+def init_logging(settings):
     """
     init the logging for the server
     """
@@ -48,11 +43,3 @@ def init_logging(settings: Settings):
 
         logger = logging.getLogger(module)
         logger.setLevel(log_level)
-
-
-async def handle_errors(request: Request, exception):
-    """
-    overrides the default error handler defined in ServerErrorMiddleware
-    """
-    prometheus.exception("unhandled_error")
-    return PlainTextResponse("Internal Server Error", status_code=500)
