@@ -13,6 +13,7 @@ from prometheus_client import (
 )
 
 from fastapi.routing import APIRoute
+from starlette.responses import PlainTextResponse
 
 
 """ The logic of the Prometheus metrics is defined in this module """
@@ -92,3 +93,11 @@ class MonitoredAPIRoute(APIRoute):
             return response
 
         return custom_handler
+
+
+async def handle_errors(request: Request, exc):
+    """
+    overrides the default error handler defined in ServerErrorMiddleware
+    """
+    exception("unhandled_error")
+    return PlainTextResponse("Internal Server Error", status_code=500)

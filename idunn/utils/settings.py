@@ -3,6 +3,7 @@ import yaml
 from typing import Any
 from inspect import Parameter
 import logging
+from idunn.utils.logging import init_logging
 
 
 def _load_yaml_file(file):
@@ -89,3 +90,4 @@ class SettingsComponent:
 
 
 settings = SettingsComponent("IDUNN")
+init_logging(settings)
