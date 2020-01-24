@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
-docker run --rm -v '/var/run/docker.sock:/var/run/docker.sock:rw' registry.qwant.ninja/continuous-integration/docker-service-network:990e94c1@sha256:94b56d4087e30d1297954cd7a0420b9d70f62e784e61ddbe768a332f11112044 python app.py "$@"
+
+TAG="57186a29"
+CHECKSUM="c130ccaa2fbb104160810bfe0f73a8c1c58efa9dbe3d97f45761bd445c31ce52"
+
+docker run --rm -v '/var/run/docker.sock:/var/run/docker.sock:rw' \
+    registry.qwant.ninja/continuous-integration/docker-service-network:${TAG}@sha256:${CHECKSUM} \
+    python app.py "$@"
