@@ -51,7 +51,6 @@ build:
     STACK_NAME: "$CI_PROJECT_ID"
     ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
     PROMETHEUS_SERVICE_NAME: "product-maps-development_prometheus"
-    IDUNN_IMAGE_TAG: "latest"
   when: manual
 
 
@@ -62,6 +61,7 @@ deploy development:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
   script:
+    - cat docker-content-digest.env
     - source docker-content-digest.env
     - deploy
   variables:
