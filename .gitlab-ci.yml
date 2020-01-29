@@ -30,6 +30,7 @@ build:
       - docker-content-digest.env
       - ci/bootstrap.sh
       - ci/bin/docker-stack-wait
+      - ci/bin/docker-service-network
       - ci/development/docker-compose.yml
       - ci/prelive/docker-compose.yml
       - ci/production/docker-compose.yml
