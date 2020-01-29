@@ -6,7 +6,7 @@ networks:
 
 services:
   idunn:
-    image: "$IDUNN_IMAGE_NAME:$IDUNN_IMAGE_TAG@$IDUNN_IMAGE_DIGEST"
+    image: "qwantresearch/idunn:$IDUNN_IMAGE_TAG@$IDUNN_IMAGE_DIGEST"
     labels: &ci_labels
       com.qwant.ci.job.id: ${CI_JOB_ID}
       com.qwant.ci.pipeline.id: ${CI_PIPELINE_ID}
