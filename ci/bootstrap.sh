@@ -48,11 +48,6 @@ function deploy
 {
     local STACK_FILE='docker-stack.yml'
 
-    export IDUNN_IMAGE_DIGEST="$(docker-content-digest \
-        "docker" "$IDUNN_IMAGE_NAME" "$IDUNN_IMAGE_TAG")"
-    export REDIS_IMAGE_DIGEST=$(docker-content-digest \
-        "qwant" "${CI_PROJECT_PATH}/idunn-redis" "latest")
-
     guess ENVIRONMENT from CI_JOB_NAME
     guess APP_HOST from CI_ENVIRONMENT_URL
 
@@ -64,10 +59,4 @@ function deploy
     docker service update --network-add "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
     docker service update --network-add "${STACK_NAME}_default" "$PROMETHEUS_SERVICE_NAME" || true
     docker-stack-wait -t 600 "$STACK_NAME"
-}
-
-function stop
-{
-    docker service update --network-rm "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true
-    docker stack rm "$STACK_NAME"
 }

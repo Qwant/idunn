@@ -12,28 +12,41 @@ before_script:
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
 
 
-build redis:
+build:
   stage: build
   tags:
     - light
   script:
     - docker-compose build --pull
     - docker-compose push
+    - subst < ci/templates/docker-content-digest.env | tee docker-content-digest.env
   variables:
     COMPOSE_FILE: "docker-compose.build.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
+  artifacts:
+    paths:
+      - docker-content-digest.env
+      - ci/bootstrap.sh
+      - ci/bin/docker-stack-wait
+      - ci/development/docker-compose.yml
+      - ci/prelive/docker-compose.yml
+      - ci/production/docker-compose.yml
+      - docker-compose.yml
   allow_failure: true
   when: manual
 
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.03
+  dependencies:
+    - build
   tags:
     - light-docker
   variables:
-    COMPOSE_FILE: "docker-compose.yml:ci/development/docker-compose.yml"
+    COMPOSE_FILE: "docker-compose.yml:ci/${CI_JOB_STAGE}/docker-compose.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     DOCKER_HOST: "tcp://10.100.31.132:2375"
+    GIT_STRATEGY: none
     STACK_NAME: "$CI_PROJECT_ID"
     ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
     PROMETHEUS_SERVICE_NAME: "product-maps-development_prometheus"
@@ -61,7 +74,6 @@ deploy prelive:
     name: prelive
     url: "https://www.qwant.plive/maps"
   variables:
-    COMPOSE_FILE: "docker-compose.yml:ci/prelive/docker-compose.yml"
     DOCKER_HOST: "tcp://10.103.9.1:2375"
     PROMETHEUS_SERVICE_NAME: "product-maps-prelive_prometheus"
 
@@ -73,7 +85,6 @@ deploy production:
     name: production
     url: "https://www.qwant.com/maps"
   variables:
-    COMPOSE_FILE: "docker-compose.yml:ci/production/docker-compose.yml"
     DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
     DOCKER_TLS_VERIFY: "1"
     ROUTER_SERVICE_NAME: "product-maps-production_traefik"
