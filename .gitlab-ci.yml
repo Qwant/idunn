@@ -62,6 +62,7 @@ deploy development:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
   script:
+    - source docker-content-digest.env
     - deploy
   variables:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
