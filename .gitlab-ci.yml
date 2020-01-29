@@ -23,6 +23,8 @@ build:
   variables:
     COMPOSE_FILE: "docker-compose.build.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
+    IDUNN_IMAGE_TAG: "latest"
+    REDIS_IMAGE_TAG: "$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
   artifacts:
     paths:
       - docker-content-digest.env
@@ -52,6 +54,7 @@ build:
     PROMETHEUS_SERVICE_NAME: "product-maps-development_prometheus"
     IDUNN_IMAGE_NAME: "qwantresearch/idunn"
     IDUNN_IMAGE_TAG: "latest"
+    REDIS_IMAGE_TAG: "$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
   when: manual
 
 
