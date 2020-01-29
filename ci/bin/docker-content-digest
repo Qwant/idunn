@@ -1,5 +1,6 @@
 #!/bin/bash
 set -ueo pipefail
+set -x
 
 # -----------------------------------------------------------------------------
 # Request the Docker Hub registry for the content digest of an image
