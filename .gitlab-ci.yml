@@ -10,6 +10,7 @@ before_script:
   - docker login
     --username "$CI_REGISTRY_USER"
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
+  - export REDIS_IMAGE_TAG="$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
 
 
 build:
@@ -24,7 +25,6 @@ build:
     COMPOSE_FILE: "docker-compose.build.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     IDUNN_IMAGE_TAG: "latest"
-    REDIS_IMAGE_TAG: "$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
   artifacts:
     paths:
       - docker-content-digest.env
@@ -51,7 +51,6 @@ build:
     ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
     PROMETHEUS_SERVICE_NAME: "product-maps-development_prometheus"
     IDUNN_IMAGE_TAG: "latest"
-    REDIS_IMAGE_TAG: "$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
   when: manual
 
 
