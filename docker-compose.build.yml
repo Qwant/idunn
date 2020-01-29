@@ -8,4 +8,4 @@ services:
         - https_proxy
         - no_proxy
       context: redis
-    image: ${CI_REGISTRY_IMAGE}/idunn-redis:latest
+    image: ${CI_REGISTRY_IMAGE}/idunn-redis:${REDIS_IMAGE_TAG}
