@@ -10,7 +10,6 @@ before_script:
   - docker login
     --username "$CI_REGISTRY_USER"
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
-  - export REDIS_IMAGE_TAG="$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
 
 
 build:
@@ -18,6 +17,7 @@ build:
   tags:
     - light
   script:
+    - export REDIS_IMAGE_TAG="$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
     - docker-compose build --pull
     - docker-compose push
     - subst < ci/templates/docker-content-digest.env | tee docker-content-digest.env
