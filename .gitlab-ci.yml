@@ -61,8 +61,9 @@ deploy development:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
   script:
-    - cat docker-content-digest.env
-    - source docker-content-digest.env
+    - set -o allexport; source docker-content-digest.env; set +o allexport
+    - echo $IDUNN_IMAGE_DIGEST
+    - echo $REDIS_IMAGE_DIGEST
     - deploy
   variables:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
