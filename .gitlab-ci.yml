@@ -33,7 +33,7 @@ build:
       - ci/production/docker-compose.yml
       - docker-compose.yml
   allow_failure: true
-  when: manual
+  # when: manual
 
 
 .deploy:
