@@ -117,7 +117,7 @@ def assert_ok_with(client, params, extra=None):
 
     if "nlu" in params:
         intentions = data["intentions"]
-        assert len(intentions) == 3
+        assert len(intentions) == 2
         assert intentions[0]["intention"] == "pharmacy"
         assert intentions[1]["intention"] == "restaurant"
 
