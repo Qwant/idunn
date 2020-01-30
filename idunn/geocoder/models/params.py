@@ -46,10 +46,7 @@ class QueryParams:
             - the lang
             - and the query itself
         """
-        return {
-            "text": self.q,
-            "lang": self.lang
-        }
+        return {"text": self.q, "lang": self.lang}
 
     def bragi_query_dict(self):
         """
@@ -59,8 +56,10 @@ class QueryParams:
         """
         return {
             (key if not isinstance(value, list) else key + "[]"): value
-            for (key, value) in dataclasses.asdict(self).items() if key is not "nlu"
+            for (key, value) in dataclasses.asdict(self).items()
+            if key is not "nlu"
         }
+
 
 class ExtraParams(BaseModel):
     shape: dict = Field(None, title="restrict search inside of a polygon")

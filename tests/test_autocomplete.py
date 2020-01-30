@@ -15,27 +15,30 @@ BASE_URL = "http://qwant.bragi"
 NLU_URL = "http://qwant.nlu/"
 CLASSIF_URL = "http://qwant.classif"
 
+
 def path_from_string(sPath):
     return os.path.join(os.path.dirname(__file__), sPath)
 
-FIXTURE_PATH =  path_from_string("fixtures/autocomplete/paris.json")
+
+FIXTURE_PATH = path_from_string("fixtures/autocomplete/paris.json")
 FIXTURE_PATH_NLU = path_from_string("fixtures/autocomplete/nlu.json")
 FIXTURE_PATH_CLASSIF_pharmacy = path_from_string("fixtures/autocomplete/classif_pharmacy.json")
 FIXTURE_PATH_CLASSIF_paris = path_from_string("fixtures/autocomplete/classif_paris.json")
+
 
 @pytest.fixture
 def mocked_responses():
     with responses.RequestsMock() as rsps:
         yield rsps
 
+
 @pytest.fixture
 def mock_NLU(mocked_responses):
-    with override_settings({"AUTOCOMPLETE_NLU_URL": NLU_URL, "AUTOCOMPLETE_CLASSIFIER_URL": CLASSIF_URL}):
+    with override_settings(
+        {"AUTOCOMPLETE_NLU_URL": NLU_URL, "AUTOCOMPLETE_CLASSIFIER_URL": CLASSIF_URL}
+    ):
         mocked_responses.add(
-            responses.POST,
-            f"{NLU_URL}",
-            body=open(FIXTURE_PATH_NLU).read(),
-            status=200,
+            responses.POST, f"{NLU_URL}", body=open(FIXTURE_PATH_NLU).read(), status=200,
         )
         """
         Two queries to the classifier API are required here,
@@ -115,8 +118,8 @@ def assert_ok_with(client, params, extra=None):
     if "nlu" in params:
         intentions = data["intentions"]
         assert len(intentions) == 3
-        assert intentions[0]['intention'] == "pharmacy"
-        assert intentions[1]['intention'] == "restaurant"
+        assert intentions[0]["intention"] == "pharmacy"
+        assert intentions[1]["intention"] == "restaurant"
 
 
 def test_autocomplete_ok(mock_autocomplete_get):

@@ -18,11 +18,11 @@ class GeocoderClient:
 
     def autocomplete(self, query: QueryParams, extra: ExtraParams):
         if query.nlu:
-            params=query.nlu_query_dict()
-            intentions=nlu_client.get_intentions(params)
+            params = query.nlu_query_dict()
+            intentions = nlu_client.get_intentions(params)
 
         url = settings["BRAGI_BASE_URL"] + "/autocomplete"
-        params=query.bragi_query_dict()
+        params = query.bragi_query_dict()
         if extra.shape:
             response = self.session.post(url, params=params, json=extra.dict())
         else:
@@ -43,7 +43,7 @@ class GeocoderClient:
 
         try:
             results = response.json()
-            if 'intentions' in locals():
+            if "intentions" in locals():
                 results["intentions"] = intentions
             result_list = IdunnAutocomplete.parse_obj(results)
         except (JSONDecodeError, pydantic.ValidationError):
