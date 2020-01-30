@@ -2,6 +2,7 @@ version: '3.5'
 
 networks:
   default:
+    driver: overlay
     attachable: true
 
 services:
@@ -12,8 +13,6 @@ services:
       com.qwant.ci.pipeline.id: ${CI_PIPELINE_ID}
       com.qwant.ci.project.id: ${CI_PROJECT_ID}
     command: "--workers=4"
-    networks:
-      - default
     deploy:
       labels:
         traefik.frontend.entryPoints: "public"
