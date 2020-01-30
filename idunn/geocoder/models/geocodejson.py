@@ -9,6 +9,8 @@ from pydantic import BaseModel, PositiveInt, confloat
 
 from .cosmogony import ZoneType
 
+from enum import Enum
+
 
 Lon = confloat(ge=-180, le=180)
 Lat = confloat(ge=-90, le=90)
@@ -133,14 +135,14 @@ class FeatureProperties(BaseModel):
     geocoding: GeocodingResponse
 
 
-class Explaination(BaseModel):
+class Explanation(BaseModel):
     value: float
     description: str
-    details: List["Explaination"]
+    details: List["Explanation"]
 
 
 class Context(BaseModel):
-    explaination: Optional[Explaination]
+    explanation: Optional[Explanation]
 
 
 class Feature(BaseModel):
@@ -153,6 +155,29 @@ class Feature(BaseModel):
     context: Optional[Context]
 
 
+class IntentionType(str, Enum):
+    Brand = "brand"
+    LocCity = "loc_city"
+    ObjetBD = "objetBD"
+    Attraction = "attraction"
+
+
+class TagType(str, Enum):
+    Brand = "brand"
+    LocCity = "loc_city"
+    ObjetBD = "objetBD"
+    Attraction = "attraction"
+    Hotel = "hotel"
+    TrainStation = "train_station"
+    Restaurant = "restaurant"
+
+
+class Intention(BaseModel):
+    type: str = IntentionType
+    intention: TagType
+    query_phrase: str
+
+
 class Geocoding(BaseModel):
     version: str = "0.1.0"
     licence: Optional[str]
@@ -160,11 +185,12 @@ class Geocoding(BaseModel):
     query: Optional[str]
 
 
-class GeocodeJson(BaseModel):
-    type: str = "FeatureCollection"
+class IdunnAutocomplete(BaseModel):
+    type: str = "FeaturesCollection"
     geocoding: Geocoding = Geocoding()
+    intentions: Optional[List[Intention]]
     features: List[Feature]
 
 
 GeocodingResponse.update_forward_refs()
-Explaination.update_forward_refs()
+Explanation.update_forward_refs()

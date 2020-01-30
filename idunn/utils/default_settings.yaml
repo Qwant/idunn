@@ -93,7 +93,6 @@ WEATHER_CACHE_TIMEOUT: 300 # seconds
 
 #######################
 ## CORS
-
 CORS_OPTIONS_REQUESTS_ENABLED: False
 
 #######################
@@ -112,6 +111,9 @@ PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allo
 #######################
 ## Geocoding
 BRAGI_BASE_URL: "http://bragi:4000"
+AUTOCOMPLETE_NLU: False
+AUTOCOMPLETE_NLU_URL:
+AUTOCOMPLETE_CLASSIFIER_URL:
 
 #######################
 ## OpenAPI DOCS
