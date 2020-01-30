@@ -81,6 +81,10 @@ deploy prelive:
 deploy production:
   extends: "deploy prelive"
   stage: production
+  script:
+    - echo "10.100.56.249 manager.maps.qwant.infra" > /etc/hosts
+    - set -o allexport; source docker-content-digest.env; set +o allexport
+    - deploy
   environment:
     name: production
     url: "https://www.qwant.com/maps"
