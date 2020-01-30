@@ -47,8 +47,8 @@ class QueryParams:
             - and the query itself
         """
         return {
-            text: self.q,
-            lang: self.lang
+            "text": self.q,
+            "lang": self.lang
         }
 
     def bragi_query_dict(self):

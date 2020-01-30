@@ -1,0 +1,12 @@
+{
+    "count": 1,
+    "domain": "poi",
+    "intention": [
+        [
+            0.9841036200523376,
+            "restaurant"
+        ]
+    ],
+    "text": "paris",
+    "tokenized": "paris\n"
+}

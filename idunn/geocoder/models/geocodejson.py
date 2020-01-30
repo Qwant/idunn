@@ -156,25 +156,26 @@ class Feature(BaseModel):
 
 
 class IntentionType(str, Enum):
-    Brand = "brand"
-    LocCity = "loc_city"
-    ObjetBD = "objetBD"
-    Attraction = "attraction"
-
-
-class TagType(str, Enum):
-    Brand = "brand"
-    LocCity = "loc_city"
-    ObjetBD = "objetBD"
     Attraction = "attraction"
     Hotel = "hotel"
     TrainStation = "train_station"
     Restaurant = "restaurant"
+    Pharmacy = "pharmacy"
+
+
+class TagType(str, Enum):
+    Brand = "brand"
+    Category = "cat"
+    City = "city"
+    Country = "country"
+    State = "state"
+    Other = "other"
+    POI = "POI"
 
 
 class Intention(BaseModel):
-    type: str = IntentionType
-    intention: TagType
+    type: str = TagType
+    intention: IntentionType
     query_phrase: str
 
 
