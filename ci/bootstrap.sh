@@ -54,6 +54,8 @@ function deploy
     docker-service-network config "${STACK_NAME}_idunn" | tee docker-networks.yml
     COMPOSE_FILE="$COMPOSE_FILE:docker-networks.yml"
 
+    set -o allexport; source docker-content-digest.env; set +o allexport
+
     docker-compose config | tee "$STACK_FILE"
     docker stack deploy --compose-file "$STACK_FILE" --with-registry-auth "$STACK_NAME"
     docker service update --network-add "${STACK_NAME}_default" "$ROUTER_SERVICE_NAME" || true

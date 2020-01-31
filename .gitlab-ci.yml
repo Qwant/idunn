@@ -39,6 +39,11 @@ build:
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.03
+  before_script:
+    - source ci/bootstrap.sh
+    - docker login 
+      --username "$CI_DEPLOY_USER" 
+      --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
   dependencies:
     - build
   tags:
@@ -48,9 +53,9 @@ build:
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     DOCKER_HOST: "tcp://10.100.31.132:2375"
     GIT_STRATEGY: none
-    STACK_NAME: "$CI_PROJECT_ID"
-    ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
     PROMETHEUS_SERVICE_NAME: "product-maps-development_prometheus"
+    ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
+    STACK_NAME: "$CI_PROJECT_ID"
   when: manual
 
 
@@ -61,7 +66,6 @@ deploy development:
     name: development
     url: "http://maps.dev.qwant.ninja/maps"
   script:
-    - set -o allexport; source docker-content-digest.env; set +o allexport
     - deploy
   variables:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
@@ -83,7 +87,6 @@ deploy production:
   stage: production
   script:
     - echo "10.100.56.249 manager.maps.qwant.infra" > /etc/hosts
-    - set -o allexport; source docker-content-digest.env; set +o allexport
     - deploy
   environment:
     name: production
