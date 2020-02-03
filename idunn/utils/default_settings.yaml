@@ -111,7 +111,7 @@ PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allo
 #######################
 ## Geocoding
 BRAGI_BASE_URL: "http://bragi:4000"
-AUTOCOMPLETE_NLU: False
+AUTOCOMPLETE_NLU_DEFAULT: False
 AUTOCOMPLETE_NLU_URL:
 AUTOCOMPLETE_CLASSIFIER_URL:
 

@@ -4,8 +4,6 @@ Bragi parameters as defined here:
 """
 from enum import Enum
 from typing import List, Optional
-
-import dataclasses
 from fastapi import Query
 from pydantic import BaseModel, Field, PositiveInt, confloat, conint
 from pydantic.dataclasses import dataclass
@@ -28,7 +26,7 @@ class QueryParams:
     q: str = Query(..., title="query string")
     lon: Optional[confloat(ge=-180, le=180)] = Query(None, title="latitude for the focus")
     lat: Optional[confloat(ge=-90, le=90)] = Query(None, title="longitude for the focus")
-    lang: str = Query(settings["DEFAULT_LANGUAGE"], title="language")
+    lang: Optional[str] = Query(None, title="language")
     limit: PositiveInt = 10
     pt_dataset: List[str] = Query([])
     poi_dataset: List[str] = Query([])
@@ -38,7 +36,8 @@ class QueryParams:
     type: List[Type] = Query([])
     zone_type: List[ZoneType] = Query([])
     poi_type: List[str] = Query([])
-    nlu: bool = settings["AUTOCOMPLETE_NLU"]
+
+    nlu: bool = settings["AUTOCOMPLETE_NLU_DEFAULT"]
 
     def nlu_query_dict(self):
         """
@@ -46,7 +45,7 @@ class QueryParams:
             - the lang
             - and the query itself
         """
-        return {"text": self.q, "lang": self.lang}
+        return {"text": self.q, "lang": self.lang or settings["DEFAULT_LANGUAGE"]}
 
     def bragi_query_dict(self):
         """
@@ -55,9 +54,19 @@ class QueryParams:
         should be sent to bragi.
         """
         return {
-            (key if not isinstance(value, list) else key + "[]"): value
-            for (key, value) in dataclasses.asdict(self).items()
-            if key is not "nlu"
+            "q": self.q,
+            "lon": self.lon,
+            "lat": self.lat,
+            "lang": self.lang,
+            "limit": self.limit,
+            "pt_dataset[]": self.pt_dataset,
+            "poi_dataset[]": self.poi_dataset,
+            "all_data": self.all_data,
+            "offset": self.offset,
+            "timeout": self.timeout,
+            "type[]": self.type,
+            "zone_type[]": self.zone_type,
+            "poi_type[]": self.poi_type,
         }
 
 

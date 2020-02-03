@@ -17,6 +17,7 @@ class GeocoderClient:
         self.session = requests.Session()
 
     def autocomplete(self, query: QueryParams, extra: ExtraParams):
+        intentions = None
         if query.nlu:
             params = query.nlu_query_dict()
             intentions = nlu_client.get_intentions(params)
@@ -43,7 +44,7 @@ class GeocoderClient:
 
         try:
             results = response.json()
-            if "intentions" in locals():
+            if intentions is not None:
                 results["intentions"] = intentions
             result_list = IdunnAutocomplete.parse_obj(results)
         except (JSONDecodeError, pydantic.ValidationError):

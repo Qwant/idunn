@@ -29,16 +29,15 @@ class NLU_Helper:
 
     def get_intentions(self, params):
         url_nlu = settings["AUTOCOMPLETE_NLU_URL"]
-        params[
-            "domain"
-        ] = "poi"  # this settings is an immutable string required as a parameter for the NLU API so I thinkg it does not need to be changed
+        # this settings is an immutable string required as a parameter for the NLU API
+        params["domain"] = "poi"
 
         try:
             response_nlu = self.session.post(url_nlu, data=params, verify=False, timeout=1)
             response_nlu.raise_for_status()
         except Exception:
             logger.error("Request to NLU returned with unexpected status", exc_info=True)
-            raise HTTPException(503, "Unexpected NLU error")
+            return []
         else:
             tags_list = response_nlu.json()["NLU"]
             intentions = [
