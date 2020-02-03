@@ -47,7 +47,8 @@ class GeocoderClient:
             if intentions is not None:
                 results["intentions"] = intentions
             result_list = IdunnAutocomplete.parse_obj(results)
-        except (JSONDecodeError, pydantic.ValidationError):
+        except (JSONDecodeError, pydantic.ValidationError) as e:
+            logger.exception("Autocomplete invalid response")
             raise HTTPException(503, "Invalid response from the geocoder")
 
         return result_list

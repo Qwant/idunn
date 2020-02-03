@@ -1,9 +1,7 @@
-import json
 import os
 import re
-from urllib.parse import parse_qs, urlparse
-
 import pytest
+from unittest.mock import ANY
 import responses
 from starlette.testclient import TestClient
 
@@ -23,7 +21,6 @@ def path_from_string(sPath):
 FIXTURE_PATH = path_from_string("fixtures/autocomplete/paris.json")
 FIXTURE_PATH_NLU = path_from_string("fixtures/autocomplete/nlu.json")
 FIXTURE_PATH_CLASSIF_pharmacy = path_from_string("fixtures/autocomplete/classif_pharmacy.json")
-FIXTURE_PATH_CLASSIF_paris = path_from_string("fixtures/autocomplete/classif_paris.json")
 
 
 @pytest.fixture
@@ -48,12 +45,6 @@ def mock_NLU(mocked_responses):
             responses.POST,
             f"{CLASSIF_URL}",
             body=open(FIXTURE_PATH_CLASSIF_pharmacy).read(),
-            status=200,
-        )
-        mocked_responses.add(
-            responses.POST,
-            f"{CLASSIF_URL}",
-            body=open(FIXTURE_PATH_CLASSIF_paris).read(),
             status=200,
         )
         yield mocked_responses
@@ -117,9 +108,13 @@ def assert_ok_with(client, params, extra=None):
 
     if "nlu" in params:
         intentions = data["intentions"]
-        assert len(intentions) == 2
-        assert intentions[0]["intention"] == "pharmacy"
-        assert intentions[1]["intention"] == "restaurant"
+        assert intentions == [
+            {
+                "type": "category",
+                "category": "pharmacy",
+                "near": {"name": "paris", "label": "paris", "bbox": ANY},
+            }
+        ]
 
 
 def test_autocomplete_ok(mock_autocomplete_get):

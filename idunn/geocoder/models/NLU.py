@@ -39,15 +39,26 @@ class NLU_Helper:
             logger.error("Request to NLU returned with unexpected status", exc_info=True)
             return []
         else:
+            intentions = []
             tags_list = response_nlu.json()["NLU"]
-            intentions = [
-                {
-                    "type": t["tag"],
-                    "query_phrase": t["phrase"],
-                    "intention": self.from_classifier(t["phrase"]),
-                }
-                for t in tags_list
-            ]
+            category_tags = [t for t in tags_list if t.get("tag") == "category"]
+            city_tags = [t for t in tags_list if t.get("tag") == "city"]
+            if len(category_tags) > 0 and len(city_tags) > 0:
+                category_tag = category_tags[0]
+                # TODO: Fetch detail (label, bbox) about city via Bragi
+                city_tag = city_tags[0]
+
+                intentions.append(
+                    {
+                        "type": "category",
+                        "category": self.from_classifier(category_tag["phrase"]),
+                        "near": {
+                            "name": city_tag["phrase"],
+                            "label": city_tag["phrase"],
+                            "bbox": [0, 0, 0, 0],
+                        },
+                    }
+                )
             return intentions
 
 

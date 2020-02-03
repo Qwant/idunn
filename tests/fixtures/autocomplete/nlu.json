@@ -2,7 +2,7 @@
     "NLU": [
         {
             "phrase": "pharmacy",
-            "tag": "POI",
+            "tag": "category",
             "value": {}
         },
         {

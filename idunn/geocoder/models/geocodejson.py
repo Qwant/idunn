@@ -155,28 +155,23 @@ class Feature(BaseModel):
     context: Optional[Context]
 
 
+class IntentionPlace(BaseModel):
+    name: str
+    label: str
+    bbox: Rect
+
+
 class IntentionType(str, Enum):
-    Attraction = "attraction"
-    Hotel = "hotel"
-    TrainStation = "train_station"
-    Restaurant = "restaurant"
-    Pharmacy = "pharmacy"
-
-
-class TagType(str, Enum):
     Brand = "brand"
-    Category = "cat"
-    City = "city"
-    Country = "country"
-    State = "state"
+    Category = "category"
     Other = "other"
-    POI = "POI"
 
 
 class Intention(BaseModel):
-    type: str = TagType
-    intention: IntentionType
-    query_phrase: str
+    type: IntentionType
+    query: Optional[str]
+    category: Optional[str]
+    near: Optional[IntentionPlace]
 
 
 class Geocoding(BaseModel):
