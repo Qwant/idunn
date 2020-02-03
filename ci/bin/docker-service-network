@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TAG="01d14f5f"
-CHECKSUM="de7e5f07e76bbae02827e09883545dc85136d3c5e7540b7f2df4a8ef6dfa8294"
+TAG="3a735904"
+CHECKSUM="b3b383e42259a31f8513258a2445f329a90c14cceca50300985e581ed1b307ae"
 
 docker run --rm -v '/var/run/docker.sock:/var/run/docker.sock:rw' \
     registry.qwant.ninja/continuous-integration/docker-service-network:${TAG}@sha256:${CHECKSUM} \
