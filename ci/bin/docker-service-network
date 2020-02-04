@@ -2,5 +2,5 @@
 set -euo pipefail
 
 docker run --rm -v '/var/run/docker.sock:/var/run/docker.sock:rw' \
-    "${CI_REGISTRY_IMAGE}/ci/docker-service-network:latest"
+    "${CI_REGISTRY_IMAGE}/ci/docker-service-network:latest" \
     python app.py "$@"
