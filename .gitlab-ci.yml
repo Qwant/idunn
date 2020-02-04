@@ -22,7 +22,7 @@ tag:
     - docker push "$DEST_IMAGE"
   variables:
     SOURCE_IMAGE: "${CI_REGISTRY}/continuous-integration/docker-service-network:3a735904"
-    DEST_IMAGE: "${CI_REGISTRY_IMAGE}/ci/logspout:latest"
+    DEST_IMAGE: "${CI_REGISTRY_IMAGE}/ci/docker-service-network:latest"
 
 
 build:
