@@ -12,6 +12,19 @@ before_script:
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
 
 
+tag:
+  stage: build
+  tags:
+    - light
+  script:
+    - docker pull "$SOURCE_IMAGE"
+    - docker tag "$SOURCE_IMAGE" "$DEST_IMAGE"
+    - docker push "$DEST_IMAGE"
+  variables:
+    SOURCE_IMAGE: "${CI_REGISTRY}/continuous-integration/docker-service-network:3a735904"
+    DEST_IMAGE: "${CI_REGISTRY_IMAGE}/ci/logspout:latest"
+
+
 build:
   stage: build
   tags:
