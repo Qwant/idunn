@@ -139,7 +139,9 @@ def fetch_es_poi(id, es) -> dict:
     This function gets from Elasticsearch the
     entry corresponding to the given id.
     """
-    es_pois = es.search(index=PLACE_POI_INDEX, body={"filter": {"term": {"_id": id}}})
+    es_pois = es.search(
+        index=PLACE_POI_INDEX, body={"filter": {"term": {"_id": id}}}, ignore_unavailable=True
+    )
 
     es_poi = es_pois.get("hits", {}).get("hits", [])
     if len(es_poi) == 0:
@@ -193,6 +195,7 @@ def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
         },
         size=max_size,
         timeout="3s",
+        ignore_unavailable=True,
     )
 
     bbox_places = bbox_places.get("hits", {}).get("hits", [])
@@ -213,7 +216,9 @@ def fetch_es_place(id, es, type) -> dict:
         index_name = INDICES.get(type)
 
     try:
-        es_places = es.search(index=index_name, body={"filter": {"term": {"_id": id}}})
+        es_places = es.search(
+            index=index_name, body={"filter": {"term": {"_id": id}}}, ignore_unavailable=True,
+        )
     except ElasticsearchException as error:
         logger.warning(f"error with database: {error}")
         raise HTTPException(detail="database issue", status_code=503)

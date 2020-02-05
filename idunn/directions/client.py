@@ -58,8 +58,8 @@ class DirectionsClient:
                 all(
                     city_surrounds_polygons[city].contains(point)
                     for point in [
-                        Point(from_coord['lon'], from_coord['lat']),
-                        Point(to_coord['lon'], to_coord['lat']),
+                        Point(from_coord["lon"], from_coord["lat"]),
+                        Point(to_coord["lon"], to_coord["lat"]),
                     ]
                 )
                 for city in settings["PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES"].split(",")
