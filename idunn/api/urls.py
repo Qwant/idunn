@@ -53,7 +53,7 @@ def get_api_urls(settings):
             responses={422: {"description": "Requested Path Not Allowed."}},
         ),
         APIRoute(
-            "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
+            "/directions",
             get_directions,
             response_model=DirectionsResponse,
             responses={422: {"description": "Requested Path Not Allowed."}},

@@ -76,6 +76,30 @@ def test_direction_car(mock_directions_car):
     assert "exclude=ferry" in mock_directions_car.calls[0].request.url
 
 
+def test_direction_car_with_ids(mock_directions_car):
+    client = TestClient(app)
+    response = client.get(
+        "http://localhost/v1/directions",
+        params={
+            "language": "fr",
+            "type": "driving",
+            "exclude": "ferry",
+            "origin": "latlon:48.89007:2.34023",
+            "destination": "osm:way:63178753",
+        },
+    )
+
+    assert response.status_code == 200
+
+    response_data = response.json()
+    assert response_data["status"] == "success"
+    assert len(response_data["data"]["routes"]) == 3
+    assert response_data["data"]["routes"][0]["legs"][0]["mode"] == "CAR"
+    mocked_request_url = mock_directions_car.calls[0].request.url
+    assert "exclude=ferry" in mocked_request_url
+    assert "2.34023,48.89007;2.32658,48.85992" in mocked_request_url
+
+
 def test_direction_public_transport(mock_directions_public_transport):
     client = TestClient(app)
     response = client.get(

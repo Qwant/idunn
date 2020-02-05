@@ -64,17 +64,19 @@ class DirectionsClient:
                 )
                 for city in settings["PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES"].split(",")
             )
-
         return True
+
+    def place_to_url_coords(self, place):
+        coord = place.get_coord()
+        lat, lon = coord["lat"], coord["lon"]
+        return (f"{lon:.5f}", f"{lat:.5f}")
 
     def directions_mapbox(self, start, end, mode, lang, extra=None):
         if extra is None:
             extra = {}
 
-        start_coord = start.get_coord()
-        start_lon, start_lat = start_coord["lon"], start_coord["lat"]
-        end_coord = end.get_coord()
-        end_lon, end_lat = end_coord["lon"], end_coord["lat"]
+        start_lon, start_lat = self.place_to_url_coords(start)
+        end_lon, end_lat = self.place_to_url_coords(end)
 
         base_url = settings["MAPBOX_DIRECTIONS_API_BASE_URL"]
         response = self.session.get(
@@ -90,7 +92,7 @@ class DirectionsClient:
         if 400 <= response.status_code < 500:
             # Proxy client errors
             logger.info(
-                "Got error from mapbox API. " "Status: %s, Body: %s",
+                "Got error from mapbox API. Status: %s, Body: %s",
                 response.status_code,
                 response.text,
             )
@@ -106,11 +108,9 @@ class DirectionsClient:
 
         if extra is None:
             extra = {}
-        start_coord = start.get_coord()
-        start_lon, start_lat = start_coord["lon"], start_coord["lat"]
-        end_coord = end.get_coord()
-        end_lon, end_lat = end_coord["lon"], end_coord["lat"]
 
+        start_lon, start_lat = self.place_to_url_coords(start)
+        end_lon, end_lat = self.place_to_url_coords(end)
         response = self.session.get(
             f"{self.QWANT_BASE_URL}/{start_lon},{start_lat};{end_lon},{end_lat}",
             params={
@@ -128,7 +128,8 @@ class DirectionsClient:
         return DirectionsResponse(**response.json())
 
     def place_to_combigo_location(self, place, lang):
-        location = {"lat": place.get_coord()["lat"], "lng": place.get_coord()["lon"]}
+        coord = place.get_coord()
+        location = {"lat": coord["lat"], "lng": coord["lon"]}
         if place.PLACE_TYPE != "latlon":
             name = place.get_name(lang)
             if name:
