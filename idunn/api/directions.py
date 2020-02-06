@@ -37,7 +37,6 @@ def get_directions_with_coordinates(
     # Request
     request: Request = Depends(directions_request),
 ):
-
     from_place = Latlon(f_lat, f_lon)
     to_place = Latlon(t_lat, t_lon)
     if not type:

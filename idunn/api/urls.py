@@ -33,6 +33,7 @@ def get_api_urls(settings):
     return [
         APIRoute("/metrics", metric_handler),
         APIRoute("/status", get_status),
+        # Deprecated POI route
         APIRoute("/pois/{id}", get_poi, deprecated=True),
         # Places
         APIRoute("/places", get_places_bbox),
