@@ -88,12 +88,12 @@ def test_block_null():
     assert resp["blocks"][0]["url"] == "tel:+33142720937"
 
 
-def test_unknow_poi():
+def test_unknown_poi():
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/pois/an_unknown_poi_id",)
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "poi 'an_unknown_poi_id' not found"}
+    assert "'an_unknown_poi_id' not found" in response.json()["detail"]
 
 
 def test_services_and_information():
