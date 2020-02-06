@@ -57,7 +57,9 @@ class PjSource:
         internal_id = id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
 
         es_places = self.es.search(
-            index=self.es_index, body={"filter": {"term": {"_id": internal_id}}}
+            index=self.es_index,
+            body={"query": {"bool": {"filter": {"term": {"_id": internal_id}}}}},
+            ignore_unavailable=True,
         )
 
         es_place = es_places.get("hits", {}).get("hits", [])

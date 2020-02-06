@@ -139,14 +139,7 @@ def fetch_es_poi(id, es) -> dict:
     This function gets from Elasticsearch the
     entry corresponding to the given id.
     """
-    es_pois = es.search(
-        index=PLACE_POI_INDEX, body={"filter": {"term": {"_id": id}}}, ignore_unavailable=True
-    )
-
-    es_poi = es_pois.get("hits", {}).get("hits", [])
-    if len(es_poi) == 0:
-        raise HTTPException(status_code=404, detail=f"poi '{id}' not found")
-    return es_poi[0]["_source"]
+    return fetch_es_place(id, es, type="poi")["_source"]
 
 
 def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
@@ -217,7 +210,10 @@ def fetch_es_place(id, es, type) -> dict:
 
     try:
         es_places = es.search(
-            index=index_name, body={"filter": {"term": {"_id": id}}}, ignore_unavailable=True,
+            index=index_name,
+            body={"query": {"bool": {"filter": {"term": {"_id": id}}}}},
+            ignore_unavailable=True,
+            _source_exclude=["boundary"],
         )
     except ElasticsearchException as error:
         logger.warning(f"error with database: {error}")
