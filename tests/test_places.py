@@ -57,7 +57,7 @@ def test_full_query_street():
         Test the response format to a street query
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/35460343?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr",)
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -66,7 +66,7 @@ def test_full_query_street():
 
     assert resp == {
         "type": "street",
-        "id": "35460343",
+        "id": "street:35460343",
         "name": "Birnenweg",
         "local_name": "Birnenweg",
         "class_name": "street",
@@ -84,7 +84,7 @@ def test_full_query_street():
             "housenumber": None,
             "postcode": "77777",
             "street": {
-                "id": "35460343",
+                "id": "street:35460343",
                 "name": "Birnenweg",
                 "label": "Birnenweg (Label)",
                 "postcodes": ["77777"],
@@ -423,14 +423,14 @@ def test_admin_i18n_name():
 
 def test_type_query_street():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/35460343?lang=fr&type=street",)
+    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr&type=street",)
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
-    assert resp["id"] == "35460343"
+    assert resp["id"] == "street:35460343"
     assert resp["name"] == "Birnenweg"
 
 
@@ -485,9 +485,7 @@ def test_wrong_type():
 
     response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=poi",)
     assert response.status_code == 404
-    assert (
-        response._content == b'{"detail":"place addr:5.108632;48.810273 not found with type=poi"}'
-    )
+    assert response.json() == {"detail": "place 'addr:5.108632;48.810273' not found with type=poi"}
 
 
 def test_basic_short_query_poi():

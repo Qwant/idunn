@@ -13,8 +13,6 @@ For each test we freeze time at different datetimes and
 for each we create a fake different OpeningHourBlock from
 a raw json extracted from a POI located in Moscow city.
 
-TODO: a test that checks that opening hours can now span
-over midnight (branch 'new-parsing' of the repo)
 """
 
 

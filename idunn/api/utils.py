@@ -23,6 +23,7 @@ from idunn.blocks import (
     WikiUndefinedException,
 )
 from idunn.utils import prometheus
+from idunn.utils.index_names import INDICES
 import phonenumbers
 
 logger = logging.getLogger(__name__)
@@ -138,7 +139,9 @@ def fetch_es_poi(id, es) -> dict:
     This function gets from Elasticsearch the
     entry corresponding to the given id.
     """
-    es_pois = es.search(index=PLACE_POI_INDEX, body={"filter": {"term": {"_id": id}}})
+    es_pois = es.search(
+        index=PLACE_POI_INDEX, body={"filter": {"term": {"_id": id}}}, ignore_unavailable=True
+    )
 
     es_poi = es_pois.get("hits", {}).get("hits", [])
     if len(es_poi) == 0:
@@ -192,13 +195,14 @@ def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
         },
         size=max_size,
         timeout="3s",
+        ignore_unavailable=True,
     )
 
     bbox_places = bbox_places.get("hits", {}).get("hits", [])
     return bbox_places
 
 
-def fetch_es_place(id, es, indices, type) -> dict:
+def fetch_es_place(id, es, type) -> dict:
     """Returns the raw Place data
 
     This function gets from Elasticsearch the
@@ -206,20 +210,26 @@ def fetch_es_place(id, es, indices, type) -> dict:
     """
     if type is None:
         index_name = PLACE_DEFAULT_INDEX
-    elif type not in indices:
+    elif type not in INDICES:
         raise HTTPException(status_code=400, detail=f"Wrong type parameter: type={type}")
     else:
-        index_name = indices.get(type)
+        index_name = INDICES.get(type)
 
     try:
-        es_places = es.search(index=index_name, body={"filter": {"term": {"_id": id}}})
+        es_places = es.search(
+            index=index_name, body={"filter": {"term": {"_id": id}}}, ignore_unavailable=True,
+        )
     except ElasticsearchException as error:
         logger.warning(f"error with database: {error}")
         raise HTTPException(detail="database issue", status_code=503)
 
     es_place = es_places.get("hits", {}).get("hits", [])
     if len(es_place) == 0:
-        raise HTTPException(status_code=404, detail=f"place {id} not found with type={type}")
+        if type is None:
+            message = f"place '{id}' not found"
+        else:
+            message = f"place '{id}' not found with type={type}"
+        raise HTTPException(status_code=404, detail=message)
     if len(es_place) > 1:
         logger.warning("Got multiple places with id %s", id)
 

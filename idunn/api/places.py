@@ -1,4 +1,3 @@
-import json
 import logging
 import urllib.parse
 
@@ -7,13 +6,11 @@ from starlette.responses import Response
 from starlette.requests import Request
 
 from idunn import settings
-from idunn.utils import prometheus
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.utils.index_names import INDICES
-from idunn.places import Place, Admin, Street, Address, POI, Latlon
+
+from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
-from idunn.api.utils import fetch_es_place, DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
-from idunn.api.pages_jaunes import pj_source
+from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
 from .closest import get_closest_place
 
 
@@ -80,34 +77,9 @@ def get_place(
     id: str, request: Request, lang: str = None, type=None, verbosity=DEFAULT_VERBOSITY
 ) -> Place:
     """Main handler that returns the requested place"""
-    es = get_elasticsearch()
     verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
-
-    # Handle place from "pages jaunes"
-    if id.startswith(pj_source.PLACE_ID_PREFIX):
-        pj_place = pj_source.get_place(id)
-        log_place_request(pj_place, request.headers)
-        return pj_place.load_place(lang, verbosity)
-
-    #  Otherwise handle places from the ES db
-    es_place = fetch_es_place(id, es, INDICES, type)
-
-    places = {
-        "admin": Admin,
-        "street": Street,
-        "addr": Address,
-        "poi": POI,
-    }
-    loader = places.get(es_place.get("_type"))
-
-    if loader is None:
-        prometheus.exception("FoundPlaceWithWrongType")
-        raise Exception(
-            "Place with id '{}' has a wrong type: '{}'".format(id, es_place[0].get("_type"))
-        )
-
-    place = loader(es_place["_source"])
+    place = place_from_id(id, type)
     log_place_request(place, request.headers)
     return place.load_place(lang, verbosity)
 

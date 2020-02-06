@@ -1,7 +1,7 @@
 from idunn.blocks.base import BaseBlock, BlocksValidator
 from idunn.api.utils import LONG, BLOCKS_BY_VERBOSITY
 from pydantic import BaseModel
-from typing import ClassVar, List, Optional
+from typing import List, Optional
 
 
 class PlaceMeta(BaseModel):

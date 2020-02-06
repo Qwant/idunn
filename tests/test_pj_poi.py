@@ -4,7 +4,7 @@ import json
 import os
 
 from app import app
-from idunn.api import places
+from idunn.places import utils as places_utils
 
 from .utils import enable_pj_source
 
@@ -18,10 +18,10 @@ def read_fixture(filename):
 def test_pj_place():
     musee_picasso = read_fixture("musee_picasso.json")
     with mock.patch.object(
-        places.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso]}}
+        places_utils.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso]}}
     ):
         client = TestClient(app)
-        response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr",)
+        response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr")
 
         assert response.status_code == 200
         resp = response.json()
@@ -60,10 +60,12 @@ def test_pj_place():
 def test_pj_place_with_missing_data():
     musee_picasso_short = read_fixture("musee_picasso_short.json")
     with mock.patch.object(
-        places.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso_short]}}
+        places_utils.pj_source.es,
+        "search",
+        new=lambda *x, **y: {"hits": {"hits": [musee_picasso_short]}},
     ):
         client = TestClient(app)
-        response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr",)
+        response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr")
 
         assert response.status_code == 200
         resp = response.json()

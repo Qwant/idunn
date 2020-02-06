@@ -1,9 +1,6 @@
-from elasticsearch import Elasticsearch
-
 from idunn import settings
 from idunn.places import POI
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.utils.settings import Settings
 from idunn.api.utils import fetch_es_poi, DEFAULT_VERBOSITY
 
 
