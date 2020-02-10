@@ -99,12 +99,14 @@ class WikidataConnector:
     @classmethod
     def get_wiki_info(cls, wikidata_id, wiki_index):
         cls.init_wiki_es()
-
         try:
             with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
                 resp = (
                     cls._wiki_es.search(
-                        index=wiki_index, body={"filter": {"term": {"wikibase_item": wikidata_id}}}
+                        index=wiki_index,
+                        body={
+                            "query": {"bool": {"filter": {"term": {"wikibase_item": wikidata_id}}}}
+                        },
                     )
                     .get("hits", {})
                     .get("hits", [])
@@ -128,7 +130,6 @@ class WikidataConnector:
             return None
 
         wiki = resp[0]["_source"]
-
         return wiki
 
 
@@ -238,7 +239,17 @@ def fetch_closest(lat, lon, max_distance, es):
         body={
             "query": {
                 "function_score": {
-                    "query": {"match_all": {}},
+                    "query": {
+                        "bool": {
+                            "filter": {
+                                "geo_distance": {
+                                    "distance": "{}m".format(max_distance),
+                                    "coord": {"lat": lat, "lon": lon},
+                                    "distance_type": "plane",
+                                }
+                            }
+                        }
+                    },
                     "boost_mode": "replace",
                     "functions": [
                         {
@@ -250,13 +261,6 @@ def fetch_closest(lat, lon, max_distance, es):
                             }
                         }
                     ],
-                }
-            },
-            "filter": {
-                "geo_distance": {
-                    "distance": "{}m".format(max_distance),
-                    "coord": {"lat": lat, "lon": lon},
-                    "distance_type": "plane",
                 }
             },
             "from": 0,
