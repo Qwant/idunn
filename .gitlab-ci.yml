@@ -12,7 +12,7 @@ before_script:
     --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
 
 
-tag:
+push docker-service-network image:
   stage: build
   tags:
     - light
@@ -23,6 +23,7 @@ tag:
   variables:
     SOURCE_IMAGE: "${CI_REGISTRY}/continuous-integration/docker-service-network:3a735904"
     DEST_IMAGE: "${CI_REGISTRY_IMAGE}/ci/docker-service-network:latest"
+  when: manual
 
 
 build:
