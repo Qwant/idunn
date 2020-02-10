@@ -29,6 +29,9 @@ services:
           memory: 2.72g
       restart_policy:
         condition: on-failure
+    networks:
+      - default
+
 
   idunn-redis:
     image: "${CI_REGISTRY_IMAGE}/idunn-redis@${REDIS_IMAGE_DIGEST}"
@@ -45,3 +48,5 @@ services:
         condition: on-failure
     environment:
       REDIS_ALIAS: "{{.Service.Name}}.{{.Task.Slot}}"
+    networks:
+      - default
