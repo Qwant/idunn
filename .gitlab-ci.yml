@@ -51,7 +51,7 @@ build:
 
 
 .deploy:
-  image: registry.qwant.ninja/docker/dood:18.03
+  image: registry.qwant.ninja/docker/dood:18.09
   before_script:
     - source ci/bootstrap.sh
     - docker login 
