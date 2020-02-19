@@ -28,14 +28,14 @@ def get_api_urls(settings):
     """
     metric_handler = get_metric_handler(settings)
     return [
-        APIRoute("/metrics", metric_handler),
-        APIRoute("/status", get_status),
+        APIRoute("/metrics", metric_handler, include_in_schema=False),
+        APIRoute("/status", get_status, include_in_schema=False),
         # Deprecated POI route
         APIRoute("/pois/{id}", get_poi, deprecated=True),
         # Places
         APIRoute("/places", get_places_bbox),
         APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
-        APIRoute("/places/{id}", handle_option, methods=["OPTIONS"]),
+        APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
         APIRoute("/places/{id}", get_place),
         # Categories
         APIRoute("/categories", get_all_categories),
