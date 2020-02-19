@@ -22,9 +22,6 @@ def get_metric_handler(settings):
     return expose_metrics
 
 
-from fastapi import HTTPException
-
-
 def get_api_urls(settings):
     """Defines all endpoints
     and handlers to build response
