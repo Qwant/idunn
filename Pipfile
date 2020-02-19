@@ -12,7 +12,7 @@ responses = "*"
 black = "==19.10b0"
 
 [packages]
-fastapi="==0.45.*"
+fastapi="==0.46.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = ">=2.20.0"
 tzwhere = "*"
@@ -23,6 +23,7 @@ redis = "*"
 python-redis-rate-limit = "*"
 python-json-logger = "*"
 lark-parser = "<0.7"
+astral = "==1.*"
 osm_humanized_opening_hours = {git = "https://github.com/rezemika/humanized_opening_hours.git",ref = "668caf4a10d19a78748636aaad22db2d1b7bb053",editable = true}
 gunicorn = "*"
 uvicorn = "*"
@@ -31,4 +32,4 @@ deepmerge = "*"
 prometheus-client = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"

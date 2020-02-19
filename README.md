@@ -43,8 +43,14 @@ The main endpoints are:
 
 ## Running
 
-- The dependencies are managed with [Pipenv](https://github.com/pypa/pipenv).
-- To run the api you need to do:
+### Requirements
+
+   - Python 3.8
+   - [Pipenv](https://github.com/pypa/pipenv), to manage dependencies and virtualenv
+
+### Installation
+
+- Create the virtualenv and install dependencies:
   ```shell
   pipenv install
   ```
