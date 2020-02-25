@@ -1,6 +1,0 @@
-scrape_configs:
-  - job_name: 'idunn'
-    scrape_interval: 1s
-    metrics_path: '/v1/metrics'
-    static_configs:
-      - targets: ['idunn:5000']
