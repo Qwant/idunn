@@ -30,6 +30,7 @@ uvicorn = "*"
 phonenumbers = "*"
 deepmerge = "*"
 prometheus-client = "*"
+unidecode = "*"
 
 [requires]
 python_version = "3.8"

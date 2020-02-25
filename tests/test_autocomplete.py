@@ -110,9 +110,8 @@ def assert_ok_with(client, params, extra=None):
         intentions = data["intentions"]
         assert intentions == [
             {
-                "type": "category",
-                "category": "pharmacy",
-                "near": {"name": "paris", "label": "paris", "bbox": ANY},
+                "filter": {"category": "pharmacy", "bbox": ANY},
+                "description": {"category": "pharmacy", "near": ANY},
             }
         ]
 

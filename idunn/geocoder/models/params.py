@@ -39,14 +39,6 @@ class QueryParams:
 
     nlu: bool = settings["AUTOCOMPLETE_NLU_DEFAULT"]
 
-    def nlu_query_dict(self):
-        """
-        Just returns the parameters required by the NLU API, i.e:
-            - the lang
-            - and the query itself
-        """
-        return {"text": self.q, "lang": self.lang or settings["DEFAULT_LANGUAGE"]}
-
     def bragi_query_dict(self):
         """
         Return a dictionary similar to the result of self.dict() but rename

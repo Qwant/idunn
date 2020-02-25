@@ -5,7 +5,7 @@ Implement GeocodeJson specification as defined here:
 """
 from typing import List, Optional, Tuple
 
-from pydantic import BaseModel, PositiveInt, confloat
+from pydantic import BaseModel, confloat, Field
 
 from .cosmogony import ZoneType
 
@@ -51,7 +51,7 @@ class Code(BaseModel):
 class AssociatedAdmin(BaseModel):
     id: str
     insee: str
-    level: PositiveInt
+    level: int
     label: str
     name: str
     zip_codes: List[str]
@@ -71,7 +71,7 @@ class Line(BaseModel):
     commercial_mode: Optional[CommercialMode]
     network: Optional[Network]
     physical_modes: Optional[PhysicalMode]
-    sort_order: Optional[PositiveInt]
+    sort_order: Optional[int]
 
 
 class FeedPublished(BaseModel):
@@ -90,7 +90,7 @@ class Comment(BaseModel):
     name: str
 
 
-class GeocodingResponse(BaseModel):
+class GeocodingPlace(BaseModel):
     type: str
     label: Optional[str]
     name: Optional[str]
@@ -115,11 +115,11 @@ class GeocodingResponse(BaseModel):
     id: str
     zone_type: Optional[str]
     citycode: Optional[str]
-    level: Optional[PositiveInt]
+    level: Optional[int]
     administrative_regions: List[AssociatedAdmin]
     poi_types: List[PoiType] = []
     properties: List[GeocodingProperty] = []
-    address: Optional["GeocodingResponse"]
+    address: Optional["GeocodingPlace"]
     commercial_modes: List[CommercialMode] = []
     comments: List[Comment] = []
     physical_modes: List[PhysicalMode] = []
@@ -132,7 +132,7 @@ class GeocodingResponse(BaseModel):
 
 
 class FeatureProperties(BaseModel):
-    geocoding: GeocodingResponse
+    geocoding: GeocodingPlace
 
 
 class Explanation(BaseModel):
@@ -151,27 +151,31 @@ class Feature(BaseModel):
     properties: FeatureProperties
 
     # From CanalTP/mimirsbrunn:libs/bragi/src/model.rs
-    distance: Optional[PositiveInt]
+    distance: Optional[int]
     context: Optional[Context]
 
 
-class IntentionPlace(BaseModel):
-    name: str
-    label: str
-    bbox: Rect
+class IntentionFilter(BaseModel):
+    q: Optional[str]
+    bbox: Optional[Rect]
+    category: Optional[str]
+    source: Optional[str]
 
 
-class IntentionType(str, Enum):
-    Brand = "brand"
-    Category = "category"
-    Other = "other"
+class IntentionDescription(BaseModel):
+    query: Optional[str]
+    category: Optional[str]
+    near: Optional[Feature]
 
 
 class Intention(BaseModel):
-    type: IntentionType
-    query: Optional[str]
-    category: Optional[str]
-    near: Optional[IntentionPlace]
+    filter: IntentionFilter = Field(
+        ..., description="Filter params that can be passed to /places endpoint"
+    )
+    description: IntentionDescription = Field(
+        ...,
+        description="Details about the detected intention, useful to format a human-readable description",
+    )
 
 
 class Geocoding(BaseModel):
@@ -188,5 +192,5 @@ class IdunnAutocomplete(BaseModel):
     features: List[Feature]
 
 
-GeocodingResponse.update_forward_refs()
+GeocodingPlace.update_forward_refs()
 Explanation.update_forward_refs()
