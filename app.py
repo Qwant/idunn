@@ -11,12 +11,10 @@ import uvicorn
 
 # Setup docs settings
 docs_settings = {
-    "docs_url": None,
-    "redoc_url": "/docs",
     "openapi_prefix": settings["DOCS_URL_PREFIX"],
 }
 if not settings["DOCS_ENABLED"]:
-    docs_settings.update({"openapi_url": None, "redoc_url": None})
+    docs_settings.update({"openapi_url": None, "redoc_url": None, "docs_url": None})
 
 
 # Setup FastAPI app
