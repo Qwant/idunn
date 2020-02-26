@@ -50,10 +50,27 @@ class NLU_Helper:
             return self.nlu_classifier(text)
         return self.regex_classifier(text)
 
-    def fuzzy_match(self, query, response):
+    @classmethod
+    def fuzzy_match(cls, query, response):
+        """ Does the response match the query reasonably well ?
+        >>> NLU_Helper.fuzzy_match("bastille", "Beuzeville-la-Bastille")
+        False
+        >>> NLU_Helper.fuzzy_match("paris 20", "Paris 20e Arrondissement")
+        True
+        >>> NLU_Helper.fuzzy_match("av victor hugo paris", "Avenue Victor Hugo")
+        True
+        """
         q = unidecode(query.strip()).lower()
         r = unidecode(response).lower()
-        return r[: len(q)] == q
+        if r[: len(q)] == q:
+            # Response starts with query
+            return True
+        if sum((Counter(r)-Counter(q)).values()) < len(q):
+            # Number of missing chars to match the response is low
+            # compared to the query length
+            return True
+        return False
+
 
     def get_intentions(self, text, lang):
         url_nlu = settings["AUTOCOMPLETE_NLU_URL"]
