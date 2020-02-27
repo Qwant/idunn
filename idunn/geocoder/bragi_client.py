@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 class BragiClient:
     def __init__(self):
         self.session = requests.Session()
+        if not settings["VERIFY_HTTPS"]:
+            self.session.verify = False
 
     def autocomplete(self, query: QueryParams, extra: ExtraParams):
         params = query.bragi_query_dict()

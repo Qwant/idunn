@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 from idunn.api.places_list import ALL_CATEGORIES, MAX_HEIGHT, MAX_WIDTH
 from .models.geocodejson import Intention
-from .models import QueryParams as BragiQueryParams
 from .bragi_client import bragi_client
 
 DEFAULT_BBOX_WIDTH = 0.02
@@ -21,6 +20,8 @@ DEFAULT_BBOX_HEIGHT = 0.01
 class NLU_Helper:
     def __init__(self):
         self.session = requests.Session()
+        if not settings["VERIFY_HTTPS"]:
+            self.session.verify = False
 
     def nlu_classifier(self, text):
         url_classifier = settings["AUTOCOMPLETE_CLASSIFIER_URL"]
@@ -65,12 +66,11 @@ class NLU_Helper:
         if r[: len(q)] == q:
             # Response starts with query
             return True
-        if sum((Counter(r)-Counter(q)).values()) < len(q):
+        if sum((Counter(r) - Counter(q)).values()) < len(q):
             # Number of missing chars to match the response is low
             # compared to the query length
             return True
         return False
-
 
     def get_intentions(self, text, lang):
         url_nlu = settings["AUTOCOMPLETE_NLU_URL"]
@@ -105,7 +105,7 @@ class NLU_Helper:
                 if not self.fuzzy_match(city_query, place["properties"]["geocoding"]["name"]):
                     return []
 
-                bbox = place["properties"].get("bbox")
+                bbox = place["properties"]["geocoding"].get("bbox")
                 if bbox:
                     if bbox[2] - bbox[0] > MAX_WIDTH or bbox[3] - bbox[1] > MAX_HEIGHT:
                         return []
@@ -134,7 +134,7 @@ class NLU_Helper:
                     intentions.append(
                         Intention(
                             filter={"q": cat_query, "bbox": bbox},
-                            description={"query": cat_query, "near": place,},
+                            description={"query": cat_query, "near": place},
                         )
                     )
             return intentions
