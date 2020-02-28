@@ -21,21 +21,22 @@ DEFAULT_BBOX_HEIGHT = 0.01
 class NLU_Helper:
     def __init__(self):
         self.session = requests.Session()
+        self.timeout = 0.3  # seconds
         if not settings["VERIFY_HTTPS"]:
             self.session.verify = False
 
     def nlu_classifier(self, text):
-        url_classifier = settings["AUTOCOMPLETE_CLASSIFIER_URL"]
+        classifier_url = settings["NLU_CLASSIFIER_URL"]
         try:
             response_classifier = self.session.post(
-                url_classifier,
+                classifier_url,
                 data=json.dumps({"text": text, "domain": "poi", "language": "fr", "count": 1}),
-                verify=False,
+                timeout=self.timeout,
             )
             response_classifier.raise_for_status()
         except Exception:
-            logger.error("Request to Classifier returned with unexpected status")
-            raise HTTPException(503, "Unexpected NLU error")
+            logger.error("Request to NLU classifier failed", exc_info=True)
+            return None
         else:
             return response_classifier.json()["intention"][0][1]
 
@@ -48,7 +49,7 @@ class NLU_Helper:
         return None
 
     def classify_category(self, text):
-        if settings["AUTOCOMPLETE_CLASSIFIER_URL"]:
+        if settings["NLU_CLASSIFIER_URL"]:
             return self.nlu_classifier(text)
         return self.regex_classifier(text)
 
@@ -131,15 +132,15 @@ class NLU_Helper:
         return None
 
     def get_intentions(self, text, lang):
-        url_nlu = settings["AUTOCOMPLETE_NLU_URL"]
+        tokenizer_url = settings["NLU_TOKENIZER_URL"]
         # this settings is an immutable string required as a parameter for the NLU API
         params = {"text": text, "lang": lang or settings["DEFAULT_LANGUAGE"], "domain": "poi"}
 
         try:
-            response_nlu = self.session.post(url_nlu, json=params, timeout=0.5)
+            response_nlu = self.session.post(tokenizer_url, json=params, timeout=self.timeout)
             response_nlu.raise_for_status()
         except Exception:
-            logger.error("Request to NLU returned with unexpected status", exc_info=True)
+            logger.error("Request to NLU tokenizer failed", exc_info=True)
             return []
         else:
             intentions = []

@@ -21,7 +21,7 @@ def read_fixture(sPath):
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
 FIXTURE_AUTOCOMPLETE_PARIS = read_fixture("fixtures/autocomplete/paris.json")
-FIXTURE_NLU = read_fixture("fixtures/autocomplete/nlu.json")
+FIXTURE_TOKENIZER = read_fixture("fixtures/autocomplete/nlu.json")
 FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
 
 
@@ -33,11 +33,9 @@ def mocked_responses():
 
 @pytest.fixture
 def mock_NLU(mocked_responses):
-    with override_settings(
-        {"AUTOCOMPLETE_NLU_URL": NLU_URL, "AUTOCOMPLETE_CLASSIFIER_URL": CLASSIF_URL}
-    ):
+    with override_settings({"NLU_TOKENIZER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
         mocked_responses.add(
-            responses.POST, f"{NLU_URL}", json=FIXTURE_NLU, status=200,
+            responses.POST, f"{NLU_URL}", json=FIXTURE_TOKENIZER, status=200,
         )
         """
         Two queries to the classifier API are required here,
