@@ -121,12 +121,12 @@ def assert_ok_with(client, params, extra=None):
                 },
                 "description": {
                     "category": "pharmacy",
-                    "near": {"type": "Feature", "geometry": ANY, "properties": ANY,},
+                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
                 },
             }
         ]
         assert (
-            intentions[0]["description"]["near"]["properties"]["geocoding"]["label"]
+            intentions[0]["description"]["place"]["properties"]["geocoding"]["label"]
             == "Paris (75000-75116), Île-de-France, France"
         )
 

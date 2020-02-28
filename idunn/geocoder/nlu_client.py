@@ -10,6 +10,7 @@ from unidecode import unidecode
 logger = logging.getLogger(__name__)
 
 from idunn.api.places_list import ALL_CATEGORIES, MAX_HEIGHT, MAX_WIDTH
+from idunn.api.pages_jaunes import pj_source
 from .models.geocodejson import Intention
 from .bragi_client import bragi_client
 
@@ -72,6 +73,63 @@ class NLU_Helper:
             return True
         return False
 
+    def build_intention_category_place(self, tags_list, lang):
+        category_tag = next(t for t in tags_list if t.get("tag") == "cat")
+        city_tag = next(t for t in tags_list if t.get("tag") == "city")
+        cat_query = category_tag["phrase"]
+        city_query = city_tag["phrase"]
+
+        bragi_result = bragi_client.raw_autocomplete(
+            params={"q": city_query, "lang": lang, "limit": 1}
+        )
+        if not bragi_result["features"]:
+            return None
+
+        place = bragi_result["features"][0]
+        if not self.fuzzy_match(city_query, place["properties"]["geocoding"]["name"]):
+            return None
+
+        bbox = place["properties"]["geocoding"].get("bbox")
+        if bbox:
+            if bbox[2] - bbox[0] > MAX_WIDTH or bbox[3] - bbox[1] > MAX_HEIGHT:
+                return None
+        else:
+            geometry = place.get("geometry", {})
+            if geometry.get("type") == "Point":
+                lon, lat = geometry.get("coordinates")
+                bbox = [
+                    lon - DEFAULT_BBOX_WIDTH / 2,
+                    lat - DEFAULT_BBOX_HEIGHT / 2,
+                    lon + DEFAULT_BBOX_WIDTH / 2,
+                    lat + DEFAULT_BBOX_HEIGHT / 2,
+                ]
+            else:
+                return None
+
+        category_name = self.classify_category(cat_query)
+        if category_name:
+            return Intention(
+                filter={"category": category_name, "bbox": bbox},
+                description={"category": category_name, "place": place},
+            )
+        else:
+            if not pj_source.bbox_is_covered(bbox):
+                return None
+            return Intention(
+                filter={"q": cat_query, "bbox": bbox},
+                description={"query": cat_query, "place": place},
+            )
+
+    def build_intention_category(self, tags_list, lang):
+        category_tag = next(t for t in tags_list if t.get("tag") == "cat")
+        cat_query = category_tag["phrase"]
+        category_name = self.classify_category(cat_query)
+        if category_name:
+            return Intention(
+                filter={"category": category_name}, description={"category": category_name},
+            )
+        return None
+
     def get_intentions(self, text, lang):
         url_nlu = settings["AUTOCOMPLETE_NLU_URL"]
         # this settings is an immutable string required as a parameter for the NLU API
@@ -90,53 +148,15 @@ class NLU_Helper:
             tags_count = Counter(t["tag"] for t in tags_list)
             if tags_count == {"city": 1, "cat": 1}:
                 # 1 category + 1 place
-                category_tag = next(t for t in tags_list if t.get("tag") == "cat")
-                city_tag = next(t for t in tags_list if t.get("tag") == "city")
-                cat_query = category_tag["phrase"]
-                city_query = city_tag["phrase"]
+                intention = self.build_intention_category_place(tags_list, lang=lang)
+                if intention is not None:
+                    intentions.append(intention)
+            elif tags_count == {"cat": 1}:
+                # 1 category
+                intention = self.build_intention_category(tags_list, lang=lang)
+                if intention is not None:
+                    intentions.append(intention)
 
-                bragi_result = bragi_client.raw_autocomplete(
-                    params={"q": city_query, "lang": lang, "limit": 1}
-                )
-                if not bragi_result["features"]:
-                    return []
-
-                place = bragi_result["features"][0]
-                if not self.fuzzy_match(city_query, place["properties"]["geocoding"]["name"]):
-                    return []
-
-                bbox = place["properties"]["geocoding"].get("bbox")
-                if bbox:
-                    if bbox[2] - bbox[0] > MAX_WIDTH or bbox[3] - bbox[1] > MAX_HEIGHT:
-                        return []
-                else:
-                    geometry = place.get("geometry", {})
-                    if geometry.get("type") == "Point":
-                        lon, lat = geometry.get("coordinates")
-                        bbox = [
-                            lon - DEFAULT_BBOX_WIDTH / 2,
-                            lat - DEFAULT_BBOX_HEIGHT / 2,
-                            lon + DEFAULT_BBOX_WIDTH / 2,
-                            lat + DEFAULT_BBOX_HEIGHT / 2,
-                        ]
-                    else:
-                        return []
-
-                category_name = self.classify_category(cat_query)
-                if category_name:
-                    intentions.append(
-                        Intention(
-                            filter={"category": category_name, "bbox": bbox},
-                            description={"category": category_name, "near": place,},
-                        )
-                    )
-                else:
-                    intentions.append(
-                        Intention(
-                            filter={"q": cat_query, "bbox": bbox},
-                            description={"query": cat_query, "near": place},
-                        )
-                    )
             return intentions
 
 

@@ -165,7 +165,7 @@ class IntentionFilter(BaseModel):
 class IntentionDescription(BaseModel):
     query: Optional[str]
     category: Optional[str]
-    near: Optional[Feature]
+    place: Optional[Feature]
 
 
 class Intention(BaseModel):
@@ -186,7 +186,7 @@ class Geocoding(BaseModel):
 
 
 class IdunnAutocomplete(BaseModel):
-    type: str = "FeaturesCollection"
+    type: str = "FeatureCollection"
     geocoding: Geocoding = Geocoding()
     intentions: Optional[List[Intention]]
     features: List[Feature]
