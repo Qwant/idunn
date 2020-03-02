@@ -1,0 +1,23 @@
+{
+    "NLU": [
+        {
+            "phrase": "pharmacie",
+            "tag": "cat",
+            "value": {}
+        },
+        {
+            "phrase": "à",
+            "tag": "O",
+            "value": {}
+        },
+        {
+            "phrase": "paris",
+            "tag": "city",
+            "value": {}
+        }
+    ],
+    "domain": "poi",
+    "lang": "fr",
+    "text": "pharmacie à paris",
+    "tokenized": "pharmacie à paris"
+}

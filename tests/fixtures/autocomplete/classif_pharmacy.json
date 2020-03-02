@@ -1,0 +1,12 @@
+{
+    "count": 1,
+    "domain": "poi",
+    "intention": [
+        [
+            1.0000100135803223,
+            "pharmacy"
+        ]
+    ],
+    "text": "pharmacy",
+    "tokenized": "pharmacy\n"
+}

@@ -1,9 +1,8 @@
-import json
 import os
 import re
-from urllib.parse import parse_qs, urlparse
-
 import pytest
+import json
+from unittest.mock import ANY
 import responses
 from starlette.testclient import TestClient
 
@@ -12,21 +11,58 @@ from .utils import override_settings
 
 
 BASE_URL = "http://qwant.bragi"
+NLU_URL = "http://qwant.nlu/"
+CLASSIF_URL = "http://qwant.classif"
 
-FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "fixtures/autocomplete/paris.json")
+
+def read_fixture(sPath):
+    return json.load(open(os.path.join(os.path.dirname(__file__), sPath)))
+
+
+FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
+FIXTURE_AUTOCOMPLETE_PARIS = read_fixture("fixtures/autocomplete/paris.json")
+FIXTURE_TOKENIZER = read_fixture("fixtures/autocomplete/nlu.json")
+FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
 
 
 @pytest.fixture
-def mock_autocomplete_get():
+def mocked_responses():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        yield rsps
+
+
+@pytest.fixture
+def mock_NLU(mocked_responses):
+    with override_settings({"NLU_TOKENIZER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
+        mocked_responses.add(
+            responses.POST, f"{NLU_URL}", json=FIXTURE_TOKENIZER, status=200,
+        )
+        """
+        Two queries to the classifier API are required here,
+        as a consequence the order of the two queries below is important
+        """
+        mocked_responses.add(
+            responses.POST, f"{CLASSIF_URL}", json=FIXTURE_CLASSIF_pharmacy, status=200,
+        )
+        yield mocked_responses
+
+
+@pytest.fixture
+def mock_autocomplete_get(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        with responses.RequestsMock() as resps:
-            resps.add(
-                responses.GET,
-                re.compile(f"^{BASE_URL}/autocomplete"),
-                body=open(FIXTURE_PATH).read(),
-                status=200,
-            )
-            yield
+        mocked_responses.add(
+            responses.GET,
+            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"),
+            json=FIXTURE_AUTOCOMPLETE_PARIS,
+            status=200,
+        )
+        mocked_responses.add(
+            responses.GET,
+            re.compile(f"^{BASE_URL}/autocomplete"),
+            json=FIXTURE_AUTOCOMPLETE,
+            status=200,
+        )
+        yield mocked_responses
 
 
 @pytest.fixture
@@ -36,7 +72,7 @@ def mock_autocomplete_post():
             resps.add(
                 responses.POST,
                 re.compile(f"^{BASE_URL}/autocomplete"),
-                body=open(FIXTURE_PATH).read(),
+                json=FIXTURE_AUTOCOMPLETE,
                 status=200,
             )
             yield
@@ -73,15 +109,34 @@ def assert_ok_with(client, params, extra=None):
     assert properties["label"] == "pavillon Eiffel (Paris)"
     assert properties["address"]["label"] == "5 Avenue Anatole France (Paris)"
 
+    if "nlu" in params:
+        intentions = data["intentions"]
+        assert intentions == [
+            {
+                "filter": {
+                    "category": "pharmacy",
+                    "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
+                },
+                "description": {
+                    "category": "pharmacy",
+                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
+                },
+            }
+        ]
+        assert (
+            intentions[0]["description"]["place"]["properties"]["geocoding"]["label"]
+            == "Paris (75000-75116), Île-de-France, France"
+        )
+
 
 def test_autocomplete_ok(mock_autocomplete_get):
     client = TestClient(app)
-    assert_ok_with(client, params={"q": "paris", "lang": "en", "limit": 7})
+    assert_ok_with(client, params={"q": "pavillon paris", "lang": "en", "limit": 7})
 
 
 def test_autocomplete_ok_defaults(mock_autocomplete_get):
     client = TestClient(app)
-    assert_ok_with(client, params={"q": "paris"})
+    assert_ok_with(client, params={"q": "pavillon paris"})
 
 
 def test_autocomplete_ok_shape(mock_autocomplete_post):
@@ -108,3 +163,8 @@ def test_autocomplete_unavailable(mock_autocomplete_unavailable):
     client = TestClient(app)
     resp = client.get("http://localhost/v1/autocomplete", params={"q": "paris"})
     assert resp.status_code == 503
+
+
+def test_autocomplete_with_nlu(mock_autocomplete_get, mock_NLU):
+    client = TestClient(app)
+    assert_ok_with(client, params={"q": "pharmacie à paris", "lang": "fr", "limit": 7, "nlu": True})

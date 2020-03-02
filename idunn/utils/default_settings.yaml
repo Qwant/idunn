@@ -1,7 +1,8 @@
 USER_AGENT: "Idunn/0.1"
 
 MIMIR_ES: http://localhost:9200/
-MIMIR_ES_VERIFY_HTTPS: True
+
+VERIFY_HTTPS: True # Whether to verify HTTPS certificates for requests to Mimir ES and internal APIs
 
 WIKI_ES:
 WIKI_ES_TIMEOUT: 0.5 # seconds
@@ -93,7 +94,6 @@ WEATHER_CACHE_TIMEOUT: 300 # seconds
 
 #######################
 ## CORS
-
 CORS_OPTIONS_REQUESTS_ENABLED: False
 
 #######################
@@ -112,6 +112,9 @@ PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allo
 #######################
 ## Geocoding
 BRAGI_BASE_URL: "http://bragi:4000"
+AUTOCOMPLETE_NLU_DEFAULT: False
+NLU_TOKENIZER_URL:
+NLU_CLASSIFIER_URL:
 
 #######################
 ## OpenAPI DOCS

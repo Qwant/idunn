@@ -4,8 +4,6 @@ Bragi parameters as defined here:
 """
 from enum import Enum
 from typing import List, Optional
-
-import dataclasses
 from fastapi import Query
 from pydantic import BaseModel, Field, PositiveInt, confloat, conint
 from pydantic.dataclasses import dataclass
@@ -28,7 +26,7 @@ class QueryParams:
     q: str = Query(..., title="query string")
     lon: Optional[confloat(ge=-180, le=180)] = Query(None, title="latitude for the focus")
     lat: Optional[confloat(ge=-90, le=90)] = Query(None, title="longitude for the focus")
-    lang: str = Query(settings["DEFAULT_LANGUAGE"], title="language")
+    lang: Optional[str] = Query(None, title="language")
     limit: PositiveInt = 10
     pt_dataset: List[str] = Query([])
     poi_dataset: List[str] = Query([])
@@ -39,15 +37,27 @@ class QueryParams:
     zone_type: List[ZoneType] = Query([])
     poi_type: List[str] = Query([])
 
+    nlu: bool = settings["AUTOCOMPLETE_NLU_DEFAULT"]
+
     def bragi_query_dict(self):
         """
-        Return a dictionary similar to the result of self.dict() but rename
-        arguments of type list with the suffix "[]", which is how they
-        should be sent to bragi.
+        Return a dict with parameters accepted by the bragi API
+        See https://github.com/CanalTP/mimirsbrunn/blob/v1.14.0/libs/bragi/src/routes/autocomplete.rs#L60
         """
         return {
-            (key if not isinstance(value, list) else key + "[]"): value
-            for (key, value) in dataclasses.asdict(self).items()
+            "q": self.q,
+            "lon": self.lon,
+            "lat": self.lat,
+            "lang": self.lang,
+            "limit": self.limit,
+            "pt_dataset[]": self.pt_dataset,
+            "poi_dataset[]": self.poi_dataset,
+            "all_data": self.all_data,
+            "offset": self.offset,
+            "timeout": self.timeout,
+            "type[]": self.type,
+            "zone_type[]": self.zone_type,
+            "poi_type[]": self.poi_type,
         }
 
 

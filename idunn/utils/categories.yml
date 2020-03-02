@@ -5,11 +5,13 @@ categories:
         raw_filters:
             - "restaurant,*"
             - "fast_food,*"
+        regex: "^resto|^restau"
     hotel:
         pj_filters:
             - "hôtels"
         raw_filters:
             - "*,hotel"
+        regex: "hotel"
     leisure:
         pj_filters:
             - "salles de cinéma"
@@ -17,22 +19,26 @@ categories:
         raw_filters:
             - "cinema,*"
             - "theatre,*"
+        regex: "^cine|leisure|loisir|theat"
     pharmacy:
         pj_filters:
             - "Pharmacie"
         raw_filters:
             - "pharmacy,*"
+        regex: "pharmac"
     supermarket:
         pj_filters:
             - "supermarchés, hypermarchés"
         raw_filters:
             - "*,supermarket"
             - "*,mall"
+        regex: "superette|epicier|epicerie|marche|market"
     bank:
         pj_filters:
             - "banques"
         raw_filters:
             - "bank,*"
+        regex: "bank|banque|credit|caisse|atm$"
     education:
         pj_filters:
             - "écoles maternelles publiques"
@@ -48,17 +54,20 @@ categories:
         raw_filters:
             - "school,*"
             - "college,*"
+        regex: "ecole|college|universit|educ"
     bar:
         pj_filters:
             - "cafés, bars"
         raw_filters:
             - "bar,*"
             - "cafe,*"
+        regex: "cafe|bar|pub"
     museum:
         pj_filters:
             - "musées"
         raw_filters:
             - "museum,*"
+        regex: "museum|musee"
     health:
         pj_filters:
             - "Centre médico-social"
@@ -70,6 +79,7 @@ categories:
             - "dentist,*"
             - "doctors,*"
             - "hospital,*"
+        regex: "health|sante|hopital|hospital|clinic|clinique|dentist|doctor|docteur"
     service:
         pj_filters:
             - "plombiers"
@@ -87,6 +97,7 @@ categories:
             - "townhall,*"
             - "police,*"
             - "fire_station,*"
+        regex: "service|car repair|post office|police|garage|poste|gendarmerie|pompiers"
     fitness:
         pj_filters:
             - "infrastructures de sports et loisirs"
@@ -94,6 +105,7 @@ categories:
             - "clubs de sport"
         raw_filters:
             - "sports_centre,*"
+        regex: "fitness|muscu|piscine"
 outing_types:
     concert:
         en:

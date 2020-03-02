@@ -6,7 +6,7 @@ from .categories import get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
 from .geocoder import get_autocomplete
-from ..geocoder.models import GeocodeJson
+from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions
 from ..utils.prometheus import (
     expose_metrics,
@@ -61,7 +61,7 @@ def get_api_urls(settings):
             "/autocomplete",
             get_autocomplete,
             methods=["GET", "POST"],
-            response_model=GeocodeJson,
+            response_model=IdunnAutocomplete,
             response_model_exclude_unset=True,
         ),
     ]

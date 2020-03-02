@@ -8,7 +8,7 @@ def get_elasticsearch():
     global ES_CONNECTION
 
     if ES_CONNECTION is None:
-        if settings["MIMIR_ES_VERIFY_HTTPS"] is False:
+        if settings["VERIFY_HTTPS"] is False:
             ES_CONNECTION = Elasticsearch(
                 settings["MIMIR_ES"], verify_certs=False, connection_class=RequestsHttpConnection
             )

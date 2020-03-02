@@ -1,2 +1,2 @@
-from .geocodejson import GeocodeJson
+from .geocodejson import IdunnAutocomplete
 from .params import ExtraParams, QueryParams
