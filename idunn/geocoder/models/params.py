@@ -41,9 +41,8 @@ class QueryParams:
 
     def bragi_query_dict(self):
         """
-        Return a dictionary similar to the result of self.dict() but rename
-        arguments of type list with the suffix "[]", which is how they
-        should be sent to bragi.
+        Return a dict with parameters accepted by the bragi API
+        See https://github.com/CanalTP/mimirsbrunn/blob/v1.14.0/libs/bragi/src/routes/autocomplete.rs#L60
         """
         return {
             "q": self.q,

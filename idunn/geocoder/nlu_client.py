@@ -30,7 +30,7 @@ class NLU_Helper:
         try:
             response_classifier = self.session.post(
                 classifier_url,
-                data=json.dumps({"text": text, "domain": "poi", "language": "fr", "count": 1}),
+                json={"text": text, "domain": "poi", "language": "fr", "count": 1},
                 timeout=self.timeout,
             )
             response_classifier.raise_for_status()
@@ -75,10 +75,8 @@ class NLU_Helper:
         return False
 
     def build_intention_category_place(self, tags_list, lang):
-        category_tag = next(t for t in tags_list if t.get("tag") == "cat")
-        city_tag = next(t for t in tags_list if t.get("tag") == "city")
-        cat_query = category_tag["phrase"]
-        city_query = city_tag["phrase"]
+        cat_query = next(t["phrase"] for t in tags_list if t.get("tag") == "cat")
+        city_query = next(t["phrase"] for t in tags_list if t.get("tag") == "city")
 
         bragi_result = bragi_client.raw_autocomplete(
             params={"q": city_query, "lang": lang, "limit": 1}
