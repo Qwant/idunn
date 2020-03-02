@@ -4,12 +4,8 @@ Implement GeocodeJson specification as defined here:
  - https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs
 """
 from typing import List, Optional, Tuple
-
 from pydantic import BaseModel, confloat, Field
-
 from .cosmogony import ZoneType
-
-from enum import Enum
 
 
 Lon = confloat(ge=-180, le=180)

@@ -3,7 +3,7 @@ import re
 import pytest
 import json
 from unittest.mock import ANY
-import responses
+import respx
 from starlette.testclient import TestClient
 
 from app import app
@@ -27,22 +27,20 @@ FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.
 
 @pytest.fixture
 def mocked_responses():
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+    with respx.mock as rsps:
         yield rsps
 
 
 @pytest.fixture
 def mock_NLU(mocked_responses):
     with override_settings({"NLU_TOKENIZER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
-        mocked_responses.add(
-            responses.POST, f"{NLU_URL}", json=FIXTURE_TOKENIZER, status=200,
+        respx.post(
+            NLU_URL,
+            content=FIXTURE_TOKENIZER,
         )
-        """
-        Two queries to the classifier API are required here,
-        as a consequence the order of the two queries below is important
-        """
-        mocked_responses.add(
-            responses.POST, f"{CLASSIF_URL}", json=FIXTURE_CLASSIF_pharmacy, status=200,
+        respx.post(
+            CLASSIF_URL,
+            content=FIXTURE_CLASSIF_pharmacy
         )
         yield mocked_responses
 
@@ -50,40 +48,35 @@ def mock_NLU(mocked_responses):
 @pytest.fixture
 def mock_autocomplete_get(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        mocked_responses.add(
-            responses.GET,
+        respx.get(
             re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"),
-            json=FIXTURE_AUTOCOMPLETE_PARIS,
-            status=200,
+            content=FIXTURE_AUTOCOMPLETE_PARIS,
         )
-        mocked_responses.add(
-            responses.GET,
+        respx.get(
             re.compile(f"^{BASE_URL}/autocomplete"),
-            json=FIXTURE_AUTOCOMPLETE,
-            status=200,
+            content=FIXTURE_AUTOCOMPLETE,
         )
         yield mocked_responses
 
 
 @pytest.fixture
-def mock_autocomplete_post():
+def mock_autocomplete_post(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        with responses.RequestsMock() as resps:
-            resps.add(
-                responses.POST,
-                re.compile(f"^{BASE_URL}/autocomplete"),
-                json=FIXTURE_AUTOCOMPLETE,
-                status=200,
-            )
-            yield
+        respx.post(
+            re.compile(f"^{BASE_URL}/autocomplete"),
+            content=FIXTURE_AUTOCOMPLETE,
+        )
+        yield mocked_responses
 
 
 @pytest.fixture
-def mock_autocomplete_unavailable():
+def mock_autocomplete_unavailable(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        with responses.RequestsMock() as resps:
-            resps.add(responses.GET, re.compile(f"^{BASE_URL}/autocomplete"), status=502)
-            yield
+        respx.get(
+            re.compile(f"^{BASE_URL}/autocomplete"),
+            status_code=502
+        )
+        yield mocked_responses
 
 
 def assert_ok_with(client, params, extra=None):

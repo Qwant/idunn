@@ -1,38 +1,35 @@
 import logging
-import requests
+import httpx
 from json.decoder import JSONDecodeError
-
 import pydantic
 from fastapi import HTTPException
 
 from idunn import settings
 from .models import QueryParams, ExtraParams
 
-
 logger = logging.getLogger(__name__)
 
 
 class BragiClient:
     def __init__(self):
-        self.session = requests.Session()
-        if not settings["VERIFY_HTTPS"]:
-            self.session.verify = False
+        self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
-    def autocomplete(self, query: QueryParams, extra: ExtraParams):
+    async def autocomplete(self, query: QueryParams, extra: ExtraParams):
         params = query.bragi_query_dict()
         body = None
         if extra.shape:
             body = extra.dict()
-        return self.raw_autocomplete(params, body)
+        response = await self.raw_autocomplete(params, body)
+        return response
 
-    def raw_autocomplete(self, params, body=None):
+    async def raw_autocomplete(self, params, body=None):
         url = settings["BRAGI_BASE_URL"] + "/autocomplete"
         if body:
-            response = self.session.post(url, params=params, json=body)
+            response = await self.client.post(url, params=params, json=body)
         else:
-            response = self.session.get(url, params=params)
+            response = await self.client.get(url, params=params)
 
-        if response.status_code != requests.codes.ok:
+        if response.status_code != httpx.codes.ok:
             try:
                 explain = response.json()["long"]
             except (IndexError, JSONDecodeError):
