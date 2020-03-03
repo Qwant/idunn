@@ -21,7 +21,7 @@ services:
       - IDUNN_NLU_TOKENIZER_URL=http://10.100.30.23:9009/nlu
       - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_DEV
-      - no_proxy=es,wiki-es,1216_kuzzle,10.100.30.23
+      - no_proxy=es,bragi,wiki-es,1216_kuzzle,10.100.30.23
     extra_hosts:
       - "wiki-es:10.100.31.26"
     networks:
