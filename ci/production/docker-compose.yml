@@ -13,6 +13,7 @@ services:
     environment:
       - http_proxy=http://10.100.9.1:2001
       - https_proxy=http://10.100.9.1:2001
+      - IDUNN_COMBIGO_API_KEY=${QMAPS_COMBIGO_API_KEY_PROD}
       - IDUNN_LOG_JSON=1
       - IDUNN_MIMIR_ES=http://es:9200
       - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
