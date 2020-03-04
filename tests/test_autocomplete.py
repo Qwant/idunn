@@ -34,14 +34,8 @@ def mocked_responses():
 @pytest.fixture
 def mock_NLU(mocked_responses):
     with override_settings({"NLU_TOKENIZER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
-        respx.post(
-            NLU_URL,
-            content=FIXTURE_TOKENIZER,
-        )
-        respx.post(
-            CLASSIF_URL,
-            content=FIXTURE_CLASSIF_pharmacy
-        )
+        respx.post(NLU_URL, content=FIXTURE_TOKENIZER)
+        respx.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
         yield mocked_responses
 
 
@@ -49,33 +43,23 @@ def mock_NLU(mocked_responses):
 def mock_autocomplete_get(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
         respx.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"),
-            content=FIXTURE_AUTOCOMPLETE_PARIS,
+            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"), content=FIXTURE_AUTOCOMPLETE_PARIS,
         )
-        respx.get(
-            re.compile(f"^{BASE_URL}/autocomplete"),
-            content=FIXTURE_AUTOCOMPLETE,
-        )
+        respx.get(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
         yield mocked_responses
 
 
 @pytest.fixture
 def mock_autocomplete_post(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        respx.post(
-            re.compile(f"^{BASE_URL}/autocomplete"),
-            content=FIXTURE_AUTOCOMPLETE,
-        )
+        respx.post(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
         yield mocked_responses
 
 
 @pytest.fixture
 def mock_autocomplete_unavailable(mocked_responses):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        respx.get(
-            re.compile(f"^{BASE_URL}/autocomplete"),
-            status_code=502
-        )
+        respx.get(re.compile(f"^{BASE_URL}/autocomplete"), status_code=502)
         yield mocked_responses
 
 

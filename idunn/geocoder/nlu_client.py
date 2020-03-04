@@ -25,8 +25,7 @@ class NLU_Helper:
         classifier_url = settings["NLU_CLASSIFIER_URL"]
         try:
             response_classifier = await self.client.post(
-                classifier_url,
-                json={"text": text, "domain": "poi", "language": "fr", "count": 1}
+                classifier_url, json={"text": text, "domain": "poi", "language": "fr", "count": 1}
             )
             response_classifier.raise_for_status()
         except Exception:
@@ -73,10 +72,8 @@ class NLU_Helper:
         cat_query = next(t["phrase"] for t in tags_list if t.get("tag") == "cat")
         city_query = next(t["phrase"] for t in tags_list if t.get("tag") == "city")
         bragi_result, category_name = await asyncio.gather(
-            bragi_client.raw_autocomplete(
-                params={"q": city_query, "lang": lang, "limit": 1}
-            ),
-            self.classify_category(cat_query)
+            bragi_client.raw_autocomplete(params={"q": city_query, "lang": lang, "limit": 1}),
+            self.classify_category(cat_query),
         )
 
         if not bragi_result["features"]:

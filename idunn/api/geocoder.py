@@ -14,8 +14,7 @@ async def get_autocomplete(
         return await nlu_client.get_intentions(text=query.q, lang=query.lang)
 
     autocomplete_response, intentions = await asyncio.gather(
-        bragi_client.autocomplete(query, extra),
-        get_intentions()
+        bragi_client.autocomplete(query, extra), get_intentions()
     )
     if intentions is not None:
         autocomplete_response["intentions"] = intentions
