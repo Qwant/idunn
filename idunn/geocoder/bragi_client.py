@@ -19,8 +19,7 @@ class BragiClient:
         body = None
         if extra.shape:
             body = extra.dict()
-        response = await self.raw_autocomplete(params, body)
-        return response
+        return await self.raw_autocomplete(params, body)
 
     async def raw_autocomplete(self, params, body=None):
         url = settings["BRAGI_BASE_URL"] + "/autocomplete"

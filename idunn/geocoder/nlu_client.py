@@ -134,23 +134,21 @@ class NLU_Helper:
         except Exception:
             logger.error("Request to NLU tokenizer failed", exc_info=True)
             return []
-        else:
-            intentions = []
-            tags_list = response_nlu.json()["NLU"]
-            tags_list = [t for t in tags_list if t["tag"] != "O"]
-            tags_count = Counter(t["tag"] for t in tags_list)
-            if tags_count == {"city": 1, "cat": 1}:
-                # 1 category + 1 place
-                intention = await self.build_intention_category_place(tags_list, lang=lang)
-                if intention is not None:
-                    intentions.append(intention)
-            elif tags_count == {"cat": 1}:
-                # 1 category
-                intention = await self.build_intention_category(tags_list, lang=lang)
-                if intention is not None:
-                    intentions.append(intention)
 
-            return intentions
+        intentions = []
+        tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
+        tags_count = Counter(t["tag"] for t in tags_list)
+        if tags_count == {"city": 1, "cat": 1}:
+            # 1 category + 1 place
+            intention = await self.build_intention_category_place(tags_list, lang=lang)
+            if intention is not None:
+                intentions.append(intention)
+        elif tags_count == {"cat": 1}:
+            # 1 category
+            intention = await self.build_intention_category(tags_list, lang=lang)
+            if intention is not None:
+                intentions.append(intention)
+        return intentions
 
 
 nlu_client = NLU_Helper()
