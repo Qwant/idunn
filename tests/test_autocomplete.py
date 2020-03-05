@@ -26,41 +26,41 @@ FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.
 
 
 @pytest.fixture
-def mocked_responses():
-    with respx.mock as rsps:
+def httpx_mock():
+    with respx.mock(assert_all_called=False) as rsps:
         yield rsps
 
 
 @pytest.fixture
-def mock_NLU(mocked_responses):
+def mock_NLU(httpx_mock):
     with override_settings({"NLU_TOKENIZER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
-        respx.post(NLU_URL, content=FIXTURE_TOKENIZER)
-        respx.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
-        yield mocked_responses
+        httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER)
+        httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
+        yield
 
 
 @pytest.fixture
-def mock_autocomplete_get(mocked_responses):
+def mock_autocomplete_get(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        respx.get(
+        httpx_mock.get(
             re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"), content=FIXTURE_AUTOCOMPLETE_PARIS,
         )
-        respx.get(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
-        yield mocked_responses
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
+        yield
 
 
 @pytest.fixture
-def mock_autocomplete_post(mocked_responses):
+def mock_autocomplete_post(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        respx.post(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
-        yield mocked_responses
+        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
+        yield
 
 
 @pytest.fixture
-def mock_autocomplete_unavailable(mocked_responses):
+def mock_autocomplete_unavailable(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        respx.get(re.compile(f"^{BASE_URL}/autocomplete"), status_code=502)
-        yield mocked_responses
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), status_code=502)
+        yield
 
 
 def assert_ok_with(client, params, extra=None):
