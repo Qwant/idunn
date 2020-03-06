@@ -47,6 +47,21 @@ class TransportInfo(BaseModel):
             data["network"] = data["transporterName"]
         super().__init__(**data)
 
+    @validator("lineColor")
+    def validate_color(cls, value):
+        """
+        >>> TransportInfo.validate_color("6eca97")
+        '6eca97'
+        >>> TransportInfo.validate_color("7852")
+        '007852'
+        >>> assert TransportInfo.validate_color(None) is None
+        """
+        if not value:
+            return None
+        if len(value) < 6:
+            return f"000000{value}"[-6:]
+        return value
+
 
 class TransportStop(BaseModel):
     id: Optional[str]
