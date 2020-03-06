@@ -1,10 +1,9 @@
-import json
-import requests
+import asyncio
+import httpx
 import logging
 import re
 from collections import Counter
 from idunn import settings
-from fastapi import HTTPException
 from unidecode import unidecode
 
 logger = logging.getLogger(__name__)
@@ -20,18 +19,13 @@ DEFAULT_BBOX_HEIGHT = 0.01
 
 class NLU_Helper:
     def __init__(self):
-        self.session = requests.Session()
-        self.timeout = 0.3  # seconds
-        if not settings["VERIFY_HTTPS"]:
-            self.session.verify = False
+        self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
 
-    def nlu_classifier(self, text):
+    async def nlu_classifier(self, text):
         classifier_url = settings["NLU_CLASSIFIER_URL"]
         try:
-            response_classifier = self.session.post(
-                classifier_url,
-                json={"text": text, "domain": "poi", "language": "fr", "count": 1},
-                timeout=self.timeout,
+            response_classifier = await self.client.post(
+                classifier_url, json={"text": text, "domain": "poi", "language": "fr", "count": 1}
             )
             response_classifier.raise_for_status()
         except Exception:
@@ -48,9 +42,9 @@ class NLU_Helper:
                 return category_name
         return None
 
-    def classify_category(self, text):
+    async def classify_category(self, text):
         if settings["NLU_CLASSIFIER_URL"]:
-            return self.nlu_classifier(text)
+            return await self.nlu_classifier(text)
         return self.regex_classifier(text)
 
     @classmethod
@@ -74,13 +68,14 @@ class NLU_Helper:
             return True
         return False
 
-    def build_intention_category_place(self, tags_list, lang):
+    async def build_intention_category_place(self, tags_list, lang):
         cat_query = next(t["phrase"] for t in tags_list if t.get("tag") == "cat")
         city_query = next(t["phrase"] for t in tags_list if t.get("tag") == "city")
-
-        bragi_result = bragi_client.raw_autocomplete(
-            params={"q": city_query, "lang": lang, "limit": 1}
+        bragi_result, category_name = await asyncio.gather(
+            bragi_client.raw_autocomplete(params={"q": city_query, "lang": lang, "limit": 1}),
+            self.classify_category(cat_query),
         )
+
         if not bragi_result["features"]:
             return None
 
@@ -105,7 +100,6 @@ class NLU_Helper:
             else:
                 return None
 
-        category_name = self.classify_category(cat_query)
         if category_name:
             return Intention(
                 filter={"category": category_name, "bbox": bbox},
@@ -119,44 +113,42 @@ class NLU_Helper:
                 description={"query": cat_query, "place": place},
             )
 
-    def build_intention_category(self, tags_list, lang):
+    async def build_intention_category(self, tags_list, lang):
         category_tag = next(t for t in tags_list if t.get("tag") == "cat")
         cat_query = category_tag["phrase"]
-        category_name = self.classify_category(cat_query)
+        category_name = await self.classify_category(cat_query)
         if category_name:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
             )
         return None
 
-    def get_intentions(self, text, lang):
+    async def get_intentions(self, text, lang):
         tokenizer_url = settings["NLU_TOKENIZER_URL"]
         # this settings is an immutable string required as a parameter for the NLU API
         params = {"text": text, "lang": lang or settings["DEFAULT_LANGUAGE"], "domain": "poi"}
 
         try:
-            response_nlu = self.session.post(tokenizer_url, json=params, timeout=self.timeout)
+            response_nlu = await self.client.post(tokenizer_url, json=params)
             response_nlu.raise_for_status()
         except Exception:
             logger.error("Request to NLU tokenizer failed", exc_info=True)
             return []
-        else:
-            intentions = []
-            tags_list = response_nlu.json()["NLU"]
-            tags_list = [t for t in tags_list if t["tag"] != "O"]
-            tags_count = Counter(t["tag"] for t in tags_list)
-            if tags_count == {"city": 1, "cat": 1}:
-                # 1 category + 1 place
-                intention = self.build_intention_category_place(tags_list, lang=lang)
-                if intention is not None:
-                    intentions.append(intention)
-            elif tags_count == {"cat": 1}:
-                # 1 category
-                intention = self.build_intention_category(tags_list, lang=lang)
-                if intention is not None:
-                    intentions.append(intention)
 
-            return intentions
+        intentions = []
+        tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
+        tags_count = Counter(t["tag"] for t in tags_list)
+        if tags_count == {"city": 1, "cat": 1}:
+            # 1 category + 1 place
+            intention = await self.build_intention_category_place(tags_list, lang=lang)
+            if intention is not None:
+                intentions.append(intention)
+        elif tags_count == {"cat": 1}:
+            # 1 category
+            intention = await self.build_intention_category(tags_list, lang=lang)
+            if intention is not None:
+                intentions.append(intention)
+        return intentions
 
 
 nlu_client = NLU_Helper()

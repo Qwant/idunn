@@ -44,7 +44,7 @@ class QueryParams:
         Return a dict with parameters accepted by the bragi API
         See https://github.com/CanalTP/mimirsbrunn/blob/v1.14.0/libs/bragi/src/routes/autocomplete.rs#L60
         """
-        return {
+        params = {
             "q": self.q,
             "lon": self.lon,
             "lat": self.lat,
@@ -59,6 +59,7 @@ class QueryParams:
             "zone_type[]": self.zone_type,
             "poi_type[]": self.poi_type,
         }
+        return {k: v for k, v in params.items() if v is not None}
 
 
 class ExtraParams(BaseModel):
