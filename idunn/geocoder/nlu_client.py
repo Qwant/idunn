@@ -16,6 +16,10 @@ from .bragi_client import bragi_client
 DEFAULT_BBOX_WIDTH = 0.02
 DEFAULT_BBOX_HEIGHT = 0.01
 
+NLU_POI_TAGS = ["poi", "other", "O"]
+NLU_CATEGORY_TAGS = ["brand", "cat"]
+NLU_PLACE_TAGS = ["city", "country", "state", "street"]
+
 
 class NLU_Helper:
     def __init__(self):
@@ -68,11 +72,9 @@ class NLU_Helper:
             return True
         return False
 
-    async def build_intention_category_place(self, tags_list, lang):
-        cat_query = next(t["phrase"] for t in tags_list if t.get("tag") == "cat")
-        city_query = next(t["phrase"] for t in tags_list if t.get("tag") == "city")
+    async def build_intention_category_place(self, cat_query, place_query, lang):
         bragi_result, category_name = await asyncio.gather(
-            bragi_client.raw_autocomplete(params={"q": city_query, "lang": lang, "limit": 1}),
+            bragi_client.raw_autocomplete(params={"q": place_query, "lang": lang, "limit": 1}),
             self.classify_category(cat_query),
         )
 
@@ -80,7 +82,7 @@ class NLU_Helper:
             return None
 
         place = bragi_result["features"][0]
-        if not self.fuzzy_match(city_query, place["properties"]["geocoding"]["name"]):
+        if not self.fuzzy_match(place_query, place["properties"]["geocoding"]["name"]):
             return None
 
         bbox = place["properties"]["geocoding"].get("bbox")
@@ -113,15 +115,36 @@ class NLU_Helper:
                 description={"query": cat_query, "place": place},
             )
 
-    async def build_intention_category(self, tags_list, lang):
-        category_tag = next(t for t in tags_list if t.get("tag") == "cat")
-        cat_query = category_tag["phrase"]
+    async def build_intention_category(self, cat_query, lang):
         category_name = await self.classify_category(cat_query)
         if category_name:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
             )
         return None
+
+    @classmethod
+    def is_poi_request(cls, tags_list):
+        """Check if a request is addressed to a POI"""
+        return any(t.get("tag") in NLU_POI_TAGS for t in tags_list)
+
+    @classmethod
+    def build_category_query(cls, tags_list):
+        tags = [t for t in tags_list if t.get("tag") in NLU_CATEGORY_TAGS]
+
+        if not tags:
+            return None
+
+        return " ".join(t["phrase"] for t in tags)
+
+    @classmethod
+    def build_place_query(cls, tags_list):
+        tags = [t for t in tags_list if t.get("tag") in NLU_PLACE_TAGS]
+
+        if not tags:
+            return None
+
+        return " ".join(t["phrase"] for t in tags)
 
     async def get_intentions(self, text, lang):
         tagger_url = settings["NLU_TAGGER_URL"]
@@ -135,17 +158,23 @@ class NLU_Helper:
             logger.error("Request to NLU tagger failed", exc_info=True)
             return []
 
-        intentions = []
         tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
-        tags_count = Counter(t["tag"] for t in tags_list)
-        if tags_count == {"city": 1, "cat": 1}:
+
+        if self.is_poi_request(tags_list):
+            return []
+
+        intentions = []
+        cat_query = self.build_category_query(tags_list)
+        place_query = self.build_place_query(tags_list)
+
+        if cat_query and place_query:
             # 1 category + 1 place
-            intention = await self.build_intention_category_place(tags_list, lang=lang)
+            intention = await self.build_intention_category_place(cat_query, place_query, lang=lang)
             if intention is not None:
                 intentions.append(intention)
-        elif tags_count == {"cat": 1}:
+        elif cat_query:
             # 1 category
-            intention = await self.build_intention_category(tags_list, lang=lang)
+            intention = await self.build_intention_category(cat_query, lang=lang)
             if intention is not None:
                 intentions.append(intention)
         return intentions
