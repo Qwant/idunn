@@ -16,8 +16,9 @@ from .bragi_client import bragi_client
 DEFAULT_BBOX_WIDTH = 0.02
 DEFAULT_BBOX_HEIGHT = 0.01
 
-NLU_POI_TAGS = ["poi", "other", "O"]
-NLU_CATEGORY_TAGS = ["brand", "cat"]
+NLU_POI_TAGS = ["poi", "other"]
+NLU_BRAND_TAGS = ["brand"]
+NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
 
 
@@ -72,7 +73,15 @@ class NLU_Helper:
             return True
         return False
 
-    async def build_intention_category_place(self, cat_query, place_query, lang):
+    async def build_intention_category_place(
+        self, cat_query, place_query, lang, skip_classifier=False
+    ):
+        async def get_category():
+            if skip_classifier:
+                return None
+            else:
+                return await self.classify_category(cat_query)
+
         bragi_result, category_name = await asyncio.gather(
             bragi_client.raw_autocomplete(params={"q": place_query, "lang": lang, "limit": 1}),
             self.classify_category(cat_query),
@@ -129,22 +138,33 @@ class NLU_Helper:
         return any(t.get("tag") in NLU_POI_TAGS for t in tags_list)
 
     @classmethod
-    def build_category_query(cls, tags_list):
-        tags = [t for t in tags_list if t.get("tag") in NLU_CATEGORY_TAGS]
+    def build_brand_query(cls, tags_list):
+        tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_BRAND_TAGS]
 
-        if not tags:
+        if len(tags) >= 2:
+            logger.warning("Ignoring tokenizer for multible brand labels: %s", tags)
             return None
 
-        return " ".join(t["phrase"] for t in tags)
+        return next(iter(tags), None)
+
+    @classmethod
+    def build_category_query(cls, tags_list):
+        tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_CATEGORY_TAGS]
+
+        if len(tags) >= 2:
+            logger.warning("Ignoring tokenizer for multible category labels: %s", tags)
+            return None
+
+        return next(iter(tags), None)
 
     @classmethod
     def build_place_query(cls, tags_list):
-        tags = [t for t in tags_list if t.get("tag") in NLU_PLACE_TAGS]
+        tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_PLACE_TAGS]
 
         if not tags:
             return None
 
-        return " ".join(t["phrase"] for t in tags)
+        return " ".join(tags)
 
     async def get_intentions(self, text, lang):
         tagger_url = settings["NLU_TAGGER_URL"]
@@ -164,17 +184,25 @@ class NLU_Helper:
             return []
 
         intentions = []
+        brand_query = self.build_brand_query(tags_list)
         cat_query = self.build_category_query(tags_list)
         place_query = self.build_place_query(tags_list)
+        skip_classifier = brand_query is not None
 
-        if cat_query and place_query:
-            # 1 category + 1 place
-            intention = await self.build_intention_category_place(cat_query, place_query, lang=lang)
+        if (bool(brand_query) ^ bool(cat_query)) and place_query:
+            # 1 category or brand + 1 place
+            # Brands are handled the same way categories except that we don't
+            # want to process them with the classifier.
+            intention = await self.build_intention_category_place(
+                cat_query, place_query, lang=lang, skip_classifier=skip_classifier
+            )
             if intention is not None:
                 intentions.append(intention)
-        elif cat_query:
-            # 1 category
-            intention = await self.build_intention_category(cat_query, lang=lang)
+        elif bool(brand_query) ^ bool(cat_query):
+            # 1 category or brand
+            intention = await self.build_intention_category(
+                cat_query, lang=lang, skip_classifier=skip_classifier
+            )
             if intention is not None:
                 intentions.append(intention)
         return intentions
