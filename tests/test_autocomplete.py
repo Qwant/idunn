@@ -2,6 +2,7 @@ import os
 import re
 import pytest
 import json
+from functools import partial
 from unittest.mock import ANY
 import respx
 from starlette.testclient import TestClient
@@ -13,6 +14,7 @@ from .utils import override_settings
 BASE_URL = "http://qwant.bragi"
 NLU_URL = "http://qwant.nlu/"
 CLASSIF_URL = "http://qwant.classif"
+ES_URL = "http://qwant.es"
 
 
 def read_fixture(sPath):
@@ -21,8 +23,11 @@ def read_fixture(sPath):
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
 FIXTURE_AUTOCOMPLETE_PARIS = read_fixture("fixtures/autocomplete/paris.json")
-FIXTURE_TAGGER = read_fixture("fixtures/autocomplete/nlu.json")
 FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
+FIXTURE_TOKENIZER = {
+    dataset: read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
+    for dataset in ["with_cat", "with_country", "with_poi"]
+}
 
 
 @pytest.fixture
@@ -31,12 +36,28 @@ def httpx_mock():
         yield rsps
 
 
-@pytest.fixture
-def mock_NLU(httpx_mock):
-    with override_settings({"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
-        httpx_mock.post(NLU_URL, content=FIXTURE_TAGGER)
+def mock_NLU_for(httpx_mock, dataset):
+    with override_settings(
+        {"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL, "PJ_ES": ES_URL}
+    ):
+        httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER[dataset])
         httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
         yield
+
+
+@pytest.fixture
+def mock_NLU_with_cat(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_cat")
+
+
+@pytest.fixture
+def mock_NLU_with_country(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_country")
+
+
+@pytest.fixture
+def mock_NLU_with_poi(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_poi")
 
 
 @pytest.fixture
@@ -63,7 +84,9 @@ def mock_autocomplete_unavailable(httpx_mock):
         yield
 
 
-def assert_ok_with(client, params, extra=None):
+def assert_ok_with(
+    client, params, extra=None, expected_intention=None, expected_intention_place=None
+):
     url = "http://localhost/v1/autocomplete"
 
     if extra is None:
@@ -86,23 +109,13 @@ def assert_ok_with(client, params, extra=None):
     assert properties["label"] == "pavillon Eiffel (Paris)"
     assert properties["address"]["label"] == "5 Avenue Anatole France (Paris)"
 
-    if "nlu" in params:
-        intentions = data["intentions"]
-        assert intentions == [
-            {
-                "filter": {
-                    "category": "pharmacy",
-                    "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
-                },
-                "description": {
-                    "category": "pharmacy",
-                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
-                },
-            }
-        ]
+    intentions = data.get("intentions", None)
+    assert intentions == expected_intention
+
+    if intentions:
         assert (
             intentions[0]["description"]["place"]["properties"]["geocoding"]["label"]
-            == "Paris (75000-75116), Île-de-France, France"
+            == expected_intention_place
         )
 
 
@@ -142,6 +155,52 @@ def test_autocomplete_unavailable(mock_autocomplete_unavailable):
     assert resp.status_code == 503
 
 
-def test_autocomplete_with_nlu(mock_autocomplete_get, mock_NLU):
+def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
     client = TestClient(app)
-    assert_ok_with(client, params={"q": "pharmacie à paris", "lang": "fr", "limit": 7, "nlu": True})
+    assert_ok_with(
+        client,
+        params={"q": "pharmacie à paris", "lang": "fr", "limit": 7, "nlu": True},
+        expected_intention=[
+            {
+                "filter": {
+                    "category": "pharmacy",
+                    "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
+                },
+                "description": {
+                    "category": "pharmacy",
+                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
+                },
+            }
+        ],
+        expected_intention_place="Paris (75000-75116), Île-de-France, France",
+    )
+
+
+def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_country):
+    client = TestClient(app)
+    assert_ok_with(
+        client,
+        params={"q": "pharmacie à paris, france", "lang": "fr", "limit": 7, "nlu": True},
+        expected_intention=[
+            {
+                "filter": {
+                    "category": "pharmacy",
+                    "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
+                },
+                "description": {
+                    "category": "pharmacy",
+                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
+                },
+            }
+        ],
+        expected_intention_place="Paris (75000-75116), Île-de-France, France",
+    )
+
+
+def test_autocomplete_with_nlu_poi(mock_autocomplete_get, mock_NLU_with_poi):
+    client = TestClient(app)
+    assert_ok_with(
+        client,
+        params={"q": "pharmacie à paris", "lang": "fr", "limit": 7, "nlu": True},
+        expected_intention=[],
+    )

@@ -79,12 +79,11 @@ class NLU_Helper:
         async def get_category():
             if skip_classifier:
                 return None
-            else:
-                return await self.classify_category(cat_query)
+            return await self.classify_category(cat_query)
 
         bragi_result, category_name = await asyncio.gather(
             bragi_client.raw_autocomplete(params={"q": place_query, "lang": lang, "limit": 1}),
-            self.classify_category(cat_query),
+            get_category(),
         )
 
         if not bragi_result["features"]:
@@ -189,22 +188,25 @@ class NLU_Helper:
         place_query = self.build_place_query(tags_list)
         skip_classifier = brand_query is not None
 
-        if (bool(brand_query) ^ bool(cat_query)) and place_query:
-            # 1 category or brand + 1 place
-            # Brands are handled the same way categories except that we don't
-            # want to process them with the classifier.
-            intention = await self.build_intention_category_place(
-                cat_query, place_query, lang=lang, skip_classifier=skip_classifier
-            )
-            if intention is not None:
-                intentions.append(intention)
-        elif bool(brand_query) ^ bool(cat_query):
-            # 1 category or brand
-            intention = await self.build_intention_category(
-                cat_query, lang=lang, skip_classifier=skip_classifier
-            )
-            if intention is not None:
-                intentions.append(intention)
+        # If there is a label for both a category and a brand, we consider that the request is
+        # ambiguous and ignore both.
+        if bool(brand_query) ^ bool(cat_query):
+            if place_query:
+                # 1 category or brand + 1 place
+                # Brands are handled the same way categories except that we don't want to process
+                # them with the classifier.
+                intention = await self.build_intention_category_place(
+                    cat_query, place_query, lang=lang, skip_classifier=skip_classifier
+                )
+                if intention is not None:
+                    intentions.append(intention)
+            else:
+                # 1 category or brand
+                intention = await self.build_intention_category(
+                    cat_query, lang=lang, skip_classifier=skip_classifier
+                )
+                if intention is not None:
+                    intentions.append(intention)
         return intentions
 
 
