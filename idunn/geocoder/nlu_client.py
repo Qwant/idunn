@@ -124,15 +124,15 @@ class NLU_Helper:
         return None
 
     async def get_intentions(self, text, lang):
-        tokenizer_url = settings["NLU_TOKENIZER_URL"]
+        tagger_url = settings["NLU_TAGGER_URL"]
         # this settings is an immutable string required as a parameter for the NLU API
         params = {"text": text, "lang": lang or settings["DEFAULT_LANGUAGE"], "domain": "poi"}
 
         try:
-            response_nlu = await self.client.post(tokenizer_url, json=params)
+            response_nlu = await self.client.post(tagger_url, json=params)
             response_nlu.raise_for_status()
         except Exception:
-            logger.error("Request to NLU tokenizer failed", exc_info=True)
+            logger.error("Request to NLU tagger failed", exc_info=True)
             return []
 
         intentions = []
