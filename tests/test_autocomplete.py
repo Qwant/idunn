@@ -21,7 +21,7 @@ def read_fixture(sPath):
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
 FIXTURE_AUTOCOMPLETE_PARIS = read_fixture("fixtures/autocomplete/paris.json")
-FIXTURE_TOKENIZER = read_fixture("fixtures/autocomplete/nlu.json")
+FIXTURE_TAGGER = read_fixture("fixtures/autocomplete/nlu.json")
 FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
 
 
@@ -33,8 +33,8 @@ def httpx_mock():
 
 @pytest.fixture
 def mock_NLU(httpx_mock):
-    with override_settings({"NLU_TOKENIZER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
-        httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER)
+    with override_settings({"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
+        httpx_mock.post(NLU_URL, content=FIXTURE_TAGGER)
         httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
         yield
 
