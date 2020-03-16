@@ -123,8 +123,11 @@ class NLU_Helper:
                 description={"query": cat_query, "place": place},
             )
 
-    async def build_intention_category(self, cat_query, lang):
-        category_name = await self.classify_category(cat_query)
+    async def build_intention_category(self, cat_query, lang, skip_classifier=False):
+        category_name = cat_query
+        if not skip_classifier:
+            category_name = await self.classify_category(cat_query)
+
         if category_name:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
@@ -191,22 +194,25 @@ class NLU_Helper:
         # If there is a label for both a category and a brand, we consider that the request is
         # ambiguous and ignore both.
         if bool(brand_query) ^ bool(cat_query):
+            cat_or_brand_query = brand_query or cat_query
+
             if place_query:
                 # 1 category or brand + 1 place
                 # Brands are handled the same way categories except that we don't want to process
                 # them with the classifier.
                 intention = await self.build_intention_category_place(
-                    cat_query, place_query, lang=lang, skip_classifier=skip_classifier
+                    cat_or_brand_query, place_query, lang=lang, skip_classifier=skip_classifier
                 )
                 if intention is not None:
                     intentions.append(intention)
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
-                    cat_query, lang=lang, skip_classifier=skip_classifier
+                    cat_or_brand_query, lang=lang, skip_classifier=skip_classifier
                 )
                 if intention is not None:
                     intentions.append(intention)
+
         return intentions
 
 

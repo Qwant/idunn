@@ -1,0 +1,24 @@
+{
+    "NLU": [
+        {
+            "phrase": "auchan",
+            "tag": "brand",
+            "value": {}
+        },
+        {
+            "phrase": "à",
+            "tag": "O",
+            "value": {}
+        },
+        {
+            "phrase": "paris",
+            "tag": "city",
+            "value": {}
+        }
+    ],
+    "count": 1,
+    "domain": "poi",
+    "lang": "fr",
+    "text": "auchan à paris",
+    "tokenized": "auchan à paris"
+}
