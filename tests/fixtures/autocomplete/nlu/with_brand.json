@@ -1,0 +1,14 @@
+{
+    "NLU": [
+        {
+            "phrase": "auchan",
+            "tag": "brand",
+            "value": {}
+        }
+    ],
+    "count": 1,
+    "domain": "poi",
+    "lang": "fr",
+    "text": "auchan",
+    "tokenized": "auchan"
+}

@@ -123,8 +123,9 @@ class NLU_Helper:
                 description={"query": cat_query, "place": place},
             )
 
-    async def build_intention_category(self, cat_query, lang, skip_classifier=False):
-        category_name = cat_query
+    async def build_intention_category(self, cat_query, lang, skip_classifier=False, focus=None):
+        category_name = None
+
         if not skip_classifier:
             category_name = await self.classify_category(cat_query)
 
@@ -132,6 +133,9 @@ class NLU_Helper:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
             )
+        elif focus and pj_source.point_is_covered(focus):
+            return Intention(filter={"q": cat_query}, description={"query": cat_query})
+
         return None
 
     @classmethod
@@ -168,7 +172,7 @@ class NLU_Helper:
 
         return " ".join(tags)
 
-    async def get_intentions(self, text, lang):
+    async def get_intentions(self, text, lang, focus=None):
         tagger_url = settings["NLU_TAGGER_URL"]
         # this settings is an immutable string required as a parameter for the NLU API
         params = {"text": text, "lang": lang or settings["DEFAULT_LANGUAGE"], "domain": "poi"}
@@ -208,7 +212,7 @@ class NLU_Helper:
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
-                    cat_or_brand_query, lang=lang, skip_classifier=skip_classifier
+                    cat_or_brand_query, lang=lang, skip_classifier=skip_classifier, focus=focus
                 )
                 if intention is not None:
                     intentions.append(intention)

@@ -26,7 +26,7 @@ FIXTURE_AUTOCOMPLETE_PARIS = read_fixture("fixtures/autocomplete/paris.json")
 FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
 FIXTURE_TOKENIZER = {
     dataset: read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
-    for dataset in ["with_brand_and_country", "with_cat", "with_country", "with_poi"]
+    for dataset in ["with_brand", "with_brand_and_country", "with_cat", "with_country", "with_poi"]
 }
 
 
@@ -43,6 +43,16 @@ def mock_NLU_for(httpx_mock, dataset):
         httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER[dataset])
         httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
         yield
+
+
+@pytest.fixture
+def mock_NLU_with_brand(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_brand")
+
+
+@pytest.fixture
+def mock_NLU_with_brand_and_country(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_brand_and_country")
 
 
 @pytest.fixture
@@ -173,7 +183,7 @@ def test_autocomplete_with_nlu_brand_and_country(
         params={"q": "auchan à paris", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
             {
-                "filter": {"q": "auchan", "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],},
+                "filter": {"q": "auchan", "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156]},
                 "description": {
                     "query": "auchan",
                     "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
@@ -181,6 +191,28 @@ def test_autocomplete_with_nlu_brand_and_country(
             }
         ],
         expected_intention_place="Paris (75000-75116), Île-de-France, France",
+    )
+
+
+@enable_pj_source()
+def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_with_brand):
+    client = TestClient(app)
+    assert_ok_with(
+        client,
+        params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True},
+        expected_intention=[],
+        expected_intention_place=None,
+    )
+
+
+@enable_pj_source()
+def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_brand):
+    client = TestClient(app)
+    assert_ok_with(
+        client,
+        params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lon": 48.9, "lat": 2.3},
+        expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"},}],
+        expected_intention_place=None,
     )
 
 
