@@ -1,0 +1,18 @@
+{
+    "NLU": [
+        {
+            "phrase": "tour eiffel",
+            "tag": "POI",
+            "value": {}
+        },
+        {
+            "phrase": "paris",
+            "tag": "city",
+            "value": {}
+        }
+    ],
+    "domain": "poi",
+    "lang": "fr",
+    "text": "tour eiffel paris",
+    "tokenized": "tour eiffel paris"
+}

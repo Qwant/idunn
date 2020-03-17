@@ -1,0 +1,14 @@
+{
+    "NLU": [
+        {
+            "phrase": "pharmacie",
+            "tag": "cat",
+            "value": {}
+        }
+    ],
+    "count": 1,
+    "domain": "poi",
+    "lang": "fr",
+    "text": "pharmacie",
+    "tokenized": "pharmacie"
+}

@@ -29,6 +29,11 @@ class PjSource:
             return False
         return bbox_inside_polygon(*bbox, poly=france_polygon)
 
+    def point_is_covered(self, point):
+        if not self.enabled:
+            return False
+        return france_polygon.contains(point)
+
     def get_places_bbox(self, raw_categories, bbox, size=10, query=""):
         left, bot, right, top = bbox
 

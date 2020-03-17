@@ -1,8 +1,8 @@
 {
     "NLU": [
         {
-            "phrase": "pharmacie",
-            "tag": "cat",
+            "phrase": "auchan",
+            "tag": "brand",
             "value": {}
         },
         {
@@ -16,8 +16,9 @@
             "value": {}
         }
     ],
+    "count": 1,
     "domain": "poi",
     "lang": "fr",
-    "text": "pharmacie à paris",
-    "tokenized": "pharmacie à paris"
+    "text": "auchan à paris",
+    "tokenized": "auchan à paris"
 }
