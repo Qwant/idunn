@@ -1,7 +1,6 @@
 import logging
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
-from shapely.geometry import Point
 
 from idunn import settings
 from idunn.places import PjPOI
@@ -33,7 +32,7 @@ class PjSource:
     def point_is_covered(self, point):
         if not self.enabled:
             return False
-        return france_polygon.contains(Point(*point))
+        return france_polygon.contains(point)
 
     def get_places_bbox(self, raw_categories, bbox, size=10, query=""):
         left, bot, right, top = bbox

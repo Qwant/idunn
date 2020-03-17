@@ -210,7 +210,7 @@ def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_
     client = TestClient(app)
     assert_ok_with(
         client,
-        params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lon": 48.9, "lat": 2.3},
+        params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lat": 48.9, "lon": 2.3},
         expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"},}],
         expected_intention_place=None,
     )

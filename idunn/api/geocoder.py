@@ -1,5 +1,6 @@
 import asyncio
 from fastapi import Body, Depends
+from shapely.geometry import Point
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.nlu_client import nlu_client
 from ..geocoder.models import QueryParams, ExtraParams
@@ -14,7 +15,7 @@ async def get_autocomplete(
 
         focus = None
         if query.lon and query.lat:
-            focus = (query.lat, query.lon)
+            focus = Point(query.lon, query.lat)
 
         return await nlu_client.get_intentions(text=query.q, lang=query.lang, focus=focus)
 
