@@ -42,3 +42,13 @@ def enable_kuzzle():
     """
     with override_settings({"KUZZLE_CLUSTER_URL": "http://localhost:7512"}):
         yield
+
+
+@contextmanager
+def enable_recycling():
+    """
+    We define here settings specific to tests.
+    We define the recycling server address and port
+    """
+    with override_settings({"RECYCLING_SERVER_URL": "http://localhost:7512/trashes/recycling"}):
+        yield

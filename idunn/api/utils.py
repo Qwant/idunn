@@ -18,6 +18,7 @@ from idunn.blocks import (
     OpeningDayEvent,
     OpeningHourBlock,
     PhoneBlock,
+    RecyclingBlock,
     WebSiteBlock,
     WikiUndefinedException,
 )
@@ -45,6 +46,7 @@ BLOCKS_BY_VERBOSITY = {
         ContactBlock,
         ImagesBlock,
         GradesBlock,
+        RecyclingBlock,
     ],
     LIST: [
         OpeningDayEvent,
@@ -54,6 +56,7 @@ BLOCKS_BY_VERBOSITY = {
         WebSiteBlock,
         ImagesBlock,
         GradesBlock,
+        RecyclingBlock,
     ],
     SHORT: [OpeningHourBlock],
 }

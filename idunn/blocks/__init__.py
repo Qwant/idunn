@@ -24,6 +24,7 @@ from .events import (
     DescriptionEvent,
 )
 from .environment import AirQuality
+from .recycling import RecyclingBlock
 
 ALL_BLOCKS = [
     OpeningHourBlock,
@@ -43,6 +44,7 @@ ALL_BLOCKS = [
     DescriptionEvent,
     CuisineBlock,
     AirQuality,
+    RecyclingBlock,
 ]
 
 BLOCK_TYPE_TO_CLASS = {b.BLOCK_TYPE: b for b in ALL_BLOCKS}
