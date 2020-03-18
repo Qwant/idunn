@@ -180,6 +180,13 @@ class BasePlace(dict):
     def get_coord(self):
         return self.get("coord")
 
+    def get_recycling(self):
+        # If it's a trash can and in Bretagne (in France), we get its volume and the time of the
+        # last update
+        return (self.properties.get("amenity", "") == "recycling"
+                and any(x.get("label", "").lower().endswith("bretagne, france")
+                        for x in self.get_raw_admins()))
+
     def get_raw_opening_hours(self):
         return self.properties.get("opening_hours")
 

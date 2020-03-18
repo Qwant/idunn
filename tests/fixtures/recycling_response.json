@@ -1,0 +1,17 @@
+{
+  "status": 200,
+  "error": null,
+  "index": "trashes",
+  "collection": "recycling",
+  "controller": "document",
+  "action": "get",
+  "requestId": "b7a8c923-cb17-4dfd-b138-44590b1bdac3",
+  "result": {
+    "_id": "osm:node:36153800",
+    "_version": 1,
+    "_source": {
+      "hour": "01-01-1970",
+      "volume": 70
+    }
+  }
+}
