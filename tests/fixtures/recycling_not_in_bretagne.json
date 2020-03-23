@@ -1,6 +1,6 @@
 {
-  "id": "osm:node:36153800",
-  "label": "Poubelle (Brest)",
+  "id": "osm:node:36153801",
+  "label": "Poubelle (Somewhere)",
   "name": "Poubelle",
   "coord": {
     "lon": -4.487716849516516,
@@ -11,8 +11,8 @@
       "id": "admin:osm:relation:102430",
       "insee": "29",
       "level": 6,
-      "label": "Finistère, Bretagne, France",
-      "name": "Finistère",
+      "label": "Somewhere, France",
+      "name": "Somewhere",
       "zip_codes": [],
       "weight": 0.000442342573601715,
       "coord": {
@@ -33,8 +33,8 @@
       "id": "admin:osm:relation:102740",
       "insee": "53",
       "level": 4,
-      "label": "Bretagne, France",
-      "name": "Bretagne",
+      "label": "Somewhere, France",
+      "name": "Somewhere",
       "zip_codes": [],
       "weight": 0.02239740890685554,
       "coord": {
@@ -77,7 +77,7 @@
       "id": "admin:osm:relation:1076124",
       "insee": "29019",
       "level": 8,
-      "label": "Brest (29200), Finistère, Bretagne, France",
+      "label": "Brest (29200), Somewhere, France",
       "name": "Brest",
       "zip_codes": [
         "29200"
@@ -125,8 +125,8 @@
           "id": "admin:osm:relation:102430",
           "insee": "29",
           "level": 6,
-          "label": "Finistère, Bretagne, France",
-          "name": "Finistère",
+          "label": "Somewhere, France",
+          "name": "Somewhere",
           "zip_codes": [],
           "weight": 0.000442342573601715,
           "coord": {
@@ -191,7 +191,7 @@
           "id": "admin:osm:relation:1076124",
           "insee": "29019",
           "level": 8,
-          "label": "Brest (29200), Finistère, Bretagne, France",
+          "label": "Brest (29200), Somewhere, France",
           "name": "Brest",
           "zip_codes": [
             "29200"
@@ -211,18 +211,9 @@
           "parent_id": null,
           "codes": []
         }
-      ],
-      "label": "Avenue Georges Clemenceau (Brest)",
-      "weight": 0.000983545754172197,
-      "coord": {
-        "lon": -4.487341,
-        "lat": 48.390743
-      },
-      "zip_codes": [
-        "29200"
       ]
     },
-    "label": "10 Avenue Georges Clemenceau (Brest)",
+    "label": "10 Avenue Georges Clemenceau (Somewhere)",
     "coord": {
       "lon": -4.487341,
       "lat": 48.390743
