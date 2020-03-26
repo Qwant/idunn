@@ -1,3 +1,4 @@
+from idunn import settings
 from .base import BaseBlock
 from .opening_hour import OpeningHourBlock
 from pydantic import constr
@@ -14,10 +15,13 @@ class Covid19Block(BaseBlock):
 
     @classmethod
     def from_es(cls, es_poi, lang):
-        opening_hours = es_poi.properties.get("opening_hours:covid19")
+        if settings["BLOCK_COVID_ENABLED"] is not True:
+            return None
+        properties = es_poi.properties
+        opening_hours = properties.get("opening_hours:covid19")
         status = "unknown"
         if opening_hours == "same":
-            opening_hours = OpeningHourBlock.from_es(es_poi.properties.get("opening_hours"), lang)
+            opening_hours = OpeningHourBlock.from_es(properties.get("opening_hours"), lang)
             status = "open_as_usual"
         elif opening_hours == "off":
             opening_hours = None
@@ -26,12 +30,13 @@ class Covid19Block(BaseBlock):
             opening_hours = OpeningHourBlock.from_es(opening_hours, lang)
             if opening_hours is None:
                 status = "unknown"
-            elif opening_hours.status == "open":
-                status = "open"
-            elif opening_hours.status == "closed":
-                status = "closed"
+            elif opening_hours.status in ["open", "closed"]:
+                if properties.get("opening_hours:covid19") == properties.get("opening_hours"):
+                    status = "open_as_usual"
+                else:
+                    status = "open"
             else:
                 status = "maybe_open"
-        note = es_poi.properties.get("note:covid19")
+        note = properties.get("note:covid19")
 
         return cls(status=status, note=note, opening_hours=opening_hours,)
