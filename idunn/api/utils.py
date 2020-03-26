@@ -18,6 +18,7 @@ from idunn.blocks import (
     InformationBlock,
     OpeningDayEvent,
     OpeningHourBlock,
+    Covid19Block,
     PhoneBlock,
     WebSiteBlock,
     WikiUndefinedException,
@@ -41,6 +42,7 @@ BLOCKS_BY_VERBOSITY = {
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
+        Covid19Block,
         HappyHourBlock,
         PhoneBlock,
         InformationBlock,
@@ -53,12 +55,13 @@ BLOCKS_BY_VERBOSITY = {
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
+        Covid19Block,
         PhoneBlock,
         WebSiteBlock,
         ImagesBlock,
         GradesBlock,
     ],
-    SHORT: [OpeningHourBlock],
+    SHORT: [OpeningHourBlock, Covid19Block,],
 }
 ALL_VERBOSITY_LEVELS = list(BLOCKS_BY_VERBOSITY.keys())
 
