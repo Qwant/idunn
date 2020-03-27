@@ -1,4 +1,5 @@
 from .opening_hour import OpeningHourBlock
+from .covid19 import Covid19Block
 from .happy_hour import HappyHourBlock
 from .phone import PhoneBlock
 from .information import InformationBlock
@@ -30,6 +31,7 @@ from .environment import (
 
 ALL_BLOCKS = [
     OpeningHourBlock,
+    Covid19Block,
     HappyHourBlock,
     PhoneBlock,
     InformationBlock,
