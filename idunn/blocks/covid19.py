@@ -19,7 +19,7 @@ class Covid19Block(BaseBlock):
     contribute_url: Optional[str]
 
     @classmethod
-    def get_caresteouvert_link(cls, place):
+    def get_ca_reste_ouvert_url(cls, place):
         try:
             _, osm_type, osm_id = place.get_id().split(":")
             cro_id = f"{osm_type[0]}{osm_id}"
@@ -70,7 +70,7 @@ class Covid19Block(BaseBlock):
         elif es_poi.get_meta().source == "osm" and settings["COVID19_USE_REDIS_DATASET"]:
             covid_status = get_poi_covid_status(es_poi.get_id())
             if covid_status is not None:
-                contribute_url = cls.get_caresteouvert_link(es_poi)
+                contribute_url = cls.get_ca_reste_ouvert_url(es_poi)
                 if covid_status.opening_hours:
                     opening_hours = parse_time_block(
                         OpeningHourBlock, es_poi, lang, covid_status.opening_hours
