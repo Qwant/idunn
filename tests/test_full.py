@@ -1,5 +1,6 @@
 from starlette.testclient import TestClient
 from freezegun import freeze_time
+from unittest.mock import ANY
 
 from app import app
 
@@ -30,7 +31,7 @@ def test_full():
         },
         "address": {
             "admin": None,
-            "admins": [],
+            "admins": ANY,
             "id": "addr:2.326285;48.859635",
             "label": "62B Rue de Lille (Paris)",
             "name": "62B Rue de Lille",
