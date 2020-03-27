@@ -1,4 +1,3 @@
-import pytest
 from starlette.testclient import TestClient
 from freezegun import freeze_time
 

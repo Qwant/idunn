@@ -39,15 +39,15 @@ class RedisWrapper:
     _connection = None
 
     @classmethod
-    def set_value(cls, key, json_result, expire=settings["WIKI_CACHE_TIMEOUT"]):
+    def _set_value(cls, key, value, expire=settings["WIKI_CACHE_TIMEOUT"]):
         try:
-            cls._connection.set(key, json_result, ex=expire)
+            cls._connection.set(key, value, ex=expire)
         except RedisError:
             prometheus.exception("RedisError")
             logging.exception("Got a RedisError")
 
     @classmethod
-    def get_value(cls, key):
+    def _get_value(cls, key):
         try:
             value_stored = cls._connection.get(key)
             return value_stored
@@ -57,15 +57,26 @@ class RedisWrapper:
             raise CacheNotAvailable from exc
 
     @classmethod
+    def get_json(cls, key):
+        value = cls._get_value(key)
+        if value is not None:
+            value = json.loads(value)
+        return value
+
+    @classmethod
     def init_cache(cls):
+        if cls._connection is not None:
+            return cls._connection is not DISABLED_STATE
         redis_db = settings["WIKI_CACHE_REDIS_DB"]
         try:
             redis_pool = get_redis_pool(db=redis_db)
         except RedisNotConfigured:
             logger.warning("No Redis URL has been set for caching", exc_info=True)
             cls._connection = DISABLED_STATE
+            return False
         else:
             cls._connection = Redis(connection_pool=redis_pool)
+            return True
 
     @classmethod
     def cache_it(cls, key, f, expire=settings["WIKI_CACHE_TIMEOUT"]):
@@ -84,7 +95,7 @@ class RedisWrapper:
             """
             if cls._connection is not DISABLED_STATE:
                 try:
-                    value_stored = cls.get_value(key)
+                    value_stored = cls._get_value(key)
                 except CacheNotAvailable:
                     # Cache is not reachable: we don't want to execute 'f'
                     # (and fetch wikipedia content, possibly very often)
@@ -93,7 +104,7 @@ class RedisWrapper:
                     return json.loads(value_stored.decode("utf-8"))
                 result = f(*args, **kwargs)
                 json_result = json.dumps(result)
-                cls.set_value(key, json_result, expire)
+                cls._set_value(key, json_result, expire)
                 return result
             return f(*args, **kwargs)
 

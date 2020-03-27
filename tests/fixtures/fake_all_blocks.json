@@ -130,6 +130,14 @@
       "value": "Tu-Su 09:30-18:00; Th 09:30-21:45"
     },
     {
+      "key": "opening_hours:covid19",
+      "value": "same"
+    },
+    {
+      "key": "note:covid19",
+      "value": "Ceci est une note à propos du confinement"
+    },
+    {
       "key": "poi_subclass",
       "value": "museum"
     },

@@ -1,13 +1,13 @@
 import logging
 import urllib.parse
 
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from starlette.responses import Response
 from starlette.requests import Request
 
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
-
+from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
 from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
@@ -74,13 +74,20 @@ def log_place_request(place: BasePlace, headers):
 
 
 def get_place(
-    id: str, request: Request, lang: str = None, type=None, verbosity=DEFAULT_VERBOSITY
+    id: str,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    lang: str = None,
+    type=None,
+    verbosity=DEFAULT_VERBOSITY,
 ) -> Place:
     """Main handler that returns the requested place"""
     verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
     place = place_from_id(id, type)
     log_place_request(place, request.headers)
+    if settings["BLOCK_COVID_ENABLED"] and settings["COVID19_USE_REDIS_DATASET"]:
+        background_tasks.add_task(covid19_osm_task)
     return place.load_place(lang, verbosity)
 
 
