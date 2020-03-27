@@ -17,7 +17,19 @@ class Covid19Block(BaseBlock):
     def from_es(cls, es_poi, lang):
         if settings["BLOCK_COVID_ENABLED"] is not True:
             return None
+
         properties = es_poi.properties
+        found = False
+        # Check if this is a french admin, otherwise we return nothing.
+        for region in properties.get("administrative_regions", []):
+            if region.get("zone_type") != "country":
+                continue
+            if "FR" in region.get("country_codes"):
+                found = True
+                break
+        if not found:
+            return None
+
         opening_hours = properties.get("opening_hours:covid19")
         status = "unknown"
         if opening_hours == "same":
