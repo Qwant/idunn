@@ -72,6 +72,9 @@ class BasePlace(dict):
     def get_raw_admins(self):
         return self.get("administrative_regions") or []
 
+    def get_country_codes(self):
+        return [c for admin in self.get_raw_admins() for c in admin.get("country_codes", [])]
+
     def get_postcodes(self):
         return self.get_raw_address().get("zip_codes")
 

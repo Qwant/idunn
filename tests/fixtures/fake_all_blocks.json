@@ -7,33 +7,382 @@
     "label": "62B Rue de Lille (Paris)",
     "name": "62B Rue de Lille",
     "zip_codes": [
-      "75007","75008"
-    ],
-    "street": {
-    "id": "street:553660044C",
-    "street_name": "Rue de Lille",
-    "name": "Rue de Lille",
-    "label": "Rue de Lille (Paris)",
-    "weight": 0.000006877017509339014,
-    "coord": {
-      "lon": 2.326285,
-      "lat": 48.859635
-    },
-    "zip_codes": [
       "75007",
       "75008"
-    ]
-  },
+    ],
+    "street": {
+      "id": "street:553660044C",
+      "street_name": "Rue de Lille",
+      "name": "Rue de Lille",
+      "label": "Rue de Lille (Paris)",
+      "weight": 0.000006877017509339014,
+      "coord": {
+        "lon": 2.326285,
+        "lat": 48.859635
+      },
+      "zip_codes": [
+        "75007",
+        "75008"
+      ]
+    },
     "type": "house"
   },
+  "administrative_regions": [
+    {
+      "id": "admin:osm:relation:2188567",
+      "insee": "",
+      "level": 10,
+      "label": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, France",
+      "name": "Quartier Saint-Thomas-d'Aquin",
+      "zip_codes": [
+        "75007"
+      ],
+      "weight": 0.0,
+      "approx_coord": null,
+      "coord": {
+        "lon": 2.325587094706363,
+        "lat": 48.85526458636696
+      },
+      "bbox": [
+        2.319015,
+        48.8484202,
+        2.3332664999999997,
+        48.8614751
+      ],
+      "zone_type": "suburb",
+      "parent_id": "admin:osm:relation:9521",
+      "country_codes": [],
+      "codes": [
+        {
+          "name": "ref:TRIRIS",
+          "value": "7510725"
+        },
+        {
+          "name": "wikidata",
+          "value": "Q3413129"
+        }
+      ],
+      "names": {},
+      "labels": {
+        "br": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Pariz, Enez-Frañs, Bro-C'hall",
+        "ca": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, París, Illa de França, França",
+        "de": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Paris, Île-de-France, Frankreich",
+        "en": "Quartier Saint-Thomas-d'Aquin (75007), 7th Arrondissement, Paris, Ile-de-France, France",
+        "es": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, París, Isla de Francia, Francia",
+        "it": "Quartier Saint-Thomas-d'Aquin (75007), Paris 7e Arrondissement, Parigi, Isola di Francia, Francia"
+      },
+      "context": null
+    },
+    {
+      "id": "admin:osm:relation:9521",
+      "insee": "75107",
+      "level": 9,
+      "label": "Paris 7e Arrondissement (75007), Paris, Île-de-France, France",
+      "name": "Paris 7e Arrondissement",
+      "zip_codes": [
+        "75007"
+      ],
+      "weight": 0.000036690714285714285,
+      "approx_coord": null,
+      "coord": {
+        "lon": 2.3201953,
+        "lat": 48.8570281
+      },
+      "bbox": [
+        2.2898239,
+        48.845933599999995,
+        2.3332664999999997,
+        48.8637782
+      ],
+      "zone_type": "city_district",
+      "parent_id": "admin:osm:relation:7444",
+      "country_codes": [],
+      "codes": [
+        {
+          "name": "ref:INSEE",
+          "value": "75107"
+        },
+        {
+          "name": "wikidata",
+          "value": "Q259463"
+        }
+      ],
+      "names": {
+        "en": "7th Arrondissement",
+        "fr": "Paris 7e Arrondissement"
+      },
+      "labels": {
+        "br": "Paris 7e Arrondissement (75007), Pariz, Enez-Frañs, Bro-C'hall",
+        "ca": "Paris 7e Arrondissement (75007), París, Illa de França, França",
+        "de": "Paris 7e Arrondissement (75007), Paris, Île-de-France, Frankreich",
+        "en": "7th Arrondissement (75007), Paris, Ile-de-France, France",
+        "es": "Paris 7e Arrondissement (75007), París, Isla de Francia, Francia",
+        "it": "Paris 7e Arrondissement (75007), Parigi, Isola di Francia, Francia"
+      },
+      "context": null
+    },
+    {
+      "id": "admin:osm:relation:7444",
+      "insee": "75056",
+      "level": 8,
+      "label": "Paris (75000-75116), Île-de-France, France",
+      "name": "Paris",
+      "zip_codes": [
+        "75000",
+        "75001",
+        "75002",
+        "75003",
+        "75004",
+        "75005",
+        "75006",
+        "75007",
+        "75008",
+        "75009",
+        "75010",
+        "75011",
+        "75012",
+        "75013",
+        "75014",
+        "75015",
+        "75016",
+        "75017",
+        "75018",
+        "75019",
+        "75020",
+        "75116"
+      ],
+      "weight": 0.0015625185714285715,
+      "approx_coord": null,
+      "coord": {
+        "lon": 2.3514616,
+        "lat": 48.8566969
+      },
+      "bbox": [
+        2.224122,
+        48.8155755,
+        2.4697602,
+        48.902156
+      ],
+      "zone_type": "city",
+      "parent_id": "admin:osm:relation:71525",
+      "country_codes": [],
+      "codes": [
+        {
+          "name": "ref:FR:MGP",
+          "value": "T1"
+        },
+        {
+          "name": "ref:INSEE",
+          "value": "75056"
+        },
+        {
+          "name": "wikidata",
+          "value": "Q90"
+        }
+      ],
+      "names": {
+        "br": "Pariz",
+        "ca": "París",
+        "de": "Paris",
+        "en": "Paris",
+        "es": "París",
+        "fr": "Paris",
+        "it": "Parigi"
+      },
+      "labels": {
+        "br": "Pariz (75000-75116), Enez-Frañs, Bro-C'hall",
+        "ca": "París (75000-75116), Illa de França, França",
+        "de": "Paris (75000-75116), Île-de-France, Frankreich",
+        "en": "Paris (75000-75116), Ile-de-France, France",
+        "es": "París (75000-75116), Isla de Francia, Francia",
+        "it": "Parigi (75000-75116), Isola di Francia, Francia"
+      },
+      "context": null
+    },
+    {
+      "id": "admin:osm:relation:71525",
+      "insee": "75",
+      "level": 6,
+      "label": "Paris, Île-de-France, France",
+      "name": "Paris",
+      "zip_codes": [],
+      "weight": 0.0015625185714285715,
+      "approx_coord": null,
+      "coord": {
+        "lon": 2.3514616,
+        "lat": 48.8566969
+      },
+      "bbox": [
+        2.224122,
+        48.8155755,
+        2.4697602,
+        48.902156
+      ],
+      "zone_type": "state_district",
+      "parent_id": "admin:osm:relation:8649",
+      "country_codes": [],
+      "codes": [
+        {
+          "name": "ISO3166-2",
+          "value": "FR-75"
+        },
+        {
+          "name": "ref:INSEE",
+          "value": "75"
+        },
+        {
+          "name": "ref:NUTS",
+          "value": "FR101"
+        }
+      ],
+      "names": {
+        "br": "Pariz",
+        "ca": "París",
+        "de": "Paris",
+        "es": "París",
+        "fr": "Paris",
+        "it": "Parigi"
+      },
+      "labels": {
+        "br": "Pariz, Enez-Frañs, Bro-C'hall",
+        "ca": "París, Illa de França, França",
+        "de": "Paris, Île-de-France, Frankreich",
+        "en": "Paris, Ile-de-France, France",
+        "es": "París, Isla de Francia, Francia",
+        "it": "Parigi, Isola di Francia, Francia"
+      },
+      "context": null
+    },
+    {
+      "id": "admin:osm:relation:8649",
+      "insee": "11",
+      "level": 4,
+      "label": "Île-de-France, France",
+      "name": "Île-de-France",
+      "zip_codes": [],
+      "weight": 0.008466322142857143,
+      "approx_coord": null,
+      "coord": {
+        "lon": 2.3514616,
+        "lat": 48.8566969
+      },
+      "bbox": [
+        1.4462445,
+        48.1201456,
+        3.5592208,
+        49.241431
+      ],
+      "zone_type": "state",
+      "parent_id": "admin:osm:relation:2202162",
+      "country_codes": [],
+      "codes": [
+        {
+          "name": "ISO3166-2",
+          "value": "FR-IDF"
+        },
+        {
+          "name": "ref:INSEE",
+          "value": "11"
+        },
+        {
+          "name": "ref:NUTS",
+          "value": "FR10"
+        },
+        {
+          "name": "wikidata",
+          "value": "Q13917"
+        }
+      ],
+      "names": {
+        "br": "Enez-Frañs",
+        "ca": "Illa de França",
+        "en": "Ile-de-France",
+        "es": "Isla de Francia",
+        "it": "Isola di Francia"
+      },
+      "labels": {
+        "br": "Enez-Frañs, Bro-C'hall",
+        "ca": "Illa de França, França",
+        "de": "Île-de-France, Frankreich",
+        "en": "Ile-de-France, France",
+        "es": "Isla de Francia, Francia",
+        "it": "Isola di Francia, Francia"
+      },
+      "context": null
+    },
+    {
+      "id": "admin:osm:relation:2202162",
+      "insee": "",
+      "level": 2,
+      "label": "France",
+      "name": "France",
+      "zip_codes": [],
+      "weight": 0.0015625185714285715,
+      "approx_coord": null,
+      "coord": {
+        "lon": 2.3514616,
+        "lat": 48.8566969
+      },
+      "bbox": [
+        -178.3873749,
+        -50.2187169,
+        172.30571519999998,
+        51.3055721
+      ],
+      "zone_type": "country",
+      "parent_id": null,
+      "country_codes": [
+        "FR"
+      ],
+      "codes": [
+        {
+          "name": "ISO3166-1",
+          "value": "FR"
+        },
+        {
+          "name": "ISO3166-1:alpha2",
+          "value": "FR"
+        },
+        {
+          "name": "ISO3166-1:alpha3",
+          "value": "FRA"
+        },
+        {
+          "name": "ISO3166-1:numeric",
+          "value": "250"
+        },
+        {
+          "name": "wikidata",
+          "value": "Q142"
+        }
+      ],
+      "names": {
+        "br": "Bro-C'hall",
+        "ca": "França",
+        "de": "Frankreich",
+        "en": "France",
+        "es": "Francia",
+        "fr": "France",
+        "it": "Francia"
+      },
+      "labels": {
+        "br": "Bro-C'hall",
+        "ca": "França",
+        "de": "Frankreich",
+        "es": "Francia",
+        "it": "Francia"
+      },
+      "context": null
+    }
+  ],
   "city": "Paris",
   "citycode": "75056",
   "id": "osm:way:7777778",
   "label": "Fake All (Paris)",
   "name": "Fake All",
   "coord": {
-  "lon": 2.3250037768187326,
-  "lat": 48.86618482685007
+    "lon": 2.3250037768187326,
+    "lat": 48.86618482685007
   },
   "poi_type": [
     {

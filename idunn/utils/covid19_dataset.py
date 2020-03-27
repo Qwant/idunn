@@ -108,7 +108,9 @@ def covid19_osm_task():
         return
 
     try:
-        with RedisWrapper._connection.lock("covid19_osm_task_lock_key", blocking_timeout=1, timeout=1800):
+        with RedisWrapper._connection.lock(
+            "covid19_osm_task_lock_key", blocking_timeout=1, timeout=1800
+        ):
             last_check_datetime = datetime.utcnow()
             update_covid19_osm_dataset()
     except LockError:
