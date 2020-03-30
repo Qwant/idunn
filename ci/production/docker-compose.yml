@@ -24,6 +24,7 @@ services:
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_PROD
+      - IDUNN_BLOCK_COVID_ENABLED=true
       - no_proxy=es,bragi,wiki-es
     extra_hosts:
       - "wiki-es:10.100.8.40"
