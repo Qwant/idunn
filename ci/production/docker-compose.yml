@@ -16,6 +16,7 @@ services:
       - IDUNN_COMBIGO_API_KEY=${QMAPS_COMBIGO_API_KEY_PROD}
       - IDUNN_LOG_JSON=1
       - IDUNN_MIMIR_ES=http://es:9200
+      - IDUNN_BRAGI_BASE_URL=http://geocoder-varnish/maps/geocoder
       - IDUNN_WIKI_API_REDIS_URL=idunn-redis:6379
       - IDUNN_WIKI_ES=http://wiki-es:9200
       - IDUNN_WIKI_USER_AGENT=Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
@@ -25,9 +26,10 @@ services:
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_PROD
       - IDUNN_BLOCK_COVID_ENABLED=true
-      - no_proxy=es,bragi,wiki-es
+      - no_proxy=es,bragi,wiki-es,geocoder-varnish
     extra_hosts:
       - "wiki-es:10.100.8.40"
+      - "geocoder-varnish:10.103.13.1"
     networks:
       - product-maps-production_default
 
