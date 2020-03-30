@@ -28,7 +28,7 @@ class Covid19Block(BaseBlock):
             return None
         lat = place.get_coord()["lat"]
         lon = place.get_coord()["lon"]
-        return f"https://www.caresteouvert.fr/@{lat},{lon},17/place/{cro_id}"
+        return f"https://www.caresteouvert.fr/@{lat:.6f},{lon:.6f},17/place/{cro_id}"
 
     @classmethod
     def from_es(cls, es_poi, lang):
@@ -44,7 +44,7 @@ class Covid19Block(BaseBlock):
             return None
 
         opening_hours = properties.get("opening_hours:covid19")
-        note = es_poi.properties.get("note:covid19")
+        note = es_poi.properties.get("description:covid19")
         status = "unknown"
         contribute_url = None
 

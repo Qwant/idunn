@@ -62,6 +62,7 @@ def update_covid19_osm_dataset():
         headers={"User-Agent": settings["WIKI_USER_AGENT"]},
         stream=True,
     )
+    response.raise_for_status()
     response.encoding = "utf-8"
     dict_reader = csv.DictReader(response.iter_lines(decode_unicode=True))
     pipe = RedisWrapper._connection.pipeline(transaction=False)
