@@ -168,6 +168,9 @@ class PjPOI(BasePlace):
             },
         }
 
+    def get_country_codes(self):
+        return ["FR"]
+
     def get_images_urls(self):
         photos = self.get("photos", {}).get("photos", [])
         return [p.get("url", "") for p in photos]

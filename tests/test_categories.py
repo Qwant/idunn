@@ -333,7 +333,7 @@ def test_bbox():
                         "label": "Rue de Lille (Paris)",
                         "postcodes": ["75007", "75008"],
                     },
-                    "admins": [],
+                    "admins": ANY,
                 },
                 "blocks": [
                     {
