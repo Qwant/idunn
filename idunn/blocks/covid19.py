@@ -46,7 +46,13 @@ class Covid19Block(BaseBlock):
         opening_hours = properties.get("opening_hours:covid19")
         note = es_poi.properties.get("description:covid19")
         status = "unknown"
+
         contribute_url = None
+        covid_status = None
+        if es_poi.get_meta().source == "osm" and settings["COVID19_USE_REDIS_DATASET"]:
+            covid_status = get_poi_covid_status(es_poi.get_id())
+            if covid_status is not None:
+                contribute_url = cls.get_ca_reste_ouvert_url(es_poi)
 
         if opening_hours == "same":
             opening_hours = parse_time_block(
@@ -67,24 +73,21 @@ class Covid19Block(BaseBlock):
                     status = "open"
             else:
                 status = "maybe_open"
-        elif es_poi.get_meta().source == "osm" and settings["COVID19_USE_REDIS_DATASET"]:
-            covid_status = get_poi_covid_status(es_poi.get_id())
-            if covid_status is not None:
-                contribute_url = cls.get_ca_reste_ouvert_url(es_poi)
-                if covid_status.opening_hours:
-                    opening_hours = parse_time_block(
-                        OpeningHourBlock, es_poi, lang, covid_status.opening_hours
-                    )
-                if covid_status.status == "ouvert":
-                    status = "open_as_usual"
-                elif covid_status.status == "ouvert_adapté":
-                    status = "open"
-                elif covid_status.status == "partiel":
-                    status = "maybe_open"
-                elif covid_status.status == "fermé":
-                    status = "closed"
-                if not note:
-                    note = covid_status.infos or None
+        elif covid_status is not None:
+            if covid_status.opening_hours:
+                opening_hours = parse_time_block(
+                    OpeningHourBlock, es_poi, lang, covid_status.opening_hours
+                )
+            if covid_status.status == "ouvert":
+                status = "open_as_usual"
+            elif covid_status.status == "ouvert_adapté":
+                status = "open"
+            elif covid_status.status == "partiel":
+                status = "maybe_open"
+            elif covid_status.status == "fermé":
+                status = "closed"
+            if not note:
+                note = covid_status.infos or None
 
         return cls(
             status=status, note=note, opening_hours=opening_hours, contribute_url=contribute_url
