@@ -4,6 +4,8 @@ networks:
   default:
     driver: overlay
     attachable: true
+  1080_default:
+    external: true
 
 services:
   idunn:
@@ -31,6 +33,7 @@ services:
         condition: on-failure
     networks:
       - default
+      - 1080_default
 
 
   idunn-redis:
