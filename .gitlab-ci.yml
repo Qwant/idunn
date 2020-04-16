@@ -83,6 +83,7 @@ deploy development:
     - deploy
   variables:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
+    NLU_SERVICE_NAME: "1701_nlu"
 
 
 deploy prelive:
