@@ -4,7 +4,7 @@ import hashlib
 import posixpath
 import urllib.parse
 from urllib.parse import urlsplit, unquote
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import ClassVar, List
 
 from idunn import settings
@@ -67,6 +67,12 @@ class Image(BaseModel):
     alt: str
     credits: str = ""
     source_url: str
+
+    @validator("alt", pre=True)
+    def validate_alt(cls, v):
+        if not v:
+            return ""
+        return v
 
 
 class ImagesBlock(BaseBlock):
