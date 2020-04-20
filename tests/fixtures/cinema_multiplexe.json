@@ -71,7 +71,8 @@
       ],
       "zone_type": "country",
       "parent_id": null,
-      "codes": []
+      "codes": [],
+      "country_codes": ["FR"]
     },
     {
       "id": "admin:osm:relation:1076124",

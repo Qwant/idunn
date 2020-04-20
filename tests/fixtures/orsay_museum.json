@@ -164,7 +164,8 @@
       ],
       "zone_type": "country",
       "parent_id": null,
-      "codes": []
+      "codes": [],
+      "country_codes": ["FR"]
     }
   ],
   "weight": 1.0,
@@ -475,7 +476,8 @@
           ],
           "zone_type": "country",
           "parent_id": null,
-          "codes": []
+          "codes": [],
+          "country_codes": ["FR"]
         }
       ],
       "label": "Rue de la Légion d'Honneur (Paris)",

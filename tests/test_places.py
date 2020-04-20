@@ -1,4 +1,5 @@
 import urllib
+from unittest.mock import ANY
 from app import app
 from starlette.testclient import TestClient
 from freezegun import freeze_time
@@ -39,13 +40,14 @@ def test_full_query_admin():
         },
         "address": {
             "admin": {"label": "Goujounac (46250), Lot, Occitanie, France",},
-            "admins": [],
+            "admins": [ANY, ANY, ANY],
             "id": None,
             "label": None,
             "name": None,
             "housenumber": None,
             "postcode": "46250",
             "street": {"id": None, "name": None, "label": None, "postcodes": None},
+            "country_code": "FR",
         },
         "blocks": [],
         "meta": {"source": None},
@@ -119,6 +121,7 @@ def test_full_query_street():
                     "postcodes": [],
                 },
             ],
+            "country_code": "DE",
         },
         "blocks": [],
         "meta": {"source": None},
@@ -194,6 +197,7 @@ def test_full_query_address():
                     "postcodes": ["55000"],
                 },
             ],
+            "country_code": "FR",
         },
         "blocks": [],
         "meta": {"source": None},
@@ -304,6 +308,7 @@ def test_full_query_poi():
                 "postcodes": [],
             },
         ],
+        "country_code": "FR",
     }
     assert resp["blocks"] == [
         {

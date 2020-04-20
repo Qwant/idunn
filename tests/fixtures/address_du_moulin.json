@@ -70,7 +70,8 @@
 				"name": "France",
 				"weight": 0.015618298409952111,
 				"zip_codes": [],
-				"zone_type": "country"
+				"zone_type": "country",
+				"country_codes": ["FR"]
 			},
 			{
 				"admin_type": "City",

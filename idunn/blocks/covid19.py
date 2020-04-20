@@ -40,7 +40,7 @@ class Covid19Block(BaseBlock):
 
         properties = es_poi.properties
         # Check if this is a french admin, otherwise we return nothing.
-        if "FR" not in es_poi.get_country_codes():
+        if es_poi.get_country_code() != "FR":
             return None
 
         opening_hours = properties.get("opening_hours:covid19")

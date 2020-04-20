@@ -43,6 +43,7 @@ def test_full():
                 "label": "Rue de Lille (Paris)",
                 "postcodes": ["75007", "75008"],
             },
+            "country_code": "FR",
         },
         "blocks": [
             {

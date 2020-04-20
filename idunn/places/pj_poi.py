@@ -166,6 +166,7 @@ class PjPOI(BasePlace):
                 "label": f"{street} ({city})",
                 "postcodes": [postal_code] if postal_code else [],
             },
+            "country_code": self.get_country_code(),
         }
 
     def get_country_codes(self):

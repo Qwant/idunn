@@ -9,6 +9,17 @@ from .place import Place, PlaceMeta
 logger = logging.getLogger(__name__)
 
 
+ZONE_TYPE_ORDER_KEY = {
+    "suburb": 1,
+    "city_district": 2,
+    "city": 3,
+    "state_district": 4,
+    "state": 5,
+    "country_region": 6,
+    "country": 7,
+}
+
+
 class BasePlace(dict):
     PLACE_TYPE = ""
 
@@ -73,7 +84,21 @@ class BasePlace(dict):
         return self.get("administrative_regions") or []
 
     def get_country_codes(self):
-        return [c for admin in self.get_raw_admins() for c in admin.get("country_codes", [])]
+        """
+        The list of codes is ordered from the least specific to the most specific
+        For example for a placed located in La Réunion: ["FR","RE","RE"]
+        for the country, the state ("région") and the state_district ("département")
+        :return: List of ISO 3166-1 alpha-2 country codes
+        """
+        ordered_admins = sorted(
+            self.get_raw_admins(),
+            key=lambda a: ZONE_TYPE_ORDER_KEY.get(a.get("zone_type"), 0),
+            reverse=True,
+        )
+        return [c for admin in ordered_admins for c in admin.get("country_codes", [])]
+
+    def get_country_code(self):
+        return next(iter(self.get_country_codes()), None)
 
     def get_postcodes(self):
         return self.get_raw_address().get("zip_codes")
@@ -104,6 +129,7 @@ class BasePlace(dict):
             "admin": self.build_admin(lang),
             "street": street,
             "admins": self.build_admins(),
+            "country_code": self.get_country_code(),
         }
 
     def build_admin(self, lang=None):

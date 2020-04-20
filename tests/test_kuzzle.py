@@ -43,7 +43,6 @@ def test_kuzzle_event_ok():
         assert firstEventData["subclass_name"] == "event"
         assert firstEventData["address"]["name"] == "Cité des Sciences et de l'Industrie"
         assert firstEventData["address"]["label"] == "30 Avenue Corentin Cariou, Paris"
-        assert firstEventData["address"]["city"] == "Paris"
         assert firstEventData["blocks"][0]["type"] == "event_opening_dates"
         assert firstEventData["blocks"][1]["type"] == "event_description"
         assert firstEventData["blocks"][2]["type"] == "website"

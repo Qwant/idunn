@@ -61,7 +61,8 @@
 			"name": "Deutschland",
 			"weight": 0.024579080066797,
 			"zip_codes": [],
-			"zone_type": "country"
+			"zone_type": "country",
+			"country_codes": ["DE"]
 		},
 		{
 			"admin_type": "Unknown",
