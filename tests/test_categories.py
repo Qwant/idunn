@@ -70,6 +70,7 @@ def test_bbox():
                         ANY,
                         ANY,
                     ],
+                    "country_code": "FR",
                 },
                 "blocks": [
                     {
@@ -334,6 +335,7 @@ def test_bbox():
                         "postcodes": ["75007", "75008"],
                     },
                     "admins": ANY,
+                    "country_code": "FR",
                 },
                 "blocks": [
                     {
@@ -607,6 +609,7 @@ def test_single_raw_filter():
                             "postcodes": [],
                         },
                     ],
+                    "country_code": "FR",
                 },
                 "blocks": [
                     {

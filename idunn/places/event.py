@@ -32,7 +32,6 @@ class Event(BasePlace):
         return {
             "name": self.get("placename"),
             "label": self.get("address"),
-            "city": self.get("city"),
             "admin": self.build_admin(lang),
             "admins": self.build_admins(),
         }
