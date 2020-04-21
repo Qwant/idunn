@@ -95,7 +95,7 @@ class BasePlace(dict):
             key=lambda a: ZONE_TYPE_ORDER_KEY.get(a.get("zone_type"), 0),
             reverse=True,
         )
-        return [c for admin in ordered_admins for c in admin.get("country_codes", [])]
+        return [c.upper() for admin in ordered_admins for c in admin.get("country_codes", [])]
 
     def get_country_code(self):
         return next(iter(self.get_country_codes()), None)

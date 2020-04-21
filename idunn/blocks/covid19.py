@@ -9,6 +9,7 @@ from .opening_hour import OpeningHourBlock, parse_time_block
 
 
 logger = logging.getLogger(__name__)
+COVID19_BLOCK_COUNTRIES = settings["COVID19_BLOCK_COUNTRIES"].split(",")
 
 
 class CovidOpeningStatus(str, Enum):
@@ -49,7 +50,7 @@ class Covid19Block(BaseBlock):
 
         properties = es_poi.properties
         # Check if this is a french admin, otherwise we return nothing.
-        if es_poi.get_country_code() != "FR":
+        if es_poi.get_country_code() not in COVID19_BLOCK_COUNTRIES:
             return None
 
         opening_hours = None
