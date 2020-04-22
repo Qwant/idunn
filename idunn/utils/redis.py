@@ -46,8 +46,7 @@ class RedisWrapper:
             prometheus.exception("RedisError")
             if raise_on_error:
                 raise
-            else:
-                logging.exception("Got a RedisError")
+            logging.exception("Got a RedisError")
 
     @classmethod
     def _get_value(cls, key):
