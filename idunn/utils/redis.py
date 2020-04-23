@@ -39,11 +39,13 @@ class RedisWrapper:
     _connection = None
 
     @classmethod
-    def _set_value(cls, key, value, expire=settings["WIKI_CACHE_TIMEOUT"]):
+    def _set_value(cls, key, value, expire=settings["WIKI_CACHE_TIMEOUT"], raise_on_error=False):
         try:
             cls._connection.set(key, value, ex=expire)
         except RedisError:
             prometheus.exception("RedisError")
+            if raise_on_error:
+                raise
             logging.exception("Got a RedisError")
 
     @classmethod
@@ -53,7 +55,6 @@ class RedisWrapper:
             return value_stored
         except RedisError as exc:
             prometheus.exception("RedisError")
-            logging.exception("Got a RedisError")
             raise CacheNotAvailable from exc
 
     @classmethod
@@ -99,6 +100,7 @@ class RedisWrapper:
                 except CacheNotAvailable:
                     # Cache is not reachable: we don't want to execute 'f'
                     # (and fetch wikipedia content, possibly very often)
+                    logger.warning("Failed to get cached value for %s", key, exc_info=True)
                     return None
                 if value_stored is not None:
                     return json.loads(value_stored.decode("utf-8"))

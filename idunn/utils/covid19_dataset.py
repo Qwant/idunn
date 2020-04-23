@@ -11,6 +11,7 @@ from redis.lock import LockError
 logger = logging.getLogger(__name__)
 COVID19_OSM_DATASET_STATE_KEY = "covid19_osm_dataset_state"
 COVID19_POI_STATUS_KEY_PREFIX = "covid19_poi_"
+COVID19_REDIS_LOCK_TIMEOUT = 900  # seconds
 
 last_check_datetime = datetime(2020, 1, 1)
 
@@ -41,20 +42,21 @@ def should_update_covid19_osm_dataset():
     try:
         state = RedisWrapper.get_json(COVID19_OSM_DATASET_STATE_KEY)
     except CacheNotAvailable:
+        logger.exception(
+            "Failed to get covid osm dataset state in Redis. No update will be attempted."
+        )
         return False
     return state is None
 
 
 def update_covid19_osm_dataset():
-    if not should_update_covid19_osm_dataset():
-        return
-
     updated_at = datetime.utcnow().isoformat()
     new_state = CovidOsmDatasetState(updated_at=updated_at)
     RedisWrapper._set_value(
         COVID19_OSM_DATASET_STATE_KEY,
         new_state.json(),
         expire=settings["COVID19_OSM_DATASET_EXPIRE"],
+        raise_on_error=True,
     )
 
     response = requests.get(
@@ -92,6 +94,7 @@ def get_poi_covid_status(place_id):
             return None
         return OsmPoiCovidStatus(**value)
     except CacheNotAvailable:
+        logger.exception("Failed to get poi covid status in Redis")
         return None
     except Exception:
         logger.exception("Failed to parse poi covid status for %s", place_id)
@@ -108,11 +111,15 @@ def covid19_osm_task():
         # Redis is not configured
         return
 
+    last_check_datetime = datetime.utcnow()
     try:
         with RedisWrapper._connection.lock(
-            "covid19_osm_task_lock_key", blocking_timeout=1, timeout=1800
+            "covid19_osm_task_lock_key", blocking_timeout=1, timeout=COVID19_REDIS_LOCK_TIMEOUT
         ):
-            last_check_datetime = datetime.utcnow()
-            update_covid19_osm_dataset()
+            if should_update_covid19_osm_dataset():
+                try:
+                    update_covid19_osm_dataset()
+                except Exception:
+                    logger.exception("Failed to update covid19 dataset")
     except LockError:
         logger.info("Failed to acquire lock to run covid19_osm_task")

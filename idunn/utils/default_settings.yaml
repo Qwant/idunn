@@ -127,3 +127,4 @@ COVID19_USE_REDIS_DATASET: True
 COVID19_OSM_DATASET_URL: https://www.data.gouv.fr/fr/datasets/r/3ed2f2eb-11a0-4497-a445-1f6f96f3e4aa
 COVID19_OSM_DATASET_EXPIRE: 7200 # seconds
 COVID19_POI_EXPIRE: 86400 # seconds
+COVID19_BLOCK_COUNTRIES: "FR" # comma separated list
