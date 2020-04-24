@@ -26,6 +26,7 @@ services:
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_PROD
       - IDUNN_BLOCK_COVID_ENABLED=true
+      - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
       - no_proxy=es,bragi,wiki-es,geocoder-varnish
     extra_hosts:
       - "wiki-es:10.100.8.40"

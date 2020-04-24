@@ -22,6 +22,7 @@ services:
       - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_DEV
       - IDUNN_BLOCK_COVID_ENABLED=true
+      - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,10.100.30.23
     extra_hosts:
       - "wiki-es:10.100.31.26"
