@@ -94,7 +94,7 @@ class Covid19Block(BaseBlock):
         elif raw_opening_hours == "off":
             status = CovidOpeningStatus.closed
         elif raw_opening_hours is not None:
-            opening_hours = parse_time_block(OpeningHourBlock, es_poi, lang, opening_hours)
+            opening_hours = parse_time_block(OpeningHourBlock, es_poi, lang, raw_opening_hours)
             if opening_hours is None:
                 status = "unknown"
             elif opening_hours.status in ["open", "closed"]:
