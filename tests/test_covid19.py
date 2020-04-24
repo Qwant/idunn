@@ -1,6 +1,10 @@
+from unittest.mock import patch
 from starlette.testclient import TestClient
+from freezegun import freeze_time
 
 from app import app
+from idunn.blocks import Covid19Block
+from idunn.places import POI
 from .utils import override_settings
 
 
@@ -16,3 +20,25 @@ def test_covid19_block():
     assert covid19_block["status"] == "open_as_usual"
     assert covid19_block["note"] == "Ceci est une note à propos du confinement"
     assert covid19_block["opening_hours"] is not None
+
+
+@freeze_time("2020-04-23 12:00:00+02:00")
+@patch.object(POI, "get_country_code", lambda *x: "FR")
+def test_covid19_parse_hours():
+    with override_settings({"BLOCK_COVID_ENABLED": True, "COVID19_USE_REDIS_DATASET": False}):
+        covid_block = Covid19Block.from_es(
+            POI(
+                {
+                    "coord": {"lon": 2.3, "lat": 48.8},
+                    "properties": {
+                        "opening_hours": "Tu-Su 08:30-24:00",
+                        "opening_hours:covid19": "Tu-Su 08:30-24:00",
+                    },
+                }
+            ),
+            lang="en",
+        )
+
+    assert covid_block.status == "open_as_usual"
+    assert covid_block.note is None
+    assert covid_block.opening_hours.raw == "Tu-Su 08:30-24:00"
