@@ -215,7 +215,10 @@ class NLU_Helper:
                     cat_or_brand_query, lang=lang, skip_classifier=skip_classifier, focus=focus
                 )
                 if intention is not None:
-                    intentions.append(intention)
+                    # A query tagged as "category" and not recognized by the classifier often
+                    # leads to irrelevant intention. Let's ignore them for now.
+                    if brand_query or intention.filter.category:
+                        intentions.append(intention)
 
         return intentions
 
