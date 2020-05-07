@@ -2,18 +2,20 @@ import os
 import logging
 
 from fastapi import HTTPException, Query
+from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.settings import _load_yaml_file
 from idunn.utils.index_names import INDICES
-from idunn.places import POI
+from idunn.places import POI, BragiPOI
 from idunn.api.utils import (
     fetch_bbox_places,
     DEFAULT_VERBOSITY_LIST,
     ALL_VERBOSITY_LEVELS,
 )
 from idunn.places.event import Event
+from idunn.geocoder.bragi_client import bragi_client
 from .pages_jaunes import pj_source
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
 from .kuzzle import kuzzle_client
@@ -169,7 +171,7 @@ def get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity)
     return raw_params
 
 
-def get_places_bbox(
+async def get_places_bbox(
     bbox: Any,
     category: Optional[List[str]] = Query(None),
     raw_filter: Optional[List[str]] = Query(None),
@@ -189,37 +191,45 @@ def get_places_bbox(
 
     source = params.source
     if source is None:
-        if params.q:
-            # PJ is currently the only source that accepts arbitrary queries
-            source = SOURCE_PAGESJAUNES
-        elif (
-            params.category
-            and all(c.get("pj_filters") for c in params.category)
-            and pj_source.bbox_is_covered(params.bbox)
-        ):
+        if (
+            params.q or (params.category and all(c.get("pj_filters") for c in params.category))
+        ) and pj_source.bbox_is_covered(params.bbox):
             source = SOURCE_PAGESJAUNES
         else:
             source = SOURCE_OSM
 
     if source == SOURCE_PAGESJAUNES:
         all_categories = [pj_category for c in params.category for pj_category in c["pj_filters"]]
-        places_list = pj_source.get_places_bbox(
-            all_categories, params.bbox, size=params.size, query=params.q
+        places_list = await run_in_threadpool(
+            pj_source.get_places_bbox, all_categories, params.bbox, size=params.size, query=params.q
         )
+    elif params.q:
+        # Default source (OSM) with query
+        bragi_response = await bragi_client.pois_query_in_bbox(
+            query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
+        )
+        places_list = [BragiPOI(f) for f in bragi_response.get("features", [])]
     else:
-        # Default source (OSM)
+        # Default source (OSM) with query
         if params.raw_filter:
             raw_filters = params.raw_filter
         else:
             raw_filters = [f for c in params.category for f in c["raw_filters"]]
 
-        bbox_places = fetch_bbox_places(
-            es, INDICES, raw_filters=raw_filters, bbox=params.bbox, max_size=params.size
+        bbox_places = await run_in_threadpool(
+            fetch_bbox_places,
+            es,
+            INDICES,
+            raw_filters=raw_filters,
+            bbox=params.bbox,
+            max_size=params.size,
         )
         places_list = [POI(p["_source"]) for p in bbox_places]
 
     return {
-        "places": [p.load_place(params.lang, params.verbosity) for p in places_list],
+        "places": await run_in_threadpool(
+            lambda: [p.load_place(params.lang, params.verbosity) for p in places_list]
+        ),
         "source": source,
     }
 

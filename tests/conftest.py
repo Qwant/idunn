@@ -3,6 +3,7 @@ import json
 import pytest
 import responses
 import re
+import respx
 from elasticsearch import Elasticsearch
 
 from .utils import override_settings
@@ -213,3 +214,9 @@ def load_all(mimir_client, init_indices):
     load_place("street_birnenweg.json", mimir_client, doc_type="street")
     load_place("address_du_moulin.json", mimir_client, doc_type="addr")
     load_place("admin_dunkerque.json", mimir_client, doc_type="admin")
+
+
+@pytest.fixture
+def httpx_mock():
+    with respx.mock(assert_all_called=False) as rsps:
+        yield rsps

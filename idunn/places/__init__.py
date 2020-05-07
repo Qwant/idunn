@@ -1,6 +1,6 @@
 from .address import Address
 from .admin import Admin
-from .poi import POI
+from .poi import POI, BragiPOI
 from .street import Street
 from .place import Place
 from .pj_poi import PjPOI

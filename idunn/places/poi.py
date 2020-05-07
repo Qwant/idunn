@@ -26,3 +26,27 @@ class POI(BasePlace):
 
     def get_meta(self):
         return PlaceMeta(source="osm")
+
+
+class BragiPOI(POI):
+    def __init__(self, bragi_feature):
+        coord = bragi_feature.get("geometry", {}).get("coordinates") or []
+        if len(coord) == 2:
+            lon, lat = coord
+        else:
+            lon, lat = None, None
+        es_dict = dict(bragi_feature["properties"]["geocoding"], coord={"lon": lon, "lat": lat})
+        super().__init__(es_dict)
+
+    def get_raw_street(self):
+        raw_address = self.get_raw_address()
+        return {"name": raw_address.get("street")}
+
+    def get_postcodes(self):
+        postcode = self.get("postcode")
+        if postcode:
+            return [postcode]
+        return None
+
+    def get_country_codes(self):
+        return [c.upper() for c in self.get_raw_address().get("country_codes") or []]
