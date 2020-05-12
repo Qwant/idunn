@@ -116,9 +116,11 @@ class BasePlace(dict):
 
         id = raw_address.get("id")
         name = raw_address.get("name")
-        housenumber = raw_address.get("house_number")
         label = raw_address.get("label")
         street = self.build_street()
+
+        # ES raw data uses "house_number" whereas Bragi returns "housenumber"
+        housenumber = raw_address.get("house_number") or raw_address.get("housenumber")
 
         return {
             "id": id,

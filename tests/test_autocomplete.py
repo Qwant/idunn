@@ -1,24 +1,16 @@
-import os
 import re
 import pytest
-import json
-from functools import partial
 from unittest.mock import ANY
-import respx
 from starlette.testclient import TestClient
 
 from app import app
-from .utils import enable_pj_source, override_settings
+from .utils import enable_pj_source, override_settings, read_fixture
 
 
 BASE_URL = "http://qwant.bragi"
 NLU_URL = "http://qwant.nlu/"
 CLASSIF_URL = "http://qwant.classif"
 ES_URL = "http://qwant.es"
-
-
-def read_fixture(sPath):
-    return json.load(open(os.path.join(os.path.dirname(__file__), sPath)))
 
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
@@ -28,12 +20,6 @@ FIXTURE_TOKENIZER = {
     dataset: read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
     for dataset in ["with_brand", "with_brand_and_country", "with_cat", "with_country", "with_poi"]
 }
-
-
-@pytest.fixture
-def httpx_mock():
-    with respx.mock(assert_all_called=False) as rsps:
-        yield rsps
 
 
 def mock_NLU_for(httpx_mock, dataset):

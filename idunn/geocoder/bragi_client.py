@@ -46,5 +46,20 @@ class BragiClient:
             logger.exception("Autocomplete invalid response")
             raise HTTPException(503, "Invalid response from the geocoder")
 
+    async def pois_query_in_bbox(self, query, bbox, limit, lang=None):
+        query_params = {"q": query, "lang": lang, "limit": limit, "type[]": "poi"}
+        xmin, ymin, xmax, ymax = bbox
+        shape = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax], [xmin, ymin]]
+                ],
+            },
+            "properties": {},
+        }
+        return await self.raw_autocomplete(params=query_params, body={"shape": shape})
+
 
 bragi_client = BragiClient()

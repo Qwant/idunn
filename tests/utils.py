@@ -1,3 +1,5 @@
+import os
+import json
 from contextlib import contextmanager
 from copy import deepcopy
 
@@ -59,3 +61,7 @@ def enable_weather_api():
         }
     ):
         yield
+
+
+def read_fixture(fixture_path):
+    return json.load(open(os.path.join(os.path.dirname(__file__), fixture_path)))
