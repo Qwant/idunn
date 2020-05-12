@@ -123,7 +123,7 @@ class NLU_Helper:
                 description={"query": cat_query, "place": place},
             )
 
-    async def build_intention_category(self, cat_query, lang, skip_classifier=False, focus=None):
+    async def build_intention_category(self, cat_query, lang, skip_classifier=False):
         category_name = None
 
         if not skip_classifier:
@@ -133,10 +133,7 @@ class NLU_Helper:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
             )
-        elif focus and pj_source.point_is_covered(focus):
-            return Intention(filter={"q": cat_query}, description={"query": cat_query})
-
-        return None
+        return Intention(filter={"q": cat_query}, description={"query": cat_query})
 
     @classmethod
     def is_poi_request(cls, tags_list):
@@ -212,7 +209,7 @@ class NLU_Helper:
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
-                    cat_or_brand_query, lang=lang, skip_classifier=skip_classifier, focus=focus
+                    cat_or_brand_query, lang=lang, skip_classifier=skip_classifier
                 )
                 if intention is not None:
                     # A query tagged as "category" and not recognized by the classifier often
