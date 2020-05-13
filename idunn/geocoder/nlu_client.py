@@ -115,13 +115,9 @@ class NLU_Helper:
                 filter={"category": category_name, "bbox": bbox},
                 description={"category": category_name, "place": place},
             )
-        else:
-            if not pj_source.bbox_is_covered(bbox):
-                return None
-            return Intention(
-                filter={"q": cat_query, "bbox": bbox},
-                description={"query": cat_query, "place": place},
-            )
+        return Intention(
+            filter={"q": cat_query, "bbox": bbox}, description={"query": cat_query, "place": place}
+        )
 
     async def build_intention_category(self, cat_query, lang, skip_classifier=False):
         category_name = None
