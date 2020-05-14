@@ -186,7 +186,7 @@ def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_wi
     assert_ok_with(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"},}],
+        expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"}}],
         expected_intention_place=None,
     )
 
