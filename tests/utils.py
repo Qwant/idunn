@@ -63,5 +63,25 @@ def enable_weather_api():
         yield
 
 
+@contextmanager
+def enable_recycling():
+    """
+    We define here settings specific to tests.
+    We define the recycling server address and port
+    """
+    with override_settings({"RECYCLING_SERVER_URL": "http://localhost:7512/trashes/recycling"}):
+        yield
+
+
+@contextmanager
+def disable_recycling():
+    """
+    We define here settings specific to tests.
+    We define the recycling server address and port
+    """
+    with override_settings({"RECYCLING_SERVER_URL": "http://non-existent:1111"}):
+        yield
+
+
 def read_fixture(fixture_path):
     return json.load(open(os.path.join(os.path.dirname(__file__), fixture_path)))

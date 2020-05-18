@@ -1,0 +1,234 @@
+{
+  "id": "osm:node:36153801",
+  "label": "Poubelle (Somewhere)",
+  "name": "Poubelle",
+  "coord": {
+    "lon": -4.487716849516516,
+    "lat": 48.39070125276485
+  },
+  "administrative_regions": [
+    {
+      "id": "admin:osm:relation:102430",
+      "insee": "29",
+      "level": 6,
+      "label": "Somewhere, France",
+      "name": "Somewhere",
+      "zip_codes": [],
+      "weight": 0.000442342573601715,
+      "coord": {
+        "lon": -4.1024782,
+        "lat": 47.9960325
+      },
+      "bbox": [
+        -5.141276599999999,
+        47.7012815,
+        -3.3866547,
+        48.7538213
+      ],
+      "zone_type": "state_district",
+      "parent_id": null,
+      "codes": []
+    },
+    {
+      "id": "admin:osm:relation:102740",
+      "insee": "53",
+      "level": 4,
+      "label": "Somewhere, France",
+      "name": "Somewhere",
+      "zip_codes": [],
+      "weight": 0.02239740890685554,
+      "coord": {
+        "lon": -1.6800198,
+        "lat": 48.1113387
+      },
+      "bbox": [
+        -5.141276599999999,
+        47.2777959,
+        -1.01569,
+        48.9086459
+      ],
+      "zone_type": "state",
+      "parent_id": null,
+      "codes": []
+    },
+    {
+      "id": "admin:osm:relation:2202162",
+      "insee": "",
+      "level": 2,
+      "label": "France",
+      "name": "France",
+      "zip_codes": [],
+      "weight": 0.015618298409952111,
+      "coord": {
+        "lon": 2.3514992,
+        "lat": 48.8566101
+      },
+      "bbox": [
+        -5.4534286,
+        41.2632185,
+        9.8678344,
+        51.268318
+      ],
+      "zone_type": "country",
+      "parent_id": null,
+      "codes": []
+    },
+    {
+      "id": "admin:osm:relation:1076124",
+      "insee": "29019",
+      "level": 8,
+      "label": "Brest (29200), Somewhere, France",
+      "name": "Brest",
+      "zip_codes": [
+        "29200"
+      ],
+      "weight": 0.000983545754172197,
+      "coord": {
+        "lon": -4.4860088,
+        "lat": 48.3905283
+      },
+      "bbox": [
+        -4.5689169,
+        48.3572972,
+        -4.4278311,
+        48.4595521
+      ],
+      "zone_type": "city",
+      "parent_id": null,
+      "codes": []
+    }
+  ],
+  "weight": 0,
+  "zip_codes": [
+    "29200"
+  ],
+  "properties": [
+    {
+      "key": "amenity",
+      "value": "recycling"
+    },
+    {
+      "key": "name",
+      "value": "Poubelle"
+    },
+    {
+      "key": "poi_subclass",
+      "value": "recycling"
+    },
+    {
+      "key": "poi_class",
+      "value": "recycling"
+    }
+  ],
+  "address": {
+    "type": "addr",
+    "id": "addr:-4.487341;48.390743",
+    "name": "10 Avenue Georges Clemenceau",
+    "house_number": "10",
+    "street": {
+      "id": "street:290191965J",
+      "name": "Avenue Georges Clemenceau",
+      "administrative_regions": [
+        {
+          "id": "admin:osm:relation:102430",
+          "insee": "29",
+          "level": 6,
+          "label": "Somewhere, France",
+          "name": "Somewhere",
+          "zip_codes": [],
+          "weight": 0.000442342573601715,
+          "coord": {
+            "lon": -4.1024782,
+            "lat": 47.9960325
+          },
+          "bbox": [
+            -5.141276599999999,
+            47.7012815,
+            -3.3866547,
+            48.7538213
+          ],
+          "zone_type": "state_district",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:102740",
+          "insee": "53",
+          "level": 4,
+          "label": "Bretagne, France",
+          "name": "Bretagne",
+          "zip_codes": [],
+          "weight": 0.02239740890685554,
+          "coord": {
+            "lon": -1.6800198,
+            "lat": 48.1113387
+          },
+          "bbox": [
+            -5.141276599999999,
+            47.2777959,
+            -1.01569,
+            48.9086459
+          ],
+          "zone_type": "state",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:2202162",
+          "insee": "",
+          "level": 2,
+          "label": "France",
+          "name": "France",
+          "zip_codes": [],
+          "weight": 0.015618298409952111,
+          "coord": {
+            "lon": 2.3514992,
+            "lat": 48.8566101
+          },
+          "bbox": [
+            -5.4534286,
+            41.2632185,
+            9.8678344,
+            51.268318
+          ],
+          "zone_type": "country",
+          "parent_id": null,
+          "codes": []
+        },
+        {
+          "id": "admin:osm:relation:1076124",
+          "insee": "29019",
+          "level": 8,
+          "label": "Brest (29200), Somewhere, France",
+          "name": "Brest",
+          "zip_codes": [
+            "29200"
+          ],
+          "weight": 0.000983545754172197,
+          "coord": {
+            "lon": -4.4860088,
+            "lat": 48.3905283
+          },
+          "bbox": [
+            -4.5689169,
+            48.3572972,
+            -4.4278311,
+            48.4595521
+          ],
+          "zone_type": "city",
+          "parent_id": null,
+          "codes": []
+        }
+      ]
+    },
+    "label": "10 Avenue Georges Clemenceau (Somewhere)",
+    "coord": {
+      "lon": -4.487341,
+      "lat": 48.390743
+    },
+    "weight": 0.000983545754172197,
+    "zip_codes": [
+      "29200"
+    ]
+  }
+}
