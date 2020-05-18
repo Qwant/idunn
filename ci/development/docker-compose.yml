@@ -23,6 +23,7 @@ services:
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_DEV
       - IDUNN_BLOCK_COVID_ENABLED=true
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
+      - IDUNN_RECYCLING_SERVER_URL=true # Enable 'recycling' block, even if no real data server is available for now
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,10.100.30.23
     extra_hosts:
       - "wiki-es:10.100.31.26"
