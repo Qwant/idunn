@@ -1,3 +1,4 @@
+from unittest.mock import ANY
 from starlette.testclient import TestClient
 import os
 import re
@@ -26,9 +27,7 @@ def test_recycling():
             json=json_event,
         )
 
-        response = client.get(
-            url=f"http://localhost/v1/pois/osm:node:36153800",
-        )
+        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153800",)
 
         assert response.status_code == 200
 
@@ -39,8 +38,14 @@ def test_recycling():
     assert len(resp["blocks"]) == 1
     block = resp["blocks"][0]
     assert block["type"] == "recycling"
-    assert block["volume"] == 70
-    assert block["last_update"] == "01-01-1970"
+    assert block == {
+        "type": "recycling",
+        "containers": [
+            {"type": "glass", "filling_level": 30, "updated_at": "2020-05-16T17:38:12Z"},
+            {"type": "paper", "filling_level": 60, "updated_at": ANY,},
+            {"type": "unknown", "filling_level": 90, "updated_at": ANY,},
+        ],
+    }
 
 
 @enable_recycling()
@@ -61,9 +66,7 @@ def test_no_recycling_in_bretagne_poi():
             json=json_event,
         )
 
-        response = client.get(
-            url=f"http://localhost/v1/pois/osm:node:36153811",
-        )
+        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153811",)
 
         assert response.status_code == 200
 
@@ -92,9 +95,7 @@ def test_recycling_in_not_bretagne_trash():
             json=json_event,
         )
 
-        response = client.get(
-            url=f"http://localhost/v1/pois/osm:node:36153801",
-        )
+        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153801",)
 
         assert response.status_code == 200
 
@@ -105,16 +106,13 @@ def test_recycling_in_not_bretagne_trash():
     assert len([x for x in resp["blocks"] if x["type"] == "recycling"]) == 0
 
 
-@disable_recycling()
-def test_recycling_in_not_bretagne_trash():
+def test_recycling_not_enabled():
     """
     Check that no trash info is provided when no trash server is provided.
     """
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-        response = client.get(
-            url=f"http://localhost/v1/pois/osm:node:36153800",
-        )
+        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153800",)
 
         assert response.status_code == 200
 

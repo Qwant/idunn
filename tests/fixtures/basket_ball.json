@@ -8,19 +8,19 @@
     "name": "62B Rue de Lille",
     "zip_codes": "75007",
     "street": {
-    "id": "street:553660044C",
-    "street_name": "Rue de Lille",
-    "name": "Rue de Lille",
-    "label": "Rue de Lille (Paris)",
-    "weight": 0.000006877017509339014,
-    "coord": {
-      "lon": 2.326285,
-      "lat": 48.859635
+      "id": "street:553660044C",
+      "street_name": "Rue de Lille",
+      "name": "Rue de Lille",
+      "label": "Rue de Lille (Paris)",
+      "weight": 0.000006877017509339014,
+      "coord": {
+        "lon": 2.326285,
+        "lat": 48.859635
+      },
+      "zip_codes": [
+        "75007"
+      ]
     },
-    "zip_codes": [
-      "75007"
-    ]
-  },
     "type": "house"
   },
   "city": "Paris",
@@ -29,8 +29,8 @@
   "label": "Fake All (Paris)",
   "name": "Fake All",
   "coord": {
-  "lon": 2.3250037768187326,
-  "lat": 48.86618482685007
+    "lon": 2.3250037768187326,
+    "lat": 48.86618482685007
   },
   "poi_type": [
     {

@@ -1,4 +1,3 @@
-import requests
 from .base import BasePlace
 from .place import PlaceMeta
 from idunn.api.utils import get_name

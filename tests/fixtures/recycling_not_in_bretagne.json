@@ -110,6 +110,14 @@
     {
       "key": "name",
       "value": "Poubelle"
+    },
+    {
+      "key": "poi_subclass",
+      "value": "recycling"
+    },
+    {
+      "key": "poi_class",
+      "value": "recycling"
     }
   ],
   "address": {
