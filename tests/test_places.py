@@ -483,14 +483,26 @@ def test_type_unknown():
     assert response._content == b'{"detail":"Wrong type parameter: type=globibulga"}'
 
 
-def test_wrong_type():
+def test_not_found_with_type():
     client = TestClient(app)
-
-    id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
-
-    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=poi",)
+    response = client.get(url=f"http://localhost/v1/places/street:4242?lang=fr&type=poi",)
     assert response.status_code == 404
-    assert response.json() == {"detail": "place 'addr:5.108632;48.810273' not found with type=poi"}
+    assert response.json() == {"detail": "place 'street:4242' not found with type=poi"}
+
+
+def test_invalid_place_id():
+    client = TestClient(app)
+    response = client.get(url=f"http://localhost/v1/places/invalid_place?lang=fr")
+    assert response.status_code == 404
+
+
+def test_redirect_obsolete_address_with_lat_lon():
+    client = TestClient(app)
+    response = client.get(
+        url=f"http://localhost/v1/places/addr:-1.12;45.6?lang=fr", allow_redirects=False
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "/v1/places/latlon:45.60000:-1.12000?lang=fr"
 
 
 def test_basic_short_query_poi():
@@ -498,7 +510,6 @@ def test_basic_short_query_poi():
     response = client.get(
         url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=short",
     )
-
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
 

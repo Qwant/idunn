@@ -76,6 +76,11 @@ PLACE_STREET_INDEX = settings["PLACE_STREET_INDEX"]
 ANY = "*"
 
 
+class PlaceNotFound(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
+
 class WikidataConnector:
     _wiki_es = None
     _es_lang = None
@@ -146,7 +151,10 @@ def fetch_es_poi(id, es) -> dict:
     This function gets from Elasticsearch the
     entry corresponding to the given id.
     """
-    return fetch_es_place(id, es, type="poi")["_source"]
+    try:
+        return fetch_es_place(id, es, type="poi")["_source"]
+    except PlaceNotFound as e:
+        raise HTTPException(status_code=404, detail=e.message)
 
 
 def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
@@ -232,7 +240,7 @@ def fetch_es_place(id, es, type) -> dict:
             message = f"place '{id}' not found"
         else:
             message = f"place '{id}' not found with type={type}"
-        raise HTTPException(status_code=404, detail=message)
+        raise PlaceNotFound(message=message)
     if len(es_place) > 1:
         logger.warning("Got multiple places with id %s", id)
 

@@ -2,8 +2,9 @@ import logging
 import urllib.parse
 
 from fastapi import HTTPException, BackgroundTasks
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 from starlette.requests import Request
+from starlette.datastructures import URL
 
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
@@ -11,8 +12,8 @@ from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
 from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
+from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
-
 
 logger = logging.getLogger(__name__)
 
@@ -80,11 +81,23 @@ def get_place(
     lang: str = None,
     type=None,
     verbosity=DEFAULT_VERBOSITY,
-) -> Place:
+):
     """Main handler that returns the requested place"""
     verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
-    place = place_from_id(id, type)
+    try:
+        place = place_from_id(id, type)
+    except InvalidPlaceId as e:
+        raise HTTPException(status_code=404, detail=e.message)
+    except RedirectToPlaceId as e:
+        path_prefix = request.headers.get("x-forwarded-prefix", "")
+        path = request.app.url_path_for("get_place", id=e.target_id)
+        query = request.url.query
+        return JSONResponse(
+            status_code=303,
+            headers={"location": str(URL(path=f"{path_prefix}{path}", query=query))},
+            content={"id": e.target_id},
+        )
     log_place_request(place, request.headers)
     if settings["BLOCK_COVID_ENABLED"] and settings["COVID19_USE_REDIS_DATASET"]:
         background_tasks.add_task(covid19_osm_task)
