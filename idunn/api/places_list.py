@@ -16,9 +16,9 @@ from idunn.api.utils import (
 )
 from idunn.places.event import Event
 from idunn.geocoder.bragi_client import bragi_client
-from .pages_jaunes import pj_source
+from idunn.datasources.pages_jaunes import pj_source
+from idunn.datasources.kuzzle import kuzzle_client
 from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
-from .kuzzle import kuzzle_client
 
 from pydantic import BaseModel, ValidationError, validator
 from typing import List, Optional, Any, Tuple

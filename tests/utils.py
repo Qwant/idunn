@@ -5,9 +5,8 @@ from copy import deepcopy
 
 from idunn import settings
 from idunn.api import places_list
-from idunn.api.pages_jaunes import PjSource
+from idunn.datasources.pages_jaunes import PjSource
 from idunn.places import utils as places_utils
-from idunn.geocoder import nlu_client
 
 
 @contextmanager
@@ -30,13 +29,11 @@ def enable_pj_source():
         new_source = PjSource()
         places_utils.pj_source = new_source
         places_list.pj_source = new_source
-        nlu_client.pj_source = new_source
         try:
             yield
         finally:
             places_utils.pj_source = old_source
             places_list.pj_source = old_source
-            nlu_client.pj_source = old_source
 
 
 @contextmanager

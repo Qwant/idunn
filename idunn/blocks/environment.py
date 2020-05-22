@@ -2,14 +2,13 @@ import logging
 from pydantic import BaseModel, conint, constr
 from datetime import datetime
 from typing import ClassVar, Optional
-from redis import Redis, RedisError
 
 from idunn import settings
-from idunn.api.kuzzle import kuzzle_client
-from idunn.api.weather import weather_client
+from idunn.datasources.kuzzle import kuzzle_client
+from idunn.datasources.weather import weather_client
 from .base import BaseBlock
 
-from idunn.utils.redis import get_redis_pool, RedisWrapperWeather
+from idunn.utils.redis import RedisWrapperWeather
 
 
 logger = logging.getLogger(__name__)
