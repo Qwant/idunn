@@ -505,6 +505,17 @@ def test_redirect_obsolete_address_with_lat_lon():
     assert response.headers["location"] == "/v1/places/latlon:45.60000:-1.12000?lang=fr"
 
 
+def test_redirect_obsolete_address_with_url_prefix():
+    client = TestClient(app)
+    response = client.get(
+        url="http://localhost/v1/places/addr:-1.12;45.6?lang=fr",
+        headers={"x-forwarded-prefix": "/maps/detail/"},
+        allow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "/maps/detail/v1/places/latlon:45.60000:-1.12000?lang=fr"
+
+
 def test_basic_short_query_poi():
     client = TestClient(app)
     response = client.get(

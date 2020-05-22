@@ -90,7 +90,7 @@ def get_place(
     except InvalidPlaceId as e:
         raise HTTPException(status_code=404, detail=e.message)
     except RedirectToPlaceId as e:
-        path_prefix = request.headers.get("x-forwarded-prefix", "")
+        path_prefix = request.headers.get("x-forwarded-prefix", "").rstrip("/")
         path = request.app.url_path_for("get_place", id=e.target_id)
         query = request.url.query
         return JSONResponse(
