@@ -1,3 +1,6 @@
+import re
+import pytest
+import responses
 from starlette.testclient import TestClient
 from freezegun import freeze_time
 from unittest.mock import ANY
@@ -5,8 +8,15 @@ from unittest.mock import ANY
 from app import app
 
 
+@pytest.fixture(scope="function")
+def mock_external_requests():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=404)
+        yield
+
+
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_full():
+def test_full(mock_external_requests):
     """
     Exhaustive test that checks all possible blocks
     """

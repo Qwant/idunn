@@ -6,6 +6,7 @@ from copy import deepcopy
 from idunn import settings
 from idunn.api import places_list
 from idunn.datasources.pages_jaunes import PjSource
+from idunn.datasources.recycling import recycling_client
 from idunn.places import utils as places_utils
 
 
@@ -66,17 +67,19 @@ def enable_recycling():
     We define here settings specific to tests.
     We define the recycling server address and port
     """
-    with override_settings({"RECYCLING_SERVER_URL": "http://localhost:7512/trashes/recycling"}):
+    with override_settings({"RECYCLING_SERVER_URL": "http://recycling.test"}):
+        # No need to authenticate and fetch a token during tests
+        recycling_client._token_expires_at = 1e60
         yield
 
 
 @contextmanager
-def disable_recycling():
+def inaccessible_recycling():
     """
     We define here settings specific to tests.
     We define the recycling server address and port
     """
-    with override_settings({"RECYCLING_SERVER_URL": "http://non-existent:1111"}):
+    with override_settings({"RECYCLING_SERVER_URL": "http://non-existent.test"}):
         yield
 
 
