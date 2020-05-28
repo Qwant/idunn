@@ -32,3 +32,34 @@ class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
             listeners=[LogListener()],
             name=name,
         )
+
+    async def call_async(self, f, *args, **kwargs):
+        """
+        Run the circuit breaker with native python async.
+        """
+
+        def raise_err_callback(err):
+            def f():
+                raise err
+
+            return f
+
+        # Check that the circuit breaker is open
+        state = self.state
+
+        if isinstance(state, pybreaker.CircuitOpenState):
+            # This is a hack: `before_call` takes a function parameter that
+            # should not be used, this way we can reproduce synchronous
+            # behavior before running the function by raising the exact same
+            # exception.
+            state.before_call(None)
+
+        # Build a synchronous `callback` function that simulates the return
+        # behaviour of `f`.
+        try:
+            res = await f(*args, **kwargs)
+            callback = lambda: res
+        except Exception as err:
+            callback = raise_err_callback(err)
+
+        return self.call(callback)

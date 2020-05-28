@@ -9,6 +9,8 @@ from unidecode import unidecode
 logger = logging.getLogger(__name__)
 
 from idunn.api.places_list import ALL_CATEGORIES, MAX_HEIGHT, MAX_WIDTH
+from idunn.utils.circuit_breaker import IdunnCircuitBreaker
+
 from .models.geocodejson import Intention
 from .bragi_client import bragi_client
 
@@ -20,23 +22,32 @@ NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
 
+tagger_circuit_breaker = IdunnCircuitBreaker(name="nlu_tagger_api_breaker")
+classifier_circuit_breaker = IdunnCircuitBreaker(name="classifier_tagger_api_breaker")
+
 
 class NLU_Helper:
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
 
-    async def nlu_classifier(self, text):
+    async def post_nlu_classifier(self, text):
         classifier_url = settings["NLU_CLASSIFIER_URL"]
+        response_classifier = await self.client.post(
+            classifier_url, json={"text": text, "domain": "poi", "language": "fr", "count": 1},
+        )
+        response_classifier.raise_for_status()
+        return response_classifier
+
+    async def nlu_classifier(self, text):
         try:
-            response_classifier = await self.client.post(
-                classifier_url, json={"text": text, "domain": "poi", "language": "fr", "count": 1}
+            response_classifier = await classifier_circuit_breaker.call_async(
+                self.post_nlu_classifier, text
             )
-            response_classifier.raise_for_status()
         except Exception:
             logger.error("Request to NLU classifier failed", exc_info=True)
             return None
-        else:
-            return response_classifier.json()["intention"][0][1]
+
+        return response_classifier.json()["intention"][0][1]
 
     def regex_classifier(self, text):
         normalized_text = unidecode(text).lower().strip()
@@ -164,14 +175,19 @@ class NLU_Helper:
 
         return " ".join(tags)
 
-    async def get_intentions(self, text, lang, focus=None):
+    async def post_intentions(self, text, lang, focus=None):
         tagger_url = settings["NLU_TAGGER_URL"]
         # this settings is an immutable string required as a parameter for the NLU API
         params = {"text": text, "lang": lang or settings["DEFAULT_LANGUAGE"], "domain": "poi"}
+        response_nlu = await self.client.post(tagger_url, json=params)
+        response_nlu.raise_for_status()
+        return response_nlu
 
+    async def get_intentions(self, text, lang, focus=None):
         try:
-            response_nlu = await self.client.post(tagger_url, json=params)
-            response_nlu.raise_for_status()
+            response_nlu = await tagger_circuit_breaker.call_async(
+                self.post_intentions, text, lang, focus
+            )
         except Exception:
             logger.error("Request to NLU tagger failed", exc_info=True)
             return []
