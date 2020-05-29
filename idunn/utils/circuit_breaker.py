@@ -2,8 +2,6 @@ import pybreaker
 import logging
 from requests import HTTPError
 
-from idunn import settings
-
 logger = logging.getLogger(__name__)
 
 
@@ -24,10 +22,10 @@ class LogListener(pybreaker.CircuitBreakerListener):
 
 
 class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
-    def __init__(self, name):
+    def __init__(self, name, fail_max, reset_timeout):
         super().__init__(
-            fail_max=settings["CIRCUIT_BREAKER_MAXFAIL"],
-            reset_timeout=settings["CIRCUIT_BREAKER_TIMEOUT"],
+            fail_max=fail_max,
+            reset_timeout=reset_timeout,
             exclude=[is_http_client_error],
             listeners=[LogListener()],
             name=name,

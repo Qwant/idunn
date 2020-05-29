@@ -22,8 +22,14 @@ NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
 
-tagger_circuit_breaker = IdunnCircuitBreaker(name="nlu_tagger_api_breaker")
-classifier_circuit_breaker = IdunnCircuitBreaker(name="classifier_tagger_api_breaker")
+tagger_circuit_breaker = IdunnCircuitBreaker(
+    "nlu_tagger_api_breaker", settings["NLU_BREAKER_MAXFAIL"], settings["NLU_BREAKER_TIMEOUT"],
+)
+classifier_circuit_breaker = IdunnCircuitBreaker(
+    "classifier_tagger_api_breaker",
+    settings["NLU_BREAKER_MAXFAIL"],
+    settings["NLU_BREAKER_TIMEOUT"],
+)
 
 
 class NLU_Helper:

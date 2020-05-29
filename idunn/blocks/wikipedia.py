@@ -34,7 +34,9 @@ class WikipediaSession:
     API_V1_BASE_PATTERN = "https://{lang}.wikipedia.org/api/rest_v1"
     API_PHP_BASE_PATTERN = "https://{lang}.wikipedia.org/w/api.php"
 
-    circuit_breaker = IdunnCircuitBreaker(name="wikipedia_api_breaker")
+    circuit_breaker = IdunnCircuitBreaker(
+        "wikipedia_api_breaker", settings["WIKI_BREAKER_MAXFAIL"], settings["WIKI_BREAKER_TIMEOUT"]
+    )
 
     class Helpers:
         @staticmethod
