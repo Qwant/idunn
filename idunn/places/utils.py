@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from idunn.api.pages_jaunes import pj_source
+from idunn.datasources.pages_jaunes import pj_source
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.api.utils import fetch_es_place, PlaceNotFound
 from idunn.utils import prometheus

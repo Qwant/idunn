@@ -9,7 +9,6 @@ from unidecode import unidecode
 logger = logging.getLogger(__name__)
 
 from idunn.api.places_list import ALL_CATEGORIES, MAX_HEIGHT, MAX_WIDTH
-from idunn.api.pages_jaunes import pj_source
 from .models.geocodejson import Intention
 from .bragi_client import bragi_client
 

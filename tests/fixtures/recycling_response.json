@@ -1,17 +1,122 @@
 {
   "status": 200,
   "error": null,
-  "index": "trashes",
-  "collection": "recycling",
   "controller": "document",
-  "action": "get",
-  "requestId": "b7a8c923-cb17-4dfd-b138-44590b1bdac3",
+  "action": "search",
+  "collection": "hourly",
+  "index": "waste",
+  "volatile": null,
   "result": {
-    "_id": "osm:node:36153800",
-    "_version": 1,
-    "_source": {
-      "hour": "01-01-1970",
-      "volume": 70
-    }
+    "hits": [
+      {
+        "_id": "7ICjUXIBXW4tV7Eo4mQ1",
+        "_score": null,
+        "_source": {
+          "_kuzzle_info": {
+            "createdAt": 1590507594291,
+            "updatedAt": null,
+            "updater": null
+          },
+          "data": {
+            "pav": {
+              "length": 1,
+              "width": 1,
+              "height": 2,
+              "wasteType": "recyclable"
+            }
+          },
+          "metadata": {
+            "entity": "camping",
+            "location": {
+              "city": "lampaul ploudalmezeau",
+              "address": "camping municipal des dunes",
+              "geolocation": {
+                "lat": -4.65678432670552,
+                "lon": 48.5674090116646
+              },
+              "department": "finistère",
+              "region": "bretagne"
+            },
+            "work": "waste"
+          },
+          "measuringPointId": "13dSUXIBXW4tV7EoFcdh",
+          "volume": 30.0005257857619604955,
+          "hour": "2020-05-26T14:00:00.948Z"
+        }
+      },
+      {
+        "_id": "G6ajUXIBvIMux5AhO89d",
+        "_score": null,
+        "_source": {
+          "_kuzzle_info": {
+            "createdAt": 1590507551577,
+            "updatedAt": null,
+            "updater": null
+          },
+          "data": {
+            "pav": {
+              "length": 1,
+              "width": 1,
+              "height": 2,
+              "wasteType": "glass"
+            }
+          },
+          "metadata": {
+            "entity": "camping",
+            "location": {
+              "city": "lampaul ploudalmezeau",
+              "address": "camping municipal des dunes",
+              "geolocation": {
+                "lat": -4.65678432670552,
+                "lon": 48.5674090116646
+              },
+              "department": "finistère",
+              "region": "bretagne"
+            },
+            "work": "waste"
+          },
+          "measuringPointId": "1ndSUXIBXW4tV7EoFcdh",
+          "volume": 60.0002081696794014043,
+          "hour": "2020-05-26T14:00:00.663Z"
+        }
+      },
+      {
+        "_id": "U36VUXIBXW4tV7EoMB3c",
+        "_score": 0,
+        "_source": {
+          "_kuzzle_info": {
+            "createdAt": 1590506631385,
+            "updatedAt": null,
+            "updater": null
+          },
+          "data": {
+            "pav": {
+              "length": 1,
+              "width": 1,
+              "height": 2,
+              "wasteType": "unknownType"
+            }
+          },
+          "metadata": {
+            "entity": "terrain de pétanque ploudal",
+            "location": {
+              "city": "ploudalmezeau",
+              "address": "rue de gouranou (parking club de petanques)",
+              "geolocation": {
+                "lat": -4.65282792202275,
+                "lon": 48.5431196274865
+              },
+              "department": "finistère",
+              "region": "bretagne"
+            },
+            "work": "waste"
+          },
+          "measuringPointId": "wHdSUXIBXW4tV7EoFcdh",
+          "volume": 90,
+          "hour": "2020-05-20T15:00:00.315Z"
+        }
+      }
+    ],
+    "total": 288
   }
 }
