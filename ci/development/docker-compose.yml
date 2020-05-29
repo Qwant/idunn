@@ -23,7 +23,9 @@ services:
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=pk.eyJ1IjoiYW1hdGlzc2FydC1xd2FudCIsImEiOiJja2E4ZDFidXgwYnNrMnJtdXg4ZTBpNjV4In0.cXyQeWCMeia7PnoxR9AdPg # Dev token
       - IDUNN_BLOCK_COVID_ENABLED=true
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
-      - IDUNN_RECYCLING_SERVER_URL=true # Enable 'recycling' block, even if no real data server is available for now
+      - IDUNN_RECYCLING_SERVER_URL=https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
+      - IDUNN_RECYCLING_SERVER_USERNAME=admin-eiffage
+      - IDUNN_RECYCLING_SERVER_PASSWORD=ZQph1W0K70BCbidcIa4Y687cVaFX9aX1
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,10.100.30.23
     extra_hosts:
       - "wiki-es:10.100.31.26"
