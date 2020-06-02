@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import pybreaker
 import logging
 from requests import HTTPError
@@ -43,21 +45,24 @@ class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
             return f
 
         # Check that the circuit breaker is open
-        state = self.state
+        with self._lock:
+            state = self.state
 
-        if isinstance(state, pybreaker.CircuitOpenState):
-            # This is a hack: `before_call` takes a function parameter that
-            # should not be used, this way we can reproduce synchronous
-            # behavior before running the function by raising the exact same
-            # exception.
-            state.before_call(None)
+            if isinstance(state, pybreaker.CircuitOpenState):
+                timeout = timedelta(seconds=state._breaker.reset_timeout)
+                opened_at = state._breaker._state_storage.opened_at
 
-        # Build a synchronous `callback` function that simulates the return
-        # behaviour of `f`.
-        try:
-            res = await f(*args, **kwargs)
-            callback = lambda: res
-        except Exception as err:
-            callback = raise_err_callback(err)
+                if opened_at and datetime.utcnow() < opened_at + timeout:
+                    raise pybreaker.CircuitBreakerError("Timeout not elapsed yet")
+                else:
+                    state._breaker.half_open()
 
-        return self.call(callback)
+            # Build a synchronous `callback` function that simulates the return
+            # behaviour of `f`.
+            try:
+                res = await f(*args, **kwargs)
+                callback = lambda: res
+            except Exception as err:
+                callback = raise_err_callback(err)
+
+            return self.call(callback)
