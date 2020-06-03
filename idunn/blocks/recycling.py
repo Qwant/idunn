@@ -12,6 +12,8 @@ from .base import BaseBlock
 
 logger = logging.getLogger(__name__)
 
+MAX_DISTANCE_AROUND_POI = settings["RECYCLING_MAX_DISTANCE_AROUND_POI"]
+
 
 def is_poi_in_finistere(poi):
     admins = poi.get_raw_admins()
@@ -89,7 +91,9 @@ class RecyclingBlock(BaseBlock):
         if lat is None or lon is None:
             return []
 
-        hits = recycling_client.get_latest_measures(lat=lat, lon=lon)
+        hits = recycling_client.get_latest_measures(
+            lat=lat, lon=lon, max_distance=MAX_DISTANCE_AROUND_POI
+        )
         containers = []
         for h in hits:
             doc = h["_source"]
