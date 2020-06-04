@@ -19,6 +19,9 @@ WIKI_API_REDIS_URL: # DEPRECATED. Use REDIS_URL instead
 WIKI_CACHE_REDIS_DB: 1
 WIKI_CACHE_TIMEOUT: 86400 # seconds
 
+WIKI_BREAKER_TIMEOUT: 120 # timeout period in seconds
+WIKI_BREAKER_MAXFAIL: 20 # consecutive failures before breaking
+
 LOG_LEVEL_BY_MODULE: '{"": "info", "elasticsearch": "warning"}' # json config to set, for each module a log level
 LOG_FORMAT: '[%(asctime)s] [%(levelname)5s] [%(process)5s] [%(name)10s] %(message)s' # logging format. if the log are json, it list the default fields
 LOG_JSON: False  # To get flat logs or json logs
@@ -49,12 +52,6 @@ LIST_PLACES_MAX_SIZE: 50
 ## Redis
 REDIS_URL:
 REDIS_TIMEOUT: "0.3" # seconds
-
-
-########################
-## Circuit Breaker
-CIRCUIT_BREAKER_TIMEOUT: 120 # timeout period in seconds
-CIRCUIT_BREAKER_MAXFAIL: 20 # consecutive failures before breaking
 
 ########################
 ## Rate Limiter
@@ -115,6 +112,9 @@ BRAGI_BASE_URL: "http://bragi:4000"
 AUTOCOMPLETE_NLU_DEFAULT: False
 NLU_TAGGER_URL:
 NLU_CLASSIFIER_URL:
+
+NLU_BREAKER_TIMEOUT: 120 # timeout period in seconds
+NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
 #######################
 ## OpenAPI DOCS
