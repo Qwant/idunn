@@ -113,7 +113,7 @@ AUTOCOMPLETE_NLU_DEFAULT: False
 NLU_TAGGER_URL:
 NLU_CLASSIFIER_URL:
 
-NLU_BREAKER_TIMEOUT: 60 # timeout period in seconds
+NLU_BREAKER_TIMEOUT: 120 # timeout period in seconds
 NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
 #######################

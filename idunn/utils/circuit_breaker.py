@@ -26,8 +26,8 @@ class LogListener(pybreaker.CircuitBreakerListener):
 class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
     def __init__(self, name, fail_max, reset_timeout):
         super().__init__(
-            fail_max=fail_max,
-            reset_timeout=reset_timeout,
+            fail_max=int(fail_max),
+            reset_timeout=int(reset_timeout),
             exclude=[is_http_client_error],
             listeners=[LogListener()],
             name=name,
