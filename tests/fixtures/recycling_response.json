@@ -31,8 +31,8 @@
               "city": "lampaul ploudalmezeau",
               "address": "camping municipal des dunes",
               "geolocation": {
-                "lat": -4.65678432670552,
-                "lon": 48.5674090116646
+                "lon": -4.4878432670552,
+                "lat": 48.3914090116646
               },
               "department": "finistère",
               "region": "bretagne"
@@ -67,8 +67,8 @@
               "city": "lampaul ploudalmezeau",
               "address": "camping municipal des dunes",
               "geolocation": {
-                "lat": -4.65678432670552,
-                "lon": 48.5674090116646
+                "lon": -4.48778432670552,
+                "lat": 48.3914090116646
               },
               "department": "finistère",
               "region": "bretagne"
@@ -103,8 +103,8 @@
               "city": "ploudalmezeau",
               "address": "rue de gouranou (parking club de petanques)",
               "geolocation": {
-                "lat": -4.65282792202275,
-                "lon": 48.5431196274865
+                "lon": -4.4882792202275,
+                "lat": 48.3911196274865
               },
               "department": "finistère",
               "region": "bretagne"

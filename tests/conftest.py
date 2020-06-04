@@ -1,8 +1,6 @@
 import os
 import json
 import pytest
-import responses
-import re
 import respx
 from elasticsearch import Elasticsearch
 

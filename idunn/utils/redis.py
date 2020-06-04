@@ -99,7 +99,7 @@ class RedisWrapper:
                     value_stored = cls._get_value(key)
                 except CacheNotAvailable:
                     # Cache is not reachable: we don't want to execute 'f'
-                    # (and fetch wikipedia content, possibly very often)
+                    # (and fetch remote content, possibly very often)
                     logger.warning("Failed to get cached value for %s", key, exc_info=True)
                     return None
                 if value_stored is not None:

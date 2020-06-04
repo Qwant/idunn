@@ -1,8 +1,11 @@
-from datetime import datetime
 from time import time
 import requests
 import logging
+from itertools import islice
+from geopy.distance import distance
+
 from idunn import settings
+from idunn.utils.redis import RedisWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +16,8 @@ class RecyclingDataSource:
         self.request_timeout = float(settings["RECYCLING_REQUEST_TIMEOUT"])
         self.data_index = settings["RECYCLING_DATA_INDEX"]
         self.data_collection = settings["RECYCLING_DATA_COLLECTION"]
+        self.use_cache = settings["RECYCLING_DATA_STORE_IN_CACHE"]
+        self.cache_expire = int(settings["RECYCLING_DATA_EXPIRE"])
 
         self._token_expires_at = 0
 
@@ -44,7 +49,35 @@ class RecyclingDataSource:
         self._token_expires_at = resp.json()["result"]["expiresAt"]
         self.session.headers["Authorization"] = f"Bearer {token}"
 
-    def get_latest_measures(self, lat, lon, max_distance=100, size=50):
+    def get_latest_measures(self, lat, lon, max_distance, size=50):
+        """
+        If cache is used, latest measures will be fetched and cached with a larger radius.
+        Arbitrary values are used in that case:
+            max_distance: 10 km
+            lat and lon: rounded to 1 decimal
+        This ensures that all measure points are covered by at least 1 cache key, with a tolerance of 2km.
+        At the equator: distance((0,0),(0.05,0.05)) is 7.9 km
+        """
+        if not self.use_cache:
+            return self._fetch_latest_measures(lat, lon, max_distance=max_distance, size=size)
+
+        assert max_distance <= 2000, "Cached recycling data cannot be retrieved for radius > 2km"
+        rounded_lat, rounded_lon = f"{lat:.1f}", f"{lon:.1f}"
+        key = f"recycling_latest_measures_{rounded_lat}_{rounded_lon}"
+        results = RedisWrapper.cache_it(key, self._fetch_latest_measures, expire=self.cache_expire)(
+            rounded_lat, rounded_lon, max_distance=10_000, size=10_000
+        )
+
+        if not results:
+            return []
+
+        def get_distance_of_result(r):
+            measure_geoloc = r["_source"]["metadata"]["location"]["geolocation"]
+            return distance((lat, lon), (measure_geoloc["lat"], measure_geoloc["lon"])).meters
+
+        return list(islice((r for r in results if get_distance_of_result(r) < max_distance), size))
+
+    def _fetch_latest_measures(self, lat, lon, max_distance, size):
         self.refresh_token()
         query = {
             "bool": {
