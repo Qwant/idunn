@@ -56,7 +56,7 @@ class RecyclingBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
-        if not settings.get("RECYCLING_SERVER_URL"):
+        if not recycling_client.enabled:
             # Data source is not configured
             return None
 

@@ -18,6 +18,7 @@ class RecyclingDataSource:
         self.data_collection = settings["RECYCLING_DATA_COLLECTION"]
         self.use_cache = settings["RECYCLING_DATA_STORE_IN_CACHE"]
         self.cache_expire = int(settings["RECYCLING_DATA_EXPIRE"])
+        self.measures_max_age_in_hours = int(settings["RECYCLING_MEASURES_MAX_AGE_IN_HOURS"])
 
         self._token_expires_at = 0
 
@@ -82,7 +83,7 @@ class RecyclingDataSource:
         query = {
             "bool": {
                 "filter": [
-                    {"range": {"hour": {"gte": "now-7d"}}},
+                    {"range": {"hour": {"gte": f"now-{self.measures_max_age_in_hours}h"}}},
                     {
                         "nested": {
                             "path": "metadata.location",
