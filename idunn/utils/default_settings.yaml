@@ -128,6 +128,7 @@ COVID19_OSM_DATASET_URL: https://www.data.gouv.fr/fr/datasets/r/3ed2f2eb-11a0-44
 COVID19_OSM_DATASET_EXPIRE: 7200 # seconds
 COVID19_POI_EXPIRE: 86400 # seconds
 COVID19_BLOCK_COUNTRIES: "FR" # comma separated list
+COVID19_BLOCK_KEEP_STATUS_UNKNOWN: False # Whether covid19 block is returned when no specific data is available
 
 ########################
 ## Recycling data

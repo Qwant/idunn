@@ -22,6 +22,17 @@ def test_covid19_block():
     assert covid19_block["opening_hours"] is not None
 
 
+def test_covid19_block_unknown_status():
+    with override_settings({"BLOCK_COVID_ENABLED": True, "COVID19_USE_REDIS_DATASET": False}):
+        client = TestClient(app)
+        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153811?lang=fr")
+
+    assert response.status_code == 200
+    resp = response.json()
+    covid19_block = next((b for b in resp["blocks"] if b["type"] == "covid19"), None)
+    assert covid19_block is None, "Block 'covid19' should not be returned"
+
+
 @freeze_time("2020-04-23 12:00:00+02:00")
 @patch.object(POI, "get_country_code", lambda *x: "FR")
 def test_covid19_parse_hours():

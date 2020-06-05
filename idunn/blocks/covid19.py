@@ -49,7 +49,6 @@ class Covid19Block(BaseBlock):
             return None
 
         properties = es_poi.properties
-        # Check if this is a french admin, otherwise we return nothing.
         if es_poi.get_country_code() not in COVID19_BLOCK_COUNTRIES:
             return None
 
@@ -96,7 +95,7 @@ class Covid19Block(BaseBlock):
         elif raw_opening_hours is not None:
             opening_hours = parse_time_block(OpeningHourBlock, es_poi, lang, raw_opening_hours)
             if opening_hours is None:
-                status = "unknown"
+                status = CovidOpeningStatus.unknown
             elif opening_hours.status in ["open", "closed"]:
                 if raw_opening_hours == properties.get("opening_hours"):
                     status = CovidOpeningStatus.open_as_usual
@@ -104,6 +103,12 @@ class Covid19Block(BaseBlock):
                     status = CovidOpeningStatus.open
             else:
                 status = CovidOpeningStatus.maybe_open
+
+        if (
+            status == CovidOpeningStatus.unknown
+            and not settings["COVID19_BLOCK_KEEP_STATUS_UNKNOWN"]
+        ):
+            return None
 
         return cls(
             status=status, note=note, opening_hours=opening_hours, contribute_url=contribute_url
