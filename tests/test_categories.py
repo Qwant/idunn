@@ -1,6 +1,6 @@
 from unittest.mock import ANY
 from app import app
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
 from .utils import enable_pj_source

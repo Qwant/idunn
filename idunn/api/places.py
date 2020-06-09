@@ -1,10 +1,9 @@
 import logging
 import urllib.parse
-
-from fastapi import HTTPException, BackgroundTasks
-from starlette.responses import Response, JSONResponse
-from starlette.requests import Request
 from starlette.datastructures import URL
+from fastapi import HTTPException, BackgroundTasks, Request, Response
+from fastapi.responses import JSONResponse
+
 
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch

@@ -3,7 +3,7 @@ import pytest
 import re
 from freezegun import freeze_time
 from app import app, settings
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from idunn.blocks.wikipedia import WikipediaSession
 from idunn.utils.redis import RedisWrapper
 from .utils import override_settings

@@ -1,7 +1,7 @@
 import re
 import pytest
 from unittest.mock import ANY
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 
 from app import app
 from .utils import enable_pj_source, override_settings, read_fixture

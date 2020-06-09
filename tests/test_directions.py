@@ -3,7 +3,7 @@ import json
 import responses
 import re
 import pytest
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from app import app
 from idunn.api.directions import rate_limiter
 

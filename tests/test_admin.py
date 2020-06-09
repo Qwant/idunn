@@ -1,5 +1,4 @@
 from idunn.places.admin import Admin
-from idunn.places import POI
 
 
 def test_admin():

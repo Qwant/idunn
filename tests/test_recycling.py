@@ -1,5 +1,5 @@
 from unittest.mock import ANY
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 import os
 import re
 import json

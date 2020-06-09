@@ -1,5 +1,5 @@
 from app import app
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from idunn.blocks.services_and_information import AccessibilityBlock
 from idunn.places import POI
 

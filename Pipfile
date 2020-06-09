@@ -13,7 +13,7 @@ black = "==19.10b0"
 respx = "*"
 
 [packages]
-fastapi="==0.46.*"
+fastapi="==0.55.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = ">=2.20.0"
 tzwhere = "*"

@@ -3,7 +3,7 @@ import pytest
 import responses
 from app import app
 from time import sleep
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from idunn.blocks.wikipedia import WikipediaSession
 
 

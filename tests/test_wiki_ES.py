@@ -1,4 +1,4 @@
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from freezegun import freeze_time
 import pytest
 import os

@@ -1,7 +1,7 @@
 import re
 import pytest
 import responses
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from unittest.mock import ANY
 

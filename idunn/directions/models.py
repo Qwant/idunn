@@ -182,7 +182,8 @@ class DirectionsRoute(BaseModel):
     geometry: dict = Field({}, description="GeoJSON")
 
     def __init__(self, **data):
-        if "price" in data and data.get("price", {}).get("value") is None:
+        price = data.get("price")
+        if price is not None and price.get("value") is None:
             data.pop("price")
 
         if "geometry" not in data:

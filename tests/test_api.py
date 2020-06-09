@@ -1,5 +1,5 @@
 from app import app
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 import pytest
 from .utils import override_settings
 
