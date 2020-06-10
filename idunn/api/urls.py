@@ -1,7 +1,7 @@
 from .pois import get_poi
 from .places import get_place, get_place_latlon, handle_option
 from .status import get_status
-from .places_list import get_places_bbox, get_events_bbox
+from .places_list import get_places_bbox, get_events_bbox, PlacesBboxResponse
 from .categories import get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
@@ -31,9 +31,14 @@ def get_api_urls(settings):
         APIRoute("/metrics", metric_handler, include_in_schema=False),
         APIRoute("/status", get_status, include_in_schema=False),
         # Deprecated POI route
-        APIRoute("/pois/{id}", get_poi, deprecated=True),
+        APIRoute("/pois/{id}", get_poi, deprecated=True, include_in_schema=False),
         # Places
-        APIRoute("/places", get_places_bbox),
+        APIRoute(
+            "/places",
+            get_places_bbox,
+            response_model=PlacesBboxResponse,
+            responses={400: {"description": "Client Error in query params"}},
+        ),
         APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
         APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
         APIRoute("/places/{id}", get_place),
