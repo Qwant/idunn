@@ -1,4 +1,4 @@
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from unittest.mock import patch
 from elasticsearch.client import ClusterClient
 from elasticsearch.exceptions import ConnectionError

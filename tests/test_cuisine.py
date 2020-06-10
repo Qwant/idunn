@@ -1,4 +1,3 @@
-from app import app
 from idunn.blocks.services_and_information import CuisineBlock, Cuisine
 
 

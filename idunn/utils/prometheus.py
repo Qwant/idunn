@@ -1,9 +1,6 @@
 import contextlib
 import time
 
-from starlette.responses import Response
-from starlette.requests import Request
-
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
@@ -12,8 +9,9 @@ from prometheus_client import (
     multiprocess,
 )
 
+from fastapi import Request, Response
+from fastapi.responses import PlainTextResponse
 from fastapi.routing import APIRoute
-from starlette.responses import PlainTextResponse
 
 
 """ The logic of the Prometheus metrics is defined in this module """

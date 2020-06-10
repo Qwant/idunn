@@ -4,7 +4,7 @@ import pytest
 from app import app
 from unittest import mock
 from idunn.places import POI
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture(scope="session", autouse=True)

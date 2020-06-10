@@ -1,6 +1,4 @@
-from fastapi import HTTPException, Query, Depends
-from starlette.requests import Request
-from starlette.responses import Response
+from fastapi import HTTPException, Query, Depends, Request, Response
 
 from idunn import settings
 from idunn.places import Latlon, place_from_id, InvalidPlaceId

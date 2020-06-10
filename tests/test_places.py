@@ -1,7 +1,7 @@
 import urllib
 from unittest.mock import ANY
 from app import app
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from elasticsearch import ElasticsearchException
 
