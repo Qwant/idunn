@@ -6,12 +6,10 @@ from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
-from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.settings import _load_yaml_file
-from idunn.utils.index_names import INDICES
 from idunn.places import POI, BragiPOI
 from idunn.api.utils import (
-    fetch_bbox_places,
+    fetch_es_pois,
     DEFAULT_VERBOSITY_LIST,
     ALL_VERBOSITY_LEVELS,
 )
@@ -68,7 +66,7 @@ class CommonQueryParam(BaseModel):
             v = DEFAULT_VERBOSITY_LIST
         if v not in ALL_VERBOSITY_LEVELS:
             raise ValueError(
-                f"the verbosity: '{v}' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}"
+                f"the verbosity: '{v}' does not belong to possible verbosity levels: {ALL_VERBOSITY_LEVELS}"
             )
         return v
 
@@ -270,14 +268,8 @@ async def _fetch_places_list(params: PlacesQueryParam):
     else:
         raw_filters = [f for c in params.category for f in c["raw_filters"]]
 
-    es = get_elasticsearch()
     bbox_places = await run_in_threadpool(
-        fetch_bbox_places,
-        es,
-        INDICES,
-        raw_filters=raw_filters,
-        bbox=params.bbox,
-        max_size=params.size,
+        fetch_es_pois, raw_filters=raw_filters, bbox=params.bbox, max_size=params.size,
     )
     return [POI(p["_source"]) for p in bbox_places]
 
