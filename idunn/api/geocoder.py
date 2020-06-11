@@ -5,12 +5,17 @@ from ..geocoder.bragi_client import bragi_client
 from ..geocoder.nlu_client import nlu_client
 from ..geocoder.models import QueryParams, ExtraParams
 
+from idunn import settings
+
+
+nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
+
 
 async def get_autocomplete(
     query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
 ):
     async def get_intentions():
-        if not query.nlu:
+        if not query.nlu or query.lang not in nlu_allowed_languages:
             return None
 
         focus = None
