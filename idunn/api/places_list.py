@@ -1,7 +1,8 @@
 import os
 import logging
 
-from shapely.geometry import MultiPoint
+from shapely.geometry import MultiPoint, box
+from shapely.affinity import scale
 from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
@@ -224,13 +225,8 @@ async def get_places_bbox(
         if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
             # Compute extended bbox and fetch results a second time
             scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
-            bbox_center_x = (original_bbox[0] + original_bbox[2]) / 2
-            bbox_center_y = (original_bbox[1] + original_bbox[3]) / 2
-            new_left = bbox_center_x - (bbox_center_x - original_bbox[0]) * scale_factor
-            new_right = bbox_center_x + (original_bbox[2] - bbox_center_x) * scale_factor
-            new_bottom = bbox_center_y - (bbox_center_y - original_bbox[1]) * scale_factor
-            new_top = bbox_center_y + (original_bbox[3] - bbox_center_y) * scale_factor
-            params.bbox = (new_left, new_bottom, new_right, new_top)
+            new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
+            params.bbox = new_box.bounds
             bbox_extended = True
             places_list = await _fetch_places_list(params)
 
@@ -238,7 +234,7 @@ async def get_places_bbox(
         results_bbox = None
     else:
         points = MultiPoint([(p.get_coord()["lon"], p.get_coord()["lat"]) for p in places_list])
-        results_bbox = list(points.bounds)
+        results_bbox = points.bounds
 
     result_places = await run_in_threadpool(
         lambda: [p.load_place(params.lang, params.verbosity) for p in places_list]
