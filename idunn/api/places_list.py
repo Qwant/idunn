@@ -1,16 +1,16 @@
 import os
 import logging
 
+from shapely.geometry import MultiPoint, box
+from shapely.affinity import scale
 from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
-from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.settings import _load_yaml_file
-from idunn.utils.index_names import INDICES
 from idunn.places import POI, BragiPOI
 from idunn.api.utils import (
-    fetch_bbox_places,
+    fetch_es_pois,
     DEFAULT_VERBOSITY_LIST,
     ALL_VERBOSITY_LEVELS,
 )
@@ -18,9 +18,9 @@ from idunn.places.event import Event
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.kuzzle import kuzzle_client
-from .constants import SOURCE_OSM, SOURCE_PAGESJAUNES
+from .constants import PoiSource, ALL_POI_SOURCES
 
-from pydantic import BaseModel, ValidationError, validator
+from pydantic import BaseModel, ValidationError, validator, root_validator, Field
 from typing import List, Optional, Any, Tuple
 
 
@@ -28,8 +28,7 @@ logger = logging.getLogger(__name__)
 
 MAX_WIDTH = 1.0  # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
-
-ALL_SOURCES = [SOURCE_OSM, SOURCE_PAGESJAUNES]
+EXTENDED_BBOX_MAX_SIZE = 0.8  # max bbox width and height after second extended query
 
 
 def get_categories():
@@ -68,7 +67,7 @@ class CommonQueryParam(BaseModel):
             v = DEFAULT_VERBOSITY_LIST
         if v not in ALL_VERBOSITY_LEVELS:
             raise ValueError(
-                f"the verbosity: '{v}' does not belong to possible verbosity levels: {VERBOSITY_LEVELS}"
+                f"the verbosity: '{v}' does not belong to possible verbosity levels: {ALL_VERBOSITY_LEVELS}"
             )
         return v
 
@@ -96,20 +95,21 @@ class PlacesQueryParam(CommonQueryParam):
     raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
+    extend_bbox: bool = False
 
     def __init__(self, **data: Any):
-        super().__init__(**data)
-        if not self.raw_filter and not self.category and not self.q:
+        try:
+            super().__init__(**data)
+        except ValidationError as e:
             raise HTTPException(
-                status_code=400,
-                detail="One of 'category', 'raw_filter' or 'q' parameter is required",
+                status_code=400, detail=e.errors(),
             )
 
     @validator("source", pre=True, always=True)
     def valid_source(cls, v):
         if not v:
             return None
-        if v not in ALL_SOURCES:
+        if v not in ALL_POI_SOURCES:
             raise ValueError(f"unknown source: '{v}'")
         return v
 
@@ -135,6 +135,24 @@ class PlacesQueryParam(CommonQueryParam):
             ret.append(ALL_CATEGORIES.get(x))
         return ret
 
+    @root_validator(skip_on_failure=True)
+    def categories_or_raw_filters(cls, values):
+        if values.get("raw_filter") and values.get("category"):
+            raise HTTPException(
+                status_code=400,
+                detail="Both 'raw_filter' and 'category' parameters cannot be provided together",
+            )
+        return values
+
+    @root_validator(skip_on_failure=True)
+    def any_query_present(cls, values):
+        if not any((values.get("raw_filter"), values.get("category"), values.get("q"))):
+            raise HTTPException(
+                status_code=400,
+                detail="One of 'category', 'raw_filter' or 'q' parameter is required",
+            )
+        return values
+
 
 class EventQueryParam(CommonQueryParam):
     category: Optional[str]
@@ -152,86 +170,104 @@ class EventQueryParam(CommonQueryParam):
         return v
 
 
-def get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity):
-    raw_params = {
-        "bbox": bbox,
-        "category": category,
-        "raw_filter": raw_filter,
-        "source": source,
-        "q": q,
-        "size": size,
-        "lang": lang,
-        "verbosity": verbosity,
-    }
-    if raw_params.get("raw_filter") and raw_params.get("category"):
-        raise HTTPException(
-            status_code=400,
-            detail="Both 'raw_filter' and 'category' parameters cannot be provided together",
-        )
-    return raw_params
+class PlacesBboxResponse(BaseModel):
+    places: List[Any]
+    source: PoiSource
+    bbox: Optional[Tuple[float, float, float, float]] = Field(
+        description="Minimal bbox containing all results. `null` if no result is found. May be larger than or outside of the original bbox passed in the query if `?extend_bbox=true` was set.",
+        example=(2.32, 48.85, 2.367, 48.866),
+    )
+    bbox_extended: bool = Field(
+        description="`true` if `?extend_bbox=true` was set and search has been executed on an extended bbox, after no result was found in the original bbox passed in the query."
+    )
+
+    @validator("bbox")
+    def round_bbox_values(cls, v):
+        if v is None:
+            return v
+        return tuple(round(x, 6) for x in v)
 
 
 async def get_places_bbox(
-    bbox: Any,
+    bbox: str = Query(
+        ...,
+        title="Bounding box to search",
+        description="Format: left_lon,bottom_lat,right_lon,top_lat",
+        example="-4.56,48.35,-4.42,48.46",
+    ),
     category: Optional[List[str]] = Query(None),
     raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
-    q: Optional[str] = Query(None),
+    q: Optional[str] = Query(None, title="Query", description="Full text query"),
     size: Optional[int] = Query(None),
     lang: Optional[str] = Query(None),
     verbosity: Optional[str] = Query(None),
-):
-    es = get_elasticsearch()
-    raw_params = get_raw_params(bbox, category, raw_filter, source, q, size, lang, verbosity)
-    try:
-        params = PlacesQueryParam(**raw_params)
-    except ValidationError as e:
-        logger.info(f"Validation Error: {e.json()}")
-        raise HTTPException(status_code=400, detail=e.errors())
-
+    extend_bbox: bool = Query(False),
+) -> PlacesBboxResponse:
+    params = PlacesQueryParam(**locals())
     source = params.source
     if source is None:
         if (
             params.q or (params.category and all(c.get("pj_filters") for c in params.category))
         ) and pj_source.bbox_is_covered(params.bbox):
-            source = SOURCE_PAGESJAUNES
+            params.source = PoiSource.PAGESJAUNES
         else:
-            source = SOURCE_OSM
+            params.source = PoiSource.OSM
 
-    if source == SOURCE_PAGESJAUNES:
+    places_list = await _fetch_places_list(params)
+    bbox_extended = False
+
+    if params.extend_bbox and len(places_list) == 0:
+        original_bbox = params.bbox
+        original_bbox_width = original_bbox[2] - original_bbox[0]
+        original_bbox_height = original_bbox[3] - original_bbox[1]
+        original_bbox_size = max(original_bbox_height, original_bbox_width)
+        if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
+            # Compute extended bbox and fetch results a second time
+            scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
+            new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
+            params.bbox = new_box.bounds
+            bbox_extended = True
+            places_list = await _fetch_places_list(params)
+
+    if len(places_list) == 0:
+        results_bbox = None
+    else:
+        points = MultiPoint([(p.get_coord()["lon"], p.get_coord()["lat"]) for p in places_list])
+        results_bbox = points.bounds
+
+    result_places = await run_in_threadpool(
+        lambda: [p.load_place(params.lang, params.verbosity) for p in places_list]
+    )
+
+    return PlacesBboxResponse(
+        places=result_places, source=params.source, bbox=results_bbox, bbox_extended=bbox_extended,
+    )
+
+
+async def _fetch_places_list(params: PlacesQueryParam):
+    if params.source == PoiSource.PAGESJAUNES:
         all_categories = [pj_category for c in params.category for pj_category in c["pj_filters"]]
-        places_list = await run_in_threadpool(
+        return await run_in_threadpool(
             pj_source.get_places_bbox, all_categories, params.bbox, size=params.size, query=params.q
         )
-    elif params.q:
+    if params.q:
         # Default source (OSM) with query
         bragi_response = await bragi_client.pois_query_in_bbox(
             query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
         )
-        places_list = [BragiPOI(f) for f in bragi_response.get("features", [])]
+        return [BragiPOI(f) for f in bragi_response.get("features", [])]
+
+    # Default source (OSM) with category or class/subclass filters
+    if params.raw_filter:
+        raw_filters = params.raw_filter
     else:
-        # Default source (OSM) with query
-        if params.raw_filter:
-            raw_filters = params.raw_filter
-        else:
-            raw_filters = [f for c in params.category for f in c["raw_filters"]]
+        raw_filters = [f for c in params.category for f in c["raw_filters"]]
 
-        bbox_places = await run_in_threadpool(
-            fetch_bbox_places,
-            es,
-            INDICES,
-            raw_filters=raw_filters,
-            bbox=params.bbox,
-            max_size=params.size,
-        )
-        places_list = [POI(p["_source"]) for p in bbox_places]
-
-    return {
-        "places": await run_in_threadpool(
-            lambda: [p.load_place(params.lang, params.verbosity) for p in places_list]
-        ),
-        "source": source,
-    }
+    bbox_places = await run_in_threadpool(
+        fetch_es_pois, raw_filters=raw_filters, bbox=params.bbox, max_size=params.size,
+    )
+    return [POI(p["_source"]) for p in bbox_places]
 
 
 def get_events_bbox(

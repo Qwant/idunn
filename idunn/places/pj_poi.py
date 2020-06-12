@@ -1,7 +1,7 @@
 from functools import lru_cache
 from .base import BasePlace
 from .place import PlaceMeta
-from ..api.constants import SOURCE_PAGESJAUNES
+from ..api.constants import PoiSource
 
 DOCTORS = (
     "Chiropracteur",
@@ -177,7 +177,7 @@ class PjPOI(BasePlace):
         return [p.get("url", "") for p in photos]
 
     def get_meta(self):
-        return PlaceMeta(source=SOURCE_PAGESJAUNES)
+        return PlaceMeta(source=PoiSource.PAGESJAUNES)
 
     def get_raw_grades(self):
         return self.get("grades")

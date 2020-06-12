@@ -20,11 +20,6 @@ def mock_autocomplete_post(httpx_mock):
 
 @freeze_time("2020-05-14 08:30:00+02:00")
 def test_places_bbox_with_osm_query(mock_autocomplete_post):
-    """
-        Test the bbox query:
-        Query first all categories in fixtures with bbox that excludes the patisserie POI
-        We should have 5 POI results including: blancs_manteaux, orsay and louvre, but not patisserie_peron (not in bbox)
-    """
     client = TestClient(app)
 
     response = client.get(url=f"http://localhost/v1/places?bbox={BBOX}&q=carrefour&source=osm")

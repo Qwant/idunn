@@ -26,6 +26,7 @@ from idunn.blocks import (
 )
 from idunn.utils import prometheus
 from idunn.utils.index_names import INDICES
+from idunn.utils.es_wrapper import get_elasticsearch
 import phonenumbers
 
 logger = logging.getLogger(__name__)
@@ -157,7 +158,8 @@ def fetch_es_poi(id, es) -> dict:
         raise HTTPException(status_code=404, detail=e.message)
 
 
-def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
+def fetch_es_pois(raw_filters, bbox, max_size) -> list:
+    es = get_elasticsearch()
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
     terms_filters = []
@@ -183,7 +185,7 @@ def fetch_bbox_places(es, indices, raw_filters, bbox, max_size) -> list:
             )
 
     bbox_places = es.search(
-        index=indices["poi"],
+        index=INDICES["poi"],
         body={
             "query": {
                 "bool": {

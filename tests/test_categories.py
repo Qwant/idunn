@@ -30,6 +30,8 @@ def test_bbox():
 
     assert resp == {
         "source": "osm",
+        "bbox": [2.325004, 48.858956, 2.357737, 48.866185],
+        "bbox_extended": False,
         "places": [
             {
                 "type": "poi",
@@ -417,6 +419,8 @@ def test_size_list():
 
     assert resp == {
         "source": "osm",
+        "bbox": ANY,
+        "bbox_extended": False,
         "places": [
             {
                 "type": "poi",
@@ -626,6 +630,8 @@ def test_single_raw_filter():
                 "meta": ANY,
             }
         ],
+        "bbox": ANY,
+        "bbox_extended": False,
     }
 
 
@@ -641,6 +647,26 @@ def test_raw_filter_with_class_subclass():
 
     assert len(resp["places"]) == 1
     assert resp["places"][0]["name"] == "Louvre Museum"
+
+
+def test_extend_bbox():
+    client = TestClient(app)
+    small_bbox = "2.350,48.850,2.351,48.851"
+
+    response = client.get(
+        url=f"http://localhost/v1/places?bbox={small_bbox}&raw_filter=museum,museum"
+    )
+    assert response.status_code == 200
+    assert len(response.json()["places"]) == 0
+
+    response = client.get(
+        url=f"http://localhost/v1/places?bbox={small_bbox}&raw_filter=museum,museum&extend_bbox=true"
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["places"]) == 1
+    assert data["bbox_extended"] == True
+    assert data["bbox"] == [2.338028, 48.861147, 2.338028, 48.861147]
 
 
 def test_invalid_bbox():
@@ -732,6 +758,8 @@ def test_valid_category():
                 "meta": {"source": "osm"},
             }
         ],
+        "bbox": ANY,
+        "bbox_extended": False,
     }
 
 
@@ -764,6 +792,8 @@ def test_places_with_explicit_source_osm():
                 "meta": {"source": "osm"},
             }
         ],
+        "bbox": ANY,
+        "bbox_extended": False,
     }
 
 
