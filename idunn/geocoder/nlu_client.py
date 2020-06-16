@@ -3,6 +3,7 @@ import httpx
 import logging
 import re
 from collections import Counter
+from shapely.geometry import mapping
 from idunn import settings
 from unidecode import unidecode
 
@@ -202,8 +203,17 @@ class NLU_Helper:
             return []
 
         tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
+        logs_extra = {
+            "intention_detection": {
+                "text": text,
+                "lang": lang,
+                "focus": mapping(focus) if focus is not None else None,
+                "tags_list": tags_list,
+            }
+        }
 
         if self.is_poi_request(tags_list):
+            logger.info("Detected POI request for '%s'", text, extra=logs_extra)
             return []
 
         intentions = []
@@ -236,6 +246,20 @@ class NLU_Helper:
                     # leads to irrelevant intention. Let's ignore them for now.
                     if brand_query or intention.filter.category:
                         intentions.append(intention)
+
+        logs_extra["intention_detection"].update(
+            {
+                "brand_query": brand_query,
+                "cat_query": cat_query,
+                "place_query": place_query,
+                "skip_classifier": skip_classifier,
+            }
+        )
+
+        if intentions:
+            logger.info("Detected intentions for '%s'", text, extra=logs_extra)
+        else:
+            logger.info("No intention detected for '%s'", text, extra=logs_extra)
 
         return intentions
 
