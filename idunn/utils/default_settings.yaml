@@ -112,7 +112,9 @@ BRAGI_BASE_URL: "http://bragi:4000"
 AUTOCOMPLETE_NLU_DEFAULT: False
 NLU_ALLOWED_LANGUAGES: "en,fr"
 NLU_TAGGER_URL:
+NLU_TAGGER_DOMAIN: "poi"
 NLU_CLASSIFIER_URL:
+NLU_CLASSIFIER_DOMAIN: "poi"
 
 NLU_BREAKER_TIMEOUT: 120 # timeout period in seconds
 NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
