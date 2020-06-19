@@ -3,6 +3,7 @@ import httpx
 import logging
 import re
 from collections import Counter
+from shapely.geometry import mapping
 from idunn import settings
 from unidecode import unidecode
 
@@ -193,17 +194,26 @@ class NLU_Helper:
         return response_nlu
 
     async def get_intentions(self, text, lang, focus=None):
+        logs_extra = {
+            "intention_detection": {
+                "text": text,
+                "lang": lang,
+                "focus": mapping(focus).get("coordinates") if focus is not None else None,
+            }
+        }
+
         try:
             response_nlu = await tagger_circuit_breaker.call_async(
                 self.post_intentions, text, lang, focus
             )
         except Exception:
-            logger.error("Request to NLU tagger failed", exc_info=True)
+            logger.error("Request to NLU tagger failed", exc_info=True, extra=logs_extra)
             return []
 
         tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
 
         if self.is_poi_request(tags_list):
+            logger.info("Detected POI request for '%s'", text, extra=logs_extra)
             return []
 
         intentions = []
@@ -211,6 +221,15 @@ class NLU_Helper:
         cat_query = self.build_category_query(tags_list)
         place_query = self.build_place_query(tags_list)
         skip_classifier = brand_query is not None
+
+        logs_extra["intention_detection"].update(
+            {
+                "brand_query": brand_query,
+                "cat_query": cat_query,
+                "place_query": place_query,
+                "skip_classifier": skip_classifier,
+            }
+        )
 
         # If there is a label for both a category and a brand, we consider that the request is
         # ambiguous and ignore both.
@@ -236,6 +255,36 @@ class NLU_Helper:
                     # leads to irrelevant intention. Let's ignore them for now.
                     if brand_query or intention.filter.category:
                         intentions.append(intention)
+
+        if intentions:
+            intention = intentions[0].dict(exclude_none=True)
+
+            place_props = (
+                intention.get("description", {})
+                .get("place", {})
+                .get("properties", {})
+                .get("geocoding", {})
+            )
+
+            logs_extra["intention_detection"].update(
+                {
+                    "res_category": intention.get("filter", {}).get("category"),
+                    "res_bbox": intention.get("filter", {}).get("bbox"),
+                    "res_query": intention.get("filter", {}).get("q"),
+                }
+            )
+
+            if place_props:
+                logs_extra["intention_detection"].update(
+                    {
+                        "res_place_id": place_props.get("id"),
+                        "res_place_name": place_props.get("name"),
+                    }
+                )
+
+            logger.info("Detected intentions for '%s'", text, extra=logs_extra)
+        else:
+            logger.info("No intention detected for '%s'", text, extra=logs_extra)
 
         return intentions
 
