@@ -42,8 +42,10 @@ class NLU_Helper:
 
     async def post_nlu_classifier(self, text):
         classifier_url = settings["NLU_CLASSIFIER_URL"]
+        classifier_domain = settings["NLU_CLASSIFIER_DOMAIN"]
         response_classifier = await self.client.post(
-            classifier_url, json={"text": text, "domain": "poi", "language": "fr", "count": 1},
+            classifier_url,
+            json={"text": text, "domain": classifier_domain, "language": "fr", "count": 1},
         )
         response_classifier.raise_for_status()
         return response_classifier
@@ -187,8 +189,13 @@ class NLU_Helper:
 
     async def post_intentions(self, text, lang, focus=None):
         tagger_url = settings["NLU_TAGGER_URL"]
+        tagger_domain = settings["NLU_TAGGER_DOMAIN"]
         # this settings is an immutable string required as a parameter for the NLU API
-        params = {"text": text, "lang": lang or settings["DEFAULT_LANGUAGE"], "domain": "poi"}
+        params = {
+            "text": text,
+            "lang": lang or settings["DEFAULT_LANGUAGE"],
+            "domain": tagger_domain,
+        }
         response_nlu = await self.client.post(tagger_url, json=params)
         response_nlu.raise_for_status()
         return response_nlu
