@@ -46,7 +46,9 @@ PLACE_DEFAULT_INDEX: "munin,munin_poi_nosearch"
 
 WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
 
+## Places list
 LIST_PLACES_MAX_SIZE: 50
+LIST_PLACES_EXTENDED_BBOX_MAX_SIZE: "0.4" # Lat/lon degrees
 
 ########################
 ## Redis
