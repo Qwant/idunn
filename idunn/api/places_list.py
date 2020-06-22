@@ -28,7 +28,9 @@ logger = logging.getLogger(__name__)
 
 MAX_WIDTH = 1.0  # max bbox longitude in degrees
 MAX_HEIGHT = 1.0  # max bbox latitude in degrees
-EXTENDED_BBOX_MAX_SIZE = 0.8  # max bbox width and height after second extended query
+EXTENDED_BBOX_MAX_SIZE = float(
+    settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
+)  # max bbox width and height after second extended query
 
 
 def get_categories():
