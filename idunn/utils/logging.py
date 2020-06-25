@@ -25,6 +25,9 @@ def get_logging_dict(settings):
             "uvicorn": {"level": "INFO", "handlers": ["console"], "propagate": False},
             "uvicorn.access": {"level": "WARNING", "handlers": ["console"], "propagate": False,},
             "gunicorn": {"level": "INFO", "handlers": ["console"], "propagate": False},
+            # "gunicorn.error" logger needs to be defined explicitly,
+            # as it will be used by UvicornWorker to configure its own error logger
+            "gunicorn.error": {"level": "INFO", "handlers": ["console"], "propagate": False},
         },
         "root": {"level": "INFO", "handlers": ["console"]},
     }
