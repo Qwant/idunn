@@ -146,28 +146,54 @@ class PjPOI(BasePlace):
         return self.get("WheelchairAccessible")
 
     def build_address(self, lang):
-        raw_address = self.get("Address", {})
-        city = raw_address.get("City", "")
-        number = raw_address.get("Number", "")
-        postal_code = raw_address.get("PostalCode", "")
-        street = raw_address.get("Street", "")
+        city = self.get_city()
+        postcode = self.get_postcode()
+        number = self.raw_address().get("Number", "")
+        street = self.raw_address().get("Street", "")
 
         return {
             "id": None,
             "name": f"{number} {street}".strip(),
             "housenumber": number,
-            "postcode": postal_code,
-            "label": f"{number} {street}, {postal_code} {city}".strip().strip(","),
+            "postcode": postcode,
+            "label": f"{number} {street}, {postcode} {city}".strip().strip(","),
             "admin": None,
-            "admins": [],
+            "admins": self.build_admins(),
             "street": {
                 "id": None,
                 "name": street,
                 "label": f"{street} ({city})",
-                "postcodes": [postal_code] if postal_code else [],
+                "postcodes": [postcode] if postcode else [],
             },
             "country_code": self.get_country_code(),
         }
+
+    def build_admins(self):
+        city = self.get_city()
+        postcode = self.get_postcode()
+
+        if postcode:
+            label = f"{city} ({postcode})"
+        else:
+            label = city
+
+        return [
+            {
+                "name": city,
+                "label": label,
+                "class_name": "city",
+                "postcodes": [postcode] if postcode else [],
+            }
+        ]
+
+    def raw_address(self):
+        return self.get("Address", {})
+
+    def get_city(self):
+        return self.raw_address().get("City", "")
+
+    def get_postcode(self):
+        return self.raw_address().get("PostalCode", "")
 
     def get_country_codes(self):
         return ["FR"]
