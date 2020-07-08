@@ -23,10 +23,14 @@ class BragiClient:
 
     async def raw_autocomplete(self, params, body=None):
         url = settings["BRAGI_BASE_URL"] + "/autocomplete"
-        if body:
-            response = await self.client.post(url, params=params, json=body)
-        else:
-            response = await self.client.get(url, params=params)
+        try:
+            if body:
+                response = await self.client.post(url, params=params, json=body)
+            else:
+                response = await self.client.get(url, params=params)
+        except httpx.ConnectTimeout:
+            logger.error("Request to Bragi %s failed with timeout", url, exc_info=True)
+            raise HTTPException(503, "Server error: geocoder timeout")
 
         if response.status_code != httpx.codes.ok:
             try:
