@@ -9,13 +9,17 @@ from idunn import settings
 
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
+autocomplete_nlu_shadow_enabled = settings["AUTOCOMPLETE_NLU_SHADOW_ENABLED"]
 
 
 async def get_autocomplete(
     query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
 ):
     async def get_intentions():
-        if not query.nlu or query.lang not in nlu_allowed_languages:
+        if query.lang not in nlu_allowed_languages:
+            return None
+
+        if not query.nlu and not autocomplete_nlu_shadow_enabled:
             return None
 
         focus = None
@@ -27,6 +31,6 @@ async def get_autocomplete(
     autocomplete_response, intentions = await asyncio.gather(
         bragi_client.autocomplete(query, extra), get_intentions()
     )
-    if intentions is not None:
+    if intentions is not None and query.nlu:
         autocomplete_response["intentions"] = intentions
     return autocomplete_response
