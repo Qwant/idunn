@@ -34,6 +34,11 @@ def test_pj_place():
         assert resp["meta"]["source"] == "pages_jaunes"
         assert resp["geometry"]["center"] == [2.362634, 48.859702]
 
+        assert resp["address"]["admins"]
+        admin = resp["address"]["admins"][0]
+        assert admin["name"] == "Paris"
+        assert admin["postcodes"] == ["75003"]
+
         blocks = resp["blocks"]
         assert blocks[0]["type"] == "opening_hours"
         assert blocks[0]["raw"] == "Tu-Su 10:30-18:00"
