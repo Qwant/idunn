@@ -49,7 +49,7 @@ def test_opening_hour_open():
         next_transition_datetime="2018-06-14T22:00:00+03:00",
         seconds_before_next_transition=37800,
         is_24_7=False,
-        raw="Mo-Sa 10:00-22:00; Su 10:00-14:00,18:00-22:00",
+        raw="Mo-Sa 10:00-22:00; Su 10:00-14:00, 18:00-22:00",
         days=[
             {
                 "dayofweek": 1,
@@ -147,7 +147,7 @@ def test_opening_hour_open_until_midnight():
         next_transition_datetime="2018-06-15T00:00:00+03:00",
         seconds_before_next_transition=3600,
         is_24_7=False,
-        raw="Mo-Su 09:00-24:00",
+        raw="Mo-Su 09:00-00:00",
         days=ANY,
     )
     assert len(oh_block.days) == 7
@@ -258,12 +258,12 @@ def test_opening_hour_sunrise_sunset():
     """
     oh_block = get_moscow_poi("sunrise-sunset")
 
-    assert dict(oh_block) == OpeningHourBlock(
+    assert oh_block == OpeningHourBlock(
         **dict(
             type="opening_hours",
             status="open",
-            next_transition_datetime="2018-06-30T21:18:00+03:00",
-            seconds_before_next_transition=37080,
+            next_transition_datetime="2018-06-30T21:32:00+03:00",
+            seconds_before_next_transition=37920,
             is_24_7=False,
             raw="sunrise-sunset",
             days=[
@@ -271,43 +271,43 @@ def test_opening_hour_sunrise_sunset():
                     "dayofweek": 1,
                     "local_date": "2018-06-25",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:45", "end": "21:19"}],
+                    "opening_hours": [{"beginning": "05:16", "end": "21:33"}],
                 },
                 {
                     "dayofweek": 2,
                     "local_date": "2018-06-26",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:46", "end": "21:19"}],
+                    "opening_hours": [{"beginning": "05:16", "end": "21:33"}],
                 },
                 {
                     "dayofweek": 3,
                     "local_date": "2018-06-27",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:46", "end": "21:19"}],
+                    "opening_hours": [{"beginning": "05:17", "end": "21:33"}],
                 },
                 {
                     "dayofweek": 4,
                     "local_date": "2018-06-28",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:47", "end": "21:19"}],
+                    "opening_hours": [{"beginning": "05:17", "end": "21:32"}],
                 },
                 {
                     "dayofweek": 5,
                     "local_date": "2018-06-29",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:47", "end": "21:19"}],
+                    "opening_hours": [{"beginning": "05:17", "end": "21:32"}],
                 },
                 {
                     "dayofweek": 6,
                     "local_date": "2018-06-30",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:48", "end": "21:18"}],
+                    "opening_hours": [{"beginning": "05:18", "end": "21:32"}],
                 },
                 {
                     "dayofweek": 7,
                     "local_date": "2018-07-01",
                     "status": "open",
-                    "opening_hours": [{"beginning": "03:49", "end": "21:18"}],
+                    "opening_hours": [{"beginning": "05:19", "end": "21:32"}],
                 },
             ],
         )
@@ -400,21 +400,145 @@ def test_oh_with_only_closed_rules():
 
 
 @freeze_time("2019-07-01T08:00:00")
-def test_oh_24_7_variant():
-    oh_block = get_moscow_poi("Apr 1-Sep 30: off")
-    assert oh_block is None
-
-
-@freeze_time("2019-07-01T08:00:00")
-def test_unsupported_rule_raises_no_exception():
+def test_unsupported_for_pylib():
+    """Expression was previously not parsed by the python library"""
     oh_block = get_moscow_poi(
         "Nov 3-Apr 30: 08:00-17:00; May 2-Nov 2: 08:00-17:30;"
         "Jul 14 off; May 1 off; PH 12:30-13:30 off"
     )
-    assert oh_block is None
+    assert oh_block == OpeningHourBlock(
+        type="opening_hours",
+        status="open",
+        next_transition_datetime="2019-07-01T17:30:00+03:00",
+        seconds_before_next_transition=23400,
+        is_24_7=False,
+        raw="Nov 3-Apr 30: 08:00-17:00; May 2-Nov 2: 08:00-17:30;Jul 14 off; May 1 off; PH 12:30-13:30 off",
+        days=[
+            {
+                "dayofweek": 1,
+                "local_date": "2019-07-01",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+            {
+                "dayofweek": 2,
+                "local_date": "2019-07-02",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+            {
+                "dayofweek": 3,
+                "local_date": "2019-07-03",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+            {
+                "dayofweek": 4,
+                "local_date": "2019-07-04",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+            {
+                "dayofweek": 5,
+                "local_date": "2019-07-05",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+            {
+                "dayofweek": 6,
+                "local_date": "2019-07-06",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+            {
+                "dayofweek": 7,
+                "local_date": "2019-07-07",
+                "status": "open",
+                "opening_hours": [{"beginning": "08:00", "end": "17:30"}],
+            },
+        ],
+    )
 
 
 @freeze_time("2019-07-01T08:00:00")
 def test_oh_all_rules_in_the_past():
     oh_block = get_moscow_poi("2018 Jul 02- 2018 Sep 02 Mo-Su 08:00-20:00")
+    assert oh_block is None
+
+
+@freeze_time("2020-07-21T08:00:00")
+def test_oh_additional_rule_overlap():
+    oh_block = get_moscow_poi("Mo-Su 18:00-22:00, Mo-Fr 11:00-14:00")
+    assert oh_block == {
+        "type": "opening_hours",
+        "status": "open",
+        "next_transition_datetime": "2020-07-21T14:00:00+03:00",
+        "seconds_before_next_transition": 10800,
+        "is_24_7": False,
+        "raw": "Mo-Su 18:00-22:00, Mo-Fr 11:00-14:00",
+        "days": [
+            {
+                "dayofweek": 1,
+                "local_date": "2020-07-20",
+                "status": "open",
+                "opening_hours": [
+                    {"beginning": "11:00", "end": "14:00"},
+                    {"beginning": "18:00", "end": "22:00"},
+                ],
+            },
+            {
+                "dayofweek": 2,
+                "local_date": "2020-07-21",
+                "status": "open",
+                "opening_hours": [
+                    {"beginning": "11:00", "end": "14:00"},
+                    {"beginning": "18:00", "end": "22:00"},
+                ],
+            },
+            {
+                "dayofweek": 3,
+                "local_date": "2020-07-22",
+                "status": "open",
+                "opening_hours": [
+                    {"beginning": "11:00", "end": "14:00"},
+                    {"beginning": "18:00", "end": "22:00"},
+                ],
+            },
+            {
+                "dayofweek": 4,
+                "local_date": "2020-07-23",
+                "status": "open",
+                "opening_hours": [
+                    {"beginning": "11:00", "end": "14:00"},
+                    {"beginning": "18:00", "end": "22:00"},
+                ],
+            },
+            {
+                "dayofweek": 5,
+                "local_date": "2020-07-24",
+                "status": "open",
+                "opening_hours": [
+                    {"beginning": "11:00", "end": "14:00"},
+                    {"beginning": "18:00", "end": "22:00"},
+                ],
+            },
+            {
+                "dayofweek": 6,
+                "local_date": "2020-07-25",
+                "status": "open",
+                "opening_hours": [{"beginning": "18:00", "end": "22:00"}],
+            },
+            {
+                "dayofweek": 7,
+                "local_date": "2020-07-26",
+                "status": "open",
+                "opening_hours": [{"beginning": "18:00", "end": "22:00"}],
+            },
+        ],
+    }
+
+
+@freeze_time("2019-07-01T08:00:00")
+def test_oh_bad_format():
+    oh_block = get_moscow_poi("all day long")
     assert oh_block is None

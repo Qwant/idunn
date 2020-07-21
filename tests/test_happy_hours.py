@@ -35,7 +35,7 @@ def test_happy_hour():
         status="yes",
         next_transition_datetime="2018-06-14T22:00:00+03:00",
         seconds_before_next_transition=1800,
-        raw="Mo-Sa 20:00-22:00; Su 12:00-14:00,20:00-22:00",
+        raw="Mo-Sa 20:00-22:00; Su 12:00-14:00, 20:00-22:00",
         days=[
             {
                 "dayofweek": 1,
