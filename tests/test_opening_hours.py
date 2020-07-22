@@ -27,6 +27,7 @@ def get_moscow_poi(opening_hours):
             {
                 "coord": {"lon": 37.588161523500276, "lat": 55.74831406552745},
                 "properties": {"opening_hours": opening_hours},
+                "country_codes": ["RU"],
             }
         ),
         lang="en",
@@ -262,8 +263,8 @@ def test_opening_hour_sunrise_sunset():
         **dict(
             type="opening_hours",
             status="open",
-            next_transition_datetime="2018-06-30T21:32:00+03:00",
-            seconds_before_next_transition=37920,
+            next_transition_datetime="2018-06-30T18:00:00+03:00",
+            seconds_before_next_transition=25200,
             is_24_7=False,
             raw="sunrise-sunset",
             days=[
@@ -271,43 +272,43 @@ def test_opening_hour_sunrise_sunset():
                     "dayofweek": 1,
                     "local_date": "2018-06-25",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:16", "end": "21:33"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
                 {
                     "dayofweek": 2,
                     "local_date": "2018-06-26",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:16", "end": "21:33"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
                 {
                     "dayofweek": 3,
                     "local_date": "2018-06-27",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:17", "end": "21:33"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
                 {
                     "dayofweek": 4,
                     "local_date": "2018-06-28",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:17", "end": "21:32"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
                 {
                     "dayofweek": 5,
                     "local_date": "2018-06-29",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:17", "end": "21:32"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
                 {
                     "dayofweek": 6,
                     "local_date": "2018-06-30",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:18", "end": "21:32"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
                 {
                     "dayofweek": 7,
                     "local_date": "2018-07-01",
                     "status": "open",
-                    "opening_hours": [{"beginning": "05:19", "end": "21:32"}],
+                    "opening_hours": [{"beginning": "06:00", "end": "18:00"}],
                 },
             ],
         )

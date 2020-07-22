@@ -53,9 +53,9 @@ def parse_time_block(cls, es_poi, lang, raw):
     if not raw:
         return None
 
-    poi_coord = get_coord(es_poi)
-    poi_lat = poi_coord[0]
-    poi_lon = poi_coord[1]
+    # Fallback to London coordinates if POI coordinates are not known.
+    poi_lat, poi_lon = get_coord(es_poi) or (51.5, 0)
+    poi_country_code = next(map(str.lower, es_poi.get("country_codes", [])), None)
 
     poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
     poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
@@ -64,7 +64,7 @@ def parse_time_block(cls, es_poi, lang, raw):
         logger.info("No timezone found for poi %s", es_poi.get("id"))
         return None
 
-    oh = OpeningHours(raw, poi_tz)
+    oh = OpeningHours(raw, poi_tz, poi_country_code)
 
     if not oh.validate():
         logger.info(

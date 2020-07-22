@@ -29,16 +29,17 @@ engine = OpeningHoursEngine()
 
 
 class OpeningHours:
-    def __init__(self, oh, tz):
+    def __init__(self, oh, tz, country_code):
         self.raw = oh
         self.tz = tz
+        self.nmt_obj = {"address": {"country_code": country_code}}
 
     def current_time(self):
         return utc.localize(datetime.utcnow()).astimezone(self.tz)
 
     def validate(self):
         """Check if an expression parses correctly"""
-        return engine.call("validate", self.raw) is True
+        return engine.call("validate", self.raw, self.nmt_obj) is True
 
     def is_24_7(self):
         """Check if this is always open"""
@@ -46,7 +47,7 @@ class OpeningHours:
 
     def is_open(self):
         """Check if open at a given time"""
-        return engine.call("wrapIsOpen", self.raw, self.current_time().isoformat())
+        return engine.call("wrapIsOpen", self.raw, self.nmt_obj, self.current_time().isoformat())
 
     def is_open_at_date(self, d):
         """Check if this is open at some point in a given date"""
@@ -57,7 +58,9 @@ class OpeningHours:
 
     def next_change(self):
         """Get datetime of next change of state"""
-        date = engine.call("wrapNextChange", self.raw, self.current_time().isoformat())
+        date = engine.call(
+            "wrapNextChange", self.raw, self.nmt_obj, self.current_time().isoformat()
+        )
 
         if date is None:
             return None
@@ -78,6 +81,7 @@ class OpeningHours:
             for [start, end, unknown, comment] in engine.call(
                 "wrapOpenIntervals",
                 self.raw,
+                self.nmt_obj,
                 start.astimezone(self.tz).isoformat(),
                 end.astimezone(self.tz).isoformat(),
             )

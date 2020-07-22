@@ -35,9 +35,9 @@ function toNaiveIso(date) {
 
 // Check if an expression parses correctly and return an error description if
 // not.
-function validate(raw) {
+function validate(raw, nmt_obj) {
     try {
-        new opening_hours(raw, null);
+        new opening_hours(raw, nmt_obj);
         return true;
     }
     catch (err) {
@@ -46,22 +46,22 @@ function validate(raw) {
 }
 
 // Check if a given opening hours description is open at a given datetime.
-function wrapIsOpen(raw, dt) {
-    const oh = new opening_hours(raw, null);
+function wrapIsOpen(raw, nmt_obj, dt) {
+    const oh = new opening_hours(raw, nmt_obj);
     return oh.getState(fromNaiveIso(dt));
 }
 
 // Get next date of change for a given opening hours description starting at a
 // given datetime.
-function wrapNextChange(raw, dt) {
-    const oh = new opening_hours(raw, null);
+function wrapNextChange(raw, nmt_obj, dt) {
+    const oh = new opening_hours(raw, nmt_obj);
     return toNaiveIso(oh.getNextChange(fromNaiveIso(dt)));
 }
 
 // Get the list of open intervals for a given opening hours description between
 // two given datetimes.
-function wrapOpenIntervals(raw, from, to) {
-    const oh = new opening_hours(raw, null);
+function wrapOpenIntervals(raw, nmt_obj, from, to) {
+    const oh = new opening_hours(raw, nmt_obj);
     return oh.getOpenIntervals(fromNaiveIso(from), fromNaiveIso(to))
         .map(rg => [toNaiveIso(rg[0]), toNaiveIso(rg[1]), rg[2], rg[3]]);
 }
