@@ -67,7 +67,7 @@ build:
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     DOCKER_HOST: "tcp://10.100.31.132:2375"
     GIT_STRATEGY: none
-    PROMETHEUS_SERVICE_NAME: "product-maps-development_prometheus"
+    PROMETHEUS_SERVICE_NAME: "1120_prometheus"
     ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
     STACK_NAME: "$CI_PROJECT_ID"
   when: manual
@@ -94,7 +94,6 @@ deploy prelive:
     url: "https://www.qwant.plive/maps"
   variables:
     DOCKER_HOST: "tcp://10.103.9.1:2375"
-    PROMETHEUS_SERVICE_NAME: "product-maps-prelive_prometheus"
 
 
 deploy production:
@@ -110,4 +109,3 @@ deploy production:
     DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
     DOCKER_TLS_VERIFY: "1"
     ROUTER_SERVICE_NAME: "product-maps-production_traefik"
-    PROMETHEUS_SERVICE_NAME: "product-maps-production_prometheus"
