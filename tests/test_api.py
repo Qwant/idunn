@@ -6,7 +6,7 @@ from .utils import override_settings
 
 def test_basic_query():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -26,7 +26,7 @@ def test_basic_query():
 
 def test_lang():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=it",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=it")
 
     assert response.status_code == 200
 
@@ -49,7 +49,7 @@ def test_contact_phone():
     We test this tag is correct here
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426")
 
     assert response.status_code == 200
 
@@ -72,7 +72,7 @@ def test_block_null():
     We check the API answer is ok (status_code == 200) with the correct fields.
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:way:55984117?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:way:55984117?lang=fr")
 
     assert response.status_code == 200
 
@@ -90,7 +90,7 @@ def test_block_null():
 
 def test_unknown_poi():
     client = TestClient(app)
-    response = client.get(url="http://localhost/v1/pois/an_unknown_poi_id",)
+    response = client.get(url="http://localhost/v1/pois/an_unknown_poi_id")
 
     assert response.status_code == 404
     assert "'an_unknown_poi_id' not found" in response.json()["detail"]
@@ -103,7 +103,7 @@ def test_services_and_information():
     internet_access, brewery).
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
 
@@ -114,7 +114,7 @@ def test_services_and_information():
         {"type": "internet_access", "wifi": True},
         {
             "type": "brewery",
-            "beers": [{"name": "Tripel Karmeliet"}, {"name": "Delirium"}, {"name": "Chouffe"},],
+            "beers": [{"name": "Tripel Karmeliet"}, {"name": "Delirium"}, {"name": "Chouffe"}],
         },
     ]
 
@@ -141,7 +141,7 @@ def options_test_with_options():
 
 def test_options_requests(options_test_with_options):
     client = TestClient(app)
-    response = client.options(url=f"http://localhost/v1/places/35460343",)
+    response = client.options(url=f"http://localhost/v1/places/35460343")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -151,6 +151,6 @@ def test_options_requests(options_test_with_options):
 
 def test_options_requests_disabled():
     client = TestClient(app)
-    response = client.options(url=f"http://localhost/v1/places/35460343",)
+    response = client.options(url=f"http://localhost/v1/places/35460343")
 
     assert response.status_code == 405

@@ -36,7 +36,7 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia):
     """
     We make a first request for the louvre museum POI
     """
-    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es")
     resp = response.json()
     """
     One request requires 2 wikipedia API calls
@@ -50,7 +50,7 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia):
     As a result no more Wikipedia call should be
     made
     """
-    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es")
     resp = response.json()
 
     assert len(mock_wikipedia.calls) == 2  # the same number of requests as before
@@ -73,7 +73,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
         """
         rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
+        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert response.status_code == 200
         resp = response.json()
@@ -116,7 +116,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             in the "get_wiki_info()" method
             """
             for i in range(10):
-                response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
+                response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
                 resp = response.json()
                 assert any(
                     b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks")
@@ -138,7 +138,7 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia):
 
     with mock.patch.object(Redis, "get", fake_get):
         client = TestClient(app)
-        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es",)
+        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
         assert response.status_code == 200
         resp = response.json()
         assert len(mock_wikipedia.calls) == 0
