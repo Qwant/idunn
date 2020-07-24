@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, utc
 from tzwhere import tzwhere
-from lark.exceptions import LarkError
 from pydantic import BaseModel, conint, constr
 from typing import ClassVar, List, Optional
 
