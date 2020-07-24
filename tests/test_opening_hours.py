@@ -27,7 +27,7 @@ def get_moscow_poi(opening_hours):
             {
                 "coord": {"lon": 37.588161523500276, "lat": 55.74831406552745},
                 "properties": {"opening_hours": opening_hours},
-                "country_codes": ["RU"],
+                "administrative_regions": [{"country_codes": ["RU"]}],
             }
         ),
         lang="en",

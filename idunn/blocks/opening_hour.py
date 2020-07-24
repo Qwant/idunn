@@ -55,7 +55,7 @@ def parse_time_block(cls, es_poi, lang, raw):
 
     # Fallback to London coordinates if POI coordinates are not known.
     poi_lat, poi_lon = get_coord(es_poi) or (51.5, 0)
-    poi_country_code = next(map(str.lower, es_poi.get("country_codes", [])), None)
+    poi_country_code = es_poi.get_country_code()
 
     poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
     poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)

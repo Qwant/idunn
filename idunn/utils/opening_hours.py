@@ -30,6 +30,9 @@ engine = OpeningHoursEngine()
 
 class OpeningHours:
     def __init__(self, oh, tz, country_code):
+        if country_code is not None:
+            country_code = country_code.lower()
+
         self.raw = oh
         self.tz = tz
         self.nmt_obj = {"address": {"country_code": country_code}}
