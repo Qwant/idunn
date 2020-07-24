@@ -65,6 +65,7 @@ def parse_time_block(cls, es_poi, lang, raw):
         return None
 
     oh = OpeningHours(raw, poi_tz, poi_country_code)
+    curr_dt = utc.localize(datetime.utcnow())
 
     if not oh.validate():
         logger.info(
@@ -75,27 +76,25 @@ def parse_time_block(cls, es_poi, lang, raw):
         )
         return None
 
-    poi_dt = utc.localize(datetime.utcnow()).astimezone(poi_tz)
-
-    if oh.is_open():
+    if oh.is_open(curr_dt):
         status = cls.STATUSES[0]
     else:
         status = cls.STATUSES[1]
 
-    if cls.BLOCK_TYPE == OpeningHourBlock.BLOCK_TYPE and oh.is_24_7():
-        return cls.init_class(status, None, None, oh, poi_dt, raw)
+    if cls.BLOCK_TYPE == OpeningHourBlock.BLOCK_TYPE and oh.is_24_7(curr_dt):
+        return cls.init_class(status, None, None, oh, curr_dt, raw)
 
-    next_transition = oh.next_change()
+    next_transition = oh.next_change(curr_dt)
 
     if next_transition is None:
         return None
 
     # Then we localize the next_change transition datetime in the local POI timezone.
     next_transition = round_dt_to_minute(next_transition)
-    delta = next_transition - poi_dt
+    delta = next_transition - curr_dt
     time_before_next = int(delta.total_seconds())
 
-    return cls.init_class(status, next_transition.isoformat(), time_before_next, oh, poi_dt, raw)
+    return cls.init_class(status, next_transition.isoformat(), time_before_next, oh, curr_dt, raw)
 
 
 def round_dt_to_minute(dt):
@@ -146,24 +145,24 @@ class OpeningHourBlock(BaseBlock):
     days: List[DaysType]
 
     @classmethod
-    def init_class(cls, status, next_transition_datetime, time_before_next, oh, poi_dt, raw):
-        if oh.is_24_7():
+    def init_class(cls, status, next_transition_datetime, time_before_next, oh, curr_dt, raw):
+        if oh.is_24_7(curr_dt):
             return cls(
                 status=status,
                 next_transition_datetime=None,
                 seconds_before_next_transition=None,
                 is_24_7=True,
                 raw=raw,
-                days=get_days(cls, oh, poi_dt),
+                days=get_days(cls, oh, curr_dt),
             )
 
         return cls(
             status=status,
             next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
-            is_24_7=oh.is_24_7(),
+            is_24_7=oh.is_24_7(curr_dt),
             raw=raw,
-            days=get_days(cls, oh, poi_dt),
+            days=get_days(cls, oh, curr_dt),
         )
 
     @classmethod
