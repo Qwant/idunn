@@ -67,7 +67,7 @@ def test_wikipedia_another_language():
     in another language.
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es")
 
     assert response.status_code == 200
 

@@ -25,7 +25,7 @@ def test_recycling():
             "POST", re.compile(r"^http://recycling.test/.*"), status=200, json=recycling_response,
         )
 
-        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153800",)
+        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153800")
 
         assert response.status_code == 200
 

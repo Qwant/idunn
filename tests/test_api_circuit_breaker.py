@@ -39,7 +39,7 @@ def test_circuit_breaker_500(breaker_test):
         calls sent).
         """
         for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es",)
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es")
 
         assert response.status_code == 200
 
@@ -56,7 +56,7 @@ def test_circuit_breaker_500(breaker_test):
         sleep(1)
 
         for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es",)
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es")
         assert len(rsps.calls) == 4
 
 
@@ -78,7 +78,7 @@ def test_circuit_breaker_404(breaker_test):
         remained closed since the 404 is an exclude exception
         """
         for i in range(4):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es",)
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=es")
 
         assert "closed" == breaker_test.current_state
         assert len(rsps.calls) == 4

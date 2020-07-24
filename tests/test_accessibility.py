@@ -23,7 +23,7 @@ def test_undefined_wheelchairs():
     defined there is no block 'accessibility'
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:node:738042332?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:node:738042332?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -45,7 +45,7 @@ def test_wheelchair():
     are defined
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:node:36153811?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/pois/osm:node:36153811?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"

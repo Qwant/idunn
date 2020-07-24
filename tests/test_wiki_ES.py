@@ -34,7 +34,7 @@ def test_basket_ball():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
+        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert response.status_code == 200
 
@@ -53,7 +53,7 @@ def test_basket_ball():
         API
         """
         for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert len(rsps.calls) == 0
 
@@ -72,7 +72,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
         )
 
         for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr",)
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr")
 
         assert len(rsps.calls) == 0
 
@@ -129,7 +129,7 @@ def test_undefined_WIKI_ES(undefine_wiki_es):
         )
 
         for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr",)
+            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert len(rsps.calls) == 10
 
@@ -144,7 +144,7 @@ def test_POI_not_in_WIKI_ES():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr",)
+        response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr")
 
         assert response.status_code == 200
 
@@ -192,6 +192,6 @@ def test_no_lang_WIKI_ES():
         """
         We make a request in russian language ("ru")
         """
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=ru",)
+        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=ru")
 
         assert len(rsps.calls) == 1

@@ -19,7 +19,7 @@ def test_full_query_admin():
         Test the response format to an admin query
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/admin:osm:relation:123057?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/places/admin:osm:relation:123057?lang=fr")
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
@@ -59,7 +59,7 @@ def test_full_query_street():
         Test the response format to a street query
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -135,7 +135,7 @@ def test_full_query_address():
     client = TestClient(app)
     id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
 
-    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -210,7 +210,7 @@ def test_full_query_poi():
         Test the response format to a POI query
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr",)
+    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -428,7 +428,7 @@ def test_admin_i18n_name():
 
 def test_type_query_street():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr&type=street",)
+    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr&type=street")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -443,7 +443,7 @@ def test_type_query_address():
     client = TestClient(app)
     id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
 
-    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=address",)
+    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=address")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -456,7 +456,7 @@ def test_type_query_address():
 
 def test_type_query_poi():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi",)
+    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -478,14 +478,14 @@ def test_type_unknown():
 
     id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
 
-    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=globibulga",)
+    response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=globibulga")
     assert response.status_code == 400
     assert response._content == b'{"detail":"Wrong type parameter: type=globibulga"}'
 
 
 def test_not_found_with_type():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/street:4242?lang=fr&type=poi",)
+    response = client.get(url=f"http://localhost/v1/places/street:4242?lang=fr&type=poi")
     assert response.status_code == 404
     assert response.json() == {"detail": "place 'street:4242' not found with type=poi"}
 
@@ -557,5 +557,5 @@ from unittest.mock import patch
 def test_no_es():
     client = TestClient(app)
 
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi",)
+    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
     assert response.status_code == 503

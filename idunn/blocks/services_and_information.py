@@ -47,7 +47,7 @@ class AccessibilityBlock(BaseBlock):
         if all(s == cls.STATUS_UNKNOWN for s in (wheelchair, toilets_wheelchair)):
             return None
 
-        return cls(wheelchair=wheelchair, toilets_wheelchair=toilets_wheelchair,)
+        return cls(wheelchair=wheelchair, toilets_wheelchair=toilets_wheelchair)
 
 
 class InternetAccessBlock(BaseBlock):
@@ -141,7 +141,7 @@ class ServicesAndInformationBlock(BaseBlock):
     BLOCK_TYPE: ClassVar = "services_and_information"
 
     blocks: List[BaseBlock] = BlocksValidator(
-        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock,]
+        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]
     )
 
     @classmethod

@@ -65,7 +65,7 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
     ],
-    SHORT: [OpeningHourBlock, Covid19Block,],
+    SHORT: [OpeningHourBlock, Covid19Block],
 }
 ALL_VERBOSITY_LEVELS = list(BLOCKS_BY_VERBOSITY.keys())
 
