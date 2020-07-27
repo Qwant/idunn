@@ -27,7 +27,9 @@ services:
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_PROD
       - IDUNN_BLOCK_COVID_ENABLED=true
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
-      - no_proxy=es,bragi,wiki-es,geocoder-varnish
+      - IDUNN_NLU_TAGGER_URL=http://1701_nlu:9009/nlu
+      - IDUNN_NLU_TAGGER_DOMAIN=MAPS
+      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu
     extra_hosts:
       - "wiki-es:10.100.8.40"
       - "geocoder-varnish:10.103.13.1"
