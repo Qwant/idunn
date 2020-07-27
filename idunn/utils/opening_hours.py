@@ -1,7 +1,6 @@
 import os
 from datetime import date, datetime, time, timedelta
 
-from pytz import utc
 from py_mini_racer.py_mini_racer import MiniRacer
 
 DIR = os.path.dirname(__file__)
@@ -11,6 +10,9 @@ OPENING_HOURS_JS_WRAPPER = os.path.join(DIR, "data/opening_hours_wrapper.js")
 
 class OpeningHoursEngine:
     def __init__(self):
+        self.js_ctx = None
+
+    def init_js_ctx(self):
         with open(OPENING_HOURS_JS, "r") as f:
             js_sources = f.read()
 
@@ -22,6 +24,11 @@ class OpeningHoursEngine:
         self.js_ctx.eval(js_wrapper)
 
     def call(self, *args, **kwargs):
+        # V8 does not support forking processes.
+        # As Idunn is called with "gunicorn --preload" in the Docker image,
+        # the MiniRacer context should not be initialized with the app.
+        if self.js_ctx is None:
+            self.init_js_ctx()
         return self.js_ctx.call(*args, **kwargs)
 
 
