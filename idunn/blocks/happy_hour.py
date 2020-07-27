@@ -3,8 +3,6 @@ import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, UTC
 from tzwhere import tzwhere
-import humanized_opening_hours as hoh
-from humanized_opening_hours.exceptions import HOHError
 from pydantic import BaseModel, conint, constr
 from typing import ClassVar, List, Optional
 
@@ -50,7 +48,7 @@ class HappyHourBlock(BaseBlock):
             status=status,
             next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
-            raw=oh.field,
+            raw=raw,
             days=get_days(cls, oh, poi_dt),
         )
 
