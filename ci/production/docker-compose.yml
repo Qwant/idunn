@@ -7,6 +7,7 @@ services:
       placement:
         constraints:
           - node.role != manager
+          - node.labels.type != node11 # workaround for QMAPS-1607
       resources:
         limits:
           cpus: "4"
