@@ -23,7 +23,7 @@ services:
         traefik.frontend.rule: "PathPrefixStrip:/maps/detail/"
         traefik.port: "5000"
       mode: replicated
-      replicas: 4
+      replicas: 3
       resources:
         limits:
           memory: 4g
