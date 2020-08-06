@@ -75,15 +75,15 @@ def parse_time_block(cls, es_poi, lang, raw):
         )
         return None
 
+    next_transition = oh.next_change(curr_dt)
+
     if oh.is_open(curr_dt):
         status = cls.STATUSES[0]
+        if next_transition is None:
+            # open or enabled 24/7
+            return cls.init_class(status, None, None, oh, curr_dt, raw)
     else:
         status = cls.STATUSES[1]
-
-    if cls.BLOCK_TYPE == OpeningHourBlock.BLOCK_TYPE and oh.is_24_7(curr_dt):
-        return cls.init_class(status, None, None, oh, curr_dt, raw)
-
-    next_transition = oh.next_change(curr_dt)
 
     if next_transition is None:
         return None
@@ -113,18 +113,17 @@ def get_days(cls, oh, dt):
 
     for x in range(0, 7):
         day = last_monday + timedelta(days=x)
+        intervals = oh.get_open_intervals_at_date(day, overlap_next_day=True)
 
         day_value = {
             "dayofweek": day.isoweekday(),
             "local_date": day.isoformat(),
-            "status": cls.STATUSES[0] if oh.is_open_at_date(day) else cls.STATUSES[1],
+            "status": cls.STATUSES[0] if len(intervals) > 0 else cls.STATUSES[1],
         }
 
         day_value[cls.BLOCK_TYPE] = [
             {"beginning": start.strftime("%H:%M"), "end": end.strftime("%H:%M")}
-            for start, end, _unknown, _comment in oh.get_open_intervals_at_date(
-                day, overlap_next_day=True
-            )
+            for start, end, _unknown, _comment in intervals
         ]
 
         days.append(day_value)
@@ -145,7 +144,7 @@ class OpeningHourBlock(BaseBlock):
 
     @classmethod
     def init_class(cls, status, next_transition_datetime, time_before_next, oh, curr_dt, raw):
-        if oh.is_24_7(curr_dt):
+        if status == "open" and next_transition_datetime is None:
             return cls(
                 status=status,
                 next_transition_datetime=None,
@@ -159,7 +158,7 @@ class OpeningHourBlock(BaseBlock):
             status=status,
             next_transition_datetime=next_transition_datetime,
             seconds_before_next_transition=time_before_next,
-            is_24_7=oh.is_24_7(curr_dt),
+            is_24_7=False,
             raw=raw,
             days=get_days(cls, oh, curr_dt),
         )

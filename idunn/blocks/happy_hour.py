@@ -1,16 +1,11 @@
 from enum import Enum
 import logging
 from datetime import datetime, timedelta, date
-from pytz import timezone, UTC
-from tzwhere import tzwhere
 from pydantic import BaseModel, conint, constr
 from typing import ClassVar, List, Optional
 
 from .base import BaseBlock
 from .opening_hour import (
-    get_tz,
-    get_coord,
-    tz,
     parse_time_block,
     get_days,
     OpeningHoursType,
