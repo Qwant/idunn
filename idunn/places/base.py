@@ -112,7 +112,10 @@ class BasePlace(dict):
         postcodes = self.get_postcodes()
         if postcodes is not None:
             if isinstance(postcodes, list):
-                postcodes = ";".join(postcodes)
+                if len(postcodes) == 1:
+                    postcodes = postcodes[0]
+                else:
+                    postcodes = None
 
         id = raw_address.get("id")
         name = raw_address.get("name")

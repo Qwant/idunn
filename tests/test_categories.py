@@ -327,7 +327,7 @@ def test_bbox():
                     "id": "addr:2.326285;48.859635",
                     "name": "62B Rue de Lille",
                     "housenumber": "62B",
-                    "postcode": "75007;75008",
+                    "postcode": None,
                     "label": "62B Rue de Lille (Paris)",
                     "admin": None,
                     "street": {

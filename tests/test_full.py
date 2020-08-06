@@ -46,7 +46,7 @@ def test_full(mock_external_requests):
             "label": "62B Rue de Lille (Paris)",
             "name": "62B Rue de Lille",
             "housenumber": "62B",
-            "postcode": "75007;75008",
+            "postcode": None,
             "street": {
                 "id": "street:553660044C",
                 "name": "Rue de Lille",
