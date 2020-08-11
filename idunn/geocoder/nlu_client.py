@@ -195,6 +195,8 @@ class NLU_Helper:
             "text": text,
             "lang": lang or settings["DEFAULT_LANGUAGE"],
             "domain": tagger_domain,
+            "detok": True,  # preserve the non-tokenized query in tagged chunks
+            "lowercase": settings["NLU_TAGGER_LOWERCASE"],
         }
         response_nlu = await self.client.post(tagger_url, json=params)
         response_nlu.raise_for_status()
