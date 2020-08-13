@@ -1,7 +1,12 @@
 {
     "NLU": [
         {
-            "phrase": "tour eiffel",
+            "phrase": "restaurant",
+            "tag": "cat",
+            "value": {}
+        },
+        {
+            "phrase": "le grand bleu",
             "tag": "POI",
             "value": {}
         },
@@ -11,8 +16,10 @@
             "value": {}
         }
     ],
-    "domain": "poi",
+    "detok": true,
+    "domain": "MAPS",
     "lang": "fr",
-    "text": "tour eiffel paris",
-    "tokenized": "tour eiffel paris"
+    "lowercase": true,
+    "text": "restaurant le grand bleu paris",
+    "tokenized": "restaurant le grand bleu paris"
 }
