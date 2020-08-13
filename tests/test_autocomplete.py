@@ -28,7 +28,7 @@ def mock_NLU_for(httpx_mock, dataset):
     ):
         httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER[dataset])
         httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
-        yield
+        yield FIXTURE_TOKENIZER[dataset]
 
 
 @pytest.fixture
@@ -239,6 +239,6 @@ def test_autocomplete_with_nlu_poi(mock_autocomplete_get, mock_NLU_with_poi):
     client = TestClient(app)
     assert_ok_with(
         client,
-        params={"q": "pharmacie à paris", "lang": "fr", "limit": 7, "nlu": True},
+        params={"q": mock_NLU_with_poi["text"], "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[],
     )

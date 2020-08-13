@@ -18,7 +18,7 @@ from .bragi_client import bragi_client
 DEFAULT_BBOX_WIDTH = 0.02
 DEFAULT_BBOX_HEIGHT = 0.01
 
-NLU_POI_TAGS = ["poi", "other"]
+NLU_POI_TAGS = ["POI", "other"]
 NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
