@@ -26,6 +26,7 @@ class QueryParams:
     q: str = Query(..., title="query string")
     lon: Optional[confloat(ge=-180, le=180)] = Query(None, title="latitude for the focus")
     lat: Optional[confloat(ge=-90, le=90)] = Query(None, title="longitude for the focus")
+    zoom: float = 11
     lang: Optional[str] = Query(None, title="language")
     limit: PositiveInt = 10
     pt_dataset: List[str] = Query([])
@@ -59,6 +60,17 @@ class QueryParams:
             "zone_type[]": self.zone_type,
             "poi_type[]": self.poi_type,
         }
+
+        if self.lon and self.lat:
+            if self.zoom >= 11:
+                params["radius"] = 30
+            elif self.zoom >= 9:
+                params["radius"] = 100
+            elif self.zoom >= 7:
+                params["radius"] = 300
+            elif self.zoom >= 5:
+                params["radius"] = 1000
+
         return {k: v for k, v in params.items() if v is not None}
 
 
