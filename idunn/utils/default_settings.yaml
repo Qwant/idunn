@@ -122,6 +122,8 @@ NLU_CLASSIFIER_DOMAIN: "poi"
 NLU_BREAKER_TIMEOUT: 120 # timeout period in seconds
 NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
+FOCUS_ZOOM_TO_RADIUS: '[[11, 20], [9, 60], [7, 180], [5, 500], [3, 1500]]' # expected request radius from zoom level
+
 #######################
 ## OpenAPI DOCS
 DOCS_ENABLED: False

@@ -2,6 +2,7 @@
 Bragi parameters as defined here:
   https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/routes/autocomplete.rs#L59
 """
+import json
 from enum import Enum
 from typing import List, Optional
 from fastapi import Query
@@ -10,6 +11,9 @@ from pydantic.dataclasses import dataclass
 
 from idunn import settings
 from .cosmogony import ZoneType
+
+focus_zoom_to_radius = json.loads(settings["FOCUS_ZOOM_TO_RADIUS"])
+minimum_zoom_for_focus = min(zoom for zoom, _ in focus_zoom_to_radius)
 
 
 class Type(str, Enum):
@@ -47,8 +51,6 @@ class QueryParams:
         """
         params = {
             "q": self.q,
-            "lon": self.lon,
-            "lat": self.lat,
             "lang": self.lang,
             "limit": self.limit,
             "pt_dataset[]": self.pt_dataset,
@@ -61,15 +63,15 @@ class QueryParams:
             "poi_type[]": self.poi_type,
         }
 
-        if self.lon and self.lat:
-            if self.zoom >= 11:
-                params["radius"] = 30
-            elif self.zoom >= 9:
-                params["radius"] = 100
-            elif self.zoom >= 7:
-                params["radius"] = 300
-            elif self.zoom >= 5:
-                params["radius"] = 1000
+        # Enables the focus mode
+        if self.lon and self.lat and self.zoom and self.zoom >= minimum_zoom_for_focus:
+            params["lon"] = self.lon
+            params["lat"] = self.lat
+            params["radius"] = next(
+                radius
+                for req_zoom, radius in sorted(focus_zoom_to_radius, key=lambda l: -l[0])
+                if self.zoom >= req_zoom
+            )
 
         return {k: v for k, v in params.items() if v is not None}
 
