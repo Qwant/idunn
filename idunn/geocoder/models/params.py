@@ -12,8 +12,9 @@ from pydantic.dataclasses import dataclass
 from idunn import settings
 from .cosmogony import ZoneType
 
-focus_zoom_to_radius = json.loads(settings["FOCUS_ZOOM_TO_RADIUS"])
-minimum_zoom_for_focus = min(zoom for zoom, _ in focus_zoom_to_radius)
+FOCUS_ZOOM_TO_RADIUS = json.loads(settings["FOCUS_ZOOM_TO_RADIUS"])
+FOCUS_MIN_ZOOM = min(zoom for zoom, _ in FOCUS_ZOOM_TO_RADIUS)
+FOCUS_DECAY = float(settings["FOCUS_DECAY"])
 
 
 class Type(str, Enum):
@@ -64,15 +65,22 @@ class QueryParams:
         }
 
         # Enables the focus mode
-        if self.lon and self.lat and self.zoom and self.zoom >= minimum_zoom_for_focus:
-            params["lon"] = self.lon
-            params["lat"] = self.lat
-            params["radius"] = next(
+        if self.lon and self.lat and self.zoom and self.zoom >= FOCUS_MIN_ZOOM:
+            radius = next(
                 radius
-                for req_zoom, radius in sorted(focus_zoom_to_radius, key=lambda l: -l[0])
+                for req_zoom, radius in sorted(FOCUS_ZOOM_TO_RADIUS, key=lambda l: -l[0])
                 if self.zoom >= req_zoom
             )
 
+            params["lon"] = self.lon
+            params["lat"] = self.lat
+
+            # Tune the shape of the weight applie to the results based on the
+            # proximity, note that mimir uses a normal decay:
+            # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#_supported_decay_functions
+            params["focus_decay"] = FOCUS_DECAY
+            params["focus_offset_distance"] = int(radius / 7.5)
+            params["focus_decay_distance"] = int(6.5 * radius / 7.5)
         return {k: v for k, v in params.items() if v is not None}
 
 
