@@ -122,7 +122,14 @@ NLU_CLASSIFIER_DOMAIN: "poi"
 NLU_BREAKER_TIMEOUT: 120 # timeout period in seconds
 NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
-FOCUS_ZOOM_TO_RADIUS: "[[11, 150], [9, 450], [7, 1300], [5, 4500], [3, 13000]]" # expected request radius from zoom level
+# List of [zoom level, typical search radius, coordinates precision]
+FOCUS_ZOOM_TO_RADIUS: "[
+    [11, 150, 0.1],
+    [9, 450, 0.3],
+    [7, 1300, 1],
+    [5, 4500, 3],
+    [3, 13000, 10]
+]"
 FOCUS_DECAY: 0.4 # minimal penality outside of the radius
 
 #######################
