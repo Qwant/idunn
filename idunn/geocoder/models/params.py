@@ -75,12 +75,13 @@ class QueryParams:
             params["lon"] = self.lon
             params["lat"] = self.lat
 
-            # Tune the shape of the weight applie to the results based on the
-            # proximity, note that mimir uses a normal decay:
+            # Tune the shape of the weight applied to the results based on the
+            # proximity, note that mimir uses an exponential decay:
             # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#_supported_decay_functions
-            params["focus_decay"] = FOCUS_DECAY
-            params["focus_offset_distance"] = int(radius / 7.5)
-            params["focus_decay_distance"] = int(6.5 * radius / 7.5)
+            params["proximity_decay"] = f"{FOCUS_DECAY:.2f}"
+            params["proximity_offset_distance"] = int(radius / 7.5)
+            params["proximity_decay_distance"] = int(6.5 * radius / 7.5)
+
         return {k: v for k, v in params.items() if v is not None}
 
 
