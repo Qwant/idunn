@@ -97,11 +97,19 @@ class RecyclingBlock(BaseBlock):
         containers = []
         for h in hits:
             doc = h["_source"]
+
+            if "percentage" not in doc:
+                logger.warning(
+                    "Recycling container data does not contain 'percentage' field",
+                    extra={"doc": doc},
+                )
+                continue
+
             containers.append(
                 RecyclingContainer(
-                    type=doc.get("data", {}).get("pav", {}).get("wasteType"),
-                    updated_at=doc.get("hour"),
-                    filling_level=doc.get("volume"),
+                    type=doc.get("pav", {}).get("wasteType"),
+                    updated_at=doc.get(settings.get("RECYCLING_DATA_TIMESTAMP_FIELD")),
+                    filling_level=100 * doc.get("percentage"),
                     place_description=doc.get("metadata", {}).get("entity"),
                 )
             )

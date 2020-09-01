@@ -106,6 +106,10 @@ categories:
         raw_filters:
             - "sports_centre,*"
         regex: "fitness|muscu|piscine"
+    recycling:
+        raw_filters:
+            - "recycling,*"
+        regex: "recycl"
 outing_types:
     concert:
         en:
