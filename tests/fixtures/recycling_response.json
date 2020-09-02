@@ -3,7 +3,7 @@
   "error": null,
   "controller": "document",
   "action": "search",
-  "collection": "hourly",
+  "collection": "measures",
   "index": "waste",
   "volatile": null,
   "result": {
@@ -17,13 +17,11 @@
             "updatedAt": null,
             "updater": null
           },
-          "data": {
-            "pav": {
-              "length": 1,
-              "width": 1,
-              "height": 2,
-              "wasteType": "recyclable"
-            }
+          "pav": {
+            "length": 1,
+            "width": 1,
+            "height": 2,
+            "wasteType": "recyclable"
           },
           "metadata": {
             "entity": "camping",
@@ -40,8 +38,9 @@
             "work": "waste"
           },
           "measuringPointId": "13dSUXIBXW4tV7EoFcdh",
-          "volume": 30.0005257857619604955,
-          "hour": "2020-05-26T14:00:00.948Z"
+          "volume": 0.6004257857619604955,
+          "percentage": 0.3002,
+          "timestamp": "2020-05-26T14:00:00.948Z"
         }
       },
       {
@@ -53,13 +52,11 @@
             "updatedAt": null,
             "updater": null
           },
-          "data": {
-            "pav": {
-              "length": 1,
-              "width": 1,
-              "height": 2,
-              "wasteType": "glass"
-            }
+          "pav": {
+            "length": 1,
+            "width": 1,
+            "height": 2,
+            "wasteType": "glass"
           },
           "metadata": {
             "entity": "camping",
@@ -76,8 +73,9 @@
             "work": "waste"
           },
           "measuringPointId": "1ndSUXIBXW4tV7EoFcdh",
-          "volume": 60.0002081696794014043,
-          "hour": "2020-05-26T14:00:00.663Z"
+          "volume": 1.2002081696794014043,
+          "percentage": 0.6001,
+          "timestamp": "2020-05-26T14:00:00.663Z"
         }
       },
       {
@@ -89,13 +87,11 @@
             "updatedAt": null,
             "updater": null
           },
-          "data": {
-            "pav": {
-              "length": 1,
-              "width": 1,
-              "height": 2,
-              "wasteType": "unknownType"
-            }
+          "pav": {
+            "length": 1,
+            "width": 1,
+            "height": 2,
+            "wasteType": "unknownType"
           },
           "metadata": {
             "entity": "terrain de pétanque ploudal",
@@ -112,8 +108,9 @@
             "work": "waste"
           },
           "measuringPointId": "wHdSUXIBXW4tV7EoFcdh",
-          "volume": 90,
-          "hour": "2020-05-20T15:00:00.315Z"
+          "volume": 1.80,
+          "percentage": 0.9,
+          "timestamp": "2020-05-20T15:00:00.315Z"
         }
       }
     ],
