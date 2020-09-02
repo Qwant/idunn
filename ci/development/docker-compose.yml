@@ -22,7 +22,7 @@ services:
       - IDUNN_NLU_TAGGER_DOMAIN=MAPS
       - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=pk.eyJ1IjoiYW1hdGlzc2FydC1xd2FudCIsImEiOiJja2E4ZDFidXgwYnNrMnJtdXg4ZTBpNjV4In0.cXyQeWCMeia7PnoxR9AdPg # Dev token
-      - IDUNN_BLOCK_COVID_ENABLED=true
+      - IDUNN_BLOCK_COVID_ENABLED=false
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
       - IDUNN_RECYCLING_SERVER_URL=https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
       - IDUNN_RECYCLING_SERVER_USERNAME=qwant
