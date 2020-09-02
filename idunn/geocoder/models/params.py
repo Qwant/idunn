@@ -10,10 +10,11 @@ from pydantic import BaseModel, Field, PositiveInt, confloat, conint
 from pydantic.dataclasses import dataclass
 
 from idunn import settings
+from idunn.utils.math import with_precision
 from .cosmogony import ZoneType
 
 FOCUS_ZOOM_TO_RADIUS = json.loads(settings["FOCUS_ZOOM_TO_RADIUS"])
-FOCUS_MIN_ZOOM = min(zoom for zoom, _ in FOCUS_ZOOM_TO_RADIUS)
+FOCUS_MIN_ZOOM = min(zoom for zoom, _, _ in FOCUS_ZOOM_TO_RADIUS)
 FOCUS_DECAY = float(settings["FOCUS_DECAY"])
 
 
@@ -66,14 +67,14 @@ class QueryParams:
 
         # Enables the focus mode
         if self.lon and self.lat and self.zoom and self.zoom >= FOCUS_MIN_ZOOM:
-            radius = next(
-                radius
-                for req_zoom, radius in sorted(FOCUS_ZOOM_TO_RADIUS, key=lambda l: -l[0])
+            radius, precision = next(
+                (r, p)
+                for req_zoom, r, p in sorted(FOCUS_ZOOM_TO_RADIUS, key=lambda l: -l[0])
                 if self.zoom >= req_zoom
             )
 
-            params["lon"] = self.lon
-            params["lat"] = self.lat
+            params["lon"] = f"{with_precision(self.lon, precision):.2f}"
+            params["lat"] = f"{with_precision(self.lat, precision):.2f}"
 
             # Tune the shape of the weight applied to the results based on the
             # proximity, note that mimir uses an exponential decay:
