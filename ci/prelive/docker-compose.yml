@@ -26,6 +26,9 @@ services:
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
       - IDUNN_NLU_TAGGER_URL=http://1701_nlu:9009/nlu
       - IDUNN_NLU_TAGGER_DOMAIN=MAPS
+      - IDUNN_RECYCLING_SERVER_URL=https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
+      - IDUNN_RECYCLING_SERVER_USERNAME=qwant
+      - IDUNN_RECYCLING_SERVER_PASSWORD=${QMAPS_SDEF_PREPROD_PASSWORD}
       - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu
     extra_hosts:
       - "wiki-es:10.100.33.34"

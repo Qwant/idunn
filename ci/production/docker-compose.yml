@@ -30,6 +30,9 @@ services:
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
       - IDUNN_NLU_TAGGER_URL=http://1701_nlu:9009/nlu
       - IDUNN_NLU_TAGGER_DOMAIN=MAPS
+      - IDUNN_RECYCLING_SERVER_URL= # disabled in production for now
+      - IDUNN_RECYCLING_SERVER_USERNAME=qwant
+      - IDUNN_RECYCLING_SERVER_PASSWORD=${QMAPS_SDEF_PROD_PASSWORD}
       - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu
     extra_hosts:
       - "wiki-es:10.100.8.40"

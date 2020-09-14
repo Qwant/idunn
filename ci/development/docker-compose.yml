@@ -26,7 +26,7 @@ services:
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
       - IDUNN_RECYCLING_SERVER_URL=https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
       - IDUNN_RECYCLING_SERVER_USERNAME=qwant
-      - IDUNN_RECYCLING_SERVER_PASSWORD=NDuxFP8sWHu0wKTgjLB4
+      - IDUNN_RECYCLING_SERVER_PASSWORD=${QMAPS_SDEF_PREPROD_PASSWORD}
       - IDUNN_RECYCLING_MEASURES_MAX_AGE_IN_HOURS=2400 # 100 days, for demonstration purposes (7 days by default)
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,1701_nlu
     extra_hosts:
