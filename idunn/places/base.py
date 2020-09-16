@@ -133,22 +133,22 @@ class BasePlace(dict):
             "label": label or street.get("label"),
             "admin": self.build_admin(lang),
             "street": street,
-            "admins": self.build_admins(),
+            "admins": self.build_admins(lang),
             "country_code": self.get_country_code(),
         }
 
     def build_admin(self, lang=None):
         return None
 
-    def build_admins(self):
+    def build_admins(self, lang=None):
         raw_admins = self.get_raw_admins()
         admins = []
         if not raw_admins is None:
             for raw_admin in raw_admins:
                 admin = {
                     "id": raw_admin.get("id"),
-                    "label": raw_admin.get("label"),
-                    "name": raw_admin.get("name"),
+                    "label": raw_admin.get("labels", {}).get(lang) or raw_admin.get("label"),
+                    "name": raw_admin.get("names", {}).get(lang) or raw_admin.get("name"),
                     "class_name": raw_admin.get("zone_type"),
                     "postcodes": raw_admin.get("zip_codes"),
                 }

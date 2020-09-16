@@ -33,7 +33,7 @@ class Event(BasePlace):
             "name": self.get("placename"),
             "label": self.get("address"),
             "admin": self.build_admin(lang),
-            "admins": self.build_admins(),
+            "admins": self.build_admins(lang),
         }
 
     def get_meta(self):
