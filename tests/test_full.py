@@ -41,7 +41,20 @@ def test_full(mock_external_requests):
         },
         "address": {
             "admin": None,
-            "admins": ANY,
+            "admins": [
+                ANY,
+                ANY,
+                ANY,
+                ANY,
+                ANY,
+                {
+                    "id": "admin:osm:relation:2202162",
+                    "class_name": "country",
+                    "label": "Francia",
+                    "name": "Francia",
+                    "postcodes": [],
+                },
+            ],
             "id": "addr:2.326285;48.859635",
             "label": "62B Rue de Lille (Paris)",
             "name": "62B Rue de Lille",

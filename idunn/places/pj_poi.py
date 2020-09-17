@@ -158,7 +158,7 @@ class PjPOI(BasePlace):
             "postcode": postcode,
             "label": f"{number} {street}, {postcode} {city}".strip().strip(","),
             "admin": None,
-            "admins": self.build_admins(),
+            "admins": self.build_admins(lang),
             "street": {
                 "id": None,
                 "name": street,
@@ -168,7 +168,7 @@ class PjPOI(BasePlace):
             "country_code": self.get_country_code(),
         }
 
-    def build_admins(self):
+    def build_admins(self, lang=None):
         city = self.get_city()
         postcode = self.get_postcode()
 
