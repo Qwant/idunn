@@ -61,18 +61,20 @@ class NLU_Helper:
 
         return response_classifier.json()["intention"][0][1]
 
-    def regex_classifier(self, text):
+    def regex_classifier(self, text, is_brand=False):
         normalized_text = unidecode(text).lower().strip()
         for category_name, cat in ALL_CATEGORIES.items():
+            if is_brand and not cat.get("match_brand"):
+                continue
             regex = cat.get("regex")
             if regex and re.search(regex, normalized_text):
                 return category_name
         return None
 
-    async def classify_category(self, text):
-        if settings["NLU_CLASSIFIER_URL"]:
+    async def classify_category(self, text, is_brand=False):
+        if settings["NLU_CLASSIFIER_URL"] and not is_brand:
             return await self.nlu_classifier(text)
-        return self.regex_classifier(text)
+        return self.regex_classifier(text, is_brand=is_brand)
 
     @classmethod
     def fuzzy_match(cls, query, response):
@@ -95,13 +97,9 @@ class NLU_Helper:
             return True
         return False
 
-    async def build_intention_category_place(
-        self, cat_query, place_query, lang, skip_classifier=False
-    ):
+    async def build_intention_category_place(self, cat_query, place_query, lang, is_brand=False):
         async def get_category():
-            if skip_classifier:
-                return None
-            return await self.classify_category(cat_query)
+            return await self.classify_category(cat_query, is_brand=is_brand)
 
         bragi_result, category_name = await asyncio.gather(
             bragi_client.raw_autocomplete(params={"q": place_query, "lang": lang, "limit": 1}),
@@ -141,12 +139,8 @@ class NLU_Helper:
             filter={"q": cat_query, "bbox": bbox}, description={"query": cat_query, "place": place}
         )
 
-    async def build_intention_category(self, cat_query, lang, skip_classifier=False):
-        category_name = None
-
-        if not skip_classifier:
-            category_name = await self.classify_category(cat_query)
-
+    async def build_intention_category(self, cat_query, lang, is_brand=False):
+        category_name = await self.classify_category(cat_query, is_brand)
         if category_name:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
@@ -229,15 +223,9 @@ class NLU_Helper:
         brand_query = self.build_brand_query(tags_list)
         cat_query = self.build_category_query(tags_list)
         place_query = self.build_place_query(tags_list)
-        skip_classifier = brand_query is not None
 
         logs_extra["intention_detection"].update(
-            {
-                "brand_query": brand_query,
-                "cat_query": cat_query,
-                "place_query": place_query,
-                "skip_classifier": skip_classifier,
-            }
+            {"brand_query": brand_query, "cat_query": cat_query, "place_query": place_query}
         )
 
         # If there is a label for both a category and a brand, we consider that the request is
@@ -250,14 +238,14 @@ class NLU_Helper:
                 # Brands are handled the same way categories except that we don't want to process
                 # them with the classifier.
                 intention = await self.build_intention_category_place(
-                    cat_or_brand_query, place_query, lang=lang, skip_classifier=skip_classifier
+                    cat_or_brand_query, place_query, lang=lang, is_brand=bool(brand_query)
                 )
                 if intention is not None:
                     intentions.append(intention)
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
-                    cat_or_brand_query, lang=lang, skip_classifier=skip_classifier
+                    cat_or_brand_query, lang=lang, is_brand=bool(brand_query)
                 )
                 if intention is not None:
                     # A query tagged as "category" and not recognized by the classifier often

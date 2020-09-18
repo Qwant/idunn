@@ -106,10 +106,25 @@ categories:
         raw_filters:
             - "sports_centre,*"
         regex: "fitness|muscu|piscine"
+    station:
+        raw_filters:
+            - "railway,station"
+            - "railway,halt"
+        regex: "^gare( |$)"
     recycling:
         raw_filters:
             - "recycling,*"
-        regex: "recycl"
+        regex: "recycl|tri selectif|dechett?erie"
+        match_brand: True
+    parking:
+        raw_filters:
+            - "parking,*"
+        regex: "parking"
+    place_of_worship:
+        raw_filters:
+            - "place_of_worship,*"
+        regex: "cathedral|church|eglise|mosque|synagogue|temple"
+
 outing_types:
     concert:
         en:

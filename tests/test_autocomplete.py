@@ -42,11 +42,6 @@ def mock_NLU_with_brand_and_country(httpx_mock):
 
 
 @pytest.fixture
-def mock_NLU_with_brand_and_country(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_brand_and_country")
-
-
-@pytest.fixture
 def mock_NLU_with_cat(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_cat")
 
