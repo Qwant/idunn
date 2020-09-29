@@ -80,8 +80,8 @@ class QueryParams:
             # proximity, note that mimir uses an exponential decay:
             # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#_supported_decay_functions
             params["proximity_decay"] = f"{FOCUS_DECAY:.2f}"
-            params["proximity_offset_distance"] = int(radius / 7.5)
-            params["proximity_decay_distance"] = int(6.5 * radius / 7.5)
+            params["proximity_offset"] = int(radius / 7.5)
+            params["proximity_scale"] = int(6.5 * radius / 7.5)
 
         return {k: v for k, v in params.items() if v is not None}
 
