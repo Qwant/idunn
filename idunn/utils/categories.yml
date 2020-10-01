@@ -38,7 +38,7 @@ categories:
             - "banques"
         raw_filters:
             - "bank,*"
-        regex: "bank|banque|credit|caisse|atm$"
+        regex: "^(bank|banque|credit|caisse|atm$)"
     education:
         pj_filters:
             - "écoles maternelles publiques"
@@ -54,20 +54,20 @@ categories:
         raw_filters:
             - "school,*"
             - "college,*"
-        regex: "ecole|college|universit|educ"
+        regex: "^ecole|^college|^universit|educat"
     bar:
         pj_filters:
             - "cafés, bars"
         raw_filters:
             - "bar,*"
             - "cafe,*"
-        regex: "cafe|bar|pub"
+        regex: "^(cafes?|bars?|pubs?)( |$)"
     museum:
         pj_filters:
             - "musées"
         raw_filters:
             - "museum,*"
-        regex: "museum|musee"
+        regex: "^(museum|musee)"
     health:
         pj_filters:
             - "Centre médico-social"

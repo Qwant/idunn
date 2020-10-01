@@ -61,7 +61,16 @@ class NLU_Helper:
 
         return response_classifier.json()["intention"][0][1]
 
-    def regex_classifier(self, text, is_brand=False):
+    @staticmethod
+    def regex_classifier(text, is_brand=False):
+        """ Match text with a category, using 'regex'
+        >>> NLU_Helper.regex_classifier("restau")
+        'restaurant'
+        >>> NLU_Helper.regex_classifier("pub")
+        'bar'
+        >>> NLU_Helper.regex_classifier("republique") is None
+        True
+        """
         normalized_text = unidecode(text).lower().strip()
         for category_name, cat in ALL_CATEGORIES.items():
             if is_brand and not cat.get("match_brand"):
