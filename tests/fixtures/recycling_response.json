@@ -39,7 +39,7 @@
           },
           "measuringPointId": "13dSUXIBXW4tV7EoFcdh",
           "volume": 0.6004257857619604955,
-          "percentage": 0.3002,
+          "percentage": 30.62,
           "timestamp": "2020-05-26T14:00:00.948Z"
         }
       },
@@ -74,7 +74,7 @@
           },
           "measuringPointId": "1ndSUXIBXW4tV7EoFcdh",
           "volume": 1.2002081696794014043,
-          "percentage": 0.6001,
+          "percentage": 60.01,
           "timestamp": "2020-05-26T14:00:00.663Z"
         }
       },
@@ -109,7 +109,7 @@
           },
           "measuringPointId": "wHdSUXIBXW4tV7EoFcdh",
           "volume": 1.80,
-          "percentage": 0.9,
+          "percentage": 90.0,
           "timestamp": "2020-05-20T15:00:00.315Z"
         }
       }
