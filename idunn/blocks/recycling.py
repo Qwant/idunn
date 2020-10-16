@@ -109,7 +109,7 @@ class RecyclingBlock(BaseBlock):
                 RecyclingContainer(
                     type=doc.get("pav", {}).get("wasteType"),
                     updated_at=doc.get(settings.get("RECYCLING_DATA_TIMESTAMP_FIELD")),
-                    filling_level=100 * doc.get("percentage"),
+                    filling_level=doc.get("percentage"),
                     place_description=doc.get("metadata", {}).get("entity"),
                 )
             )
