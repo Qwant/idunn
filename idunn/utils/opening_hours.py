@@ -37,16 +37,20 @@ engine = OpeningHoursEngine()
 
 class OpeningHours:
     def __init__(self, oh, tz, country_code):
-        if country_code is not None:
-            country_code = country_code.lower()
-
         self.raw = oh
         self.tz = tz
-        self.nmt_obj = {"address": {"country_code": country_code}}
+        if country_code:
+            self.nmt_obj = {"address": {"country_code": country_code.lower()}}
+        else:
+            self.nmt_obj = None
 
     def validate(self):
         """Check if an expression parses correctly"""
-        return engine.call("validate", self.raw, self.nmt_obj) is True
+        result = engine.call("validate", self.raw, self.nmt_obj)
+        if self.nmt_obj is not None and result is not True:
+            self.nmt_obj = None
+            return self.validate()
+        return result is True
 
     def is_24_7(self, dt):
         """Check if this is always open starting from a given date"""
