@@ -139,7 +139,7 @@ class NLU_Helper:
             else:
                 return None
 
-        if category_name:
+        if category_name in ALL_CATEGORIES:
             return Intention(
                 filter={"category": category_name, "bbox": bbox},
                 description={"category": category_name, "place": place},
@@ -150,7 +150,7 @@ class NLU_Helper:
 
     async def build_intention_category(self, cat_query, lang, is_brand=False):
         category_name = await self.classify_category(cat_query, is_brand)
-        if category_name:
+        if category_name in ALL_CATEGORIES:
             return Intention(
                 filter={"category": category_name}, description={"category": category_name},
             )
