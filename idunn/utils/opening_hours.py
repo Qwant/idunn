@@ -1,7 +1,7 @@
 import os
 from datetime import date, datetime, time, timedelta
 
-from py_mini_racer.py_mini_racer import MiniRacer
+from py_mini_racer.py_mini_racer import MiniRacer, JSEvalException
 
 DIR = os.path.dirname(__file__)
 OPENING_HOURS_JS = os.path.join(DIR, "data/opening_hours.min.js")
@@ -46,11 +46,16 @@ class OpeningHours:
 
     def validate(self):
         """Check if an expression parses correctly"""
-        result = engine.call("validate", self.raw, self.nmt_obj)
-        if self.nmt_obj is not None and result is not True:
-            self.nmt_obj = None
-            return self.validate()
-        return result is True
+        try:
+            engine.call("validate", self.raw, self.nmt_obj)
+        except JSEvalException as exc:
+            if self.nmt_obj is not None and "no holidays" in str(exc):
+                # The OH library does not support public/school holidays in the current country
+                # Let's ignore the location-dependant holidays for the evaluation
+                self.nmt_obj = None
+                return self.validate()
+            return False
+        return True
 
     def is_24_7(self, dt):
         """Check if this is always open starting from a given date"""
