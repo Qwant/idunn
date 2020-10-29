@@ -41,7 +41,7 @@ function validate(raw, nmt_obj) {
         return true;
     }
     catch (err) {
-        return "" + err;
+        throw "" + err;
     }
 }
 

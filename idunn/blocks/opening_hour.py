@@ -68,7 +68,7 @@ def parse_time_block(cls, es_poi, lang, raw):
 
     if not oh.validate():
         logger.info(
-            "Failed to parse happy_hours field, id:'%s' raw:'%s'",
+            "Failed to validate opening_hours field, id:'%s' raw:'%s'",
             es_poi.get_id(),
             raw,
             exc_info=True,
