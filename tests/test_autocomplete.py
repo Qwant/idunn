@@ -14,11 +14,16 @@ ES_URL = "http://qwant.es"
 
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
-FIXTURE_AUTOCOMPLETE_PARIS = read_fixture("fixtures/autocomplete/paris.json")
 FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
 FIXTURE_TOKENIZER = {
     dataset: read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
-    for dataset in ["with_brand", "with_brand_and_country", "with_cat", "with_country", "with_poi"]
+    for dataset in [
+        "with_brand",
+        "with_brand_and_city",
+        "with_cat",
+        "with_cat_city_country",
+        "with_poi",
+    ]
 }
 
 
@@ -37,8 +42,8 @@ def mock_NLU_with_brand(httpx_mock):
 
 
 @pytest.fixture
-def mock_NLU_with_brand_and_country(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_brand_and_country")
+def mock_NLU_with_brand_and_city(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_brand_and_city")
 
 
 @pytest.fixture
@@ -47,8 +52,8 @@ def mock_NLU_with_cat(httpx_mock):
 
 
 @pytest.fixture
-def mock_NLU_with_country(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_country")
+def mock_NLU_with_cat_city_country(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_cat_city_country")
 
 
 @pytest.fixture
@@ -60,7 +65,12 @@ def mock_NLU_with_poi(httpx_mock):
 def mock_autocomplete_get(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
         httpx_mock.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"), content=FIXTURE_AUTOCOMPLETE_PARIS,
+            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"),
+            content=read_fixture("fixtures/autocomplete/paris.json"),
+        )
+        httpx_mock.get(
+            re.compile(f"^{BASE_URL}/autocomplete.*q=auchan.*"),
+            content=read_fixture("fixtures/autocomplete/auchan.json"),
         )
         httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
         yield
@@ -80,9 +90,7 @@ def mock_autocomplete_unavailable(httpx_mock):
         yield
 
 
-def assert_ok_with(
-    client, params, extra=None, expected_intention=None, expected_intention_place=None
-):
+def assert_ok_with(client, params, extra=None):
     url = "http://localhost/v1/autocomplete"
 
     if extra is None:
@@ -105,6 +113,14 @@ def assert_ok_with(
     assert properties["label"] == "pavillon Eiffel (Paris)"
     assert properties["address"]["label"] == "5 Avenue Anatole France (Paris)"
 
+
+def assert_intention(client, params, expected_intention=None, expected_intention_place=None):
+    url = "http://localhost/v1/autocomplete"
+    response = client.get(url, params=params)
+
+    data = response.json()
+    assert response.status_code == 200
+    assert len(data.get("features")) > 0
     intentions = data.get("intentions", None)
     assert intentions == expected_intention
 
@@ -155,11 +171,9 @@ def test_autocomplete_unavailable(mock_autocomplete_unavailable):
 
 
 @enable_pj_source()
-def test_autocomplete_with_nlu_brand_and_country(
-    mock_autocomplete_get, mock_NLU_with_brand_and_country
-):
+def test_autocomplete_with_nlu_brand_and_city(mock_autocomplete_get, mock_NLU_with_brand_and_city):
     client = TestClient(app)
-    assert_ok_with(
+    assert_intention(
         client,
         params={"q": "auchan à paris", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
@@ -178,7 +192,7 @@ def test_autocomplete_with_nlu_brand_and_country(
 @enable_pj_source()
 def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_with_brand):
     client = TestClient(app)
-    assert_ok_with(
+    assert_intention(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"}}],
@@ -189,7 +203,7 @@ def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_wi
 @enable_pj_source()
 def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_brand):
     client = TestClient(app)
-    assert_ok_with(
+    assert_intention(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lat": 48.9, "lon": 2.3},
         expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"},}],
@@ -199,7 +213,7 @@ def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_
 
 def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
     client = TestClient(app)
-    assert_ok_with(
+    assert_intention(
         client,
         params={"q": "pharmacie", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
@@ -209,9 +223,9 @@ def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
     )
 
 
-def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_country):
+def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_cat_city_country):
     client = TestClient(app)
-    assert_ok_with(
+    assert_intention(
         client,
         params={"q": "pharmacie à paris, france", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
@@ -232,8 +246,22 @@ def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_coun
 
 def test_autocomplete_with_nlu_poi(mock_autocomplete_get, mock_NLU_with_poi):
     client = TestClient(app)
-    assert_ok_with(
+    assert_intention(
         client,
         params={"q": mock_NLU_with_poi["text"], "lang": "fr", "limit": 7, "nlu": True},
+        expected_intention=[],
+    )
+
+
+def test_no_intention_for_brand_with_no_matching_feature(
+    mock_autocomplete_get, mock_NLU_with_brand
+):
+    client = TestClient(app)
+    brand_query = mock_NLU_with_brand["text"]
+    assert brand_query == "auchan"
+
+    assert_intention(
+        client,
+        params={"q": "this is not a brand", "lang": "fr", "limit": 7, "nlu": True,},
         expected_intention=[],
     )
