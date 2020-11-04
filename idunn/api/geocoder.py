@@ -10,6 +10,7 @@ from idunn import settings
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 autocomplete_nlu_shadow_enabled = settings["AUTOCOMPLETE_NLU_SHADOW_ENABLED"]
+autocomplete_nlu_filter_intentions = settings["AUTOCOMPLETE_NLU_FILTER_INTENTIONS"]
 
 
 def post_filter_intention(intention, bragi_response, limit):
@@ -51,10 +52,12 @@ async def get_autocomplete(
         bragi_client.autocomplete(query, extra), get_intentions()
     )
     if intentions is not None and query.nlu:
-        intentions = list(
-            filter(
-                lambda i: post_filter_intention(i, autocomplete_response, query.limit), intentions
+        if autocomplete_nlu_filter_intentions:
+            intentions = list(
+                filter(
+                    lambda i: post_filter_intention(i, autocomplete_response, query.limit),
+                    intentions,
+                )
             )
-        )
         autocomplete_response["intentions"] = intentions
     return autocomplete_response
