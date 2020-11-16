@@ -24,7 +24,10 @@ def post_filter_intention(intention, bragi_response, limit):
     expected_matches = limit / 2
     matches = 0
     for f in bragi_response["features"]:
-        name = f.get("properties", {}).get("geocoding", {}).get("name", "")
+        geocoding = f.get("properties", {}).get("geocoding", {})
+        if geocoding.get("type") != "poi":
+            continue
+        name = geocoding.get("name", "")
         if nlu_client.fuzzy_match(intention.description.query, name):
             matches += 1
             if matches > expected_matches:
