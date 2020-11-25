@@ -5,7 +5,7 @@ from copy import deepcopy
 
 from idunn import settings
 from idunn.api import places_list
-from idunn.datasources.pages_jaunes import PjSource
+from idunn.datasources.pages_jaunes import LegacyPjSource
 from idunn.datasources.recycling import recycling_client
 from idunn.places import utils as places_utils
 
@@ -24,10 +24,10 @@ def override_settings(overrides):
 
 
 @contextmanager
-def enable_pj_source():
+def enable_legacy_pj_source():
     old_source = places_list.pj_source
     with override_settings({"LEGACY_PJ_ES": "http://pj_es.test"}):
-        new_source = PjSource()
+        new_source = LegacyPjSource()
         places_utils.pj_source = new_source
         places_list.pj_source = new_source
         try:

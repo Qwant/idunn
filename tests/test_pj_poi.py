@@ -6,7 +6,7 @@ import os
 from app import app
 from idunn.places import utils as places_utils
 
-from .utils import enable_pj_source
+from .utils import enable_legacy_pj_source
 
 
 def read_fixture(filename):
@@ -14,14 +14,14 @@ def read_fixture(filename):
     return json.load(open(filepath))
 
 
-@enable_pj_source()
+@enable_legacy_pj_source()
 def test_pj_place():
     musee_picasso = read_fixture("musee_picasso.json")
     with mock.patch.object(
         places_utils.pj_source.es, "search", new=lambda *x, **y: {"hits": {"hits": [musee_picasso]}}
     ):
         client = TestClient(app)
-        response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr")
+        response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
 
         assert response.status_code == 200
         resp = response.json()
@@ -61,7 +61,7 @@ def test_pj_place():
         assert blocks[5]["url"] == "https://[VOIR_TOUS_AVIS]"
 
 
-@enable_pj_source()
+@enable_legacy_pj_source()
 def test_pj_place_with_missing_data():
     musee_picasso_short = read_fixture("musee_picasso_short.json")
     with mock.patch.object(
@@ -70,7 +70,7 @@ def test_pj_place_with_missing_data():
         new=lambda *x, **y: {"hits": {"hits": [musee_picasso_short]}},
     ):
         client = TestClient(app)
-        response = client.get(url=f"http://localhost/v1/places/pj:05360257?lang=fr")
+        response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
 
         assert response.status_code == 200
         resp = response.json()

@@ -71,10 +71,13 @@ THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
 #########################
 ## Data sources
 
-# Pages jaunes
+# Pages jaunes access through legacy ES data, PJ_ACCESS_TOKEN will be prefered
 LEGACY_PJ_ES:
 LEGACY_PJ_ES_INDEX: "pagesjaunes"
 LEGACY_PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
+
+# Pages jaunes
+PJ_ACCESS_TOKEN:
 
 #######################
 ## Data Publishing

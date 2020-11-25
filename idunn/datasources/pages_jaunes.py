@@ -1,28 +1,19 @@
+import httpx
 import logging
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
 
 from idunn import settings
-from idunn.places import LegacyPjPOI
+from idunn.places import PjPOI, LegacyPjPOI
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
 
+# TODO: add a shortcircuit mecanism in case PJ is not reliable?
+
 
 class PjSource:
     PLACE_ID_NAMESPACE = "pj"
-
-    es_index = settings.get("LEGACY_PJ_ES_INDEX")
-    es_query_template = settings.get("LEGACY_PJ_ES_QUERY_TEMPLATE")
-
-    def __init__(self):
-        pj_es_url = settings.get("LEGACY_PJ_ES")
-
-        if pj_es_url:
-            self.es = Elasticsearch(pj_es_url, timeout=3.0)
-            self.enabled = True
-        else:
-            self.enabled = False
 
     def bbox_is_covered(self, bbox):
         if not self.enabled:
@@ -33,6 +24,30 @@ class PjSource:
         if not self.enabled:
             return False
         return france_polygon.contains(point)
+
+    def internal_id(self, poi_id):
+        return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
+
+    def get_places_bbox(self, raw_categories, bbox, size=10, query=""):
+        raise NotImplementedError
+
+    def get_place(self, poi_id):
+        raise NotImplementedError
+
+
+class LegacyPjSource(PjSource):
+    es_index = settings.get("LEGACY_PJ_ES_INDEX")
+    es_query_template = settings.get("LEGACY_PJ_ES_QUERY_TEMPLATE")
+
+    def __init__(self):
+        pj_es_url = settings.get("LEGACY_PJ_ES")
+
+        print("HEEEEEY", pj_es_url)
+        if pj_es_url:
+            self.es = Elasticsearch(pj_es_url, timeout=3.0)
+            self.enabled = True
+        else:
+            self.enabled = False
 
     def get_places_bbox(self, raw_categories, bbox, size=10, query=""):
         left, bot, right, top = bbox
@@ -58,21 +73,54 @@ class PjSource:
         raw_places = result.get("hits", {}).get("hits", [])
         return [LegacyPjPOI(p["_source"]) for p in raw_places]
 
-    def get_place(self, id):
-        internal_id = id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
-
+    def get_place(self, poi_id):
         es_places = self.es.search(
             index=self.es_index,
-            body={"query": {"bool": {"filter": {"term": {"_id": internal_id}}}}},
+            body={"query": {"bool": {"filter": {"term": {"_id": self.internal_id(poi_id)}}}}},
             ignore_unavailable=True,
         )
 
         es_place = es_places.get("hits", {}).get("hits", [])
         if len(es_place) == 0:
-            raise HTTPException(status_code=404, detail=f"place {id} not found")
+            raise HTTPException(status_code=404, detail=f"place {poi_id} not found")
         if len(es_place) > 1:
-            logger.warning("Got multiple places with id %s", id)
+            logger.warning("Got multiple places with id %s", poi_id)
         return LegacyPjPOI(es_place[0]["_source"])
 
 
-pj_source = PjSource()
+class ApiPjSource(PjSource):
+    PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
+    PJ_FIND_API_URL = "https://api.pagesjaunes.fr/pagesjaunes_api"
+    access_token = settings.get("PJ_ACCESS_TOKEN")
+
+    def __init__(self):
+        logging.warning("Using regular PJ source which is not yet fully implemented")
+        self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
+
+    @staticmethod
+    def format_where(bbox):
+        left, bot, right, top = bbox
+        return f"gZ{left},{top},{right},{bot}"
+
+    # TODO: this requires a strong error management as it calls an external API
+    def get_from_params(self, url, params) -> PjPOI:
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        return PjPOI(self.client.get(url, params=params, headers=headers))
+
+    def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> PjPOI:
+        query_params = {
+            "what": raw_categories,
+            "where": self.format_where(bbox),
+            "max": size,
+        }
+
+        if query:
+            query_params["q"] = query
+
+        return self.get_from_params(self.PJ_FIND_API_URL, query_params)
+
+    def get_place(self, poi_id) -> PjPOI:
+        return self.get_from_params(self.PJ_INFO_API_URL, {"pro_id": self.internal_id(poi_id)})
+
+
+pj_source = ApiPjSource() if settings.get("PJ_ACCESS_TOKEN") else LegacyPjSource()
