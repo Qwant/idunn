@@ -1,4 +1,4 @@
-import httpx
+import requests
 import logging
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
@@ -42,7 +42,6 @@ class LegacyPjSource(PjSource):
     def __init__(self):
         pj_es_url = settings.get("LEGACY_PJ_ES")
 
-        print("HEEEEEY", pj_es_url)
         if pj_es_url:
             self.es = Elasticsearch(pj_es_url, timeout=3.0)
             self.enabled = True
@@ -90,12 +89,13 @@ class LegacyPjSource(PjSource):
 
 class ApiPjSource(PjSource):
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
-    PJ_FIND_API_URL = "https://api.pagesjaunes.fr/pagesjaunes_api"
+    PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
     access_token = settings.get("PJ_ACCESS_TOKEN")
 
     def __init__(self):
         logging.warning("Using regular PJ source which is not yet fully implemented")
-        self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
+        self.enabled = bool(self.access_token)
+        self.client = requests.Session()
 
     @staticmethod
     def format_where(bbox):
@@ -105,13 +105,16 @@ class ApiPjSource(PjSource):
     # TODO: this requires a strong error management as it calls an external API
     def get_from_params(self, url, params) -> PjPOI:
         headers = {"Authorization": f"Bearer {self.access_token}"}
-        return PjPOI(self.client.get(url, params=params, headers=headers))
+        res = self.client.get(url, params=params, headers=headers)
+        res.raise_for_status()
+        return res.json()
 
     def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> PjPOI:
         query_params = {
             "what": raw_categories,
             "where": self.format_where(bbox),
-            "max": size,
+            # TODO: add some scrolling mechanism, should go with some async?
+            "max": min(30, size),
         }
 
         if query:
@@ -120,7 +123,11 @@ class ApiPjSource(PjSource):
         return self.get_from_params(self.PJ_FIND_API_URL, query_params)
 
     def get_place(self, poi_id) -> PjPOI:
-        return self.get_from_params(self.PJ_INFO_API_URL, {"pro_id": self.internal_id(poi_id)})
+        return PjPOI(
+            self.get_from_params(
+                self.PJ_INFO_API_URL, {"listing_id": "FCP55780754PROSPECT000001C0001"}
+            )
+        )
 
 
 pj_source = ApiPjSource() if settings.get("PJ_ACCESS_TOKEN") else LegacyPjSource()
