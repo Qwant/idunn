@@ -3,7 +3,7 @@ from .admin import Admin
 from .poi import POI, BragiPOI
 from .street import Street
 from .place import Place
-from .pj_poi import PjPOI
+from .legacy_pj_poi import LegacyPjPOI
 from .latlon import Latlon
 from .event import Event
 

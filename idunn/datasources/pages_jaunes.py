@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 from fastapi import HTTPException
 
 from idunn import settings
-from idunn.places import PjPOI
+from idunn.places import LegacyPjPOI
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 class PjSource:
     PLACE_ID_NAMESPACE = "pj"
 
-    es_index = settings.get("PJ_ES_INDEX")
-    es_query_template = settings.get("PJ_ES_QUERY_TEMPLATE")
+    es_index = settings.get("LEGACY_PJ_ES_INDEX")
+    es_query_template = settings.get("LEGACY_PJ_ES_QUERY_TEMPLATE")
 
     def __init__(self):
-        pj_es_url = settings.get("PJ_ES")
+        pj_es_url = settings.get("LEGACY_PJ_ES")
 
         if pj_es_url:
             self.es = Elasticsearch(pj_es_url, timeout=3.0)
@@ -56,7 +56,7 @@ class PjSource:
 
         result = self.es.search_template(index=self.es_index, body=body, params={"size": size})
         raw_places = result.get("hits", {}).get("hits", [])
-        return [PjPOI(p["_source"]) for p in raw_places]
+        return [LegacyPjPOI(p["_source"]) for p in raw_places]
 
     def get_place(self, id):
         internal_id = id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
@@ -72,7 +72,7 @@ class PjSource:
             raise HTTPException(status_code=404, detail=f"place {id} not found")
         if len(es_place) > 1:
             logger.warning("Got multiple places with id %s", id)
-        return PjPOI(es_place[0]["_source"])
+        return LegacyPjPOI(es_place[0]["_source"])
 
 
 pj_source = PjSource()

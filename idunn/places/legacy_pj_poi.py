@@ -75,7 +75,7 @@ def get_class_subclass(raw_categories):
     return (None, None)
 
 
-class PjPOI(BasePlace):
+class LegacyPjPOI(BasePlace):
     PLACE_TYPE = "poi"
 
     def get_id(self):

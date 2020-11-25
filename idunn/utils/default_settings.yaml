@@ -72,9 +72,9 @@ THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
 ## Data sources
 
 # Pages jaunes
-PJ_ES:
-PJ_ES_INDEX: "pagesjaunes"
-PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
+LEGACY_PJ_ES:
+LEGACY_PJ_ES_INDEX: "pagesjaunes"
+LEGACY_PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 
 #######################
 ## Data Publishing

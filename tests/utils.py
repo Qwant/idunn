@@ -26,7 +26,7 @@ def override_settings(overrides):
 @contextmanager
 def enable_pj_source():
     old_source = places_list.pj_source
-    with override_settings({"PJ_ES": "http://pj_es.test"}):
+    with override_settings({"LEGACY_PJ_ES": "http://pj_es.test"}):
         new_source = PjSource()
         places_utils.pj_source = new_source
         places_list.pj_source = new_source
