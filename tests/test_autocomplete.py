@@ -29,7 +29,7 @@ FIXTURE_TOKENIZER = {
 
 def mock_NLU_for(httpx_mock, dataset):
     with override_settings(
-        {"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL, "LEGACY_PJ_ES": ES_URL}
+        {"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL, "PJ_ES": ES_URL}
     ):
         httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER[dataset])
         httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)

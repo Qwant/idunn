@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 from fastapi import HTTPException
 
 from idunn import settings
-from idunn.places import PjPOI, LegacyPjPOI
+from idunn.places import PjApiPOI, PjPOI
 from idunn.places.models import pj_info, pj_find
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
@@ -39,11 +39,11 @@ class PjSource:
 
 
 class LegacyPjSource(PjSource):
-    es_index = settings.get("LEGACY_PJ_ES_INDEX")
-    es_query_template = settings.get("LEGACY_PJ_ES_QUERY_TEMPLATE")
+    es_index = settings.get("PJ_ES_INDEX")
+    es_query_template = settings.get("PJ_ES_QUERY_TEMPLATE")
 
     def __init__(self):
-        pj_es_url = settings.get("LEGACY_PJ_ES")
+        pj_es_url = settings.get("PJ_ES")
 
         if pj_es_url:
             self.es = Elasticsearch(pj_es_url, timeout=3.0)
@@ -73,7 +73,7 @@ class LegacyPjSource(PjSource):
 
         result = self.es.search_template(index=self.es_index, body=body, params={"size": size})
         raw_places = result.get("hits", {}).get("hits", [])
-        return [LegacyPjPOI(p["_source"]) for p in raw_places]
+        return [PjPOI(p["_source"]) for p in raw_places]
 
     def get_place(self, poi_id):
         es_places = self.es.search(
@@ -87,7 +87,7 @@ class LegacyPjSource(PjSource):
             raise HTTPException(status_code=404, detail=f"place {poi_id} not found")
         if len(es_place) > 1:
             logger.warning("Got multiple places with id %s", poi_id)
-        return LegacyPjPOI(es_place[0]["_source"])
+        return PjPOI(es_place[0]["_source"])
 
 
 class ApiPjSource(PjSource):
@@ -106,13 +106,13 @@ class ApiPjSource(PjSource):
         return f"gZ{left},{top},{right},{bot}"
 
     # TODO: this requires a strong error management as it calls an external API
-    def get_from_params(self, url, params) -> PjPOI:
+    def get_from_params(self, url, params) -> PjApiPOI:
         headers = {"Authorization": f"Bearer {self.access_token}"}
         res = self.client.get(url, params=params, headers=headers)
         res.raise_for_status()
         return res.json()
 
-    def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> List[PjPOI]:
+    def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> List[PjApiPOI]:
         query_params = {
             "what": raw_categories,
             "where": self.format_where(bbox),
@@ -128,10 +128,10 @@ class ApiPjSource(PjSource):
         if not res:
             return None
 
-        return [PjPOI(listing) for listing in res.search_results.listings or []]
+        return [PjApiPOI(listing) for listing in res.search_results.listings or []]
 
-    def get_place(self, poi_id) -> PjPOI:
-        return PjPOI(
+    def get_place(self, poi_id) -> PjApiPOI:
+        return PjApiPOI(
             pj_info.Response(
                 **self.get_from_params(
                     self.PJ_INFO_API_URL, {"listing_id": self.internal_id(poi_id)}

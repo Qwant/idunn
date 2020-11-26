@@ -65,16 +65,16 @@ RATE_LIMITER_REDIS_DB: 0
 
 BLOCK_IMAGES_ENABLED: True
 THUMBR_SALT:
-THUMBR_ENABLED: False # Set to False if you want to keep raw image urls instead of Thumbr
+THUMBR_ENABLED: True # Set to False if you want to keep raw image urls instead of Thumbr
 THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
 
 #########################
 ## Data sources
 
 # Pages jaunes access through legacy ES data, PJ_ACCESS_TOKEN will be prefered
-LEGACY_PJ_ES:
-LEGACY_PJ_ES_INDEX: "pagesjaunes"
-LEGACY_PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
+PJ_ES:
+PJ_ES_INDEX: "pagesjaunes"
+PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 
 # Pages jaunes
 PJ_ACCESS_TOKEN:

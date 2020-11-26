@@ -80,7 +80,7 @@ def get_class_subclass(raw_categories):
     return (None, None)
 
 
-class LegacyPjPOI(BasePlace):
+class PjPOI(BasePlace):
     PLACE_TYPE = "poi"
 
     def get_id(self):
@@ -217,7 +217,7 @@ class LegacyPjPOI(BasePlace):
         return self.get("Links", {}).get("viewReviews", "")
 
 
-class PjPOI(BasePlace):
+class PjApiPOI(BasePlace):
     PLACE_TYPE = "poi"
 
     def __init__(self, d: Union[pj_find.Listing, pj_info.Response]):
