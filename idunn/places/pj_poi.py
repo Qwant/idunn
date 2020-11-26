@@ -1,7 +1,8 @@
 from statistics import mean, StatisticsError
+from typing import Union
 
 from .base import BasePlace
-from .models.pj_business import Response, ContactType
+from .models import pj_business, pj_find
 from .place import PlaceMeta
 from ..api.constants import PoiSource
 
@@ -9,29 +10,57 @@ from ..api.constants import PoiSource
 class PjPOI(BasePlace):
     PLACE_TYPE = "poi"
 
-    def __init__(self, d):
+    def __init__(self, d: Union[pj_find.Listing, pj_business.Response]):
         super().__init__(d)
-        self.data = Response(**d)
+        self.data = d
 
     def get_id(self):
-        business_id = self.data.merchant_id
-        return f"pj:{business_id}" if business_id else None
+        listing_id = self.data.listing_id
+        return f"pj:{listing_id}" if listing_id else None
 
     def get_coord(self):
-        # TODO
-        pass
+        if isinstance(self.data, pj_business.Response):
+            # TODO: it seems the information is not here?
+            return {"lat": 0, "lon": 0}
+
+        return next(
+            (
+                {"lat": ins.latitude, "lon": ins.longitude}
+                for ins in self.data.inscriptions or []
+                if ins.latitude and ins.longitude
+            ),
+            None,
+        )
 
     def get_local_name(self):
         return self.data.merchant_name or ""
 
+    def get_contact_infos(self):
+        if isinstance(self.data, pj_business.Response):
+            return (
+                contact
+                for ins in self.data.inscriptions or []
+                for contact in ins.contact_infos or []
+            )
+        else:
+            return (
+                contact
+                for ins in self.data.inscriptions or []
+                for contact in ins.contact_info or []
+            )
+
     def get_phone(self):
-        print(self.data)
         return next(
             (
                 contact.contact_value
-                for inscription in self.data.inscriptions or []
-                for contact in inscription.contact_infos or []
-                if contact.contact_type in [ContactType.MOBILE, ContactType.TELEPHONE]
+                for contact in self.get_contact_infos()
+                if contact.contact_type
+                in [  # TODO: unify
+                    pj_business.ContactType.MOBILE,
+                    pj_business.ContactType.TELEPHONE,
+                    pj_find.ContactType.MOBILE,
+                    pj_find.ContactType.TELEPHONE,
+                ]
             ),
             None,
         )
@@ -41,11 +70,11 @@ class PjPOI(BasePlace):
 
     def get_class_name(self):
         # TODO : check that this still matches
-        pass
+        return "cinema"
 
     def get_subclass_name(self):
         # TODO : check that this still matches
-        pass
+        return "cinema"
 
     def get_raw_opening_hours(self):
         # TODO
@@ -58,7 +87,6 @@ class PjPOI(BasePlace):
     def get_inscription_with_address(self):
         """Search for an inscriptions that contains address informations"""
         # TODO: is the filter relevant?
-        # TODO: should we also check HeadOfficeAddress?
         return next((ins for ins in self.data.inscriptions or [] if ins.address_street), None)
 
     def build_address(self, lang):
@@ -68,31 +96,21 @@ class PjPOI(BasePlace):
             return None
 
         city = inscription.address_city
-        postcode = inscription.address_postal_box
+        postcode = inscription.address_zipcode
         street_and_number = inscription.address_street
-
-        try:
-            # TODO: this method isn't quire robust:
-            #       "46 Ter rue ...", "58-60 rue ..."
-            words = street_and_number.split()
-            number = int(words[0])
-            street = " ".join(words[1:])
-        except (IndexError, ValueError):
-            number = None
-            street = street_and_number
 
         return {
             "id": None,
-            "name": f"{number} {street}".strip(),
-            "housenumber": number,
+            "name": street_and_number,
+            "housenumber": None,  # TODO?
             "postcode": postcode,
-            "label": f"{number} {street}, {postcode} {city}".strip().strip(","),
+            "label": f"{street_and_number}, {postcode} {city}".strip().strip(","),
             "admin": None,
             "admins": self.build_admins(lang),
-            "street": {
+            "street": {  # TODO?
                 "id": None,
-                "name": street,
-                "label": f"{street} ({city})",
+                "name": None,
+                "label": None,
                 "postcodes": [postcode] if postcode else [],
             },
             "country_code": self.get_country_code(),
@@ -128,8 +146,14 @@ class PjPOI(BasePlace):
         return ["FR"]
 
     def get_images_urls(self):
-        # TODO: do we have a mechanism to use "thumbnail"?
-        return [photo.url for photo in self.data.photos or []]
+        # TODO: it could be interesting to distinguish the thumbnail from other images
+        thumbnail = self.data.thumbnail_url
+        images = [thumbnail] if thumbnail else []
+
+        if isinstance(self.data, pj_business.Response):
+            images += [photo.url for photo in self.data.photos or []]
+
+        return images or None
 
     def get_meta(self):
         return PlaceMeta(source=PoiSource.PAGESJAUNES)

@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 import logging
 from elasticsearch import Elasticsearch
@@ -5,6 +7,7 @@ from fastapi import HTTPException
 
 from idunn import settings
 from idunn.places import PjPOI, LegacyPjPOI
+from idunn.places.models import pj_business, pj_find
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
@@ -109,23 +112,30 @@ class ApiPjSource(PjSource):
         res.raise_for_status()
         return res.json()
 
-    def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> PjPOI:
+    def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> List[PjPOI]:
         query_params = {
             "what": raw_categories,
             "where": self.format_where(bbox),
-            # TODO: add some scrolling mechanism, should go with some async?
+            # TODO: add some scrolling mechanism, which should go with some async?
             "max": min(30, size),
         }
 
         if query:
             query_params["q"] = query
 
-        return self.get_from_params(self.PJ_FIND_API_URL, query_params)
+        res = pj_find.Response(**self.get_from_params(self.PJ_FIND_API_URL, query_params))
+
+        if not res:
+            return None
+
+        return [PjPOI(listing) for listing in res.search_results.listings or []]
 
     def get_place(self, poi_id) -> PjPOI:
         return PjPOI(
-            self.get_from_params(
-                self.PJ_INFO_API_URL, {"listing_id": "FCP55780754PROSPECT000001C0001"}
+            pj_business.Response(
+                **self.get_from_params(
+                    self.PJ_INFO_API_URL, {"listing_id": self.internal_id(poi_id)}
+                )
             )
         )
 
