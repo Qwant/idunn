@@ -4,6 +4,8 @@ import requests
 import logging
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
+from oauthlib.oauth2 import BackendApplicationClient
+from requests_oauthlib import OAuth2Session
 
 from idunn import settings
 from idunn.places import PjApiPOI, PjPOI
@@ -93,12 +95,22 @@ class LegacyPjSource(PjSource):
 class ApiPjSource(PjSource):
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
     PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
-    access_token = settings.get("PJ_ACCESS_TOKEN")
+    PJ_AUTHORIZATION = "https://api.pagesjaunes.fr/oauth/client_credential/accesstoken"
 
     def __init__(self):
-        logging.warning("Using regular PJ source which is not yet fully implemented")
-        self.enabled = bool(self.access_token)
-        self.client = requests.Session()
+        self.enabled = True
+        self.client_id = settings.get("PJ_API_ID")
+        self.client_secret = settings.get("PJ_API_SECRET")
+
+        # TODO: refresh token if available?
+        #       https://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#refreshing-tokens
+        self.client = BackendApplicationClient(client_id=self.client_id)
+        self.oauth = OAuth2Session(client=self.client)
+        self.token = self.oauth.fetch_token(
+            token_url=self.PJ_AUTHORIZATION,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+        )
 
     @staticmethod
     def format_where(bbox):
@@ -107,8 +119,7 @@ class ApiPjSource(PjSource):
 
     # TODO: this requires a strong error management as it calls an external API
     def get_from_params(self, url, params) -> PjApiPOI:
-        headers = {"Authorization": f"Bearer {self.access_token}"}
-        res = self.client.get(url, params=params, headers=headers)
+        res = self.oauth.get(url, params=params)
         res.raise_for_status()
         return res.json()
 
@@ -116,7 +127,7 @@ class ApiPjSource(PjSource):
         query_params = {
             "what": raw_categories,
             "where": self.format_where(bbox),
-            # TODO: add some scrolling mechanism, which should go with some async?
+            # TODO: add some scrolling mechanism, which should come with some async?
             "max": min(30, size),
         }
 
@@ -140,4 +151,4 @@ class ApiPjSource(PjSource):
         )
 
 
-pj_source = ApiPjSource() if settings.get("PJ_ACCESS_TOKEN") else LegacyPjSource()
+pj_source = ApiPjSource() if settings.get("PJ_API_ID") else LegacyPjSource()

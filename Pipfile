@@ -32,6 +32,7 @@ unidecode = "*"
 httpx = ">=0.12.0"
 geopy = "*"
 py-mini-racer = "*"
+requests-oauthlib = "*"
 
 [requires]
 python_version = "3.8"

@@ -77,7 +77,8 @@ PJ_ES_INDEX: "pagesjaunes"
 PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 
 # Pages jaunes
-PJ_ACCESS_TOKEN:
+PJ_API_ID:
+PJ_API_SECRET:
 
 #######################
 ## Data Publishing
