@@ -7,7 +7,7 @@ from fastapi import HTTPException
 
 from idunn import settings
 from idunn.places import PjPOI, LegacyPjPOI
-from idunn.places.models import pj_business, pj_find
+from idunn.places.models import pj_info, pj_find
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
@@ -132,7 +132,7 @@ class ApiPjSource(PjSource):
 
     def get_place(self, poi_id) -> PjPOI:
         return PjPOI(
-            pj_business.Response(
+            pj_info.Response(
                 **self.get_from_params(
                     self.PJ_INFO_API_URL, {"listing_id": self.internal_id(poi_id)}
                 )
