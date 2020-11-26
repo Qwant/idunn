@@ -279,12 +279,16 @@ class PjApiPOI(BasePlace):
         return next((site.website_url for site in self.data.website_urls or []), None)
 
     def get_class_name(self):
-        # TODO : check that this still matches
-        return "cinema"
+        class_name, _ = get_class_subclass(
+            frozenset(cat.category_name for cat in self.data.categories or [])
+        )
+        return class_name
 
     def get_subclass_name(self):
-        # TODO : check that this still matches
-        return "cinema"
+        _, subclass_name = get_class_subclass(
+            frozenset(cat.category_name for cat in self.data.categories or [])
+        )
+        return subclass_name
 
     def get_raw_opening_hours(self):
         # TODO
