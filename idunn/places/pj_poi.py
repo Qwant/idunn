@@ -1,3 +1,4 @@
+import re
 from functools import lru_cache
 from statistics import mean, StatisticsError
 from typing import Union
@@ -7,6 +8,15 @@ from .models import pj_info, pj_find
 from .place import PlaceMeta
 from ..api.constants import PoiSource
 
+WHEELCHAIN_ACCESSIBLE = re.compile(
+    "|".join(
+        [
+            "accès handicapés?",
+            "accès aux personnes à mobilité réduite",
+            "accès pour personne à mobilité réduite",
+        ]
+    )
+)
 
 DOCTORS = (
     "Chiropracteur",
@@ -264,13 +274,7 @@ class PjApiPOI(BasePlace):
             (
                 contact.contact_value
                 for contact in self.get_contact_infos()
-                if contact.contact_type
-                in [  # TODO: unify
-                    pj_info.ContactType.MOBILE,
-                    pj_info.ContactType.TELEPHONE,
-                    pj_find.ContactType.MOBILE,
-                    pj_find.ContactType.TELEPHONE,
-                ]
+                if contact.contact_type.value in ["MOBILE", "TELEPHONE"]
             ),
             None,
         )
@@ -298,12 +302,17 @@ class PjApiPOI(BasePlace):
         return None
 
     def get_raw_wheelchair(self):
-        # TODO: need the API to look into the format
-        pass
+        return (
+            any(
+                WHEELCHAIN_ACCESSIBLE.match(label)
+                for desc in self.data.business_descriptions or []
+                for label in (desc.values or [])
+            )
+            or None
+        )
 
     def get_inscription_with_address(self):
         """Search for an inscriptions that contains address informations"""
-        # TODO: is the filter relevant?
         return next((ins for ins in self.data.inscriptions or [] if ins.address_street), None)
 
     def build_address(self, lang):
@@ -319,12 +328,12 @@ class PjApiPOI(BasePlace):
         return {
             "id": None,
             "name": street_and_number,
-            "housenumber": None,  # TODO?
+            "housenumber": None,
             "postcode": postcode,
             "label": f"{street_and_number}, {postcode} {city}".strip().strip(","),
             "admin": None,
             "admins": self.build_admins(lang),
-            "street": {  # TODO?
+            "street": {
                 "id": None,
                 "name": None,
                 "label": None,
@@ -360,9 +369,10 @@ class PjApiPOI(BasePlace):
         return ["FR"]
 
     def get_images_urls(self):
-        # TODO: it could be interesting to distinguish the thumbnail from other images
-        thumbnail = self.data.thumbnail_url
-        images = [thumbnail] if thumbnail else []
+        images = []
+
+        if self.data.thumbnail_url:
+            images.append(self.data.thumbnail_url)
 
         if isinstance(self.data, pj_info.Response):
             images += [photo.url for photo in self.data.photos or []]

@@ -14,8 +14,6 @@ from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
 
-# TODO: add a shortcircuit mecanism in case PJ is not reliable?
-
 
 class PjSource:
     PLACE_ID_NAMESPACE = "pj"
@@ -117,9 +115,7 @@ class ApiPjSource(PjSource):
         left, bot, right, top = bbox
         return f"gZ{left},{top},{right},{bot}"
 
-    # TODO: this requires a strong error management as it calls an external API
     def get_from_params(self, url, params=None) -> PjApiPOI:
-        # oauthlib.oauth2.rfc6749.errors.TokenExpiredError
         res = self.session.get(url, params=params)
         res.raise_for_status()
         return res.json()

@@ -26,13 +26,13 @@ class AuthSession:
         raise NotImplementedError
 
     @staticmethod
-    def parse_authorisation_response(resp: dict) -> (str, int):
+    def parse_authorisation_response(resp: dict) -> (str, float):
         """
         Build the token and the expiration date timestamp from the response
         from authorization API.
         """
         token = resp["access_token"]
-        expires_at = int(resp["issued_at"]) + int(resp["expires_in"])
+        expires_at = float(resp["issued_at"]) // 1000 + float(resp["expires_in"])
         return token, expires_at
 
     def query_new_token(self) -> requests.Response:
