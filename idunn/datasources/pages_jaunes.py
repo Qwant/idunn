@@ -1,15 +1,15 @@
+from os import path
 from typing import List
 
 import requests
 import logging
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
-from oauthlib.oauth2 import BackendApplicationClient
-from requests_oauthlib import OAuth2Session
 
 from idunn import settings
 from idunn.places import PjApiPOI, PjPOI
 from idunn.places.models import pj_info, pj_find
+from idunn.utils.auth_session import AuthSession
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
@@ -92,25 +92,25 @@ class LegacyPjSource(PjSource):
         return PjPOI(es_place[0]["_source"])
 
 
+class PjAuthSession(AuthSession):
+    def get_authorization_url(self):
+        return "https://api.pagesjaunes.fr/oauth/client_credential/accesstoken"
+
+    def get_authorization_params(self):
+        return {
+            "grant_type": "client_credentials",
+            "client_id": settings.get("PJ_API_ID"),
+            "client_secret": settings.get("PJ_API_SECRET"),
+        }
+
+
 class ApiPjSource(PjSource):
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
     PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
-    PJ_AUTHORIZATION = "https://api.pagesjaunes.fr/oauth/client_credential/accesstoken"
 
     def __init__(self):
         self.enabled = True
-        self.client_id = settings.get("PJ_API_ID")
-        self.client_secret = settings.get("PJ_API_SECRET")
-
-        # TODO: refresh token if available?
-        #       https://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#refreshing-tokens
-        self.client = BackendApplicationClient(client_id=self.client_id)
-        self.oauth = OAuth2Session(client=self.client)
-        self.token = self.oauth.fetch_token(
-            token_url=self.PJ_AUTHORIZATION,
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-        )
+        self.session = PjAuthSession()
 
     @staticmethod
     def format_where(bbox):
@@ -118,21 +118,22 @@ class ApiPjSource(PjSource):
         return f"gZ{left},{top},{right},{bot}"
 
     # TODO: this requires a strong error management as it calls an external API
-    def get_from_params(self, url, params) -> PjApiPOI:
-        res = self.oauth.get(url, params=params)
+    def get_from_params(self, url, params=None) -> PjApiPOI:
+        # oauthlib.oauth2.rfc6749.errors.TokenExpiredError
+        res = self.session.get(url, params=params)
         res.raise_for_status()
         return res.json()
 
     def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> List[PjApiPOI]:
         query_params = {
-            "what": raw_categories,
+            "what": " ".join(raw_categories),
             "where": self.format_where(bbox),
             # TODO: add some scrolling mechanism, which should come with some async?
             "max": min(30, size),
         }
 
         if query:
-            query_params["q"] = query
+            query_params["what"] += " " + query
 
         res = pj_find.Response(**self.get_from_params(self.PJ_FIND_API_URL, query_params))
 
@@ -144,9 +145,7 @@ class ApiPjSource(PjSource):
     def get_place(self, poi_id) -> PjApiPOI:
         return PjApiPOI(
             pj_info.Response(
-                **self.get_from_params(
-                    self.PJ_INFO_API_URL, {"listing_id": self.internal_id(poi_id)}
-                )
+                **self.get_from_params(path.join(self.PJ_INFO_API_URL, self.internal_id(poi_id)))
             )
         )
 

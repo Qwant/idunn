@@ -225,13 +225,13 @@ class PjApiPOI(BasePlace):
         self.data = d
 
     def get_id(self):
-        listing_id = self.data.listing_id
-        return f"pj:{listing_id}" if listing_id else None
+        merchant_id = self.data.merchant_id
+        return f"pj:{merchant_id}" if merchant_id else None
 
     def get_coord(self):
         if isinstance(self.data, pj_info.Response):
             # TODO: it seems the information is not here?
-            return {"lat": 0, "lon": 0}
+            return {"lat": 48, "lon": 2}
 
         return next(
             (
@@ -291,8 +291,11 @@ class PjApiPOI(BasePlace):
         return subclass_name
 
     def get_raw_opening_hours(self):
-        # TODO
-        pass
+        if isinstance(self.data, pj_info.Response) and self.data.schedules:
+            return self.data.schedules.opening_hours
+        elif isinstance(self.data, pj_find.Listing):
+            return self.data.opening_hours
+        return None
 
     def get_raw_wheelchair(self):
         # TODO: need the API to look into the format
@@ -352,9 +355,6 @@ class PjApiPOI(BasePlace):
                 "postcodes": [postcode] if postcode else [],
             }
         ]
-
-    def get_raw_address(self):
-        return {}
 
     def get_country_codes(self):
         return ["FR"]

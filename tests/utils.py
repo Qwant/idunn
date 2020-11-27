@@ -69,7 +69,7 @@ def enable_recycling():
     """
     with override_settings({"RECYCLING_SERVER_URL": "http://recycling.test"}):
         # No need to authenticate and fetch a token during tests
-        recycling_client._token_expires_at = 1e60
+        recycling_client.session.token_expires_at = 1e60
         yield
 
 

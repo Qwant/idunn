@@ -5,14 +5,39 @@ from itertools import islice
 from geopy.distance import distance
 
 from idunn import settings
+from idunn.utils.auth_session import AuthSession
 from idunn.utils.redis import RedisWrapper
 
 logger = logging.getLogger(__name__)
 
 
+class RecyclingAuthSession(AuthSession):
+    def get_authorization_url(self):
+        base_url = settings.get("RECYCLING_SERVER_URL")
+        return f"{base_url}/_login/local"
+
+    def get_authorization_params(self):
+        return {
+            "username": settings["RECYCLING_SERVER_USERNAME"],
+            "password": settings["RECYCLING_SERVER_PASSWORD"],
+        }
+
+    @staticmethod
+    def parse_authorisation_response(resp):
+        token = resp["result"]["jwt"]
+        expires_at = resp["result"]["expiresAt"] / 1000
+        return token, expires_at
+
+    def query_new_token(self):
+        return self.inner.post(
+            self.get_authorization_url(),
+            json=self.get_authorization_params(),
+            timeout=self.refresh_timeout,
+        )
+
+
 class RecyclingDataSource:
     def __init__(self):
-        self.session = requests.Session()
         self.request_timeout = float(settings["RECYCLING_REQUEST_TIMEOUT"])
         self.data_index = settings["RECYCLING_DATA_INDEX"]
         self.data_collection = settings["RECYCLING_DATA_COLLECTION"]
@@ -20,8 +45,7 @@ class RecyclingDataSource:
         self.use_cache = settings["RECYCLING_DATA_STORE_IN_CACHE"]
         self.cache_expire = int(settings["RECYCLING_DATA_EXPIRE"])
         self.measures_max_age_in_hours = int(settings["RECYCLING_MEASURES_MAX_AGE_IN_HOURS"])
-
-        self._token_expires_at = 0
+        self.session = RecyclingAuthSession(refresh_timeout=self.request_timeout)
 
     @property
     def base_url(self):
@@ -30,26 +54,6 @@ class RecyclingDataSource:
     @property
     def enabled(self):
         return bool(self.base_url)
-
-    def refresh_token(self):
-        current_epoch_millis = int(time() * 1000)
-        expiration_tolerance = 10000  # refresh token expiring in less than 10s
-        if current_epoch_millis < self._token_expires_at - expiration_tolerance:
-            return
-
-        self.session.headers.pop("Authorization", None)
-        resp = self.session.get(
-            f"{self.base_url}/_login/local",
-            json={
-                "username": settings["RECYCLING_SERVER_USERNAME"],
-                "password": settings["RECYCLING_SERVER_PASSWORD"],
-            },
-            timeout=self.request_timeout,
-        )
-        resp.raise_for_status()
-        token = resp.json()["result"]["jwt"]
-        self._token_expires_at = resp.json()["result"]["expiresAt"]
-        self.session.headers["Authorization"] = f"Bearer {token}"
 
     def get_latest_measures(self, lat, lon, max_distance, size=50):
         """
@@ -80,7 +84,6 @@ class RecyclingDataSource:
         return list(islice((r for r in results if get_distance_of_result(r) < max_distance), size))
 
     def _fetch_latest_measures(self, lat, lon, max_distance, size):
-        self.refresh_token()
         query = {
             "bool": {
                 "filter": [
