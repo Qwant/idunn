@@ -103,6 +103,7 @@ class PjAuthSession(AuthSession):
 
 
 class ApiPjSource(PjSource):
+    PJ_RESULT_MAX_SIZE = 30
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
     PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
 
@@ -120,23 +121,34 @@ class ApiPjSource(PjSource):
         res.raise_for_status()
         return res.json()
 
+    def get_places_from_url(self, url, params=None, size=10):
+        res = pj_find.Response(**self.get_from_params(url, params))
+        pois = [PjApiPOI(listing) for listing in res.search_results.listings[:size] or []]
+
+        if (
+            len(pois) < size
+            and res.context
+            and res.context.pages
+            and res.context.pages.next_page_url
+        ):
+            pois += self.get_places_from_url(
+                res.context.pages.next_page_url.replace("/pros/find", "/pros/search"),
+                size=size - len(pois),
+            )
+
+        return pois
+
     def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> List[PjApiPOI]:
         query_params = {
             "what": " ".join(raw_categories),
             "where": self.format_where(bbox),
-            # TODO: add some scrolling mechanism, which should come with some async?
-            "max": min(30, size),
+            "max": min(self.PJ_RESULT_MAX_SIZE, size),
         }
 
         if query:
             query_params["what"] += " " + query
 
-        res = pj_find.Response(**self.get_from_params(self.PJ_FIND_API_URL, query_params))
-
-        if not res:
-            return None
-
-        return [PjApiPOI(listing) for listing in res.search_results.listings or []]
+        return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
     def get_place(self, poi_id) -> PjApiPOI:
         return PjApiPOI(
