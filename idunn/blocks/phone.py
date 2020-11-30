@@ -7,26 +7,16 @@ from .base import BaseBlock
 logger = logging.getLogger(__name__)
 
 
-def get_formatted_phone_number(phone, output_format):
-    try:
-        if not isinstance(phone, PhoneNumber):
-            phone = parse(phone)
-        return format_number(phone, output_format)
-    except Exception:
-        logger.warning("Failed to format phone number", exc_info=True)
-    return None
-
-
 def get_international_phone_number(phone):
-    return get_formatted_phone_number(phone, PhoneNumberFormat.INTERNATIONAL)
+    return format_number(phone, PhoneNumberFormat.INTERNATIONAL)
 
 
 def get_national_phone_number(phone):
-    return get_formatted_phone_number(phone, PhoneNumberFormat.NATIONAL)
+    return format_number(phone, PhoneNumberFormat.NATIONAL)
 
 
 def get_e164_phone_number(phone):
-    return get_formatted_phone_number(phone, PhoneNumberFormat.E164)
+    return format_number(phone, PhoneNumberFormat.E164)
 
 
 class PhoneBlock(BaseBlock):
@@ -42,7 +32,7 @@ class PhoneBlock(BaseBlock):
         if not raw:
             return None
         try:
-            parsed_phone_number = parse(raw)
+            parsed_phone_number = parse(raw, place.get_country_code())
         except Exception:
             logger.warning(
                 "Failed to parse phone number for place %s", place.get_id(), exc_info=True
