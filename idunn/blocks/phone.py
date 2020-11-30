@@ -1,7 +1,22 @@
-from .base import BaseBlock
-from ..api import utils
-
+import logging
 from typing import ClassVar
+from phonenumbers import PhoneNumber, PhoneNumberFormat, parse, format_number
+
+from .base import BaseBlock
+
+logger = logging.getLogger(__name__)
+
+
+def get_international_phone_number(phone):
+    return format_number(phone, PhoneNumberFormat.INTERNATIONAL)
+
+
+def get_national_phone_number(phone):
+    return format_number(phone, PhoneNumberFormat.NATIONAL)
+
+
+def get_e164_phone_number(phone):
+    return format_number(phone, PhoneNumberFormat.E164)
 
 
 class PhoneBlock(BaseBlock):
@@ -12,17 +27,23 @@ class PhoneBlock(BaseBlock):
     local_format: str
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        raw = es_poi.get_phone()
+    def from_es(cls, place, lang):
+        raw = place.get_phone()
         if not raw:
             return None
-        parsed_phone_number = utils.parse_phone_number(raw)
+        try:
+            parsed_phone_number = parse(raw, place.get_country_code())
+        except Exception:
+            logger.warning(
+                "Failed to parse phone number for place %s", place.get_id(), exc_info=True
+            )
+            return None
         if parsed_phone_number is None:
             return None
-        # At this point, it should all work but just in case...
-        e164 = utils.get_e164_phone_number(parsed_phone_number)
-        national = utils.get_national_phone_number(parsed_phone_number)
-        international = utils.get_international_phone_number(parsed_phone_number)
+
+        e164 = get_e164_phone_number(parsed_phone_number)
+        national = get_national_phone_number(parsed_phone_number)
+        international = get_international_phone_number(parsed_phone_number)
         if e164 is None or national is None or international is None:
             return None
         return cls(
