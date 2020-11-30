@@ -1,0 +1,96 @@
+{
+    "business_descriptions": [
+        {
+            "label": "Services et Prestations",
+            "values": [
+                "musée de collection",
+                "exposition permanente",
+                "exposition temporaire",
+                "conférence",
+                "visite guidée",
+                "boutique",
+                "accès aux personnes à mobilité réduite"
+            ]
+        }
+    ],
+    "categories": [
+        {
+            "category_name": "musées"
+        }
+    ],
+    "click_and_collect": {
+        "eligible": false
+    },
+    "context": {
+        "search": {
+            "request_id": "1361606724369457757506724369457"
+        }
+    },
+    "listing_id": "FCP05360257PROSPECT000001C0001",
+    "merchant_id": "05360257",
+    "merchant_name": "Musée Picasso",
+    "photos": [
+        {
+            "url": "https://www.pagesjaunes.fr/media/resto/musee_picasso_OSD05360257-45027.jpg"
+        },
+        {
+            "url": "https://www.pagesjaunes.fr/media/resto/musee_picasso_OSD05360257-45028.jpg"
+        },
+        {
+            "url": "https://www.pagesjaunes.fr/media/ugc/musee_picasso_07505600_104036264"
+        }
+    ],
+    "schedules": {
+        "opening_days": [
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Mardi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Mercredi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Jeudi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Vendredi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Samedi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Dimanche"
+            }
+        ],
+        "opening_hours": "Tu-Su 10:30-18:00",
+        "opening_hours_updated": "2018-08-28 00:00:00"
+    },
+    "website_urls": [
+        {
+            "suggested_label": "Voir le site www.museepicassoparis.fr",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "http://www.museepicassoparis.fr"
+        },
+        {
+            "suggested_label": "Voir le site www.facebook.com/MuseePicassoParis",
+            "url_type": "FACEBOOK",
+            "website_url": "https://[FACEBOOK]"
+        },
+        {
+            "suggested_label": "Twitter",
+            "url_type": "TWITTER",
+            "website_url": "https://[TWITTER]"
+        }
+    ]
+}

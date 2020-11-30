@@ -1,0 +1,149 @@
+{
+    "b2b": {
+        "business_details": {
+            "head_office": true,
+            "naf_code": "9102Z",
+            "number_of_employees": "0 salarié",
+            "siret": "13001217200016"
+        },
+        "company_details": {
+            "associated_names": [
+                "Musée Picasso"
+            ],
+            "creation_date": "2010-06-18",
+            "head_office_address": {
+                "address_city": "Paris",
+                "address_district": "03",
+                "address_street": "r Thorigny",
+                "address_street_number": "5",
+                "address_zipcode": "75003"
+            },
+            "number_of_businesses": 0,
+            "numbers_of_employees": "0 salarié",
+            "siren": "130012172"
+        }
+    },
+    "business_descriptions": [
+        {
+            "label": "Services et Prestations",
+            "values": [
+                "musée de collection",
+                "exposition permanente",
+                "exposition temporaire",
+                "conférence",
+                "visite guidée",
+                "boutique",
+                "accès aux personnes à mobilité réduite"
+            ]
+        }
+    ],
+    "categories": [
+        {
+            "category_name": "musées"
+        }
+    ],
+    "click_and_collect": {
+        "eligible": false
+    },
+    "context": {
+        "search": {
+            "request_id": "1361606724369457757506724369457"
+        }
+    },
+    "inscriptions": [
+        {
+            "address_city": "Paris",
+            "address_district": "03",
+            "address_street": "5 r Thorigny",
+            "address_zipcode": "75003",
+            "contact_infos": [
+                {
+                    "contact_type": "MAIL",
+                    "contact_value": "contact@museepicassoparis.fr"
+                },
+                {
+                    "contact_type": "TELEPHONE",
+                    "contact_value": "01 85 56 00 36",
+                    "no_direct_marketing": false
+                }
+            ],
+            "reviews": {
+                "overall_review_rating": 4.0,
+                "total_reviews": 8
+            },
+            "urls": {
+                "itinerary_url": "https://[ITINERARY]",
+                "map_url": "https://[MAP]",
+                "merchant_url": "https://[MERCHANT]",
+                "reviews_url": "https://[VOIR_TOUS_AVIS]"
+            }
+        }
+    ],
+    "listing_id": "FCP05360257PROSPECT000001C0001",
+    "merchant_id": "05360257",
+    "merchant_name": "Musée Picasso",
+    "photos": [
+        {
+            "url": "https://www.pagesjaunes.fr/media/resto/musee_picasso_OSD05360257-45027.jpg"
+        },
+        {
+            "url": "https://www.pagesjaunes.fr/media/resto/musee_picasso_OSD05360257-45028.jpg"
+        },
+        {
+            "url": "https://www.pagesjaunes.fr/media/ugc/musee_picasso_07505600_104036264"
+        }
+    ],
+    "schedules": {
+        "opening_days": [
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Mardi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Mercredi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Jeudi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Vendredi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Samedi"
+            },
+            {
+                "morning_closing_time": "18:00",
+                "morning_opening_time": "10:30",
+                "weekday": "Dimanche"
+            }
+        ],
+        "opening_hours": "Tu-Su 10:30-18:00",
+        "opening_hours_updated": "2018-08-28 00:00:00"
+    },
+    "website_urls": [
+        {
+            "suggested_label": "Voir le site www.museepicassoparis.fr",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "http://www.museepicassoparis.fr"
+        },
+        {
+            "suggested_label": "Voir le site www.facebook.com/MuseePicassoParis",
+            "url_type": "FACEBOOK",
+            "website_url": "https://[FACEBOOK]"
+        },
+        {
+            "suggested_label": "Twitter",
+            "url_type": "TWITTER",
+            "website_url": "https://[TWITTER]"
+        }
+    ]
+}

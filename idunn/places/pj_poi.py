@@ -319,11 +319,11 @@ class PjApiPOI(BasePlace):
         inscription = self.get_inscription_with_address()
 
         if not inscription:
-            return None
-
-        city = inscription.address_city
-        postcode = inscription.address_zipcode
-        street_and_number = inscription.address_street
+            city, postcode, street_and_number = [""] * 3
+        else:
+            city = inscription.address_city
+            postcode = inscription.address_zipcode
+            street_and_number = inscription.address_street
 
         return {
             "id": None,

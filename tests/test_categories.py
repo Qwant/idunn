@@ -1,9 +1,10 @@
+import pytest
 from unittest.mock import ANY
 from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
-from .utils import enable_legacy_pj_source
+from .test_pj_poi import enable_pj_source
 
 BBOX_PARIS = "2.252876,48.819862,2.395707,48.891132"
 BBOX_BREST = "-4.807542,48.090743,-4.097541,48.800743"
@@ -763,8 +764,12 @@ def test_valid_category():
     }
 
 
-@enable_legacy_pj_source()
-def test_places_with_explicit_source_osm():
+@pytest.mark.parametrize(
+    "enable_pj_source",
+    [("legacy", "musee_picasso_short"), ("api", "api_musee_picasso_short")],
+    indirect=True,
+)
+def test_places_with_explicit_source_osm(enable_pj_source):
     """
         If source=osm is passed to the query, pj_source should be ignored
     """
