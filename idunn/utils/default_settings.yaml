@@ -1,5 +1,9 @@
 USER_AGENT: "Idunn/0.1"
 
+BASE_URL: http://localhost:5000/ # Base URL of Idunn's endpoint
+
+SECRET: "CHANGE_ME"
+
 MIMIR_ES: http://localhost:9200/
 
 VERIFY_HTTPS: True # Whether to verify HTTPS certificates for requests to Mimir ES and internal APIs
