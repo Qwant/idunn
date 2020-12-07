@@ -77,7 +77,16 @@ def test_pj_place(enable_pj_source):
     assert blocks[2]["blocks"][0]["blocks"][0]["wheelchair"] == "yes"
 
     assert blocks[3]["type"] == "website"
-    assert blocks[3]["url"] == "http://www.museepicassoparis.fr"
+    assert (
+        blocks[3]["url"]
+        == {
+            "redirect": True,
+            "url": "http://www.museepicassoparis.fr",
+            "hash": mock.ANY,
+            "label": "www.museepicassoparis.fr",
+        }
+        or blocks[3]["url"] == "http://www.museepicassoparis.fr"
+    )
 
     assert blocks[4]["type"] == "images"
     assert len(blocks[4]["images"]) == 3
