@@ -7,6 +7,7 @@ from .base import BasePlace
 from .models import pj_info, pj_find
 from .place import PlaceMeta
 from ..api.constants import PoiSource
+from ..api.urlsolver import hash_url
 
 WHEELCHAIN_ACCESSIBLE = re.compile(
     "|".join(
@@ -272,7 +273,26 @@ class PjApiPOI(BasePlace):
         )
 
     def get_website(self):
-        return next((site.website_url for site in self.data.website_urls), None)
+        def get_label(suggested_label):
+            prefix = "Voir le site "
+            if suggested_label.startswith(prefix):
+                return suggested_label[len(prefix) :]
+            return suggested_label
+
+        if not self.data.website_urls:
+            return None
+
+        site = self.data.website_urls[0]
+        res = {
+            "redirect": True,
+            "url": site.website_url,
+            "hash": hash_url(site.website_url),
+        }
+
+        if isinstance(self.data, pj_info.Response):
+            res["label"] = get_label(site.suggested_label)
+
+        return res
 
     def get_class_name(self):
         class_name, _ = get_class_subclass(

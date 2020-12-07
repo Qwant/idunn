@@ -8,6 +8,7 @@ from ..directions.models import DirectionsResponse
 from .geocoder import get_autocomplete
 from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions
+from .urlsolver import follow_redirection
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
@@ -68,5 +69,15 @@ def get_api_urls(settings):
             methods=["GET", "POST"],
             response_model=IdunnAutocomplete,
             response_model_exclude_unset=True,
+        ),
+        # Solve URLs
+        APIRoute(
+            "/redirect",
+            follow_redirection,
+            responses={
+                307: {"description": "Redirect to the same page as provided URL."},
+                403: {"description": "Wrong URL hash."},
+                404: {"description": "The URL does not redirect."},
+            },
         ),
     ]

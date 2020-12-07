@@ -1,12 +1,21 @@
 from .base import BaseBlock
 
-from typing import ClassVar
+from typing import ClassVar, Union, Optional
+
+from pydantic import BaseModel
+
+
+class WebsiteUrl(BaseModel):
+    url: str
+    redirect: bool = False
+    hash: Optional[str]
+    label: Optional[str]
 
 
 class WebSiteBlock(BaseBlock):
     BLOCK_TYPE: ClassVar = "website"
 
-    url: str
+    url: Union[str, WebsiteUrl]
 
     @classmethod
     def from_es(cls, es_poi, lang):
