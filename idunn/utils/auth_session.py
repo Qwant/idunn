@@ -11,9 +11,17 @@ class AuthSession:
 
     Note that at least `get_authorization_url` and `get_authorization_params`
     need to be overriden.
+
+    Parameters
+    ----------
+
+    expiration_tolerance: Delay before the expiration of the token to fetch a
+                          new token, in seconds.
+
+    refresh_timeout: Timeout of the request asking for a new token.
     """
 
-    def __init__(self, expiration_tolerance=10, refresh_timeout=1000):
+    def __init__(self, expiration_tolerance=10, refresh_timeout=1):
         self.inner = requests.Session()
         self.expiration_tolerance = expiration_tolerance
         self.refresh_timeout = refresh_timeout
@@ -40,7 +48,7 @@ class AuthSession:
         return self.inner.post(
             self.get_authorization_url(),
             data=self.get_authorization_params(),
-            timeout=self.refresh_timeout,
+            timeout=self.refresh_timeout * 1000,
         )
 
     def get_new_token(self):

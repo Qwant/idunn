@@ -29,7 +29,7 @@ class RecyclingAuthSession(AuthSession):
         return token, expires_at
 
     def query_new_token(self):
-        return self.inner.post(
+        return self.inner.get(
             self.get_authorization_url(),
             json=self.get_authorization_params(),
             timeout=self.refresh_timeout,
