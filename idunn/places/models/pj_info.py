@@ -13,7 +13,7 @@ class BusinessDescription(BaseModel):
       - label: Business description label
     """
 
-    values: Optional[List[str]] = Field(None, description="Array of Business description values")
+    values: List[str] = Field([], description="Array of Business description values")
 
 
 class Category(BaseModel):
@@ -112,9 +112,7 @@ class Inscription(BaseModel):
     address_zipcode: Optional[str] = Field(None, description="Zip code of business location")
     address_city: Optional[str] = Field(None, description="City of business location")
     reviews: Optional[Reviews] = Field(None, description="Review object")
-    contact_infos: Optional[List[ContactInfo]] = Field(
-        None, description="Array of contact information"
-    )
+    contact_infos: List[ContactInfo] = Field([], description="Array of contact information")
     urls: Optional[Urls] = Field(None, description="Wraps the set of urls for this business")
 
 
@@ -141,18 +139,16 @@ class Response(BaseModel):
     merchant_id: Optional[str] = Field(None, description="Id of the professional")
     merchant_name: Optional[str] = Field(None, description="Name of the professional")
     thumbnail_url: Optional[str] = Field(None, description="URL of the professional ’s thumbnail")
-    website_urls: Optional[List[WebsiteUrl]] = Field(
-        None, description="Array of merchant websites URLs"
+    website_urls: List[WebsiteUrl] = Field([], description="Array of merchant websites URLs")
+    business_descriptions: List[BusinessDescription] = Field(
+        [], description="Array of business description object"
     )
-    business_descriptions: Optional[List[BusinessDescription]] = Field(
-        None, description="Array of business description object"
-    )
-    photos: Optional[List[Photo]] = Field(None, description="Array of photos")
-    categories: Optional[List[Category]] = Field(None, description="Array of categories")
+    photos: List[Photo] = Field([], description="Array of photos")
+    categories: List[Category] = Field([], description="Array of categories")
     schedules: Optional[Schedules] = Field(
         None,
         description="Schedules object (see http://wiki.openstreetmap.org/wiki/Key:opening_hours/specification to calculate current status)",
     )
-    inscriptions: Optional[List[Inscription]] = Field(
-        None, description="Array of all subscriptions (contact info and address) for a business"
+    inscriptions: List[Inscription] = Field(
+        [], description="Array of all subscriptions (contact info and address) for a business"
     )

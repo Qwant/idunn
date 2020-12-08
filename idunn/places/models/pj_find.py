@@ -13,7 +13,7 @@ class BusinessDescription(BaseModel):
       - label: Business description label
     """
 
-    values: Optional[List[str]] = Field(None, description="Array of Business description values")
+    values: List[str] = Field([], description="Array of Business description values")
 
 
 class Category(BaseModel):
@@ -113,9 +113,7 @@ class Inscription(BaseModel):
     latitude: Optional[float] = Field(None, description="Location latitude (WGS84)")
     longitude: Optional[float] = Field(None, description="Location longitude (WGS84)")
     reviews: Optional[Reviews] = Field(None, description="Reviews object")
-    contact_info: Optional[List[ContactInfo]] = Field(
-        None, description="Array of contact information"
-    )
+    contact_info: List[ContactInfo] = Field([], description="Array of contact information")
     urls: Optional[Urls] = Field(None, description="Wraps the set of urls for this business")
 
 
@@ -141,15 +139,13 @@ class Listing(BaseModel):
     )
     merchant_name: Optional[str] = Field(None, description="Name of the merchant")
     thumbnail_url: Optional[str] = Field(None, description="URL for the merchant main thumbnail")
-    website_urls: Optional[List[WebsiteUrls]] = Field(
-        None, description="Array of merchant websites URLs"
+    website_urls: List[WebsiteUrls] = Field([], description="Array of merchant websites URLs")
+    business_descriptions: List[BusinessDescription] = Field(
+        [], description="Array of business description object"
     )
-    business_descriptions: Optional[List[BusinessDescription]] = Field(
-        None, description="Array of business description object"
-    )
-    categories: Optional[List[Category]] = Field(None, description="Array of categories")
-    inscriptions: Optional[List[Inscription]] = Field(
-        None, description="Array of all subscriptions (contact info and address) for a business"
+    categories: List[Category] = Field([], description="Array of categories")
+    inscriptions: List[Inscription] = Field(
+        [], description="Array of all subscriptions (contact info and address) for a business"
     )
     opening_hours: Optional[str] = Field(
         None,
@@ -165,7 +161,7 @@ class SearchResults(BaseModel):
       - small_map_url: URL for small map image
     """
 
-    listings: Optional[List[Listing]] = Field(None, description="Array of listings")
+    listings: List[Listing] = Field([], description="Array of listings")
 
 
 class Response(BaseModel):

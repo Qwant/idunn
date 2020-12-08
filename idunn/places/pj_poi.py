@@ -246,7 +246,7 @@ class PjApiPOI(BasePlace):
         return next(
             (
                 {"lat": ins.latitude, "lon": ins.longitude}
-                for ins in self.data.inscriptions or []
+                for ins in self.data.inscriptions
                 if ins.latitude and ins.longitude
             ),
             None,
@@ -257,17 +257,9 @@ class PjApiPOI(BasePlace):
 
     def get_contact_infos(self):
         if isinstance(self.data, pj_info.Response):
-            return (
-                contact
-                for ins in self.data.inscriptions or []
-                for contact in ins.contact_infos or []
-            )
+            return (contact for ins in self.data.inscriptions for contact in ins.contact_infos)
         else:
-            return (
-                contact
-                for ins in self.data.inscriptions or []
-                for contact in ins.contact_info or []
-            )
+            return (contact for ins in self.data.inscriptions for contact in ins.contact_info)
 
     def get_phone(self):
         return next(
@@ -280,17 +272,17 @@ class PjApiPOI(BasePlace):
         )
 
     def get_website(self):
-        return next((site.website_url for site in self.data.website_urls or []), None)
+        return next((site.website_url for site in self.data.website_urls), None)
 
     def get_class_name(self):
         class_name, _ = get_class_subclass(
-            frozenset(cat.category_name for cat in self.data.categories or [])
+            frozenset(cat.category_name for cat in self.data.categories)
         )
         return class_name
 
     def get_subclass_name(self):
         _, subclass_name = get_class_subclass(
-            frozenset(cat.category_name for cat in self.data.categories or [])
+            frozenset(cat.category_name for cat in self.data.categories)
         )
         return subclass_name
 
@@ -305,15 +297,15 @@ class PjApiPOI(BasePlace):
         return (
             any(
                 WHEELCHAIN_ACCESSIBLE.match(label)
-                for desc in self.data.business_descriptions or []
-                for label in (desc.values or [])
+                for desc in self.data.business_descriptions
+                for label in desc.values
             )
             or None
         )
 
     def get_inscription_with_address(self):
         """Search for an inscriptions that contains address informations"""
-        return next((ins for ins in self.data.inscriptions or [] if ins.address_street), None)
+        return next((ins for ins in self.data.inscriptions if ins.address_street), None)
 
     def build_address(self, lang):
         inscription = self.get_inscription_with_address()
@@ -375,7 +367,7 @@ class PjApiPOI(BasePlace):
             images.append(self.data.thumbnail_url)
 
         if isinstance(self.data, pj_info.Response):
-            images += [photo.url for photo in self.data.photos or []]
+            images += [photo.url for photo in self.data.photos]
 
         return images or None
 
@@ -384,13 +376,13 @@ class PjApiPOI(BasePlace):
 
     def get_raw_grades(self):
         grade_count = sum(
-            ins.reviews.total_reviews for ins in self.data.inscriptions or [] if ins.reviews
+            ins.reviews.total_reviews for ins in self.data.inscriptions if ins.reviews
         )
 
         try:
             grade_avg = mean(
                 ins.reviews.overall_review_rating
-                for ins in self.data.inscriptions or []
+                for ins in self.data.inscriptions
                 if ins.reviews and ins.reviews.overall_review_rating > 0
             )
         except StatisticsError:
@@ -406,7 +398,7 @@ class PjApiPOI(BasePlace):
         return next(
             (
                 ins.urls.reviews_url
-                for ins in self.data.inscriptions or []
+                for ins in self.data.inscriptions
                 if ins.urls and ins.urls.reviews_url
             ),
             None,
