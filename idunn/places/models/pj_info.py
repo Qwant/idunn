@@ -111,6 +111,8 @@ class Inscription(BaseModel):
     )
     address_zipcode: Optional[str] = Field(None, description="Zip code of business location")
     address_city: Optional[str] = Field(None, description="City of business location")
+    latitude: Optional[float] = Field(None, description="Location latitude (WGS84)")
+    longitude: Optional[float] = Field(None, description="Location longitude (WGS84)")
     reviews: Optional[Reviews] = Field(None, description="Review object")
     contact_infos: List[ContactInfo] = Field([], description="Array of contact information")
     urls: Optional[Urls] = Field(None, description="Wraps the set of urls for this business")

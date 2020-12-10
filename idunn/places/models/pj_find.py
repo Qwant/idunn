@@ -165,11 +165,9 @@ class SearchResults(BaseModel):
 
 
 class Response(BaseModel):
-    """
-    Omitted fields:
-      - context: object containing the context data for this query
-    """
-
+    context: Optional[Context] = Field(
+        None, description="object containing the context data for this query"
+    )
     search_results: Optional[SearchResults] = Field(
         None, description="Object containing the search result for this query"
     )

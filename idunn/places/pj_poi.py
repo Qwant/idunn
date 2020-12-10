@@ -239,10 +239,6 @@ class PjApiPOI(BasePlace):
         return f"pj:{merchant_id}" if merchant_id else None
 
     def get_coord(self):
-        if isinstance(self.data, pj_info.Response):
-            # TODO: it seems the information is not here?
-            return {"lat": 48, "lon": 2}
-
         return next(
             (
                 {"lat": ins.latitude, "lon": ins.longitude}
