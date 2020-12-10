@@ -78,7 +78,7 @@ def test_pj_place(enable_pj_source):
 
     assert blocks[3]["type"] == "website"
     assert blocks[3]["url"] == "http://www.museepicassoparis.fr" or blocks[3]["url"].startswith(
-        "http://localhost:5000/v1/url?url=http://www.museepicassoparis.fr&hash=b6fc09"
+        "http://localhost:5000/v1/redirect?url=http%3A%2F%2Fwww.museepicassoparis.fr&hash=b6fc09"
     )
 
     assert blocks[4]["type"] == "images"
