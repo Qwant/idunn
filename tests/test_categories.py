@@ -238,8 +238,7 @@ def test_bbox():
                         "type": "phone",
                         "url": "tel:+33140205229",
                     },
-                    {"type": "website", "url":
-                            "http://www.louvre.fr","label":None},
+                    {"type": "website", "url": "http://www.louvre.fr", "label": None},
                 ],
                 "meta": {"source": "osm"},
             },

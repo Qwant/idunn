@@ -18,7 +18,7 @@ def resolve_url(url: str) -> str:
     Idunn's URL that can be provided to redirect to the same page as the input
     URL would.
     """
-    return base_url + f"v1/redirect?url={quote(url)}&hash={hash_url(url)}"
+    return base_url + f"v1/redirect?url={quote(url, safe='')}&hash={hash_url(url)}"
 
 
 def hash_url(url: str) -> str:
