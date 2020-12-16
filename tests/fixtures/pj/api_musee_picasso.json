@@ -56,6 +56,8 @@
             "address_district": "03",
             "address_street": "5 r Thorigny",
             "address_zipcode": "75003",
+            "latitude": 48.859702,
+            "longitude": 2.362634,
             "contact_infos": [
                 {
                     "contact_type": "MAIL",

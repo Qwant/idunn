@@ -249,9 +249,12 @@ async def get_places_bbox(
 
 async def _fetch_places_list(params: PlacesQueryParam):
     if params.source == PoiSource.PAGESJAUNES:
-        all_categories = [pj_category for c in params.category for pj_category in c["pj_filters"]]
         return await run_in_threadpool(
-            pj_source.get_places_bbox, all_categories, params.bbox, size=params.size, query=params.q
+            pj_source.get_places_bbox,
+            params.category,
+            params.bbox,
+            size=params.size,
+            query=params.q,
         )
     if params.q:
         # Default source (OSM) with query

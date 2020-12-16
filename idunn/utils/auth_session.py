@@ -48,7 +48,7 @@ class AuthSession:
         return self.inner.post(
             self.get_authorization_url(),
             data=self.get_authorization_params(),
-            timeout=self.refresh_timeout * 1000,
+            timeout=self.refresh_timeout,
         )
 
     def get_new_token(self):

@@ -26,6 +26,12 @@
             "request_id": "1361606724369457757506724369457"
         }
     },
+    "inscriptions": [
+        {
+            "latitude": 48.859702,
+            "longitude": 2.362634
+        }
+    ],
     "listing_id": "FCP05360257PROSPECT000001C0001",
     "merchant_id": "05360257",
     "merchant_name": "Musée Picasso",

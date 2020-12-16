@@ -31,7 +31,7 @@ class PjSource:
     def internal_id(self, poi_id):
         return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
 
-    def get_places_bbox(self, raw_categories, bbox, size=10, query=""):
+    def get_places_bbox(self, categories, bbox, size=10, query=""):
         raise NotImplementedError
 
     def get_place(self, poi_id):
@@ -51,7 +51,8 @@ class LegacyPjSource(PjSource):
         else:
             self.enabled = False
 
-    def get_places_bbox(self, raw_categories, bbox, size=10, query=""):
+    def get_places_bbox(self, categories, bbox, size=10, query=""):
+        raw_categories = [pj_category for c in categories for pj_category in c["pj_filters"]]
         left, bot, right, top = bbox
 
         body = {
@@ -138,9 +139,9 @@ class ApiPjSource(PjSource):
 
         return pois
 
-    def get_places_bbox(self, raw_categories, bbox, size=10, query="") -> List[PjApiPOI]:
+    def get_places_bbox(self, categories, bbox, size=10, query="") -> List[PjApiPOI]:
         query_params = {
-            "what": " ".join(raw_categories),
+            "what": " ".join(c["pj_what"] for c in categories),
             "where": self.format_where(bbox),
             "max": min(self.PJ_RESULT_MAX_SIZE, size),
         }

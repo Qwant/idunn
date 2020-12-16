@@ -59,8 +59,7 @@ def test_pj_place(enable_pj_source):
     assert resp["subclass_name"] == "museum"
     assert resp["type"] == "poi"
     assert resp["meta"]["source"] == "pages_jaunes"
-    # TODO
-    # assert resp["geometry"]["center"] == [2.362634, 48.859702]
+    assert resp["geometry"]["center"] == [2.362634, 48.859702]
 
     assert resp["address"]["admins"]
     admin = resp["address"]["admins"][0]
@@ -111,5 +110,4 @@ def test_pj_place_with_missing_data(enable_pj_source):
     assert resp["subclass_name"] == "museum"
     assert resp["type"] == "poi"
     assert resp["meta"]["source"] == "pages_jaunes"
-    # TODO
-    #  assert resp["geometry"]["center"] == [2.362634, 48.859702]
+    assert resp["geometry"]["center"] == [2.362634, 48.859702]

@@ -1,5 +1,6 @@
 categories:
     restaurant:
+        pj_what: "restaurants"
         pj_filters:
             - "restaurants"
         raw_filters:
@@ -7,12 +8,14 @@ categories:
             - "fast_food,*"
         regex: "^resto|^restau"
     hotel:
+        pj_what: "hôtels"
         pj_filters:
             - "hôtels"
         raw_filters:
             - "*,hotel"
         regex: "hotel"
     leisure:
+        pj_what: "cinéma concerts spectacles"
         pj_filters:
             - "salles de cinéma"
             - "salles de concerts, de spectacles"
@@ -21,12 +24,14 @@ categories:
             - "theatre,*"
         regex: "^cine|leisure|loisir|theat"
     pharmacy:
+        pj_what: "pharmacie"
         pj_filters:
             - "Pharmacie"
         raw_filters:
             - "pharmacy,*"
         regex: "pharmac"
     supermarket:
+        pj_what: "supermarchés hypermarchés"
         pj_filters:
             - "supermarchés, hypermarchés"
         raw_filters:
@@ -34,12 +39,14 @@ categories:
             - "*,mall"
         regex: "superette|epicier|epicerie|marche|market"
     bank:
+        pj_what: "banques"
         pj_filters:
             - "banques"
         raw_filters:
             - "bank,*"
         regex: "^(bank|banque|credit|caisse|atm$)"
     education:
+        pj_what: "école collège lycée enseignement supérieur"
         pj_filters:
             - "écoles maternelles publiques"
             - "écoles primaires publiques"
@@ -56,6 +63,7 @@ categories:
             - "college,*"
         regex: "^ecole|^college|^universit|educat"
     bar:
+        pj_what: "cafés bars"
         pj_filters:
             - "cafés, bars"
         raw_filters:
@@ -63,12 +71,14 @@ categories:
             - "cafe,*"
         regex: "^(cafes?|bars?|pubs?)( |$)"
     museum:
+        pj_what: "musées"
         pj_filters:
             - "musées"
         raw_filters:
             - "museum,*"
         regex: "^(museum|musee)"
     health:
+        pj_what: "centre médico-social chirurgien-dentiste médecin généraliste hôpital"
         pj_filters:
             - "Centre médico-social"
             - "Chirurgien-dentiste"
@@ -81,6 +91,7 @@ categories:
             - "hospital,*"
         regex: "health|sante|hopital|hospital|clinic|clinique|dentist|doctor|docteur"
     service:
+        pj_what: "plombier garages automobiles envoi distribution colis serrurerie mairies gendarmerie police sapeurs-pompiers secours préfecture sous-prefecture"
         pj_filters:
             - "plombiers"
             - "garages automobiles"
@@ -99,6 +110,7 @@ categories:
             - "fire_station,*"
         regex: "service|car repair|post office|police|garage|poste|gendarmerie|pompiers"
     fitness:
+        pj_what: "sports loisirs piscines club de sport"
         pj_filters:
             - "infrastructures de sports et loisirs"
             - "piscines (établissements)"
