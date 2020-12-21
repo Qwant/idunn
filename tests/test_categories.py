@@ -1,9 +1,10 @@
+import pytest
 from unittest.mock import ANY
 from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
-from .utils import enable_pj_source
+from .test_pj_poi import enable_pj_source
 
 BBOX_PARIS = "2.252876,48.819862,2.395707,48.891132"
 BBOX_BREST = "-4.807542,48.090743,-4.097541,48.800743"
@@ -133,7 +134,7 @@ def test_bbox():
                         "local_format": "01 40 49 48 14",
                         "url": "tel:+33140494814",
                     },
-                    {"type": "website", "url": "http://www.musee-orsay.fr"},
+                    {"type": "website", "url": "http://www.musee-orsay.fr", "label": None},
                 ],
                 "meta": {"source": "osm"},
             },
@@ -160,6 +161,7 @@ def test_bbox():
                     {
                         "type": "website",
                         "url": "http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html",
+                        "label": None,
                     },
                 ],
                 "meta": {"source": "osm"},
@@ -236,7 +238,7 @@ def test_bbox():
                         "type": "phone",
                         "url": "tel:+33140205229",
                     },
-                    {"type": "website", "url": "http://www.louvre.fr"},
+                    {"type": "website", "url": "http://www.louvre.fr", "label": None},
                 ],
                 "meta": {"source": "osm"},
             },
@@ -494,7 +496,7 @@ def test_size_list():
                         "type": "phone",
                         "url": "tel:+33140494814",
                     },
-                    {"type": "website", "url": "http://www.musee-orsay.fr"},
+                    {"type": "website", "url": "http://www.musee-orsay.fr", "label": None},
                 ],
                 "meta": ANY,
             }
@@ -625,6 +627,7 @@ def test_single_raw_filter():
                     {
                         "type": "website",
                         "url": "http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html",
+                        "label": None,
                     },
                 ],
                 "meta": ANY,
@@ -763,8 +766,12 @@ def test_valid_category():
     }
 
 
-@enable_pj_source()
-def test_places_with_explicit_source_osm():
+@pytest.mark.parametrize(
+    "enable_pj_source",
+    [("legacy", "musee_picasso_short"), ("api", "api_musee_picasso_short")],
+    indirect=True,
+)
+def test_places_with_explicit_source_osm(enable_pj_source):
     """
         If source=osm is passed to the query, pj_source should be ignored
     """

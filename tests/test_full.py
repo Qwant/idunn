@@ -154,7 +154,7 @@ def test_full(mock_external_requests):
                     }
                 ],
             },
-            {"type": "website", "url": "http://testing.test"},
+            {"type": "website", "url": "http://testing.test", "label": None},
             {"type": "contact", "url": "mailto:contact@example.com",},
         ],
         "meta": {"source": "osm"},

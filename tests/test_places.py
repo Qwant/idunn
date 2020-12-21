@@ -393,7 +393,7 @@ def test_full_query_poi():
                 }
             ],
         },
-        {"type": "website", "url": "http://www.musee-orsay.fr"},
+        {"type": "website", "url": "http://www.musee-orsay.fr", "label": None},
     ]
 
 

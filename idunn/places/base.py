@@ -180,6 +180,9 @@ class BasePlace(dict):
     def get_website(self):
         return self.find_property_value(["contact:website", "website", "facebook"])
 
+    def get_website_label(self):
+        return None
+
     def get_coord(self):
         return self.get("coord")
 

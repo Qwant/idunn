@@ -4,7 +4,7 @@ from unittest.mock import ANY
 from fastapi.testclient import TestClient
 
 from app import app
-from .utils import enable_pj_source, override_settings, read_fixture
+from .utils import override_settings, read_fixture
 
 
 BASE_URL = "http://qwant.bragi"
@@ -170,7 +170,6 @@ def test_autocomplete_unavailable(mock_autocomplete_unavailable):
     assert resp.status_code == 503
 
 
-@enable_pj_source()
 def test_autocomplete_with_nlu_brand_and_city(mock_autocomplete_get, mock_NLU_with_brand_and_city):
     client = TestClient(app)
     assert_intention(
@@ -189,7 +188,6 @@ def test_autocomplete_with_nlu_brand_and_city(mock_autocomplete_get, mock_NLU_wi
     )
 
 
-@enable_pj_source()
 def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_with_brand):
     client = TestClient(app)
     assert_intention(
@@ -200,7 +198,6 @@ def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_wi
     )
 
 
-@enable_pj_source()
 def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_brand):
     client = TestClient(app)
     assert_intention(

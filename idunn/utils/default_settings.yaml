@@ -1,5 +1,9 @@
 USER_AGENT: "Idunn/0.1"
 
+BASE_URL: http://localhost:5000/ # Base URL of Idunn's endpoint
+
+SECRET: "CHANGE_ME"
+
 MIMIR_ES: http://localhost:9200/
 
 VERIFY_HTTPS: True # Whether to verify HTTPS certificates for requests to Mimir ES and internal APIs
@@ -71,10 +75,15 @@ THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
 #########################
 ## Data sources
 
-# Pages jaunes
+# Pages jaunes access through legacy ES data
+# PJ_API_ID / PJ_API_SECRET will be prefered
 PJ_ES:
 PJ_ES_INDEX: "pagesjaunes"
 PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
+
+# Pages jaunes
+PJ_API_ID:
+PJ_API_SECRET:
 
 #######################
 ## Data Publishing

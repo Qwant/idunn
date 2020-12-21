@@ -1,7 +1,23 @@
+import re
 from functools import lru_cache
+from statistics import mean, StatisticsError
+from typing import Union
+
 from .base import BasePlace
+from .models import pj_info, pj_find
 from .place import PlaceMeta
 from ..api.constants import PoiSource
+from ..api.urlsolver import resolve_url
+
+WHEELCHAIN_ACCESSIBLE = re.compile(
+    "|".join(
+        [
+            "accès handicapés?",
+            "accès aux personnes à mobilité réduite",
+            "accès pour personne à mobilité réduite",
+        ]
+    )
+)
 
 DOCTORS = (
     "Chiropracteur",
@@ -210,3 +226,192 @@ class PjPOI(BasePlace):
 
     def get_reviews_url(self):
         return self.get("Links", {}).get("viewReviews", "")
+
+
+class PjApiPOI(BasePlace):
+    PLACE_TYPE = "poi"
+
+    def __init__(self, d: Union[pj_find.Listing, pj_info.Response]):
+        super().__init__(d)
+        self.data = d
+
+    def get_id(self):
+        merchant_id = self.data.merchant_id
+        return f"pj:{merchant_id}" if merchant_id else None
+
+    def get_coord(self):
+        return next(
+            (
+                {"lat": ins.latitude, "lon": ins.longitude}
+                for ins in self.data.inscriptions
+                if ins.latitude and ins.longitude
+            ),
+            None,
+        )
+
+    def get_local_name(self):
+        return self.data.merchant_name or ""
+
+    def get_contact_infos(self):
+        if isinstance(self.data, pj_info.Response):
+            return (contact for ins in self.data.inscriptions for contact in ins.contact_infos)
+        else:
+            return (contact for ins in self.data.inscriptions for contact in ins.contact_info)
+
+    def get_phone(self):
+        return next(
+            (
+                contact.contact_value
+                for contact in self.get_contact_infos()
+                if contact.contact_type.value in ["MOBILE", "TELEPHONE"]
+            ),
+            None,
+        )
+
+    def get_website(self):
+        if not self.data.website_urls:
+            return None
+
+        return resolve_url(self.data.website_urls[0].website_url)
+
+    def get_website_label(self):
+        if isinstance(self.data, pj_find.Listing) or not self.data.website_urls:
+            return None
+
+        suggested_label = self.data.website_urls[0].suggested_label
+        prefix = "Voir le site "
+
+        if suggested_label.startswith(prefix):
+            return suggested_label[len(prefix) :]
+
+        return suggested_label
+
+    def get_class_name(self):
+        class_name, _ = get_class_subclass(
+            frozenset(cat.category_name for cat in self.data.categories)
+        )
+        return class_name
+
+    def get_subclass_name(self):
+        _, subclass_name = get_class_subclass(
+            frozenset(cat.category_name for cat in self.data.categories)
+        )
+        return subclass_name
+
+    def get_raw_opening_hours(self):
+        if isinstance(self.data, pj_info.Response) and self.data.schedules:
+            return self.data.schedules.opening_hours
+        elif isinstance(self.data, pj_find.Listing):
+            return self.data.opening_hours
+        return None
+
+    def get_raw_wheelchair(self):
+        return (
+            any(
+                WHEELCHAIN_ACCESSIBLE.match(label)
+                for desc in self.data.business_descriptions
+                for label in desc.values
+            )
+            or None
+        )
+
+    def get_inscription_with_address(self):
+        """Search for an inscriptions that contains address informations"""
+        return next((ins for ins in self.data.inscriptions if ins.address_street), None)
+
+    def build_address(self, lang):
+        inscription = self.get_inscription_with_address()
+
+        if not inscription:
+            city, postcode, street_and_number = [""] * 3
+        else:
+            city = inscription.address_city
+            postcode = inscription.address_zipcode
+            street_and_number = inscription.address_street
+
+        return {
+            "id": None,
+            "name": street_and_number,
+            "housenumber": None,
+            "postcode": postcode,
+            "label": f"{street_and_number}, {postcode} {city}".strip().strip(","),
+            "admin": None,
+            "admins": self.build_admins(lang),
+            "street": {
+                "id": None,
+                "name": None,
+                "label": None,
+                "postcodes": [postcode] if postcode else [],
+            },
+            "country_code": self.get_country_code(),
+        }
+
+    def build_admins(self, lang=None):
+        inscription = self.get_inscription_with_address()
+
+        if not inscription:
+            return None
+
+        city = inscription.address_city
+        postcode = inscription.address_zipcode
+
+        if postcode:
+            label = f"{city} ({postcode})"
+        else:
+            label = city
+
+        return [
+            {
+                "name": city,
+                "label": label,
+                "class_name": "city",
+                "postcodes": [postcode] if postcode else [],
+            }
+        ]
+
+    def get_country_codes(self):
+        return ["FR"]
+
+    def get_images_urls(self):
+        images = []
+
+        if self.data.thumbnail_url:
+            images.append(self.data.thumbnail_url)
+
+        if isinstance(self.data, pj_info.Response):
+            images += [photo.url for photo in self.data.photos]
+
+        return images or None
+
+    def get_meta(self):
+        return PlaceMeta(source=PoiSource.PAGESJAUNES)
+
+    def get_raw_grades(self):
+        grade_count = sum(
+            ins.reviews.total_reviews for ins in self.data.inscriptions if ins.reviews
+        )
+
+        try:
+            grade_avg = mean(
+                ins.reviews.overall_review_rating
+                for ins in self.data.inscriptions
+                if ins.reviews and ins.reviews.overall_review_rating > 0
+            )
+        except StatisticsError:
+            # Empty reviews
+            return None
+
+        return {
+            "total_grades_count": grade_count,
+            "global_grade": grade_avg,
+        }
+
+    def get_reviews_url(self):
+        return next(
+            (
+                ins.urls.reviews_url
+                for ins in self.data.inscriptions
+                if ins.urls and ins.urls.reviews_url
+            ),
+            None,
+        )
