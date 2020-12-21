@@ -23,6 +23,14 @@ NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
 
+
+class NluClientException(Exception):
+    def __init__(self, reason):
+        self.reason = reason
+        self.extra = {}
+        super().__init__(f"No result from NLU client, reason: `{self.reason}`")
+
+
 tagger_circuit_breaker = IdunnCircuitBreaker(
     "nlu_tagger_api_breaker",
     int(settings["NLU_BREAKER_MAXFAIL"]),
@@ -116,16 +124,16 @@ class NLU_Helper:
         )
 
         if not bragi_result["features"]:
-            return None
+            raise NluClientException("no matching place")
 
         place = bragi_result["features"][0]
         if not self.fuzzy_match(place_query, place["properties"]["geocoding"]["name"]):
-            return None
+            raise NluClientException("matching place too different from query")
 
         bbox = place["properties"]["geocoding"].get("bbox")
         if bbox:
             if bbox[2] - bbox[0] > MAX_WIDTH or bbox[3] - bbox[1] > MAX_HEIGHT:
-                return None
+                raise NluClientException("matching place is too large")
         else:
             geometry = place.get("geometry", {})
             if geometry.get("type") == "Point":
@@ -137,7 +145,7 @@ class NLU_Helper:
                     lat + DEFAULT_BBOX_HEIGHT / 2,
                 ]
             else:
-                return None
+                raise NluClientException("matching place has no coordinates")
 
         if category_name in ALL_CATEGORIES:
             return Intention(
@@ -166,8 +174,7 @@ class NLU_Helper:
         tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_BRAND_TAGS]
 
         if len(tags) >= 2:
-            logger.warning("Ignoring tokenizer for multible brand labels: %s", tags)
-            return None
+            raise NluClientException("multiple brand labels")
 
         return next(iter(tags), None)
 
@@ -176,8 +183,7 @@ class NLU_Helper:
         tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_CATEGORY_TAGS]
 
         if len(tags) >= 2:
-            logger.warning("Ignoring tokenizer for multible category labels: %s", tags)
-            return None
+            raise NluClientException("multiple category labels")
 
         return next(iter(tags), None)
 
@@ -228,7 +234,6 @@ class NLU_Helper:
             logger.info("Detected POI request for '%s'", text, extra=logs_extra)
             return []
 
-        intentions = []
         brand_query = self.build_brand_query(tags_list)
         cat_query = self.build_category_query(tags_list)
         place_query = self.build_place_query(tags_list)
@@ -237,9 +242,13 @@ class NLU_Helper:
             {"brand_query": brand_query, "cat_query": cat_query, "place_query": place_query}
         )
 
-        # If there is a label for both a category and a brand, we consider that the request is
-        # ambiguous and ignore both.
-        if bool(brand_query) ^ bool(cat_query):
+        try:
+            if brand_query and cat_query:
+                raise NluClientException("detected a category and a brand")
+
+            if not brand_query and not cat_query:
+                raise NluClientException("no category or brand detected")
+
             cat_or_brand_query = brand_query or cat_query
 
             if place_query:
@@ -249,24 +258,20 @@ class NLU_Helper:
                 intention = await self.build_intention_category_place(
                     cat_or_brand_query, place_query, lang=lang, is_brand=bool(brand_query)
                 )
-                if intention is not None:
-                    intentions.append(intention)
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
                     cat_or_brand_query, lang=lang, is_brand=bool(brand_query)
                 )
-                if intention is not None:
-                    # A query tagged as "category" and not recognized by the classifier often
-                    # leads to irrelevant intention. Let's ignore them for now.
-                    if brand_query or intention.filter.category:
-                        intentions.append(intention)
 
-        if intentions:
-            intention = intentions[0].dict(exclude_none=True)
+                # A query tagged as "category" and not recognized by the classifier often
+                # leads to irrelevant intention. Let's ignore them for now.
+                if cat_query and not intention.filter.category:
+                    raise NluClientException("no category matched")
 
+            intention_dict = intention.dict(exclude_none=True)
             place_props = (
-                intention.get("description", {})
+                intention_dict.get("description", {})
                 .get("place", {})
                 .get("properties", {})
                 .get("geocoding", {})
@@ -274,9 +279,9 @@ class NLU_Helper:
 
             logs_extra["intention_detection"].update(
                 {
-                    "res_category": intention.get("filter", {}).get("category"),
-                    "res_bbox": intention.get("filter", {}).get("bbox"),
-                    "res_query": intention.get("filter", {}).get("q"),
+                    "res_category": intention_dict.get("filter", {}).get("category"),
+                    "res_bbox": intention_dict.get("filter", {}).get("bbox"),
+                    "res_query": intention_dict.get("filter", {}).get("q"),
                 }
             )
 
@@ -289,10 +294,10 @@ class NLU_Helper:
                 )
 
             logger.info("Detected intentions for '%s'", text, extra=logs_extra)
-        else:
-            logger.info("No intention detected for '%s'", text, extra=logs_extra)
-
-        return intentions
+            return [intention]
+        except NluClientException as exp:
+            exp.extra = logs_extra
+            raise exp
 
 
 nlu_client = NLU_Helper()
