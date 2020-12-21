@@ -15,7 +15,7 @@ categories:
             - "*,hotel"
         regex: "hotel"
     leisure:
-        pj_what: "cinéma concerts spectacles"
+        pj_what: "loisir"
         pj_filters:
             - "salles de cinéma"
             - "salles de concerts, de spectacles"
@@ -46,7 +46,7 @@ categories:
             - "bank,*"
         regex: "^(bank|banque|credit|caisse|atm$)"
     education:
-        pj_what: "école collège lycée enseignement supérieur"
+        pj_what: "scolaire"
         pj_filters:
             - "écoles maternelles publiques"
             - "écoles primaires publiques"
@@ -71,14 +71,14 @@ categories:
             - "cafe,*"
         regex: "^(cafes?|bars?|pubs?)( |$)"
     museum:
-        pj_what: "musées"
+        pj_what: "musée"
         pj_filters:
             - "musées"
         raw_filters:
             - "museum,*"
         regex: "^(museum|musee)"
     health:
-        pj_what: "centre médico-social chirurgien-dentiste médecin généraliste hôpital"
+        pj_what: "santé"
         pj_filters:
             - "Centre médico-social"
             - "Chirurgien-dentiste"
@@ -91,7 +91,7 @@ categories:
             - "hospital,*"
         regex: "health|sante|hopital|hospital|clinic|clinique|dentist|doctor|docteur"
     service:
-        pj_what: "plombier garages automobiles envoi distribution colis serrurerie mairies gendarmerie police sapeurs-pompiers secours préfecture sous-prefecture"
+        pj_what: "poste"
         pj_filters:
             - "plombiers"
             - "garages automobiles"
@@ -110,7 +110,7 @@ categories:
             - "fire_station,*"
         regex: "service|car repair|post office|police|garage|poste|gendarmerie|pompiers"
     fitness:
-        pj_what: "sports loisirs piscines club de sport"
+        pj_what: "sport"
         pj_filters:
             - "infrastructures de sports et loisirs"
             - "piscines (établissements)"
