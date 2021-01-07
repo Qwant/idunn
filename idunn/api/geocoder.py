@@ -34,6 +34,12 @@ def post_filter_intention(intention, bragi_response, limit):
             matches += 1
             if matches > expected_matches:
                 return True
+
+    logging.info(
+        "Ignored intention which doesn't match enough geocoding results `%s`",
+        intention.description.query,
+        extra={"intention": intention, "bragi_response": bragi_response, "limit": limit},
+    )
     return False
 
 
@@ -54,7 +60,7 @@ async def get_autocomplete(
         try:
             return await nlu_client.get_intentions(text=query.q, lang=query.lang, focus=focus)
         except NluClientException as exp:
-            logger.warning("Ignored NLU for '%s': %s", query.q, exp.reason, extra=exp.extra)
+            logger.info("Ignored NLU for '%s': %s", query.q, exp.reason(), extra=exp.extra)
             return []
 
     autocomplete_response, intentions = await asyncio.gather(

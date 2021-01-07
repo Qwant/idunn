@@ -26,9 +26,11 @@ NLU_PLACE_TAGS = ["city", "country", "state", "street"]
 
 class NluClientException(Exception):
     def __init__(self, reason):
-        self.reason = reason
-        self.extra = {}
-        super().__init__(f"No result from NLU client, reason: `{self.reason}`")
+        self.extra = {"reason": reason}
+        super().__init__(f"No result from NLU client, reason: `{self.reason()}`")
+
+    def reason(self):
+        return self.extra["reason"]
 
 
 tagger_circuit_breaker = IdunnCircuitBreaker(
