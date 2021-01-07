@@ -33,6 +33,9 @@ services:
       - IDUNN_RECYCLING_SERVER_URL= # disabled in production for now
       - IDUNN_RECYCLING_SERVER_USERNAME=qwant
       - IDUNN_RECYCLING_SERVER_PASSWORD=${QMAPS_SDEF_PROD_PASSWORD}
+      - IDUNN_SECRET=${QMAPS_SECRET_PROD}
+      - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PROD}
+      - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PROD}
       - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu
     extra_hosts:
       - "wiki-es:10.100.8.40"

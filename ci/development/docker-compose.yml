@@ -28,6 +28,9 @@ services:
       - IDUNN_RECYCLING_SERVER_USERNAME=qwant
       - IDUNN_RECYCLING_SERVER_PASSWORD=${QMAPS_SDEF_PREPROD_PASSWORD}
       - IDUNN_RECYCLING_MEASURES_MAX_AGE_IN_HOURS=2400 # 100 days, for demonstration purposes (7 days by default)
+      - IDUNN_SECRET=public_for_dev_only
+      - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PLIVE}
+      - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PLIVE}
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,1701_nlu
     extra_hosts:
       - "wiki-es:10.100.31.26"
