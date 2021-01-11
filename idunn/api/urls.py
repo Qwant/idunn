@@ -14,6 +14,7 @@ from ..utils.prometheus import (
     expose_metrics_multiprocess,
     MonitoredAPIRoute as APIRoute,
 )
+from .instant_answer import get_instant_answer, InstantAnswerResponse
 
 
 def get_metric_handler(settings):
@@ -78,6 +79,15 @@ def get_api_urls(settings):
                 307: {"description": "Redirect to the same page as provided URL."},
                 403: {"description": "Wrong URL hash."},
                 404: {"description": "The URL does not redirect."},
+            },
+        ),
+        APIRoute(
+            "/instant_answer",
+            get_instant_answer,
+            response_model=InstantAnswerResponse,
+            responses={
+                200: {"description": "Details about place(s) to display"},
+                404: {"description": "No instant answer to display"},
             },
         ),
     ]

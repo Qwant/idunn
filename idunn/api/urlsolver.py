@@ -1,5 +1,4 @@
 import hmac
-from secrets import token_bytes
 from urllib.parse import quote
 
 import httpx

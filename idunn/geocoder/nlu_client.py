@@ -205,7 +205,7 @@ class NLU_Helper:
         response_nlu.raise_for_status()
         return response_nlu
 
-    async def get_intentions(self, text, lang, focus=None):
+    async def get_intentions(self, text, lang, focus=None) -> [Intention]:
         logs_extra = {
             "intention_detection": {
                 "text": text,

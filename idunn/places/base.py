@@ -195,8 +195,11 @@ class BasePlace(dict):
     def get_raw_wheelchair(self):
         return self.properties.get("wheelchair")
 
+    def get_source(self):
+        return None
+
     def get_meta(self):
-        return PlaceMeta()
+        return PlaceMeta(source=self.get_source())
 
     def load_place(self, lang, verbosity):
         return Place(

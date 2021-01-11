@@ -5,7 +5,6 @@ from typing import Union
 
 from .base import BasePlace
 from .models import pj_info, pj_find
-from .place import PlaceMeta
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
 
@@ -218,8 +217,8 @@ class PjPOI(BasePlace):
         photos = self.get("photos", {}).get("photos", [])
         return [p.get("url", "") for p in photos]
 
-    def get_meta(self):
-        return PlaceMeta(source=PoiSource.PAGESJAUNES)
+    def get_source(self):
+        return PoiSource.PAGESJAUNES
 
     def get_raw_grades(self):
         return self.get("grades")
@@ -383,8 +382,8 @@ class PjApiPOI(BasePlace):
 
         return images or None
 
-    def get_meta(self):
-        return PlaceMeta(source=PoiSource.PAGESJAUNES)
+    def get_source(self):
+        return PoiSource.PAGESJAUNES
 
     def get_raw_grades(self):
         grade_count = sum(

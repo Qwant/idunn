@@ -81,7 +81,8 @@ class CommonQueryParam(BaseModel):
 
     @validator("bbox", pre=True, always=True)
     def valid_bbox(cls, v):
-        v = v.split(",")
+        if isinstance(v, str):
+            v = v.split(",")
         if len(v) != 4:
             raise ValueError("bbox should contain 4 numbers")
         left, bot, right, top = float(v[0]), float(v[1]), float(v[2]), float(v[3])
