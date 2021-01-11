@@ -298,7 +298,7 @@ class NLU_Helper:
             logger.info("Detected intentions for '%s'", text, extra=logs_extra)
             return [intention]
         except NluClientException as exp:
-            exp.extra = logs_extra
+            exp.extra.update(logs_extra)
             raise exp
 
 
