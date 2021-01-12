@@ -1,0 +1,14 @@
+{
+    "NLU": [
+        {
+            "phrase": "paris",
+            "tag": "city",
+            "value": {}
+        }
+    ],
+    "detok": true,
+    "domain": "MAPS",
+    "lang": "fr",
+    "text": "paris",
+    "tokenized": "paris"
+}
