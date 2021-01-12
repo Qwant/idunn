@@ -13,7 +13,7 @@ from .latlon import Latlon
 from .exceptions import InvalidPlaceId, RedirectToPlaceId
 
 
-def place_from_id(id, type=None):
+def place_from_id(id: str, type=None):
     """
     :param id: place id
     :param type: Optional type to restrict query in Elasticsearch

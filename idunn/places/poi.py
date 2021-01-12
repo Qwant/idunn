@@ -1,6 +1,6 @@
 from .base import BasePlace
-from .place import PlaceMeta
 from idunn.api.utils import get_name
+from idunn.api.constants import PoiSource
 
 
 class POI(BasePlace):
@@ -24,8 +24,8 @@ class POI(BasePlace):
     def get_subclass_name(self):
         return self.properties.get("poi_subclass")
 
-    def get_meta(self):
-        return PlaceMeta(source="osm")
+    def get_source(self):
+        return PoiSource.OSM
 
 
 class BragiPOI(POI):
