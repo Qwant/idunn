@@ -10,6 +10,7 @@ from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
+from idunn.places.exceptions import PlaceNotFound
 from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
@@ -87,6 +88,8 @@ def get_place(
     try:
         place = place_from_id(id, type)
     except InvalidPlaceId as e:
+        raise HTTPException(status_code=404, detail=e.message)
+    except PlaceNotFound as e:
         raise HTTPException(status_code=404, detail=e.message)
     except RedirectToPlaceId as e:
         path_prefix = request.headers.get("x-forwarded-prefix", "").rstrip("/")

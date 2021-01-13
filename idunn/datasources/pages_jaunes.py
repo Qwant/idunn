@@ -1,14 +1,15 @@
 from os import path
 from typing import List
 
-import requests
 import logging
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
+from requests import HTTPError as RequestsHTTPError
 
 from idunn import settings
 from idunn.places import PjApiPOI, PjPOI
 from idunn.places.models import pj_info, pj_find
+from idunn.places.exceptions import PlaceNotFound
 from idunn.utils.auth_session import AuthSession
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
@@ -152,11 +153,21 @@ class ApiPjSource(PjSource):
         return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
     def get_place(self, poi_id) -> PjApiPOI:
-        return PjApiPOI(
-            pj_info.Response(
-                **self.get_from_params(path.join(self.PJ_INFO_API_URL, self.internal_id(poi_id)))
+        try:
+            return PjApiPOI(
+                pj_info.Response(
+                    **self.get_from_params(
+                        path.join(self.PJ_INFO_API_URL, self.internal_id(poi_id))
+                    )
+                )
             )
-        )
+        except RequestsHTTPError as e:
+            if e.response.status_code in (404, 400):
+                logger.debug(
+                    "Got HTTP %s from PagesJaunes API", e.response.status_code, exc_info=True
+                )
+                raise PlaceNotFound from e
+            raise
 
 
 pj_source = ApiPjSource() if settings.get("PJ_API_ID") else LegacyPjSource()

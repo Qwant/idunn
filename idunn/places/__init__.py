@@ -7,4 +7,4 @@ from .pj_poi import PjApiPOI, PjPOI
 from .latlon import Latlon
 from .event import Event
 
-from .utils import place_from_id, InvalidPlaceId
+from .utils import place_from_id

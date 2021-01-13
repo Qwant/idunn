@@ -48,7 +48,7 @@ class InstantAnswerResponse(BaseModel):
 
 def get_instant_answer_single_place(place_id: str, lang: str):
     try:
-        place = place_from_id(place_id)
+        place = place_from_id(place_id, follow_redirect=True)
     except:
         logger.warning("Failed to get place for instant answer", exc_info=True)
         raise HTTPException(status_code=404)

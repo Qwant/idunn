@@ -27,6 +27,7 @@ from idunn.blocks import (
 from idunn.utils import prometheus
 from idunn.utils.index_names import INDICES
 from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.places.exceptions import PlaceNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -74,11 +75,6 @@ PLACE_ADDRESS_INDEX = settings["PLACE_ADDRESS_INDEX"]
 PLACE_STREET_INDEX = settings["PLACE_STREET_INDEX"]
 
 ANY = "*"
-
-
-class PlaceNotFound(Exception):
-    def __init__(self, message: str):
-        self.message = message
 
 
 class WikidataConnector:
