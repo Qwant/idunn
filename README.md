@@ -1,5 +1,5 @@
-[![GitHub Build](https://travis-ci.org/QwantResearch/idunn.svg?branch=master)](https://github.com/QwantResearch/idunn)
-[![GitHub license](https://img.shields.io/github/license/QwantResearch/idunn.svg)](https://github.com/QwantResearch/idunn/blob/master/LICENSE)
+[![GitHub Build](https://github.com/Qwant/idunn/workflows/Idunn%20tests/badge.svg)](https://github.com/Qwant/idunn)
+[![GitHub license](https://img.shields.io/github/license/Qwant/idunn.svg)](./LICENSE)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qwantresearch/idunn.svg)](https://hub.docker.com/r/qwantresearch/idunn/)
 
 # Idunn

@@ -1,4 +1,4 @@
-name: Python package
+name: Idunn tests
 
 on: [push, pull_request]
 
