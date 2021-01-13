@@ -9,12 +9,14 @@ from .geocoder import get_autocomplete
 from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
+from .instant_answer import get_instant_answer, InstantAnswerResponse
+
+from ..places.place import Place
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
     MonitoredAPIRoute as APIRoute,
 )
-from .instant_answer import get_instant_answer, InstantAnswerResponse
 
 
 def get_metric_handler(settings):
@@ -43,7 +45,7 @@ def get_api_urls(settings):
         ),
         APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
         APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
-        APIRoute("/places/{id}", get_place),
+        APIRoute("/places/{id}", get_place, response_model=Place),
         # Categories
         APIRoute("/categories", get_all_categories),
         # Reverse

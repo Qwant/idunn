@@ -8,7 +8,7 @@ from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
 from idunn.utils.settings import _load_yaml_file
-from idunn.places import POI, BragiPOI
+from idunn.places import Place, POI, BragiPOI
 from idunn.api.utils import (
     fetch_es_pois,
     DEFAULT_VERBOSITY_LIST,

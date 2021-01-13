@@ -1,6 +1,7 @@
-from .opening_hour import OpeningHourBlock
+from typing import Union
+
+from .opening_hour import OpeningHourBlock, HappyHourBlock
 from .covid19 import Covid19Block
-from .happy_hour import HappyHourBlock
 from .phone import PhoneBlock
 from .information import InformationBlock
 from .website import WebSiteBlock
@@ -31,7 +32,7 @@ from .environment import (
 
 from .recycling import RecyclingBlock
 
-ALL_BLOCKS = [
+AnyBlock = Union[
     OpeningHourBlock,
     Covid19Block,
     HappyHourBlock,
@@ -53,5 +54,3 @@ ALL_BLOCKS = [
     Weather,
     RecyclingBlock,
 ]
-
-BLOCK_TYPE_TO_CLASS = {b.BLOCK_TYPE: b for b in ALL_BLOCKS}

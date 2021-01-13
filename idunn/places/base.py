@@ -201,7 +201,7 @@ class BasePlace(dict):
     def get_meta(self):
         return PlaceMeta(source=self.get_source())
 
-    def load_place(self, lang, verbosity):
+    def load_place(self, lang, verbosity) -> Place:
         return Place(
             type=self.PLACE_TYPE,
             id=self.get_id(),

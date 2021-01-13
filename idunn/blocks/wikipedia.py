@@ -4,6 +4,7 @@ import requests
 import pybreaker
 from requests.exceptions import HTTPError, RequestException, Timeout
 from redis import Redis, RedisError
+from typing import ClassVar, Literal
 
 from idunn import settings
 from idunn.utils import prometheus
@@ -11,8 +12,6 @@ from idunn.utils.redis import RedisWrapper
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 from idunn.utils.rate_limiter import IdunnRateLimiter, TooManyRequestsException
 from .base import BaseBlock
-
-from typing import ClassVar
 
 
 GET_WIKI_INFO = "get_wiki_info"
@@ -146,8 +145,7 @@ class SizeLimiter:
 
 
 class WikipediaBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "wikipedia"
-
+    type: Literal["wikipedia"] = "wikipedia"
     url: str
     title: str
     description: str

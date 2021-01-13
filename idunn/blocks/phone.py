@@ -1,5 +1,5 @@
 import logging
-from typing import ClassVar
+from typing import Literal
 from phonenumbers import PhoneNumber, PhoneNumberFormat, parse, format_number
 
 from .base import BaseBlock
@@ -20,8 +20,7 @@ def get_e164_phone_number(phone):
 
 
 class PhoneBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "phone"
-
+    type: Literal["phone"] = "phone"
     url: str
     international_format: str
     local_format: str

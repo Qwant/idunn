@@ -12,6 +12,7 @@ from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
 from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
+from idunn.places import Place
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
 
@@ -81,7 +82,7 @@ def get_place(
     lang: str = None,
     type=None,
     verbosity=DEFAULT_VERBOSITY,
-):
+) -> Place:
     """Main handler that returns the requested place"""
     verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
@@ -103,6 +104,7 @@ def get_place(
     log_place_request(place, request.headers)
     if settings["BLOCK_COVID_ENABLED"] and settings["COVID19_USE_REDIS_DATASET"]:
         background_tasks.add_task(covid19_osm_task)
+    print(place.load_place(lang, verbosity).dict())
     return place.load_place(lang, verbosity)
 
 

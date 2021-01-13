@@ -5,7 +5,7 @@ import posixpath
 import urllib.parse
 from urllib.parse import urlsplit, unquote
 from pydantic import BaseModel, validator
-from typing import ClassVar, List
+from typing import ClassVar, List, Literal
 
 from idunn import settings
 from .base import BaseBlock
@@ -76,8 +76,7 @@ class Image(BaseModel):
 
 
 class ImagesBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "images"
-
+    type: Literal["images"] = "images"
     images: List[Image]
     _thumb_helper = None
 

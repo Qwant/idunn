@@ -1,7 +1,7 @@
 from .base import BaseBlock
 from pydantic import BaseModel
 from datetime import datetime
-from typing import ClassVar, List, Optional
+from typing import ClassVar, List, Literal, Optional
 
 
 class TimeTableItem(BaseModel):
@@ -10,8 +10,7 @@ class TimeTableItem(BaseModel):
 
 
 class OpeningDayEvent(BaseBlock):
-    BLOCK_TYPE: ClassVar = "event_opening_dates"
-
+    type: Literal["event_opening_dates"] = "event_opening_dates"
     date_start: datetime
     date_end: datetime
     space_time_info: Optional[str]
@@ -49,8 +48,7 @@ class OpeningDayEvent(BaseBlock):
 
 
 class DescriptionEvent(BaseBlock):
-    BLOCK_TYPE: ClassVar = "event_description"
-
+    type: Literal["event_description"] = "event_description"
     description: Optional[str]
     free_text: Optional[str]
     price: Optional[str]
