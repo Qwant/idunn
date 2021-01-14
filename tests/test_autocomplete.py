@@ -1,93 +1,23 @@
-import re
-import pytest
 from unittest.mock import ANY
 from fastapi.testclient import TestClient
 
 from app import app
-from .utils import override_settings, read_fixture
+from .fixtures.autocomplete import (
+    mock_autocomplete_get,
+    mock_autocomplete_post,
+    mock_autocomplete_unavailable,
+    mock_NLU_with_poi,
+    mock_NLU_with_brand,
+    mock_NLU_with_cat,
+    mock_NLU_with_cat_city_country,
+    mock_NLU_with_brand_and_city,
+)
 
 
 BASE_URL = "http://qwant.bragi"
 NLU_URL = "http://qwant.nlu/"
 CLASSIF_URL = "http://qwant.classif"
 ES_URL = "http://qwant.es"
-
-
-FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
-FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
-FIXTURE_TOKENIZER = {
-    dataset: read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
-    for dataset in [
-        "with_brand",
-        "with_brand_and_city",
-        "with_cat",
-        "with_cat_city_country",
-        "with_poi",
-    ]
-}
-
-
-def mock_NLU_for(httpx_mock, dataset):
-    with override_settings(
-        {"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL, "PJ_ES": ES_URL}
-    ):
-        httpx_mock.post(NLU_URL, content=FIXTURE_TOKENIZER[dataset])
-        httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
-        yield FIXTURE_TOKENIZER[dataset]
-
-
-@pytest.fixture
-def mock_NLU_with_brand(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_brand")
-
-
-@pytest.fixture
-def mock_NLU_with_brand_and_city(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_brand_and_city")
-
-
-@pytest.fixture
-def mock_NLU_with_cat(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_cat")
-
-
-@pytest.fixture
-def mock_NLU_with_cat_city_country(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_cat_city_country")
-
-
-@pytest.fixture
-def mock_NLU_with_poi(httpx_mock):
-    yield from mock_NLU_for(httpx_mock, "with_poi")
-
-
-@pytest.fixture
-def mock_autocomplete_get(httpx_mock):
-    with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"),
-            content=read_fixture("fixtures/autocomplete/paris.json"),
-        )
-        httpx_mock.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=auchan.*"),
-            content=read_fixture("fixtures/autocomplete/auchan.json"),
-        )
-        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
-        yield
-
-
-@pytest.fixture
-def mock_autocomplete_post(httpx_mock):
-    with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
-        yield
-
-
-@pytest.fixture
-def mock_autocomplete_unavailable(httpx_mock):
-    with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), status_code=502)
-        yield
 
 
 def assert_ok_with(client, params, extra=None):

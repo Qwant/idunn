@@ -6,7 +6,7 @@ from typing import Optional, List, Any, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
 
 from idunn import settings
-from idunn.geocoder.nlu_client import nlu_client
+from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id
 from idunn.api.places_list import get_places_bbox
@@ -66,7 +66,10 @@ def get_instant_answer_single_place(place_id: str, lang: str):
 async def get_instant_answer(q: str, lang: str = "en"):
     q = q.strip()
     if lang in nlu_allowed_languages:
-        intentions = await nlu_client.get_intentions(text=q, lang=lang)
+        try:
+            intentions = await nlu_client.get_intentions(text=q, lang=lang)
+        except NluClientException:
+            intentions = []
     else:
         intentions = []
 

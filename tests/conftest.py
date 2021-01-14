@@ -207,6 +207,7 @@ def load_all(mimir_client, init_indices):
     load_place("street_birnenweg.json", mimir_client, doc_type="street")
     load_place("address_du_moulin.json", mimir_client, doc_type="addr")
     load_place("admin_dunkerque.json", mimir_client, doc_type="admin")
+    load_place("admin_paris.json", mimir_client, doc_type="admin")
 
 
 @pytest.fixture
