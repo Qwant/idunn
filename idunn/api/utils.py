@@ -1,3 +1,4 @@
+from enum import Enum
 from fastapi import HTTPException
 from elasticsearch import (
     Elasticsearch,
@@ -31,14 +32,23 @@ from idunn.places.exceptions import PlaceNotFound
 
 logger = logging.getLogger(__name__)
 
-LONG = "long"
-SHORT = "short"
-LIST = "list"
-DEFAULT_VERBOSITY = LONG
-DEFAULT_VERBOSITY_LIST = LIST
+
+class Verbosity(str, Enum):
+    LONG = "long"
+    SHORT = "short"
+    LIST = "list"
+
+    @classmethod
+    def default(cls):
+        return cls.LONG
+
+    @classmethod
+    def default_list(cls):
+        return cls.LIST
+
 
 BLOCKS_BY_VERBOSITY = {
-    LONG: [
+    Verbosity.LONG: [
         AirQuality,
         Weather,
         OpeningDayEvent,
@@ -54,7 +64,7 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
     ],
-    LIST: [
+    Verbosity.LIST: [
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
@@ -65,9 +75,8 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
     ],
-    SHORT: [OpeningHourBlock, Covid19Block],
+    Verbosity.SHORT: [OpeningHourBlock, Covid19Block],
 }
-ALL_VERBOSITY_LEVELS = list(BLOCKS_BY_VERBOSITY.keys())
 
 PLACE_DEFAULT_INDEX = settings["PLACE_DEFAULT_INDEX"]
 PLACE_POI_INDEX = settings["PLACE_POI_INDEX"]

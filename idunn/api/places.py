@@ -6,26 +6,17 @@ from fastapi.responses import JSONResponse
 
 
 from idunn import settings
+from idunn.api.utils import Verbosity
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
-from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
 from idunn.places import Place
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
 
 logger = logging.getLogger(__name__)
-
-
-def validate_verbosity(verbosity):
-    if verbosity not in ALL_VERBOSITY_LEVELS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown verbosity '{verbosity}'. Accepted values are {ALL_VERBOSITY_LEVELS}",
-        )
-    return verbosity
 
 
 def validate_lang(lang):
@@ -81,10 +72,9 @@ def get_place(
     background_tasks: BackgroundTasks,
     lang: str = None,
     type=None,
-    verbosity=DEFAULT_VERBOSITY,
+    verbosity: Verbosity = Verbosity.default(),
 ) -> Place:
     """Main handler that returns the requested place"""
-    verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
     try:
         place = place_from_id(id, type)
@@ -109,10 +99,9 @@ def get_place(
 
 
 def get_place_latlon(
-    lat: float, lon: float, lang: str = None, verbosity=DEFAULT_VERBOSITY
+    lat: float, lon: float, lang: str = None, verbosity: Verbosity = Verbosity.default()
 ) -> Place:
     es = get_elasticsearch()
-    verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
     try:
         closest_place = get_closest_place(lat, lon, es)

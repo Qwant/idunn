@@ -9,11 +9,7 @@ from fastapi.concurrency import run_in_threadpool
 from idunn import settings
 from idunn.utils.settings import _load_yaml_file
 from idunn.places import Place, POI, BragiPOI
-from idunn.api.utils import (
-    fetch_es_pois,
-    DEFAULT_VERBOSITY_LIST,
-    ALL_VERBOSITY_LEVELS,
-)
+from idunn.api.utils import fetch_es_pois, Verbosity
 from idunn.places.event import Event
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.datasources.pages_jaunes import pj_source
@@ -55,23 +51,13 @@ class CommonQueryParam(BaseModel):
     bbox: Tuple[float, float, float, float] = None
     size: int = None
     lang: str = None
-    verbosity: str = None
+    verbosity: Verbosity
 
     @validator("lang", pre=True, always=True)
     def valid_lang(cls, v):
         if v is None:
             v = settings["DEFAULT_LANGUAGE"]
         return v.lower()
-
-    @validator("verbosity", pre=True, always=True)
-    def valid_verbosity(cls, v):
-        if v is None:
-            v = DEFAULT_VERBOSITY_LIST
-        if v not in ALL_VERBOSITY_LEVELS:
-            raise ValueError(
-                f"the verbosity: '{v}' does not belong to possible verbosity levels: {ALL_VERBOSITY_LEVELS}"
-            )
-        return v
 
     @validator("size", pre=True, always=True)
     def max_size(cls, v):
@@ -204,7 +190,7 @@ async def get_places_bbox(
     q: Optional[str] = Query(None, title="Query", description="Full text query"),
     size: Optional[int] = Query(None),
     lang: Optional[str] = Query(None),
-    verbosity: Optional[str] = Query(None),
+    verbosity: Verbosity = Verbosity.default_list(),
     extend_bbox: bool = Query(False),
 ) -> PlacesBboxResponse:
     params = PlacesQueryParam(**locals())
@@ -281,7 +267,7 @@ def get_events_bbox(
     category: Optional[str] = Query(None),
     size: int = Query(None),
     lang: Optional[str] = Query(None),
-    verbosity: Optional[str] = Query(None),
+    verbosity: Verbosity = Verbosity.default_list(),
 ):
     if not kuzzle_client.enabled:
         raise HTTPException(status_code=501, detail="Kuzzle client is not available")

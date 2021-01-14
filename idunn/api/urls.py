@@ -11,7 +11,7 @@ from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
 from .instant_answer import get_instant_answer, InstantAnswerResponse
 
-from ..places.place import Place
+from ..places.place import Address, Place
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
@@ -43,13 +43,13 @@ def get_api_urls(settings):
             response_model=PlacesBboxResponse,
             responses={400: {"description": "Client Error in query params"}},
         ),
-        APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
+        APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon, response_model=Place),
         APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
         APIRoute("/places/{id}", get_place, response_model=Place),
         # Categories
         APIRoute("/categories", get_all_categories),
         # Reverse
-        APIRoute("/reverse/{lat}:{lon}", closest_address),
+        APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
         # Kuzzle events
         APIRoute("/events", get_events_bbox),
         # Directions

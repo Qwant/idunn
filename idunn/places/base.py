@@ -1,6 +1,6 @@
 import logging
 
-from idunn.api.utils import WikidataConnector, get_geom, build_blocks
+from idunn.api.utils import Verbosity, WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
 from idunn.utils.redis import RedisWrapper
 from .place import Place, PlaceMeta
@@ -201,7 +201,7 @@ class BasePlace(dict):
     def get_meta(self):
         return PlaceMeta(source=self.get_source())
 
-    def load_place(self, lang, verbosity) -> Place:
+    def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
         return Place(
             type=self.PLACE_TYPE,
             id=self.get_id(),

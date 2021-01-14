@@ -10,7 +10,6 @@ from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id
 from idunn.api.places_list import get_places_bbox
-from idunn.api.utils import DEFAULT_VERBOSITY
 from .constants import PoiSource
 
 logger = logging.getLogger(__name__)
@@ -53,7 +52,7 @@ def get_instant_answer_single_place(place_id: str, lang: str):
         logger.warning("Failed to get place for instant answer", exc_info=True)
         raise HTTPException(status_code=404)
 
-    detailed_place = place.load_place(lang=lang, verbosity=DEFAULT_VERBOSITY)
+    detailed_place = place.load_place(lang=lang)
     return InstantAnswerResponse(
         places=[detailed_place],
         source=place.get_source(),

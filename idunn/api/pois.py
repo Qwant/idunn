@@ -1,7 +1,7 @@
 from idunn import settings
 from idunn.places import POI
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.api.utils import fetch_es_poi, DEFAULT_VERBOSITY
+from idunn.api.utils import fetch_es_poi
 
 
 def get_poi(id: str, lang: str = None) -> POI:
@@ -12,4 +12,4 @@ def get_poi(id: str, lang: str = None) -> POI:
     lang = lang.lower()
 
     es_poi = fetch_es_poi(id, es)
-    return POI(es_poi).load_place(lang, verbosity=DEFAULT_VERBOSITY)
+    return POI(es_poi).load_place(lang)

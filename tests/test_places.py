@@ -541,8 +541,8 @@ def test_wrong_verbosity():
     response = client.get(
         url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=shoooooort",
     )
-    assert response.status_code == 400
-    assert "Unknown verbosity" in response.json()["detail"]
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["type"] == "type_error.enum"
 
 
 def mock_search(detail, *args, **kwargs):

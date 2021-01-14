@@ -30,9 +30,10 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
-    return PlainTextResponse(f"Invalid parameter received: {str(exc)}", status_code=404)
+# TODO: is there a motivation for this wrapper?
+#  @app.exception_handler(RequestValidationError)
+#  async def validation_exception_handler(request, exc):
+#      return PlainTextResponse(f"Invalid parameter received: {str(exc)}", status_code=404)
 
 
 # Override FastAPI defaults

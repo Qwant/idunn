@@ -1,6 +1,5 @@
 from idunn.blocks.base import BaseBlock
 from idunn.blocks import AnyBlock
-from idunn.api.utils import LONG, BLOCKS_BY_VERBOSITY
 from pydantic import BaseModel
 from typing import List, Optional
 
