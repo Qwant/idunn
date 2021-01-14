@@ -1,7 +1,6 @@
-from fastapi import HTTPException
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.api.utils import fetch_es_place, PlaceNotFound
+from idunn.api.utils import fetch_es_place
 from idunn.utils import prometheus
 
 
@@ -10,13 +9,14 @@ from .street import Street
 from .address import Address
 from .poi import POI
 from .latlon import Latlon
-from .exceptions import InvalidPlaceId, RedirectToPlaceId
+from .exceptions import InvalidPlaceId, RedirectToPlaceId, PlaceNotFound
 
 
-def place_from_id(id: str, type=None):
+def place_from_id(id: str, type=None, follow_redirect=False):
     """
     :param id: place id
     :param type: Optional type to restrict query in Elasticsearch
+    :param follow_redirect: if false, RedirectToPlaceId may be raised
     :return: Place
     """
     try:
@@ -34,10 +34,9 @@ def place_from_id(id: str, type=None):
 
     # Otherwise handle places from the ES db
     es = get_elasticsearch()
-
     try:
         es_place = fetch_es_place(id, es, type)
-    except PlaceNotFound as e:
+    except PlaceNotFound:
         if namespace == "addr":
             # A Latlon place can be used as a substitute for a "addr:<lon>;<lat>" id
             # that is not present in the database anymore
@@ -47,8 +46,11 @@ def place_from_id(id: str, type=None):
             except ValueError:
                 pass
             else:
-                raise RedirectToPlaceId(latlon_id)
-        raise HTTPException(status_code=404, detail=e.message)
+                if follow_redirect:
+                    return place_from_id(latlon_id, follow_redirect=False)
+                else:
+                    raise RedirectToPlaceId(latlon_id)
+        raise
 
     places = {
         "admin": Admin,

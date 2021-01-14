@@ -1,7 +1,8 @@
 from fastapi import HTTPException, Query, Depends, Request, Response
 
 from idunn import settings
-from idunn.places import Latlon, place_from_id, InvalidPlaceId
+from idunn.places import Latlon, place_from_id
+from idunn.places.exceptions import IdunnPlaceError
 from idunn.utils.rate_limiter import IdunnRateLimiter
 from ..directions.client import directions_client
 
@@ -55,9 +56,9 @@ def get_directions(
 ):
     rate_limiter.check_limit_per_client(request)
     try:
-        from_place = place_from_id(origin)
-        to_place = place_from_id(destination)
-    except InvalidPlaceId as exc:
+        from_place = place_from_id(origin, follow_redirect=True)
+        to_place = place_from_id(destination, follow_redirect=True)
+    except IdunnPlaceError as exc:
         raise HTTPException(status_code=404, detail=exc.message)
 
     return directions_client.get_directions(
