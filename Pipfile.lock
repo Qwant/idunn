@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "11ae7c47e02e9fca0a907cdbef6a93f64aedc1f895fdfa130f9703d47d535ed4"
+            "sha256": "b728ca366ee5003249286a1c6f666c2c4a91c5a686bbd82b86bf533c3c61ee35"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -75,6 +75,13 @@
                 "sha256:51cfa698e7183792bce27d8fb63ac8e83689cd8170a730bf35e1a5c5bf8849b9"
             ],
             "version": "==1.50"
+        },
+        "geojson-pydantic": {
+            "hashes": [
+                "sha256:ed8f965d614badd9fd7958fd6d69507769a6aa4353e24190368531edcd7e9c0d"
+            ],
+            "index": "pypi",
+            "version": "==0.2.2"
         },
         "geopy": {
             "hashes": [
@@ -301,6 +308,9 @@
             "version": "==2.24.0"
         },
         "rfc3986": {
+            "extras": [
+                "idna2008"
+            ],
             "hashes": [
                 "sha256:112398da31a3344dc25dbf477d8df6cb34f9278a94fee2625d89e4514be8bb9d",
                 "sha256:af9147e9aceda37c91a05f4deb128d4b4b49d6b199775fd2d2927768abdc8f50"
@@ -555,6 +565,13 @@
             ],
             "version": "==2.10"
         },
+        "iniconfig": {
+            "hashes": [
+                "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3",
+                "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"
+            ],
+            "version": "==1.1.1"
+        },
         "ipython": {
             "hashes": [
                 "sha256:2dbcc8c27ca7d3cfe4fcdff7f45b27f9a8d3edfa70ff8024a71c7a8eb5f09d64",
@@ -736,6 +753,9 @@
             "version": "==0.11.2"
         },
         "rfc3986": {
+            "extras": [
+                "idna2008"
+            ],
             "hashes": [
                 "sha256:112398da31a3344dc25dbf477d8df6cb34f9278a94fee2625d89e4514be8bb9d",
                 "sha256:af9147e9aceda37c91a05f4deb128d4b4b49d6b199775fd2d2927768abdc8f50"

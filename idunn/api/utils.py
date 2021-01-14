@@ -6,6 +6,7 @@ from elasticsearch import (
     NotFoundError,
     ElasticsearchException,
 )
+import os
 import logging
 from idunn import settings
 from idunn.blocks import (
@@ -29,11 +30,73 @@ from idunn.utils import prometheus
 from idunn.utils.index_names import INDICES
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.places.exceptions import PlaceNotFound
+from idunn.utils.settings import _load_yaml_file
 
 logger = logging.getLogger(__name__)
 
 
+class Type(str, Enum):
+    # City = "city" # this field is available in Bragi but deprecated
+    House = "house"
+    Poi = "poi"
+    StopArea = "public_transport:stop_area"
+    Street = "street"
+    Zone = "zone"
+
+
+def get_categories():
+    categories_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml"
+    )
+    return _load_yaml_file(categories_path)["categories"]
+
+
+def get_outing_types():
+    outing_types_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml"
+    )
+    return _load_yaml_file(outing_types_path)["outing_types"]
+
+
+ALL_CATEGORIES = get_categories()
+ALL_OUTING_CATEGORIES = get_outing_types()
+
+
+class CategoryEnum(str):
+    """
+    Methods defining the behavior of the enum `Category` defined bellow.
+    """
+
+    def match_brand(self):
+        return ALL_CATEGORIES[self].get("match_brand", False)
+
+    def pj_filters(self):
+        return ALL_CATEGORIES[self].get("pj_filters")
+
+    def raw_filters(self):
+        return ALL_CATEGORIES[self].get("raw_filters")
+
+    def regex(self):
+        return ALL_CATEGORIES[self].get("regex")
+
+    def as_outing(self):
+        if self not in ALL_OUTING_CATEGORIES:
+            raise ValueError(
+                f"outing_type '{self}' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}"
+            )
+
+        return ALL_OUTING_CATEGORIES.get(self, {})
+
+
+# Load the list of categories as an enum for validation purpose
+Category = Enum("Category", {cat: cat for cat in ALL_CATEGORIES}, type=CategoryEnum)
+
+
 class Verbosity(str, Enum):
+    """
+    Control the verbosity of the output.
+    """
+
     LONG = "long"
     SHORT = "short"
     LIST = "list"

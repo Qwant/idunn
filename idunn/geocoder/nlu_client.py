@@ -9,7 +9,8 @@ from unidecode import unidecode
 
 logger = logging.getLogger(__name__)
 
-from idunn.api.places_list import ALL_CATEGORIES, MAX_HEIGHT, MAX_WIDTH
+from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
+from idunn.api.utils import Category
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 
 from .models.geocodejson import Intention
@@ -75,19 +76,19 @@ class NLU_Helper:
     def regex_classifier(text, is_brand=False):
         """ Match text with a category, using 'regex'
         >>> NLU_Helper.regex_classifier("restau")
-        'restaurant'
+        <Category.restaurant: 'restaurant'>
         >>> NLU_Helper.regex_classifier("pub")
-        'bar'
+        <Category.bar: 'bar'>
         >>> NLU_Helper.regex_classifier("republique") is None
         True
         """
         normalized_text = unidecode(text).lower().strip()
-        for category_name, cat in ALL_CATEGORIES.items():
-            if is_brand and not cat.get("match_brand"):
+        for cat in list(Category):
+            if is_brand and not cat.match_brand():
                 continue
-            regex = cat.get("regex")
+            regex = cat.regex()
             if regex and re.search(regex, normalized_text):
-                return category_name
+                return cat
         return None
 
     async def classify_category(self, text, is_brand=False):
@@ -120,7 +121,7 @@ class NLU_Helper:
         async def get_category():
             return await self.classify_category(cat_query, is_brand=is_brand)
 
-        bragi_result, category_name = await asyncio.gather(
+        bragi_result, category = await asyncio.gather(
             bragi_client.raw_autocomplete(params={"q": place_query, "lang": lang, "limit": 1}),
             get_category(),
         )
@@ -149,21 +150,22 @@ class NLU_Helper:
             else:
                 raise NluClientException("matching place has no coordinates")
 
-        if category_name in ALL_CATEGORIES:
+        if category:
             return Intention(
-                filter={"category": category_name, "bbox": bbox},
-                description={"category": category_name, "place": place},
+                filter={"category": category, "bbox": bbox},
+                description={"category": category, "place": place},
             )
+
         return Intention(
             filter={"q": cat_query, "bbox": bbox}, description={"query": cat_query, "place": place}
         )
 
     async def build_intention_category(self, cat_query, lang, is_brand=False):
-        category_name = await self.classify_category(cat_query, is_brand)
-        if category_name in ALL_CATEGORIES:
-            return Intention(
-                filter={"category": category_name}, description={"category": category_name},
-            )
+        category = await self.classify_category(cat_query, is_brand)
+
+        if category:
+            return Intention(filter={"category": category}, description={"category": category})
+
         return Intention(filter={"q": cat_query}, description={"query": cat_query})
 
     @classmethod

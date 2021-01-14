@@ -479,8 +479,8 @@ def test_type_unknown():
     id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
 
     response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=globibulga")
-    assert response.status_code == 400
-    assert response._content == b'{"detail":"Wrong type parameter: type=globibulga"}'
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["type"] == "type_error.enum"
 
 
 def test_not_found_with_type():

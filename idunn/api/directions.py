@@ -1,4 +1,5 @@
-from fastapi import HTTPException, Query, Depends, Request, Response
+from fastapi import HTTPException, Query, Depends, Path, Request, Response
+from pydantic import confloat
 
 from idunn import settings
 from idunn.places import Latlon, place_from_id
@@ -26,16 +27,17 @@ def directions_request(request: Request, response: Response):
 
 def get_directions_with_coordinates(
     # URL values
-    f_lon: float,
-    f_lat: float,
-    t_lon: float,
-    t_lat: float,
+    f_lon: confloat(ge=-180, le=180) = Path(..., title="Origin point longitude"),
+    f_lat: confloat(ge=-90, le=90) = Path(..., title="Origin point latitude"),
+    t_lon: confloat(ge=-180, le=180) = Path(..., title="Destination point longitude"),
+    t_lat: confloat(ge=-90, le=90) = Path(..., title="Destination point latitude"),
     # Query parameters
-    type: str,
+    type: str = Query(..., description="Transport mode"),
     language: str = "en",
     # Request
     request: Request = Depends(directions_request),
 ):
+    """Get directions to get from a point to another."""
     from_place = Latlon(f_lat, f_lon)
     to_place = Latlon(t_lat, t_lon)
     if not type:
@@ -47,13 +49,14 @@ def get_directions_with_coordinates(
 
 def get_directions(
     # Query parameters
-    origin: str = Query(..., description="Origin place id"),
-    destination: str = Query(..., description="Destination place id"),
-    type: str = Query(..., description="Transport mode"),
-    language: str = Query("en", description="User language"),
+    origin: str = Query(..., description="Origin place id."),
+    destination: str = Query(..., description="Destination place id."),
+    type: str = Query(..., description="Transport mode."),
+    language: str = Query("en", description="User language."),
     # Request
     request: Request = Depends(directions_request),
 ):
+    """Get directions to get from a places to another."""
     rate_limiter.check_limit_per_client(request)
     try:
         from_place = place_from_id(origin, follow_redirect=True)

@@ -2,7 +2,7 @@ from .pois import get_poi
 from .places import get_place, get_place_latlon, handle_option
 from .status import get_status
 from .places_list import get_places_bbox, get_events_bbox, PlacesBboxResponse
-from .categories import get_all_categories
+from .categories import AllCategoriesResponse, get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
 from .geocoder import get_autocomplete
@@ -47,7 +47,7 @@ def get_api_urls(settings):
         APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
         APIRoute("/places/{id}", get_place, response_model=Place),
         # Categories
-        APIRoute("/categories", get_all_categories),
+        APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
         APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
         # Kuzzle events
@@ -77,8 +77,8 @@ def get_api_urls(settings):
         APIRoute(
             "/redirect",
             follow_redirection,
+            status_code=307,
             responses={
-                307: {"description": "Redirect to the same page as provided URL."},
                 403: {"description": "Wrong URL hash."},
                 404: {"description": "The URL does not redirect."},
             },

@@ -2,7 +2,7 @@ import hmac
 from urllib.parse import quote
 
 import httpx
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi.responses import RedirectResponse
 from idunn import settings
 
@@ -28,7 +28,14 @@ def hash_url(url: str) -> str:
     return hmac.HMAC(key=secret, msg=url.encode(), digestmod="sha256").hexdigest()
 
 
-async def follow_redirection(url: str, hash: str):
+async def follow_redirection(
+    url: str = Query(..., description="An external URL that is expected to redirect."),
+    hash: str = Query(..., description="Value of the hash provided by Idunn."),
+):
+    """
+    Redirect to the same page as provided URL which must have been provided by
+    Idunn together with an hash value.
+    """
     if not hmac.compare_digest(hash_url(url), hash):
         raise HTTPException(403, detail="provided hash does not match the URL")
 

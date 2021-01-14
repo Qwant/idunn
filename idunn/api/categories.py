@@ -1,8 +1,21 @@
-from .places_list import ALL_CATEGORIES
+from .utils import Category
+from pydantic import BaseModel, Field
+from typing import List
 
 
-def get_all_categories():
-    categories = []
-    for name, category_list in ALL_CATEGORIES.items():
-        categories.append({"name": name, "raw_filters": category_list.get("raw_filters")})
-    return {"categories": categories}
+class CategoryDescription(BaseModel):
+    name: str = Field(..., description="Unique label of the category.")
+    raw_filters: List[str] = Field(..., description="Raw filter on OSM tags.")
+
+
+class AllCategoriesResponse(BaseModel):
+    categories: List[CategoryDescription] = Field(..., description="All available categories")
+
+
+def get_all_categories() -> AllCategoriesResponse:
+    """List all available categories."""
+    return {
+        "categories": [
+            {"name": cat.value, "raw_filters": cat.raw_filters()} for cat in list(Category)
+        ]
+    }

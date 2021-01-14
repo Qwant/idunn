@@ -1,8 +1,11 @@
 import logging
 import urllib.parse
+from enum import Enum
 from starlette.datastructures import URL
-from fastapi import HTTPException, BackgroundTasks, Request, Response
+from fastapi import HTTPException, BackgroundTasks, Request, Response, Query
 from fastapi.responses import JSONResponse
+from typing import Optional
+from pydantic import confloat
 
 
 from idunn import settings
@@ -17,6 +20,13 @@ from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
 
 logger = logging.getLogger(__name__)
+
+
+class PlaceType(str, Enum):
+    ADDRESS = "address"
+    ADMIN = "admin"
+    POI = "poi"
+    STREET = "street"
 
 
 def validate_lang(lang):
@@ -71,10 +81,12 @@ def get_place(
     request: Request,
     background_tasks: BackgroundTasks,
     lang: str = None,
-    type=None,
+    type: Optional[PlaceType] = Query(
+        None, description="Restrict the type of documents to search in."
+    ),
     verbosity: Verbosity = Verbosity.default(),
 ) -> Place:
-    """Main handler that returns the requested place"""
+    """Main handler that returns the requested place."""
     lang = validate_lang(lang)
     try:
         place = place_from_id(id, type)
@@ -94,13 +106,17 @@ def get_place(
     log_place_request(place, request.headers)
     if settings["BLOCK_COVID_ENABLED"] and settings["COVID19_USE_REDIS_DATASET"]:
         background_tasks.add_task(covid19_osm_task)
-    print(place.load_place(lang, verbosity).dict())
     return place.load_place(lang, verbosity)
 
 
 def get_place_latlon(
-    lat: float, lon: float, lang: str = None, verbosity: Verbosity = Verbosity.default()
+    lat: confloat(ge=-90, le=90),
+    lon: confloat(ge=-180, le=180),
+    lang: str = None,
+    verbosity: Verbosity = Verbosity.default(),
 ) -> Place:
+    """Find the closest place to a point."""
+
     es = get_elasticsearch()
     lang = validate_lang(lang)
     try:

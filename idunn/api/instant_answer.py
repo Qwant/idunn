@@ -1,6 +1,6 @@
 import logging
 from urllib.parse import urlencode
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Any, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
@@ -62,7 +62,16 @@ def get_instant_answer_single_place(place_id: str, lang: str):
     )
 
 
-async def get_instant_answer(q: str, lang: str = "en"):
+async def get_instant_answer(
+    q: str = Query(..., title="Query string"), lang: str = Query("en", title="Language")
+):
+    """
+    Perform a query with result intended to be displayed as an instant answer
+    on *qwant.com*.
+
+    This should not be confused with "Get Places Bbox" as this endpoint will
+    run more restrictive checks on its results.
+    """
     q = q.strip()
     if lang in nlu_allowed_languages:
         try:

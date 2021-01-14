@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import HTTPException
+from pydantic import confloat
 
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
@@ -39,8 +40,13 @@ def get_closest_place(lat: float, lon: float, es=None):
 
 
 def closest_address(
-    lat: float, lon: float, lang=None, verbosity: Verbosity = Verbosity.default()
+    lat: confloat(ge=-90, le=90),
+    lon: confloat(ge=-180, le=180),
+    lang=None,
+    verbosity: Verbosity = Verbosity.default(),
 ) -> Address:
+    """Find the closest address to a point."""
+
     es = get_elasticsearch()
 
     if not lang:
