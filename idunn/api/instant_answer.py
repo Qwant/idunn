@@ -38,6 +38,7 @@ class InstantAnswerResult(BaseModel):
     )
 
     @validator("intention_bbox")
+    @classmethod
     def round_bbox_values(cls, v):
         if v is None:
             return v

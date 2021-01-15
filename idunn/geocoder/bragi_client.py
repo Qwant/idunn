@@ -32,7 +32,7 @@ class BragiClient:
             logger.error("Request to Bragi %s failed with timeout", url, exc_info=True)
             raise HTTPException(503, "Server error: geocoder timeout")
 
-        if response.status_code != httpx.codes.ok:
+        if response.status_code != httpx.codes.OK:
             try:
                 explain = response.json()["long"]
             except (IndexError, JSONDecodeError):

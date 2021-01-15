@@ -32,21 +32,24 @@ class CommonQueryParam(BaseModel):
     bbox: Tuple[float, float, float, float] = None
     size: int = None
     lang: str = None
-    verbosity: Verbosity
+    verbosity: Verbosity = Field(...)
 
     @validator("lang", pre=True, always=True)
+    @classmethod
     def valid_lang(cls, v):
         if v is None:
             v = settings["DEFAULT_LANGUAGE"]
         return v.lower()
 
     @validator("size", pre=True, always=True)
+    @classmethod
     def max_size(cls, v):
         max_size = settings["LIST_PLACES_MAX_SIZE"]
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
     @validator("bbox", pre=True, always=True)
+    @classmethod
     def valid_bbox(cls, v):
         if isinstance(v, str):
             v = v.split(",")
@@ -76,6 +79,7 @@ class PlacesQueryParam(CommonQueryParam):
             )
 
     @validator("source", pre=True, always=True)
+    @classmethod
     def valid_source(cls, v):
         if not v:
             return None
@@ -84,6 +88,7 @@ class PlacesQueryParam(CommonQueryParam):
         return v
 
     @validator("raw_filter", pre=True, always=True)
+    @classmethod
     def valid_raw_filter(cls, v):
         if not v:
             return []
@@ -93,6 +98,7 @@ class PlacesQueryParam(CommonQueryParam):
         return v
 
     @root_validator(skip_on_failure=True)
+    @classmethod
     def categories_or_raw_filters(cls, values):
         if values.get("raw_filter") and values.get("category"):
             raise HTTPException(
@@ -102,6 +108,7 @@ class PlacesQueryParam(CommonQueryParam):
         return values
 
     @root_validator(skip_on_failure=True)
+    @classmethod
     def any_query_present(cls, values):
         if not any((values.get("raw_filter"), values.get("category"), values.get("q"))):
             raise HTTPException(
@@ -127,6 +134,7 @@ class PlacesBboxResponse(BaseModel):
     )
 
     @validator("bbox")
+    @classmethod
     def round_bbox_values(cls, v):
         if v is None:
             return v

@@ -159,13 +159,10 @@ ANY = "*"
 
 class WikidataConnector:
     _wiki_es = None
-    _es_lang = None
 
     @classmethod
     def get_wiki_index(cls, lang):
-        if cls._es_lang is None:
-            cls._es_lang = settings["ES_WIKI_LANG"].split(",")
-        if lang in cls._es_lang:
+        if lang in settings["ES_WIKI_LANG"].split(","):
             return "wikidata_{}".format(lang)
         return None
 
@@ -259,6 +256,7 @@ def fetch_es_pois(raw_filters, bbox, max_size) -> list:
                 {"bool": {"must": [{"term": {"poi_type.name": term}} for term in filt]}}
             )
 
+    # pylint: disable=unexpected-keyword-arg
     bbox_places = es.search(
         index=INDICES["poi"],
         body={

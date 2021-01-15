@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 class PjSource:
     PLACE_ID_NAMESPACE = "pj"
 
+    def __init__(self):
+        self.enabled = True
+
     def bbox_is_covered(self, bbox):
         if not self.enabled:
             return False
@@ -44,6 +47,7 @@ class LegacyPjSource(PjSource):
     es_query_template = settings.get("PJ_ES_QUERY_TEMPLATE")
 
     def __init__(self):
+        super().__init__()
         pj_es_url = settings.get("PJ_ES")
 
         if pj_es_url:
@@ -78,6 +82,7 @@ class LegacyPjSource(PjSource):
         return [PjPOI(p["_source"]) for p in raw_places]
 
     def get_place(self, poi_id):
+        # pylint: disable=unexpected-keyword-arg
         es_places = self.es.search(
             index=self.es_index,
             body={"query": {"bool": {"filter": {"term": {"_id": self.internal_id(poi_id)}}}}},
@@ -110,7 +115,7 @@ class ApiPjSource(PjSource):
     PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
 
     def __init__(self):
-        self.enabled = True
+        super().__init__()
         self.session = PjAuthSession()
 
     @staticmethod
