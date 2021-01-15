@@ -13,7 +13,7 @@ from idunn.geocoder.bragi_client import bragi_client
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.kuzzle import kuzzle_client
 from .constants import PoiSource, ALL_POI_SOURCES
-from .utils import Category
+from .utils import Category, OutingCategory
 
 from pydantic import BaseModel, ValidationError, validator, root_validator, Field
 from typing import List, Optional, Any, Tuple
@@ -61,7 +61,7 @@ class CommonQueryParam(BaseModel):
 
 
 class PlacesQueryParam(CommonQueryParam):
-    category: Optional[List[Category]]
+    category: List[Category] = []
     raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
@@ -112,13 +112,7 @@ class PlacesQueryParam(CommonQueryParam):
 
 
 class EventQueryParam(CommonQueryParam):
-    category: Optional[Category]
-
-    @validator("category", pre=True, always=True)
-    def valid_categories(cls, v):
-        if v is None:
-            return None
-        return v.as_outing()
+    category: Optional[OutingCategory]
 
 
 class PlacesBboxResponse(BaseModel):
@@ -146,7 +140,7 @@ async def get_places_bbox(
         description="Format: left_lon,bottom_lat,right_lon,top_lat",
         example="-4.56,48.35,-4.42,48.46",
     ),
-    category: Optional[List[Category]] = Query(None),
+    category: List[Category] = Query([]),
     raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
     q: Optional[str] = Query(None, title="Query", description="Full text query"),
@@ -232,7 +226,7 @@ def get_events_bbox(
         description="Format: left_lon,bottom_lat,right_lon,top_lat",
         example="-4.56,48.35,-4.42,48.46",
     ),
-    category: Optional[str] = Query(None),
+    category: Optional[OutingCategory] = Query(None, description="Kind of event to look for."),
     size: int = Query(None),
     lang: Optional[str] = Query(None),
     verbosity: Verbosity = Verbosity.default_list(),
@@ -255,10 +249,10 @@ def get_events_bbox(
         logger.info(f"Validation Error: {e.json()}")
         raise HTTPException(status_code=400, detail=e.errors())
 
-    current_outing_lang = params.category
+    current_outing_lang = None
 
     if params.category:
-        current_outing_lang = params.category.get("fr")
+        current_outing_lang = params.category.languages().get("fr")
 
     bbox_places = kuzzle_client.fetch_event_places(
         bbox=params.bbox, collection="events", category=current_outing_lang, size=params.size

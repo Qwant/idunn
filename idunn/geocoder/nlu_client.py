@@ -75,10 +75,10 @@ class NLU_Helper:
     @staticmethod
     def regex_classifier(text, is_brand=False):
         """ Match text with a category, using 'regex'
-        >>> NLU_Helper.regex_classifier("restau")
-        <Category.restaurant: 'restaurant'>
-        >>> NLU_Helper.regex_classifier("pub")
-        <Category.bar: 'bar'>
+        >>> NLU_Helper.regex_classifier("restau").value
+        'restaurant'
+        >>> NLU_Helper.regex_classifier("pub").value
+        'bar'
         >>> NLU_Helper.regex_classifier("republique") is None
         True
         """

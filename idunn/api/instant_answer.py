@@ -108,7 +108,6 @@ async def get_instant_answer(
         source=None,
         size=10,
         lang=lang,
-        verbosity=None,
         extend_bbox=True,
     )
 

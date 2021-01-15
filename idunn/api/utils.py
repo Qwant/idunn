@@ -73,23 +73,33 @@ class CategoryEnum(str):
     def pj_filters(self):
         return ALL_CATEGORIES[self].get("pj_filters")
 
+    def pj_what(self):
+        return ALL_CATEGORIES[self].get("pj_what")
+
     def raw_filters(self):
         return ALL_CATEGORIES[self].get("raw_filters")
 
     def regex(self):
         return ALL_CATEGORIES[self].get("regex")
 
-    def as_outing(self):
-        if self not in ALL_OUTING_CATEGORIES:
-            raise ValueError(
-                f"outing_type '{self}' is invalid since it does not belong to set of possible outings type: {list(ALL_OUTING_CATEGORIES.keys())}"
-            )
-
-        return ALL_OUTING_CATEGORIES.get(self, {})
-
 
 # Load the list of categories as an enum for validation purpose
 Category = Enum("Category", {cat: cat for cat in ALL_CATEGORIES}, type=CategoryEnum)
+
+
+class OutingCategoryEnum(str):
+    """
+    Methods defining the behavior of the enum `OutingCategory` defined bellow.
+    """
+
+    def languages(self):
+        return ALL_OUTING_CATEGORIES[self]
+
+
+# Load the list of outing categories as an enum for validation purpose
+OutingCategory = Enum(
+    "OutingCategory", {cat: cat for cat in ALL_OUTING_CATEGORIES}, type=OutingCategoryEnum
+)
 
 
 class Verbosity(str, Enum):
