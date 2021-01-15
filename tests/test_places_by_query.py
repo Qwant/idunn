@@ -1,3 +1,5 @@
+# pylint: disable = redefined-outer-name, unused-argument, unused-import
+
 from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time

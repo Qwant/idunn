@@ -1,3 +1,5 @@
+# pylint: disable = line-too-long
+
 from fastapi.testclient import TestClient
 import os
 import re
@@ -27,10 +29,9 @@ def test_kuzzle_event_ok():
         )
 
         response = client.get(
-            url=f"http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5",
+            url="http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5",
         )
 
-        # TODO (none found, might be because of the mock)
         assert len(rsps.calls) == 1
 
         resp = response.json()
@@ -63,10 +64,7 @@ def test_kuzzle_event_ok():
             },
         ]
 
-        """
-        We check that there is no Wikipedia block
-        in the answer
-        """
+        # We check that there is no Wikipedia block in the answer.
         assert all(b["type"] != "wikipedia" for b in firstEventData["blocks"])
 
 
@@ -74,7 +72,6 @@ def test_kuzzle_event_nok():
     """
     Check that an error  501 is raised when kuzzle port and address not set
     """
-    # with pytest.raises(Exception):
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", "kuzzle_event_response.json")
     with open(filepath, "r") as f:
         json_event = json.load(f)
@@ -89,7 +86,7 @@ def test_kuzzle_event_nok():
         )
 
         response = client.get(
-            url=f"http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5",
+            url="http://localhost/v1/events?bbox=2.0667651,48.432533,2.9384989,49.0349191& ,*&size=5",
         )
 
         assert response.status_code == 501

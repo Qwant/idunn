@@ -157,6 +157,12 @@ class IntentionFilter(BaseModel):
     category: Optional[str]
     source: Optional[str]
 
+    def to_query_dict(self):
+        query_dict = self.dict(exclude_none=True)
+        if self.bbox:
+            query_dict["bbox"] = ",".join(map(lambda x: f"{x:.6f}", self.bbox))
+        return query_dict
+
 
 class IntentionDescription(BaseModel):
     query: Optional[str]
@@ -170,7 +176,9 @@ class Intention(BaseModel):
     )
     description: IntentionDescription = Field(
         ...,
-        description="Details about the detected intention, useful to format a human-readable description",
+        description=(
+            "Details about the detected intention, useful to format a human-readable description"
+        ),
     )
 
 

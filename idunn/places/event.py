@@ -37,3 +37,6 @@ class Event(BasePlace):
 
     def get_source(self):
         return self.get("id_events", "").split("_")[0]
+
+    def get_bbox(self):
+        raise NotImplementedError

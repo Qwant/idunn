@@ -1,3 +1,5 @@
+# pylint: disable = redefined-outer-name, unused-argument
+
 import os
 import json
 import responses
@@ -33,6 +35,7 @@ def mock_directions_car():
 
 @pytest.fixture
 def mock_directions_car_with_rate_limiter(redis, mock_directions_car):
+    # pylint: disable = protected-access
     with override_settings({"REDIS_URL": redis}):
         rate_limiter._init_limiter()
         yield
@@ -196,7 +199,7 @@ def test_directions_not_configured():
 def test_directions_rate_limiter(mock_directions_car_with_rate_limiter):
     client = TestClient(app)
     # rate limiter is triggered after 30 req/min by default
-    for i in range(40):
+    for _ in range(40):
         response = client.get(
             "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
             params={"language": "fr", "type": "driving"},

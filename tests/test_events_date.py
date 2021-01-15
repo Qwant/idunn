@@ -1,17 +1,11 @@
+# pylint: disable = line-too-long
+
 from idunn.blocks.events import OpeningDayEvent
 from idunn.places import Event
 
-"""
-In this module we test the events block OpeningDayEvent. check if fields
-are correctly returned
-
-"""
-
 
 def get_event_day_complete_fields():
-    """
-    returns an OpeningDayEvent with all features and multiple timetables
-    """
+    """Returns an OpeningDayEvent with all features and multiple timetables"""
     return OpeningDayEvent.from_es(
         Event(
             {

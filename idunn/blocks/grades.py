@@ -1,5 +1,5 @@
 from .base import BaseBlock
-from typing import ClassVar, Optional, Literal
+from typing import Optional, Literal
 
 
 class GradesBlock(BaseBlock):

@@ -1,3 +1,6 @@
+# pylint: disable = super-init-not-called
+
+
 class IdunnPlaceError(Exception):
     message = "Idunn place error"
 

@@ -1,3 +1,5 @@
+# pylint: disable = redefined-outer-name, unused-argument
+
 import os
 import json
 import pytest
@@ -42,7 +44,7 @@ def wiki_client(wiki_es):
 
 @pytest.fixture(scope="function")
 def wiki_es_ko(docker_services):
-    port = docker_services.wait_for_service("wiki_es", 9200)
+    docker_services.wait_for_service("wiki_es", 9200)
     url = "something.invalid:1234"
 
     with override_settings({"WIKI_ES": url, "ES_WIKI_LANG": "fr"}):
@@ -57,7 +59,8 @@ def wiki_client_ko(wiki_es_ko):
 @pytest.fixture(scope="session")
 def init_indices(mimir_client, wiki_client):
     """
-    Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir does
+    Init the elastic index with the 'munin_poi_specific' index and alias it to 'munin_poi' as mimir
+    does.
     """
     mimir_client.indices.create(
         index="munin_poi",

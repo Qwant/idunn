@@ -9,3 +9,6 @@ class Street(BasePlace):
 
     def get_postcodes(self):
         return self.get("zip_codes")
+
+    def get_bbox(self):
+        raise NotImplementedError

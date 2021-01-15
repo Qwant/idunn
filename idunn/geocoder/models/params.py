@@ -6,7 +6,7 @@ import json
 from geojson_pydantic.features import Feature
 from typing import List, Optional
 from fastapi import Query
-from pydantic import BaseModel, Field, PositiveInt, confloat, conint
+from pydantic import BaseModel, Field, confloat, conint
 from pydantic.dataclasses import dataclass
 
 from idunn import settings

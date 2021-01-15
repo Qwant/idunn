@@ -1,7 +1,7 @@
 from .base import BaseBlock
 from pydantic import BaseModel
 from datetime import datetime
-from typing import ClassVar, List, Literal, Optional
+from typing import List, Literal, Optional
 
 
 class TimeTableItem(BaseModel):

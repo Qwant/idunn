@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import ClassVar, Optional, Literal
+from typing import Optional, Literal
 
 from idunn import settings
 from idunn.utils.covid19_dataset import get_poi_covid_status
@@ -32,7 +32,7 @@ class Covid19Block(BaseBlock):
         try:
             _, osm_type, osm_id = place.get_id().split(":")
             cro_id = f"{osm_type[0]}{osm_id}"
-        except Exception:
+        except IndexError:
             logger.warning("Failed to build caresteouvert id for %s", place.get_id())
             return None
         lat = place.get_coord()["lat"]
@@ -67,7 +67,7 @@ class Covid19Block(BaseBlock):
             note = covid_status_from_redis.infos or None
 
             if covid_status_from_redis.opening_hours:
-                opening_hours = OpeningHourBlock.from_es(
+                opening_hours = OpeningHourBlock.from_es_with_oh(
                     es_poi, lang, covid_status_from_redis.opening_hours
                 )
 
@@ -90,7 +90,7 @@ class Covid19Block(BaseBlock):
         elif raw_opening_hours == "off":
             status = CovidOpeningStatus.closed
         elif raw_opening_hours is not None:
-            opening_hours = OpeningHourBlock.from_es(es_poi, lang, raw_opening_hours)
+            opening_hours = OpeningHourBlock.from_es_with_oh(es_poi, lang, raw_opening_hours)
             if opening_hours is None:
                 status = CovidOpeningStatus.unknown
             elif opening_hours.status in ["open", "closed"]:

@@ -14,11 +14,11 @@ class Latlon(BasePlace):
         super().__init__(self.closest_address)
 
     @classmethod
-    def from_id(cls, id):
+    def from_id(cls, latlon_id):
         try:
-            namespace, lat, lon = id.split(":")
-        except ValueError:
-            raise InvalidPlaceId(id)
+            _namespace, lat, lon = latlon_id.split(":")
+        except ValueError as exc:
+            raise InvalidPlaceId(latlon_id) from exc
         return cls(lat, lon)
 
     def build_address(self, lang):
@@ -34,3 +34,6 @@ class Latlon(BasePlace):
 
     def get_coord(self):
         return {"lat": self.lat, "lon": self.lon}
+
+    def get_bbox(self):
+        raise NotImplementedError

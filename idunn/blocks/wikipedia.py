@@ -1,9 +1,8 @@
-import json
 import logging
 import requests
 import pybreaker
 from requests.exceptions import HTTPError, RequestException, Timeout
-from redis import Redis, RedisError
+from redis import RedisError
 from typing import ClassVar, Literal
 
 from idunn import settings
@@ -44,28 +43,28 @@ class WikipediaSession:
         def handle_requests_error(f):
             def wrapped_f(*args, **kwargs):
                 try:
-                    with WikipediaSession.get_rate_limiter().limit(client="idunn") as limit:
+                    with WikipediaSession.get_rate_limiter().limit(client="idunn"):
                         return f(*args, **kwargs)
                 except pybreaker.CircuitBreakerError:
                     prometheus.exception("CircuitBreakerError")
                     logger.error(
-                        "Got CircuitBreakerError in {}".format(f.__name__), exc_info=True,
+                        "Got CircuitBreakerError in %s", f.__name__, exc_info=True,
                     )
                 except HTTPError:
                     prometheus.exception("HTTPError")
-                    logger.warning("Got HTTP error in {}".format(f.__name__), exc_info=True)
+                    logger.warning("Got HTTP error in %s", f.__name__, exc_info=True)
                 except Timeout:
                     prometheus.exception("RequestsTimeout")
-                    logger.warning("External API timed out in {}".format(f.__name__), exc_info=True)
+                    logger.warning("External API timed out in %s", f.__name__, exc_info=True)
                 except RequestException:
                     prometheus.exception("RequestException")
-                    logger.error("Got Request exception in {}".format(f.__name__), exc_info=True)
+                    logger.error("Got Request exception in %s", f.__name__, exc_info=True)
                 except TooManyRequestsException:
                     prometheus.exception("TooManyRequests")
-                    logger.warning("Got TooManyRequests{}".format(f.__name__), exc_info=True)
+                    logger.warning("Got TooManyRequests in %s", f.__name__, exc_info=True)
                 except RedisError:
                     prometheus.exception("RedisError")
-                    logger.warning("Got redis ConnectionError{}".format(f.__name__), exc_info=True)
+                    logger.warning("Got redis ConnectionError in %s", f.__name__, exc_info=True)
 
             return wrapped_f
 
@@ -174,14 +173,7 @@ class WikipediaBlock(BaseBlock):
                             title=wiki_poi_info.get("title")[0],
                             description=SizeLimiter.limit_size(wiki_poi_info.get("content", "")),
                         )
-                    else:
-                        """
-                        if the lang is in ES_WIKI_LANG and
-                        the WIKI_ES contains no information,
-                        then there is no need to call the
-                        Wikipedia API, i.e we return None
-                        """
-                        return None
+                    return None
                 except WikiUndefinedException:
                     logger.info("WIKI_ES variable has not been set: call to Wikipedia")
 
@@ -210,3 +202,5 @@ class WikipediaBlock(BaseBlock):
                     title=wiki_summary.get("displaytitle", ""),
                     description=SizeLimiter.limit_size(wiki_summary.get("extract", "")),
                 )
+
+        return None

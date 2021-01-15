@@ -26,7 +26,7 @@ jobs:
         run: pipenv run black --diff --check .
 
       - name: Run lints
-        run: pipenv run pylint -E -f colorized idunn tests
+        run: pipenv run pylint idunn tests
 
       - name: Run tests
         run: pipenv run pytest

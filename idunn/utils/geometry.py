@@ -2,24 +2,26 @@ import json
 import os
 from shapely.geometry import MultiPolygon, box, shape
 
-# Approximate shape of Metropolitan France (source: https://download.geofabrik.de/europe/france.html)
+# Approximate shape of Metropolitan France
+# (source: https://download.geofabrik.de/europe/france.html)
 france_poly_filename = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "./data/france.poly"
 )
 
-#  Approximate shape of some cities surroundings. These shapes have been defined using the following
-#  script: https://gist.github.com/remi-dupre/6c4a1d699e48c00e134657dc1164a2c9
+# Approximate shape of some cities surroundings. These shapes have been defined using the following
+# script: https://gist.github.com/remi-dupre/6c4a1d699e48c00e134657dc1164a2c9
 cities_surrounds_file = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "./data/surroundings.json"
 )
 
 
 def parse_poly(lines):
-    """ Parse an Osmosis polygon filter file.
+    """
+    Parse an Osmosis polygon filter file.
 
-        Accept a sequence of lines from a polygon file, return a shapely.geometry.MultiPolygon object.
+    Accept a sequence of lines from a polygon file, return a shapely.geometry.MultiPolygon object.
 
-        http://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format
+    http://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format
     """
     in_ring = False
     coords = []
@@ -27,7 +29,7 @@ def parse_poly(lines):
     for (index, line) in enumerate(lines):
         if index == 0:
             # first line is junk.
-            continue
+            pass
 
         elif index == 1:
             # second line is the first polygon ring.

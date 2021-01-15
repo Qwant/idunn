@@ -23,12 +23,17 @@ class InstantAnswerResult(BaseModel):
         "At most 1 place is returned if no broad intention has been detected."
     )
     source: Optional[PoiSource] = Field(
-        description="Data source for the returned place, or data provider for the list of results. "
-        "This field is not provided when the instant answer relates to an admnistrative area or an address."
+        description=(
+            "Data source for the returned place, or data provider for the list of results. This "
+            "field is not provided when the instant answer relates to an admnistrative area or an "
+            "address."
+        )
     )
     intention_bbox: Optional[Tuple[float, float, float, float]] = Field(
-        description="Bounding box where the results have been searched for, based on the detected intention."
-        "Not provided when no detected intention was used to fetch the results.",
+        description=(
+            "Bounding box where the results have been searched for, based on the detected "
+            "intention. Not provided when no detected intention was used to fetch the results."
+        ),
         example=(2.32, 48.85, 2.367, 48.866),
     )
     maps_url: HttpUrl = Field(description="Direct URL to the result(s) on Qwant Maps.",)
@@ -69,9 +74,9 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
 def get_instant_answer_single_place(place_id: str, lang: str):
     try:
         place = place_from_id(place_id, follow_redirect=True)
-    except:
+    except Exception as exc:
         logger.warning("Failed to get place for instant answer", exc_info=True)
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from exc
 
     detailed_place = place.load_place(lang=lang)
     return InstantAnswerResult(

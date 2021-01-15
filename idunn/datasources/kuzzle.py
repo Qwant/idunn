@@ -143,13 +143,14 @@ class KuzzleClient:
         bbox_places.raise_for_status()
         try:
             bbox_places = bbox_places.json()
-        except Exception:
+        except Exception as exc:
             logger.error(
-                f"Error with kuzzle JSON with request to {url_kuzzle} "
-                f"Got {bbox_places.content}",
+                "Error with kuzzle JSON with request to %s got %s",
+                url_kuzzle,
+                bbox_places.content,
                 exc_info=True,
             )
-            raise HTTPException(detail="kuzzle error", status_code=503)
+            raise HTTPException(detail="kuzzle error", status_code=503) from exc
 
         bbox_places = bbox_places.get("result", {}).get("hits", [])
         return bbox_places

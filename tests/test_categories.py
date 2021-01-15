@@ -1,3 +1,5 @@
+# pylint: disable = line-too-long, redefined-outer-name, unused-argument, unused-import
+
 import pytest
 from unittest.mock import ANY
 from app import app
@@ -5,6 +7,8 @@ from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
 from .test_pj_poi import enable_pj_source
+from .test_full import OH_BLOCK
+
 
 BBOX_PARIS = "2.252876,48.819862,2.395707,48.891132"
 BBOX_BREST = "-4.807542,48.090743,-4.097541,48.800743"
@@ -15,9 +19,11 @@ INVALID_BBOX_PARIS_MISSING = "48.819862,2.252876,48.891132"
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_bbox():
     """
-        Test the bbox query:
-        Query first all categories in fixtures with bbox that excludes the patisserie POI
-        We should have 5 POI results including: blancs_manteaux, orsay and louvre, but not patisserie_peron (not in bbox)
+    Test the bbox query.
+
+    Query first all categories in fixtures with bbox that excludes the patisserie POI We should
+    have 5 POI results including: blancs_manteaux, orsay and louvre, but not patisserie_peron (not
+    in bbox).
     """
     client = TestClient(app)
 
@@ -76,58 +82,7 @@ def test_bbox():
                     "country_code": "FR",
                 },
                 "blocks": [
-                    {
-                        "type": "opening_hours",
-                        "status": "open",
-                        "next_transition_datetime": "2018-06-14T21:45:00+02:00",
-                        "seconds_before_next_transition": 40500,
-                        "is_24_7": False,
-                        "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-                        "days": [
-                            {
-                                "dayofweek": 1,
-                                "local_date": "2018-06-11",
-                                "status": "closed",
-                                "opening_hours": [],
-                            },
-                            {
-                                "dayofweek": 2,
-                                "local_date": "2018-06-12",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 3,
-                                "local_date": "2018-06-13",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 4,
-                                "local_date": "2018-06-14",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
-                            },
-                            {
-                                "dayofweek": 5,
-                                "local_date": "2018-06-15",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 6,
-                                "local_date": "2018-06-16",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 7,
-                                "local_date": "2018-06-17",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                        ],
-                    },
+                    OH_BLOCK,
                     {
                         "type": "phone",
                         "international_format": "+33 1 40 49 48 14",
@@ -259,62 +214,7 @@ def test_bbox():
                     "center": [2.3250037768187326, 48.86618482685007],
                 },
                 "address": ANY,
-                "blocks": [
-                    {
-                        "type": "opening_hours",
-                        "status": "open",
-                        "next_transition_datetime": "2018-06-14T21:45:00+02:00",
-                        "seconds_before_next_transition": 40500,
-                        "is_24_7": False,
-                        "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-                        "days": [
-                            {
-                                "dayofweek": 1,
-                                "local_date": "2018-06-11",
-                                "status": "closed",
-                                "opening_hours": [],
-                            },
-                            {
-                                "dayofweek": 2,
-                                "local_date": "2018-06-12",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 3,
-                                "local_date": "2018-06-13",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 4,
-                                "local_date": "2018-06-14",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
-                            },
-                            {
-                                "dayofweek": 5,
-                                "local_date": "2018-06-15",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 6,
-                                "local_date": "2018-06-16",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 7,
-                                "local_date": "2018-06-17",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                        ],
-                    },
-                    ANY,
-                    ANY,
-                ],
+                "blocks": [OH_BLOCK, ANY, ANY],
                 "meta": ANY,
             },
             {
@@ -345,6 +245,7 @@ def test_bbox():
                     "admins": ANY,
                     "country_code": "FR",
                 },
+<<<<<<< HEAD
                 "blocks": [
                     {
                         "type": "opening_hours",
@@ -402,6 +303,10 @@ def test_bbox():
                     ANY,
                 ],
                 "meta": ANY,
+=======
+                "blocks": [OH_BLOCK, ANY, ANY],
+                "meta": {"source": "osm"},
+>>>>>>> c23c063 (pylint: fix most lints)
             },
         ],
     }
@@ -442,58 +347,7 @@ def test_size_list():
                 },
                 "address": ANY,
                 "blocks": [
-                    {
-                        "type": "opening_hours",
-                        "status": "open",
-                        "next_transition_datetime": "2018-06-14T21:45:00+02:00",
-                        "seconds_before_next_transition": 40500,
-                        "is_24_7": False,
-                        "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-                        "days": [
-                            {
-                                "dayofweek": 1,
-                                "local_date": "2018-06-11",
-                                "status": "closed",
-                                "opening_hours": [],
-                            },
-                            {
-                                "dayofweek": 2,
-                                "local_date": "2018-06-12",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 3,
-                                "local_date": "2018-06-13",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 4,
-                                "local_date": "2018-06-14",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
-                            },
-                            {
-                                "dayofweek": 5,
-                                "local_date": "2018-06-15",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 6,
-                                "local_date": "2018-06-16",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                            {
-                                "dayofweek": 7,
-                                "local_date": "2018-06-17",
-                                "status": "open",
-                                "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                            },
-                        ],
-                    },
+                    OH_BLOCK,
                     {
                         "international_format": "+33 1 40 49 48 14",
                         "local_format": "01 40 49 48 14",
@@ -510,12 +364,13 @@ def test_size_list():
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_single_raw_filter():
+    """
+    Test the category filter.
+
+    Query just one category (place_of_worship) in fixtures with bbox that excludes patisserie POI.
+    The result should contain only one POI: blancs_manteaux.
+    """
     client = TestClient(app)
-    """
-    Test the category filter:
-        Query just one category (place_of_worship) in fixtures with bbox that excludes patisserie POI
-        The result should contain only one POI: blancs_manteaux
-    """
     response = client.get(
         url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=*,place_of_worship"
     )
@@ -672,7 +527,7 @@ def test_extend_bbox():
     assert response.status_code == 200
     data = response.json()
     assert len(data["places"]) == 1
-    assert data["bbox_extended"] == True
+    assert data["bbox_extended"]
     assert data["bbox"] == [2.338028, 48.861147, 2.338028, 48.861147]
 
 
@@ -827,7 +682,7 @@ def test_endpoint_categories():
     """
     client = TestClient(app)
 
-    response = client.get(url=f"http://localhost/v1/categories")
+    response = client.get(url="http://localhost/v1/categories")
 
     assert response.status_code == 200
 

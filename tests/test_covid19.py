@@ -11,7 +11,7 @@ from .utils import override_settings
 def test_covid19_block():
     with override_settings({"BLOCK_COVID_ENABLED": True, "COVID19_USE_REDIS_DATASET": False}):
         client = TestClient(app)
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777778?lang=es")
+        response = client.get(url="http://localhost/v1/pois/osm:way:7777778?lang=es")
 
     assert response.status_code == 200
     resp = response.json()
@@ -25,7 +25,7 @@ def test_covid19_block():
 def test_covid19_block_unknown_status():
     with override_settings({"BLOCK_COVID_ENABLED": True, "COVID19_USE_REDIS_DATASET": False}):
         client = TestClient(app)
-        response = client.get(url=f"http://localhost/v1/pois/osm:node:36153811?lang=fr")
+        response = client.get(url="http://localhost/v1/pois/osm:node:36153811?lang=fr")
 
     assert response.status_code == 200
     resp = response.json()

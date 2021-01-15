@@ -1,3 +1,5 @@
+"""The logic of the Prometheus metrics is defined in this module."""
+
 import contextlib
 import time
 
@@ -12,9 +14,6 @@ from prometheus_client import (
 from fastapi import Request, Response
 from fastapi.responses import PlainTextResponse
 from fastapi.routing import APIRoute
-
-
-""" The logic of the Prometheus metrics is defined in this module """
 
 
 IDUNN_WIKI_REQUEST_DURATION = Histogram(
@@ -93,7 +92,7 @@ class MonitoredAPIRoute(APIRoute):
         return custom_handler
 
 
-async def handle_errors(request: Request, exc):
+async def handle_errors(_request: Request, _exc):
     """
     overrides the default error handler defined in ServerErrorMiddleware
     """

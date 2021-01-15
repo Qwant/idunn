@@ -33,6 +33,7 @@ class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
             name=name,
         )
 
+    # pylint: disable=arguments-differ, broad-except, invalid-overridden-method, protected-access
     async def call_async(self, f, *args, **kwargs):
         """
         Run the circuit breaker with native python async.
@@ -54,8 +55,8 @@ class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
 
                 if opened_at and datetime.utcnow() < opened_at + timeout:
                     raise pybreaker.CircuitBreakerError("Timeout not elapsed yet")
-                else:
-                    state._breaker.half_open()
+
+                state._breaker.half_open()
 
             # Build a synchronous `callback` function that simulates the return
             # behaviour of `f`.

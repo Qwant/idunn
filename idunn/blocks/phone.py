@@ -1,6 +1,6 @@
 import logging
 from typing import Literal
-from phonenumbers import PhoneNumber, PhoneNumberFormat, parse, format_number
+from phonenumbers import NumberParseException, PhoneNumberFormat, parse, format_number
 
 from .base import BaseBlock
 
@@ -26,15 +26,15 @@ class PhoneBlock(BaseBlock):
     local_format: str
 
     @classmethod
-    def from_es(cls, place, lang):
-        raw = place.get_phone()
+    def from_es(cls, es_poi, lang):
+        raw = es_poi.get_phone()
         if not raw:
             return None
         try:
-            parsed_phone_number = parse(raw, place.get_country_code())
-        except Exception:
+            parsed_phone_number = parse(raw, es_poi.get_country_code())
+        except NumberParseException:
             logger.warning(
-                "Failed to parse phone number for place %s", place.get_id(), exc_info=True
+                "Failed to parse phone number for place %s", es_poi.get_id(), exc_info=True
             )
             return None
         if parsed_phone_number is None:

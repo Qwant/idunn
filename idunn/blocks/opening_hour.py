@@ -2,8 +2,8 @@ import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, utc
 from tzwhere import tzwhere
-from pydantic import BaseModel, Schema, conint, constr
-from typing import ClassVar, List, Literal, Optional
+from pydantic import BaseModel, conint, constr
+from typing import List, Literal, Optional
 
 from .base import BaseBlock
 from idunn.utils.opening_hours import OpeningHours
@@ -111,13 +111,7 @@ class OpeningHourBlock(BaseBlock):
         return es_poi.get_raw_opening_hours()
 
     @classmethod
-    def from_es(cls, es_poi, lang, raw_oh=None):
-        if not raw_oh:
-            raw_oh = cls.get_raw_oh(es_poi)
-
-        if not raw_oh:
-            return None
-
+    def from_es_with_oh(cls, es_poi, _lang, raw_oh):
         # Fallback to London coordinates if POI coordinates are not known.
         poi_lat, poi_lon = get_coord(es_poi) or (51.5, 0)
         poi_country_code = es_poi.get_country_code()
@@ -162,3 +156,12 @@ class OpeningHourBlock(BaseBlock):
         return cls.init_class(
             status, next_transition.isoformat(), time_before_next, oh, curr_dt, raw_oh
         )
+
+    @classmethod
+    def from_es(cls, es_poi, lang):
+        raw_oh = cls.get_raw_oh(es_poi)
+
+        if raw_oh is None:
+            return None
+
+        return cls.from_es_with_oh(es_poi, lang, raw_oh)

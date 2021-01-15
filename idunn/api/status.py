@@ -1,5 +1,5 @@
 import logging
-from elasticsearch import ConnectionError
+from elasticsearch import ConnectionError  # pylint: disable=redefined-builtin
 
 from idunn.utils.es_wrapper import get_elasticsearch
 

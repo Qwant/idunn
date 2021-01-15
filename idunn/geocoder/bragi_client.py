@@ -28,9 +28,9 @@ class BragiClient:
                 response = await self.client.post(url, params=params, json=body)
             else:
                 response = await self.client.get(url, params=params)
-        except httpx.ConnectTimeout:
+        except httpx.ConnectTimeout as exc:
             logger.error("Request to Bragi %s failed with timeout", url, exc_info=True)
-            raise HTTPException(503, "Server error: geocoder timeout")
+            raise HTTPException(503, "Server error: geocoder timeout") from exc
 
         if response.status_code != httpx.codes.OK:
             try:
@@ -46,9 +46,9 @@ class BragiClient:
 
         try:
             return response.json()
-        except (JSONDecodeError, pydantic.ValidationError) as e:
+        except (JSONDecodeError, pydantic.ValidationError) as exc:
             logger.exception("Autocomplete invalid response")
-            raise HTTPException(503, "Invalid response from the geocoder")
+            raise HTTPException(503, "Invalid response from the geocoder") from exc
 
     async def pois_query_in_bbox(self, query, bbox, limit, lang=None):
         query_params = {"q": query, "lang": lang, "limit": limit, "type[]": "poi"}

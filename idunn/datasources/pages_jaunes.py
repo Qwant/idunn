@@ -1,3 +1,6 @@
+# TODO: this is the only cycle in the app, but still a bad idea.
+# pylint: disable = cyclic-import
+
 from os import path
 from typing import List
 

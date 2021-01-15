@@ -36,26 +36,28 @@ class AirQuality(BaseBlock):
     measurements_unit: Optional[str] = None
 
     @classmethod
-    def from_es(cls, place, lang):
-        if not settings["BLOCK_AIR_QUALITY_ENABLED"]:
-            return None
-        if place.PLACE_TYPE != "admin":
-            return None
-        if place.get("zone_type") not in ("city", "city_district", "suburb"):
+    def from_es(cls, es_poi, lang):
+        if (
+            not settings["BLOCK_AIR_QUALITY_ENABLED"]
+            or es_poi.PLACE_TYPE != "admin"
+            or es_poi.get("zone_type") not in ("city", "city_district", "suburb")
+        ):
             return None
 
-        bbox = place.get_bbox()
+        bbox = es_poi.get_bbox()
+
         if not bbox:
             return None
 
         try:
             air_quality = get_air_quality(bbox)
-        except Exception:
-            logger.warning("Failed to fetch air quality for %s", place.get_id(), exc_info=True)
+        except Exception:  # pylint: disable=broad-except
+            logger.warning("Failed to fetch air quality for %s", es_poi.get_id(), exc_info=True)
             return None
 
         if not air_quality:
             return None
+
         for x in ["CO", "PM10", "O3", "NO2", "SO2", "PM2_5"]:
             if x not in air_quality:
                 continue
@@ -79,20 +81,20 @@ class Weather(BaseBlock):
     _connection: ClassVar = None
 
     @classmethod
-    def from_es(cls, place, lang):
-        if place.PLACE_TYPE != "admin":
+    def from_es(cls, es_poi, lang):
+        if es_poi.PLACE_TYPE != "admin":
             return None
-        if place.get("zone_type") not in ("city", "city_district", "suburd"):
+        if es_poi.get("zone_type") not in ("city", "city_district", "suburd"):
             return None
 
-        coord = place.get_coord()
+        coord = es_poi.get_coord()
         if not coord:
             return None
 
         try:
             weather = get_local_weather(coord)
-        except Exception:
-            logger.warning("Failed to fetch weather for %s", place.get_id(), exc_info=True)
+        except Exception:  # pylint: disable=broad-except
+            logger.warning("Failed to fetch weather for %s", es_poi.get_id(), exc_info=True)
             return None
 
         if not weather:

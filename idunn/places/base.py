@@ -20,13 +20,13 @@ ZONE_TYPE_ORDER_KEY = {
     "country": 7,
 }
 
-
+# pylint: disable = no-self-use, too-many-public-methods
 class BasePlace(dict):
     PLACE_TYPE = ""
 
     def __init__(self, d):
         if not self.PLACE_TYPE:
-            raise Exception("Missing PLACE_TYPE in class %s", self.__class__.__name__)
+            raise Exception(f"Missing PLACE_TYPE in class {self.__class__.__name__}")
         super().__init__(d)
         self._wiki_resp = {}
         self.properties = {}
@@ -60,7 +60,7 @@ class BasePlace(dict):
     def wikidata_id(self):
         return self.properties.get("wikidata")
 
-    def get_name(self, lang):
+    def get_name(self, _lang):
         return self.get_local_name()
 
     def get_local_name(self):
@@ -118,7 +118,7 @@ class BasePlace(dict):
                 else:
                     postcodes = None
 
-        id = raw_address.get("id")
+        addr_id = raw_address.get("id")
         name = raw_address.get("name")
         label = raw_address.get("label")
         street = self.build_street()
@@ -127,7 +127,7 @@ class BasePlace(dict):
         housenumber = raw_address.get("house_number") or raw_address.get("housenumber")
 
         return {
-            "id": id,
+            "id": addr_id,
             "name": name or street.get("name"),
             "housenumber": housenumber,
             "postcode": postcodes,
@@ -138,7 +138,7 @@ class BasePlace(dict):
             "country_code": self.get_country_code(),
         }
 
-    def build_admin(self, lang=None):
+    def build_admin(self, _lang=None):
         return None
 
     def build_admins(self, lang=None):

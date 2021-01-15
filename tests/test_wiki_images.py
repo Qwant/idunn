@@ -1,3 +1,5 @@
+# pylint: disable = line-too-long, unused-argument
+
 import os
 import json
 import pytest
@@ -24,7 +26,7 @@ def orsay_wiki_es(wiki_client, init_indices):
 
 def test_orsay_images():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr")
+    response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -44,7 +46,7 @@ def test_orsay_images():
 @mock.patch.object(POI, "get_name", lambda *x: None)
 def test_image_for_unnamed_poi():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr")
+    response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"

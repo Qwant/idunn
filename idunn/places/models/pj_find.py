@@ -149,7 +149,11 @@ class Listing(BaseModel):
     )
     opening_hours: Optional[str] = Field(
         None,
-        description="Opening hours (see http://wiki.openstreetmap.org/wiki/Key:opening_hours/specification to calculate current status)",
+        description=(
+            "Opening hours "
+            "(see http://wiki.openstreetmap.org/wiki/Key:opening_hours/specification to calculate "
+            "current status)"
+        ),
     )
 
 

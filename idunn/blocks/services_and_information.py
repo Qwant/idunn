@@ -141,7 +141,6 @@ class ServicesAndInformationBlock(BaseBlock):
     @classmethod
     def from_es(cls, es_poi, lang):
         blocks = []
-
         access_block = AccessibilityBlock.from_es(es_poi, lang)
         internet_block = InternetAccessBlock.from_es(es_poi, lang)
         brewery_block = BreweryBlock.from_es(es_poi, lang)
@@ -158,3 +157,5 @@ class ServicesAndInformationBlock(BaseBlock):
 
         if len(blocks) > 0:
             return cls(blocks=blocks)
+
+        return None

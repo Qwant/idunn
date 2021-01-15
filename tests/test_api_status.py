@@ -1,7 +1,9 @@
+# pylint: disable = redefined-outer-name, unused-argument
+
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 from elasticsearch.client import ClusterClient
-from elasticsearch.exceptions import ConnectionError
+from elasticsearch.exceptions import ConnectionError  # pylint: disable = redefined-builtin
 
 from app import app
 

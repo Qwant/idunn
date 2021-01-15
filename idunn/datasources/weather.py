@@ -39,13 +39,14 @@ class WeatherClient:
         weather_town.raise_for_status()
         try:
             weather_town = weather_town.json()
-        except Exception:
+        except Exception as exc:
             logger.error(
-                f"Error with weather API JSON with request to {url_weather_api} "
-                f"Got {weather_town.content}",
+                "Error with weather API JSON with request to %s, got %s",
+                url_weather_api,
+                weather_town.content,
                 exc_info=True,
             )
-            raise HTTPException(detail="weather error", status_code=503)
+            raise HTTPException(detail="weather error", status_code=503) from exc
 
         weather_info = {
             "temperature": weather_town.get("main", {}).get("temp"),
