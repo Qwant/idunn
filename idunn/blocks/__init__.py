@@ -1,6 +1,6 @@
 from typing import Union
 
-from .opening_hour import OpeningHourBlock, HappyHourBlock
+from .opening_hour import OpeningHourBlock
 from .covid19 import Covid19Block
 from .phone import PhoneBlock
 from .information import InformationBlock
@@ -35,7 +35,6 @@ from .recycling import RecyclingBlock
 AnyBlock = Union[
     OpeningHourBlock,
     Covid19Block,
-    HappyHourBlock,
     PhoneBlock,
     InformationBlock,
     WikipediaBlock,

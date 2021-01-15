@@ -162,11 +162,3 @@ class OpeningHourBlock(BaseBlock):
         return cls.init_class(
             status, next_transition.isoformat(), time_before_next, oh, curr_dt, raw_oh
         )
-
-
-class HappyHourBlock(OpeningHourBlock):
-    type: Literal["happy_hours"] = "happy_hours"
-
-    @staticmethod
-    def get_raw_oh(es_poi):
-        return es_poi.get_raw_happy_hours()
