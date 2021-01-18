@@ -1,11 +1,12 @@
-from idunn.blocks.base import BaseBlock
 from idunn.blocks import AnyBlock
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from typing import List, Optional
 
 
 class PlaceMeta(BaseModel):
     source: Optional[str]
+    maps_place_url: HttpUrl
+    maps_directions_url: HttpUrl
 
 
 class Street(BaseModel):

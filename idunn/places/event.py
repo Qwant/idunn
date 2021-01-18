@@ -1,5 +1,4 @@
 from .base import BasePlace
-from .place import PlaceMeta
 
 
 class Event(BasePlace):
@@ -36,5 +35,5 @@ class Event(BasePlace):
             "admins": self.build_admins(lang),
         }
 
-    def get_meta(self):
-        return PlaceMeta(source=self.get("id_events", "").split("_")[0])
+    def get_source(self):
+        return self.get("id_events", "").split("_")[0]

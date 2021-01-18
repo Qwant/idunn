@@ -157,5 +157,9 @@ def test_full(mock_external_requests):
             {"type": "website", "url": "http://testing.test", "label": None},
             {"type": "contact", "url": "mailto:contact@example.com",},
         ],
-        "meta": {"source": "osm"},
+        "meta": {
+            "source": "osm",
+            "maps_place_url": "https://www.qwant.com/maps/place/osm:way:7777778",
+            "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=osm%3Away%3A7777778",
+        },
     }

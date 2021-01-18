@@ -1,5 +1,4 @@
 import logging
-from urllib.parse import urlencode
 from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Any, Tuple
@@ -10,12 +9,12 @@ from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id
 from idunn.api.places_list import get_places_bbox
+from idunn.utils import maps_urls
 from .constants import PoiSource
 
 logger = logging.getLogger(__name__)
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
-maps_base_url = settings["MAPS_BASE_URL"]
 
 
 class InstantAnswerResponse(BaseModel):
@@ -121,16 +120,14 @@ async def get_instant_answer(
             places=places,
             source=places_bbox_response.source,
             intention_bbox=intention.filter.bbox,
-            maps_url=f"{maps_base_url}place/{place_id}",
-            maps_frame_url=f"{maps_base_url}place/{place_id}?no_ui=1",
+            maps_url=maps_urls.get_place_url(place_id),
+            maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
         )
 
-    query_dict = intention.filter.to_query_dict()
-    query_dict_no_ui = dict(**query_dict, no_ui=1)
     return InstantAnswerResponse(
         places=places,
         source=places_bbox_response.source,
         intention_bbox=intention.filter.bbox,
-        maps_url=f"{maps_base_url}places/?{urlencode(query_dict)}",
-        maps_frame_url=f"{maps_base_url}places/?{urlencode(query_dict_no_ui)}",
+        maps_url=maps_urls.get_places_url(intention.filter),
+        maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
     )
