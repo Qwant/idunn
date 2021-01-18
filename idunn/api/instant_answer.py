@@ -101,7 +101,7 @@ async def get_instant_answer(
     category = intention.filter.category
 
     places_bbox_response = await get_places_bbox(
-        category=[category] if category else None,
+        category=[category] if category else [],
         bbox=intention.filter.bbox,
         q=intention.filter.q,
         raw_filter=None,

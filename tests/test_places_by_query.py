@@ -1,25 +1,14 @@
-import re
-import pytest
 from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
-from .utils import read_fixture, override_settings
+from .fixtures.autocomplete import mock_bragi_carrefour_in_bbox
 
 BBOX = "-4.5689169,48.3572972,-4.4278311,48.4595521"
-BRAGI_BASE_URL = "http://bragi.test"
-BRAGI_RESPONSE = read_fixture("fixtures/autocomplete/carrefour_in_bbox.json")
-
-
-@pytest.fixture
-def mock_autocomplete_post(httpx_mock):
-    with override_settings({"BRAGI_BASE_URL": BRAGI_BASE_URL}):
-        httpx_mock.post(re.compile(f"^{BRAGI_BASE_URL}/autocomplete"), content=BRAGI_RESPONSE)
-        yield
 
 
 @freeze_time("2020-05-14 08:30:00+02:00")
-def test_places_bbox_with_osm_query(mock_autocomplete_post):
+def test_places_bbox_with_osm_query(mock_bragi_carrefour_in_bbox):
     client = TestClient(app)
 
     response = client.get(url=f"http://localhost/v1/places?bbox={BBOX}&q=carrefour&source=osm")
