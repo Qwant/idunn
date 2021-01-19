@@ -1,3 +1,4 @@
+from enum import Enum
 from fastapi import HTTPException
 from elasticsearch import (
     Elasticsearch,
@@ -5,6 +6,7 @@ from elasticsearch import (
     NotFoundError,
     ElasticsearchException,
 )
+import os
 import logging
 from idunn import settings
 from idunn.blocks import (
@@ -13,7 +15,6 @@ from idunn.blocks import (
     ContactBlock,
     DescriptionEvent,
     GradesBlock,
-    HappyHourBlock,
     ImagesBlock,
     InformationBlock,
     OpeningDayEvent,
@@ -28,24 +29,104 @@ from idunn.utils import prometheus
 from idunn.utils.index_names import INDICES
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.places.exceptions import PlaceNotFound
+from idunn.utils.settings import _load_yaml_file
 
 logger = logging.getLogger(__name__)
 
-LONG = "long"
-SHORT = "short"
-LIST = "list"
-DEFAULT_VERBOSITY = LONG
-DEFAULT_VERBOSITY_LIST = LIST
+
+class Type(str, Enum):
+    # City = "city" # this field is available in Bragi but deprecated
+    House = "house"
+    Poi = "poi"
+    StopArea = "public_transport:stop_area"
+    Street = "street"
+    Zone = "zone"
+
+
+def get_categories():
+    categories_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml"
+    )
+    return _load_yaml_file(categories_path)["categories"]
+
+
+def get_outing_types():
+    outing_types_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml"
+    )
+    return _load_yaml_file(outing_types_path)["outing_types"]
+
+
+ALL_CATEGORIES = get_categories()
+ALL_OUTING_CATEGORIES = get_outing_types()
+
+
+class CategoryEnum(str):
+    """
+    Methods defining the behavior of the enum `Category` defined bellow.
+    """
+
+    def match_brand(self):
+        return ALL_CATEGORIES[self].get("match_brand", False)
+
+    def pj_filters(self):
+        return ALL_CATEGORIES[self].get("pj_filters")
+
+    def pj_what(self):
+        return ALL_CATEGORIES[self].get("pj_what")
+
+    def raw_filters(self):
+        return ALL_CATEGORIES[self].get("raw_filters")
+
+    def regex(self):
+        return ALL_CATEGORIES[self].get("regex")
+
+
+# Load the list of categories as an enum for validation purpose
+Category = Enum("Category", {cat: cat for cat in ALL_CATEGORIES}, type=CategoryEnum)
+
+
+class OutingCategoryEnum(str):
+    """
+    Methods defining the behavior of the enum `OutingCategory` defined bellow.
+    """
+
+    def languages(self):
+        return ALL_OUTING_CATEGORIES[self]
+
+
+# Load the list of outing categories as an enum for validation purpose
+OutingCategory = Enum(
+    "OutingCategory", {cat: cat for cat in ALL_OUTING_CATEGORIES}, type=OutingCategoryEnum
+)
+
+
+class Verbosity(str, Enum):
+    """
+    Control the verbosity of the output.
+    """
+
+    LONG = "long"
+    SHORT = "short"
+    LIST = "list"
+
+    @classmethod
+    def default(cls):
+        return cls.LONG
+
+    @classmethod
+    def default_list(cls):
+        return cls.LIST
+
 
 BLOCKS_BY_VERBOSITY = {
-    LONG: [
+    Verbosity.LONG: [
         AirQuality,
         Weather,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
         Covid19Block,
-        HappyHourBlock,
         PhoneBlock,
         InformationBlock,
         WebSiteBlock,
@@ -54,7 +135,7 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
     ],
-    LIST: [
+    Verbosity.LIST: [
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
@@ -65,9 +146,8 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
     ],
-    SHORT: [OpeningHourBlock, Covid19Block],
+    Verbosity.SHORT: [OpeningHourBlock, Covid19Block],
 }
-ALL_VERBOSITY_LEVELS = list(BLOCKS_BY_VERBOSITY.keys())
 
 PLACE_DEFAULT_INDEX = settings["PLACE_DEFAULT_INDEX"]
 PLACE_POI_INDEX = settings["PLACE_POI_INDEX"]

@@ -142,7 +142,7 @@ class ApiPjSource(PjSource):
 
     def get_places_bbox(self, categories, bbox, size=10, query="") -> List[PjApiPOI]:
         query_params = {
-            "what": " ".join(c["pj_what"] for c in categories),
+            "what": " ".join(c.pj_what() for c in categories),
             "where": self.format_where(bbox),
             "max": min(self.PJ_RESULT_MAX_SIZE, size),
         }

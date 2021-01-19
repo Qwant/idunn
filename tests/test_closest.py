@@ -15,7 +15,7 @@ def test_reverse():
 def test_reverse_invalid():
     client = TestClient(app)
     response = client.get("http://localhost/v1/reverse/48.810273:abc")
-    assert response.status_code == 404
+    assert response.status_code == 422
 
 
 def test_place_latlon():
@@ -55,4 +55,4 @@ def test_place_latlon_no_address():
 def test_place_latlon_invalid():
     client = TestClient(app)
     response = client.get("http://localhost/v1/places/latlon:abc:55-")
-    assert response.status_code == 404
+    assert response.status_code == 422

@@ -1,5 +1,5 @@
-from idunn.blocks.base import BaseBlock, BlocksValidator
-from idunn.api.utils import LONG, BLOCKS_BY_VERBOSITY
+from idunn.blocks.base import BaseBlock
+from idunn.blocks import AnyBlock
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -48,5 +48,5 @@ class Place(BaseModel):
     subclass_name: Optional[str]
     geometry: Optional[dict]
     address: Optional[Address]
-    blocks: List[BaseBlock] = BlocksValidator(allowed_blocks=BLOCKS_BY_VERBOSITY.get(LONG))
+    blocks: List[AnyBlock]
     meta: PlaceMeta

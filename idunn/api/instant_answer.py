@@ -1,6 +1,6 @@
 import logging
 from urllib.parse import urlencode
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Any, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
@@ -10,7 +10,6 @@ from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id
 from idunn.api.places_list import get_places_bbox
-from idunn.api.utils import DEFAULT_VERBOSITY
 from .constants import PoiSource
 
 logger = logging.getLogger(__name__)
@@ -53,7 +52,7 @@ def get_instant_answer_single_place(place_id: str, lang: str):
         logger.warning("Failed to get place for instant answer", exc_info=True)
         raise HTTPException(status_code=404)
 
-    detailed_place = place.load_place(lang=lang, verbosity=DEFAULT_VERBOSITY)
+    detailed_place = place.load_place(lang=lang)
     return InstantAnswerResponse(
         places=[detailed_place],
         source=place.get_source(),
@@ -63,7 +62,16 @@ def get_instant_answer_single_place(place_id: str, lang: str):
     )
 
 
-async def get_instant_answer(q: str, lang: str = "en"):
+async def get_instant_answer(
+    q: str = Query(..., title="Query string"), lang: str = Query("en", title="Language")
+):
+    """
+    Perform a query with result intended to be displayed as an instant answer
+    on *qwant.com*.
+
+    This should not be confused with "Get Places Bbox" as this endpoint will
+    run more restrictive checks on its results.
+    """
     q = q.strip()
     if lang in nlu_allowed_languages:
         try:
@@ -93,14 +101,13 @@ async def get_instant_answer(q: str, lang: str = "en"):
     category = intention.filter.category
 
     places_bbox_response = await get_places_bbox(
-        category=[category] if category else None,
+        category=[category] if category else [],
         bbox=intention.filter.bbox,
         q=intention.filter.q,
         raw_filter=None,
         source=None,
         size=10,
         lang=lang,
-        verbosity=None,
         extend_bbox=True,
     )
 

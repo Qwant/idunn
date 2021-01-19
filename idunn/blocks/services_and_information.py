@@ -1,17 +1,16 @@
 from pydantic import BaseModel, constr
-from typing import ClassVar, List
+from typing import ClassVar, List, Literal, Union
 
-from .base import BaseBlock, BlocksValidator
+from .base import BaseBlock
 
 
 class AccessibilityBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "accessibility"
-
     STATUS_OK: ClassVar = "yes"
     STATUS_KO: ClassVar = "no"
     STATUS_LIMITED: ClassVar = "partial"
     STATUS_UNKNOWN: ClassVar = "unknown"
 
+    type: Literal["accessibility"] = "accessibility"
     wheelchair: constr(
         regex="({})".format("|".join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
     )
@@ -51,8 +50,7 @@ class AccessibilityBlock(BaseBlock):
 
 
 class InternetAccessBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "internet_access"
-
+    type: Literal["internet_access"] = "internet_access"
     wifi: bool
 
     @classmethod
@@ -74,8 +72,7 @@ class Beer(BaseModel):
 
 
 class BreweryBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "brewery"
-
+    type: Literal["brewery"] = "brewery"
     beers: List[Beer]
 
     @classmethod
@@ -104,13 +101,13 @@ class Cuisine(BaseModel):
 
 
 class CuisineBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "cuisine"
     SUPPORTED_DIETS: ClassVar = ("vegetarian", "vegan", "gluten_free")
     STATUS_YES: ClassVar = "yes"
     STATUS_NO: ClassVar = "no"
     STATUS_ONLY: ClassVar = "only"
     STATUS_UNKNOWN: ClassVar = "unknown"
 
+    type: Literal["cuisine"] = "cuisine"
     cuisines: List[Cuisine]
     vegetarian: str
     vegan: str
@@ -138,11 +135,8 @@ class CuisineBlock(BaseBlock):
 
 
 class ServicesAndInformationBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "services_and_information"
-
-    blocks: List[BaseBlock] = BlocksValidator(
-        allowed_blocks=[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]
-    )
+    type: Literal["services_and_information"] = "services_and_information"
+    blocks: List[Union[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]]
 
     @classmethod
     def from_es(cls, es_poi, lang):

@@ -9,7 +9,6 @@ NLU_URL = "http://qwant.nlu/"
 CLASSIF_URL = "http://qwant.classif"
 ES_URL = "http://qwant.es"
 
-
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
 FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
 
@@ -80,4 +79,12 @@ def mock_autocomplete_post(httpx_mock):
 def mock_autocomplete_unavailable(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
         httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), status_code=502)
+        yield
+
+
+@pytest.fixture
+def mock_bragi_carrefour_in_bbox(httpx_mock):
+    bragi_response = read_fixture("fixtures/autocomplete/carrefour_in_bbox.json")
+    with override_settings({"BRAGI_BASE_URL": BASE_URL}):
+        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete"), content=bragi_response)
         yield

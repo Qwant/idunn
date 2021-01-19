@@ -1,12 +1,13 @@
 import logging
 
 from fastapi import HTTPException
+from pydantic import confloat
 
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
 from idunn.places import Street, Address
-from idunn.api.utils import fetch_closest, DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
+from idunn.api.utils import fetch_closest, Verbosity
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +39,14 @@ def get_closest_place(lat: float, lon: float, es=None):
     return loader(es_addr["_source"])
 
 
-def closest_address(lat: float, lon: float, lang=None, verbosity=DEFAULT_VERBOSITY) -> Address:
-    if verbosity not in ALL_VERBOSITY_LEVELS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown verbosity '{verbosity}'. Accepted values are {ALL_VERBOSITY_LEVELS}",
-        )
+def closest_address(
+    lat: confloat(ge=-90, le=90),
+    lon: confloat(ge=-180, le=180),
+    lang=None,
+    verbosity: Verbosity = Verbosity.default(),
+) -> Address:
+    """Find the closest address to a point."""
+
     es = get_elasticsearch()
 
     if not lang:

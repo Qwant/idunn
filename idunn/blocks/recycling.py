@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import ClassVar, List
+from typing import List, Literal
 from enum import Enum
 from pydantic import BaseModel, validator, ValidationError
 from pytz import UTC
@@ -50,8 +50,7 @@ class RecyclingContainer(BaseModel):
 
 
 class RecyclingBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "recycling"
-
+    type: Literal["recycling"] = "recycling"
     containers: List[RecyclingContainer]
 
     @classmethod

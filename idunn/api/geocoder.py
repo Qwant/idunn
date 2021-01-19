@@ -4,7 +4,7 @@ from fastapi import Body, Depends
 from shapely.geometry import Point
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.nlu_client import nlu_client, NluClientException
-from ..geocoder.models import QueryParams, ExtraParams
+from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings
 
@@ -52,7 +52,12 @@ def post_filter_intention(intention, bragi_response, limit):
 
 async def get_autocomplete(
     query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
-):
+) -> IdunnAutocomplete:
+    """
+    Get a list of suggested places or intentions from a potentially incomplete
+    query.
+    """
+
     async def get_intentions():
         if query.lang not in nlu_allowed_languages:
             return None

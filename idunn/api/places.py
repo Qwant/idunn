@@ -1,30 +1,32 @@
 import logging
 import urllib.parse
+from enum import Enum
 from starlette.datastructures import URL
-from fastapi import HTTPException, BackgroundTasks, Request, Response
+from fastapi import HTTPException, BackgroundTasks, Request, Response, Query
 from fastapi.responses import JSONResponse
+from typing import Optional
+from pydantic import confloat
 
 
 from idunn import settings
+from idunn.api.utils import Verbosity
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
-from idunn.api.utils import DEFAULT_VERBOSITY, ALL_VERBOSITY_LEVELS
+from idunn.places import Place
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
 
 logger = logging.getLogger(__name__)
 
 
-def validate_verbosity(verbosity):
-    if verbosity not in ALL_VERBOSITY_LEVELS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown verbosity '{verbosity}'. Accepted values are {ALL_VERBOSITY_LEVELS}",
-        )
-    return verbosity
+class PlaceType(str, Enum):
+    ADDRESS = "address"
+    ADMIN = "admin"
+    POI = "poi"
+    STREET = "street"
 
 
 def validate_lang(lang):
@@ -79,11 +81,12 @@ def get_place(
     request: Request,
     background_tasks: BackgroundTasks,
     lang: str = None,
-    type=None,
-    verbosity=DEFAULT_VERBOSITY,
-):
-    """Main handler that returns the requested place"""
-    verbosity = validate_verbosity(verbosity)
+    type: Optional[PlaceType] = Query(
+        None, description="Restrict the type of documents to search in."
+    ),
+    verbosity: Verbosity = Verbosity.default(),
+) -> Place:
+    """Main handler that returns the requested place."""
     lang = validate_lang(lang)
     try:
         place = place_from_id(id, type)
@@ -107,10 +110,14 @@ def get_place(
 
 
 def get_place_latlon(
-    lat: float, lon: float, lang: str = None, verbosity=DEFAULT_VERBOSITY
+    lat: confloat(ge=-90, le=90),
+    lon: confloat(ge=-180, le=180),
+    lang: str = None,
+    verbosity: Verbosity = Verbosity.default(),
 ) -> Place:
+    """Find the closest place to a point."""
+
     es = get_elasticsearch()
-    verbosity = validate_verbosity(verbosity)
     lang = validate_lang(lang)
     try:
         closest_place = get_closest_place(lat, lon, es)

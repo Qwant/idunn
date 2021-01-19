@@ -1,10 +1,9 @@
 from .base import BaseBlock
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Literal
 
 
 class GradesBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "grades"
-
+    type: Literal["grades"] = "grades"
     total_grades_count: int
     global_grade: float
     url: Optional[str]

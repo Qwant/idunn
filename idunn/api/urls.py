@@ -2,19 +2,21 @@ from .pois import get_poi
 from .places import get_place, get_place_latlon, handle_option
 from .status import get_status
 from .places_list import get_places_bbox, get_events_bbox, PlacesBboxResponse
-from .categories import get_all_categories
+from .categories import AllCategoriesResponse, get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
 from .geocoder import get_autocomplete
 from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
+from .instant_answer import get_instant_answer, InstantAnswerResponse
+
+from ..places.place import Address, Place
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
     MonitoredAPIRoute as APIRoute,
 )
-from .instant_answer import get_instant_answer, InstantAnswerResponse
 
 
 def get_metric_handler(settings):
@@ -41,13 +43,13 @@ def get_api_urls(settings):
             response_model=PlacesBboxResponse,
             responses={400: {"description": "Client Error in query params"}},
         ),
-        APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon),
+        APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon, response_model=Place),
         APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
-        APIRoute("/places/{id}", get_place),
+        APIRoute("/places/{id}", get_place, response_model=Place),
         # Categories
-        APIRoute("/categories", get_all_categories),
+        APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
-        APIRoute("/reverse/{lat}:{lon}", closest_address),
+        APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
         # Kuzzle events
         APIRoute("/events", get_events_bbox),
         # Directions
@@ -75,8 +77,8 @@ def get_api_urls(settings):
         APIRoute(
             "/redirect",
             follow_redirection,
+            status_code=307,
             responses={
-                307: {"description": "Redirect to the same page as provided URL."},
                 403: {"description": "Wrong URL hash."},
                 404: {"description": "The URL does not redirect."},
             },

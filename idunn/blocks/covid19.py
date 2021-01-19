@@ -1,11 +1,11 @@
 import logging
 from enum import Enum
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Literal
 
 from idunn import settings
 from idunn.utils.covid19_dataset import get_poi_covid_status
 from .base import BaseBlock
-from .opening_hour import OpeningHourBlock, parse_time_block
+from .opening_hour import OpeningHourBlock
 
 
 logger = logging.getLogger(__name__)
@@ -21,8 +21,7 @@ class CovidOpeningStatus(str, Enum):
 
 
 class Covid19Block(BaseBlock):
-    BLOCK_TYPE: ClassVar = "covid19"
-
+    type: Literal["covid19"] = "covid19"
     status: CovidOpeningStatus
     opening_hours: Optional[OpeningHourBlock]
     note: Optional[str]
@@ -68,8 +67,8 @@ class Covid19Block(BaseBlock):
             note = covid_status_from_redis.infos or None
 
             if covid_status_from_redis.opening_hours:
-                opening_hours = parse_time_block(
-                    OpeningHourBlock, es_poi, lang, covid_status_from_redis.opening_hours
+                opening_hours = OpeningHourBlock.from_es(
+                    es_poi, lang, covid_status_from_redis.opening_hours
                 )
 
             if covid_status_from_redis.status == "ouvert":
@@ -82,9 +81,7 @@ class Covid19Block(BaseBlock):
                 status = CovidOpeningStatus.closed
 
         elif raw_opening_hours == "same":
-            opening_hours = parse_time_block(
-                OpeningHourBlock, es_poi, lang, properties.get("opening_hours")
-            )
+            opening_hours = OpeningHourBlock.from_es(es_poi, lang)
             status = CovidOpeningStatus.open_as_usual
         elif raw_opening_hours == "open":
             status = CovidOpeningStatus.open
@@ -93,7 +90,7 @@ class Covid19Block(BaseBlock):
         elif raw_opening_hours == "off":
             status = CovidOpeningStatus.closed
         elif raw_opening_hours is not None:
-            opening_hours = parse_time_block(OpeningHourBlock, es_poi, lang, raw_opening_hours)
+            opening_hours = OpeningHourBlock.from_es(es_poi, lang, raw_opening_hours)
             if opening_hours is None:
                 status = CovidOpeningStatus.unknown
             elif opening_hours.status in ["open", "closed"]:

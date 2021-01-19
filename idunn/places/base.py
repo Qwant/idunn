@@ -1,6 +1,6 @@
 import logging
 
-from idunn.api.utils import WikidataConnector, get_geom, build_blocks
+from idunn.api.utils import Verbosity, WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
 from idunn.utils.redis import RedisWrapper
 from .place import Place, PlaceMeta
@@ -189,9 +189,6 @@ class BasePlace(dict):
     def get_raw_opening_hours(self):
         return self.properties.get("opening_hours")
 
-    def get_raw_happy_hours(self):
-        return self.properties.get("happy_hours")
-
     def get_raw_wheelchair(self):
         return self.properties.get("wheelchair")
 
@@ -201,7 +198,7 @@ class BasePlace(dict):
     def get_meta(self):
         return PlaceMeta(source=self.get_source())
 
-    def load_place(self, lang, verbosity):
+    def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
         return Place(
             type=self.PLACE_TYPE,
             id=self.get_id(),

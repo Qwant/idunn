@@ -1,10 +1,9 @@
 from .base import BaseBlock
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 
 class ContactBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "contact"
-
+    type: Literal["contact"] = "contact"
     url: str
 
     @classmethod

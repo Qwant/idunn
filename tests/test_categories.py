@@ -809,15 +809,12 @@ def test_invalid_category():
         Test we get a 400 if the parameter category is invalid:
     """
     client = TestClient(app)
-
     response = client.get(
         url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=supppermarket"
     )
 
-    assert response.status_code == 400
-
-    resp = response.json()
-    assert resp["detail"][0]["msg"].startswith("Category 'supppermarket' is invalid ")
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["type"] == "type_error.enum"
 
 
 def test_endpoint_categories():

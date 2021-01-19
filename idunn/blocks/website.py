@@ -1,11 +1,10 @@
 from .base import BaseBlock
 
-from typing import ClassVar, Optional
+from typing import Optional, Literal
 
 
 class WebSiteBlock(BaseBlock):
-    BLOCK_TYPE: ClassVar = "website"
-
+    type: Literal["website"] = "website"
     url: str
     label: Optional[str]
 

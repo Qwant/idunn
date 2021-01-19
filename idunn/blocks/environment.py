@@ -1,7 +1,7 @@
 import logging
 from pydantic import BaseModel, conint, constr
 from datetime import datetime
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Literal
 
 from idunn import settings
 from idunn.datasources.kuzzle import kuzzle_client
@@ -22,8 +22,7 @@ class ParticleType(BaseModel):
 
 
 class AirQuality(BaseBlock):
-    BLOCK_TYPE: ClassVar = "air_quality"
-
+    type: Literal["air_quality"] = "air_quality"
     CO: Optional[ParticleType] = None
     PM10: Optional[ParticleType] = None
     O3: Optional[ParticleType] = None
@@ -74,8 +73,7 @@ def get_air_quality(geobbox):
 
 
 class Weather(BaseBlock):
-    BLOCK_TYPE: ClassVar = "weather"
-
+    type: Literal["weather"] = "weather"
     temperature: Optional[float] = None
     icon: Optional[constr(regex="11d|09d|10d|13d|50d|01d|01n|02d|03d|04d|02n|03n|04n")]
     _connection: ClassVar = None
@@ -109,5 +107,5 @@ def get_local_weather(coord):
 
     if not weather_client.enabled:
         return None
-    key = "{}_{}_{}".format(Weather.BLOCK_TYPE, coord["lat"], coord["lon"])
+    key = "weather_{}_{}".format(coord["lat"], coord["lon"])
     return RedisWrapperWeather.cache_it(key, inner)(coord)
