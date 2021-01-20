@@ -83,8 +83,11 @@ def mock_autocomplete_unavailable(httpx_mock):
 
 
 @pytest.fixture
-def mock_bragi_carrefour_in_bbox(httpx_mock):
+def mock_bragi_carrefour_in_bbox(request, httpx_mock):
     bragi_response = read_fixture("fixtures/autocomplete/carrefour_in_bbox.json")
+    limit = getattr(request, "param", {}).get("limit")
+    if limit is not None:
+        bragi_response["features"] = bragi_response["features"][:limit]
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
         httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete"), content=bragi_response)
         yield

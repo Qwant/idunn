@@ -116,7 +116,7 @@ async def get_instant_answer(
         raise HTTPException(404)
 
     if len(places) == 1:
-        place_id = places[0]["id"]
+        place_id = places[0].id
         return InstantAnswerResponse(
             places=places,
             source=places_bbox_response.source,
