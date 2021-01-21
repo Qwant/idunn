@@ -157,12 +157,6 @@ class IntentionFilter(BaseModel):
     category: Optional[str]
     source: Optional[str]
 
-    def to_query_dict(self):
-        dict = self.dict(exclude_none=True)
-        if self.bbox:
-            dict["bbox"] = ",".join(map(lambda x: f"{x:.6f}", self.bbox))
-        return dict
-
 
 class IntentionDescription(BaseModel):
     query: Optional[str]

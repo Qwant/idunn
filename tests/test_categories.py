@@ -136,7 +136,11 @@ def test_bbox():
                     },
                     {"type": "website", "url": "http://www.musee-orsay.fr", "label": None},
                 ],
-                "meta": {"source": "osm"},
+                "meta": {
+                    "source": "osm",
+                    "maps_place_url": "https://www.qwant.com/maps/place/osm:way:63178753",
+                    "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=osm%3Away%3A63178753",
+                },
             },
             {
                 "type": "poi",
@@ -164,7 +168,7 @@ def test_bbox():
                         "label": None,
                     },
                 ],
-                "meta": {"source": "osm"},
+                "meta": ANY,
             },
             {
                 "type": "poi",
@@ -240,7 +244,7 @@ def test_bbox():
                     },
                     {"type": "website", "url": "http://www.louvre.fr", "label": None},
                 ],
-                "meta": {"source": "osm"},
+                "meta": ANY,
             },
             {
                 "type": "poi",
@@ -311,7 +315,7 @@ def test_bbox():
                     ANY,
                     ANY,
                 ],
-                "meta": {"source": "osm"},
+                "meta": ANY,
             },
             {
                 "type": "poi",
@@ -397,7 +401,7 @@ def test_bbox():
                     ANY,
                     ANY,
                 ],
-                "meta": {"source": "osm"},
+                "meta": ANY,
             },
         ],
     }
@@ -758,7 +762,7 @@ def test_valid_category():
                 "geometry": ANY,
                 "address": ANY,
                 "blocks": [],
-                "meta": {"source": "osm"},
+                "meta": {"source": "osm", "maps_place_url": ANY, "maps_directions_url": ANY,},
             }
         ],
         "bbox": ANY,
@@ -796,7 +800,7 @@ def test_places_with_explicit_source_osm(enable_pj_source):
                 "geometry": ANY,
                 "address": ANY,
                 "blocks": [],
-                "meta": {"source": "osm"},
+                "meta": {"source": "osm", "maps_place_url": ANY, "maps_directions_url": ANY,},
             }
         ],
         "bbox": ANY,

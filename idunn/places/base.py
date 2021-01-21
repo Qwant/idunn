@@ -3,6 +3,7 @@ import logging
 from idunn.api.utils import Verbosity, WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
 from idunn.utils.redis import RedisWrapper
+from idunn.utils import maps_urls
 from .place import Place, PlaceMeta
 
 
@@ -196,7 +197,12 @@ class BasePlace(dict):
         return None
 
     def get_meta(self):
-        return PlaceMeta(source=self.get_source())
+        place_id = self.get_id()
+        return PlaceMeta(
+            source=self.get_source(),
+            maps_place_url=maps_urls.get_place_url(place_id),
+            maps_directions_url=maps_urls.get_directions_url(place_id),
+        )
 
     def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
         return Place(
