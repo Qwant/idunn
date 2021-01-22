@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument
-
 from fastapi.testclient import TestClient
 from app import app
 import responses

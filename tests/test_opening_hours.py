@@ -7,8 +7,6 @@ fake different OpeningHourBlock from a raw json extracted from a POI located in
 Moscow city.
 """
 
-# pylint: disable = line-too-long
-
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
@@ -115,7 +113,7 @@ def test_opening_hour_close():
     assert oh_block.status == "closed"
     assert oh_block.next_transition_datetime == "2018-06-15T10:00:00+03:00"
     assert oh_block.seconds_before_next_transition == 34200
-    assert not oh_block.is_24_7
+    assert oh_block.is_24_7 is False
     assert oh_block.raw == "Mo-Su 10:00-22:00"
     assert len(oh_block.days) == 7
     assert all(d.status == "open" for d in oh_block.days)

@@ -32,7 +32,7 @@ class Covid19Block(BaseBlock):
         try:
             _, osm_type, osm_id = place.get_id().split(":")
             cro_id = f"{osm_type[0]}{osm_id}"
-        except IndexError:
+        except (IndexError, ValueError):
             logger.warning("Failed to build caresteouvert id for %s", place.get_id())
             return None
         lat = place.get_coord()["lat"]

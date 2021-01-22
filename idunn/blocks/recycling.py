@@ -36,14 +36,12 @@ class RecyclingContainer(BaseModel):
     place_description: str
 
     @validator("type", pre=True)
-    @classmethod
     def container_type_fallback(cls, value):
         if value not in (t.value for t in ContainerType):
             return ContainerType.unknown
         return value
 
     @validator("updated_at")
-    @classmethod
     def validate_datetime(cls, dt):
         dt = dt.replace(microsecond=0)
         if dt.tzinfo is None:

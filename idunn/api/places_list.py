@@ -35,21 +35,18 @@ class CommonQueryParam(BaseModel):
     verbosity: Verbosity = Field(...)
 
     @validator("lang", pre=True, always=True)
-    @classmethod
     def valid_lang(cls, v):
         if v is None:
             v = settings["DEFAULT_LANGUAGE"]
         return v.lower()
 
     @validator("size", pre=True, always=True)
-    @classmethod
     def max_size(cls, v):
         max_size = settings["LIST_PLACES_MAX_SIZE"]
         sizes = [v, max_size]
         return min(int(i) for i in sizes if i is not None)
 
     @validator("bbox", pre=True, always=True)
-    @classmethod
     def valid_bbox(cls, v):
         if isinstance(v, str):
             v = v.split(",")
@@ -77,7 +74,6 @@ class PlacesQueryParam(CommonQueryParam):
             raise HTTPException(status_code=400, detail=e.errors()) from e
 
     @validator("source", pre=True, always=True)
-    @classmethod
     def valid_source(cls, v):
         if not v:
             return None
@@ -86,7 +82,6 @@ class PlacesQueryParam(CommonQueryParam):
         return v
 
     @validator("raw_filter", pre=True, always=True)
-    @classmethod
     def valid_raw_filter(cls, v):
         if not v:
             return []
@@ -96,7 +91,6 @@ class PlacesQueryParam(CommonQueryParam):
         return v
 
     @root_validator(skip_on_failure=True)
-    @classmethod
     def categories_or_raw_filters(cls, values):
         if values.get("raw_filter") and values.get("category"):
             raise HTTPException(
@@ -106,7 +100,6 @@ class PlacesQueryParam(CommonQueryParam):
         return values
 
     @root_validator(skip_on_failure=True)
-    @classmethod
     def any_query_present(cls, values):
         if not any((values.get("raw_filter"), values.get("category"), values.get("q"))):
             raise HTTPException(
@@ -138,7 +131,6 @@ class PlacesBboxResponse(BaseModel):
     )
 
     @validator("bbox")
-    @classmethod
     def round_bbox_values(cls, v):
         if v is None:
             return v
@@ -146,7 +138,7 @@ class PlacesBboxResponse(BaseModel):
 
 
 # TODO: using `Depends` could probably help since `locals()` seems quite dirty
-# pylint: disable=unused-argument, too-many-locals
+# pylint: disable = unused-argument
 async def get_places_bbox(
     bbox: str = Query(
         ...,

@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument
-
 import re
 import pytest
 import responses

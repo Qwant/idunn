@@ -7,7 +7,10 @@ class PlaceMeta(BaseModel):
     source: Optional[str]
     maps_place_url: HttpUrl = Field(description="Direct URL to the place details on Qwant Maps.")
     maps_directions_url: HttpUrl = Field(
-        description="Direct URL to the directions on Qwant Maps, with the current place selected as destination."
+        description=(
+            "Direct URL to the directions on Qwant Maps, with the current place selected as "
+            "destination."
+        )
     )
 
 

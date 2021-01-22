@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument, unused-import
-
 import responses
 import re
 from unittest import mock
@@ -21,7 +19,6 @@ def cache_test_normal(redis):
     We define here settings specific to the
     test of the Wikipedia/Wikidata cache
     """
-    # pylint: disable = protected-access
     settings._settings["REDIS_URL"] = redis
     RedisWrapper._connection = None
     yield
@@ -79,8 +76,6 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             #
             # So we change the method used by the WikidataConnector by a fake
             # method to be sure the real method is not called.
-
-            # pylint: disable = import-outside-toplevel
             from idunn.api.utils import WikidataConnector
 
             @wraps(WikidataConnector.get_wiki_info)

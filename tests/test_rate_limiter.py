@@ -1,5 +1,3 @@
-# pylint: disable = line-too-long, redefined-outer-name, unused-argument, unused-import
-
 import responses
 import pytest
 import re
@@ -20,7 +18,7 @@ from functools import wraps
 def disable_wikipedia_cache():
     RedisWrapper.disable()
     yield
-    RedisWrapper._connection = None  # pylint: disable = protected-access
+    RedisWrapper._connection = None
 
 
 @pytest.fixture(scope="function")
@@ -30,7 +28,6 @@ def limiter_test_normal(redis, disable_wikipedia_cache):
     We define low max calls limits to avoid
     too large number of requests made
     """
-    # pylint: disable = protected-access
     with override_settings(
         {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 6, "REDIS_URL": redis}
     ):
@@ -48,7 +45,6 @@ def limiter_test_interruption(redis, disable_wikipedia_cache):
     allowed by the fixture 'limiter_test_normal'
     So we need another specific fixture.
     """
-    # pylint: disable = protected-access
     with override_settings(
         {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 100, "REDIS_URL": redis}
     ):
@@ -105,7 +101,6 @@ def restart_wiki_redis(docker_services):
     dynamically chosen when the service starts
     we have to get the new port of the service.
     """
-    # pylint: disable = protected-access
     docker_services.start("wiki_redis")
     # We have to remove the previous port of the redis service which has been
     # stored in the dict '_services' before to get the new one.
@@ -203,7 +198,6 @@ def test_rate_limiter_with_redis_interruption(
     }
 
     # B - We interrupt the Redis service and we make a new Idunn request
-    # pylint: disable = protected-access
     docker_services._docker_compose.execute("stop", "wiki_redis")
     response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
     assert response.status_code == 200

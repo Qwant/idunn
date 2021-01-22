@@ -1,6 +1,3 @@
-# TODO: this is the only cycle in the app, but still a bad idea.
-# pylint: disable = cyclic-import
-
 from os import path
 from typing import List
 
@@ -10,7 +7,7 @@ from fastapi import HTTPException
 from requests import HTTPError as RequestsHTTPError
 
 from idunn import settings
-from idunn.places import PjApiPOI, PjPOI
+from idunn.places.pj_poi import PjApiPOI, PjPOI
 from idunn.places.models import pj_info, pj_find
 from idunn.places.exceptions import PlaceNotFound
 from idunn.utils.auth_session import AuthSession
@@ -85,7 +82,7 @@ class LegacyPjSource(PjSource):
         return [PjPOI(p["_source"]) for p in raw_places]
 
     def get_place(self, poi_id):
-        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable = unexpected-keyword-arg
         es_places = self.es.search(
             index=self.es_index,
             body={"query": {"bool": {"filter": {"term": {"_id": self.internal_id(poi_id)}}}}},

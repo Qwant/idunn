@@ -5,8 +5,6 @@ The purpose of the 4 following tests 'test_full' is to describe the response
 format for each possible spatial objects (Admin, Street, Address, POI).
 """
 
-# pylint: disable = line-too-long, redefined-outer-name, unused-argument, unused-import
-
 import urllib
 from unittest.mock import ANY
 from app import app

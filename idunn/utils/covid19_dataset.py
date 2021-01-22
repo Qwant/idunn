@@ -1,3 +1,5 @@
+# pylint: disable = protected-access
+
 import logging
 import csv
 import json
@@ -5,7 +7,7 @@ from datetime import datetime, timedelta
 import requests
 from idunn import settings
 from idunn.utils.redis import RedisWrapper, CacheNotAvailable
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from redis.lock import LockError
 
 
@@ -54,7 +56,7 @@ def should_update_covid19_osm_dataset():
 def update_covid19_osm_dataset():
     updated_at = datetime.utcnow().isoformat()
     new_state = CovidOsmDatasetState(updated_at=updated_at)
-    RedisWrapper._set_value(  # pylint: disable=protected-access
+    RedisWrapper._set_value(
         COVID19_OSM_DATASET_STATE_KEY,
         new_state.json(),
         expire=settings["COVID19_OSM_DATASET_EXPIRE"],
@@ -69,7 +71,7 @@ def update_covid19_osm_dataset():
     response.raise_for_status()
     response.encoding = "utf-8"
     dict_reader = csv.DictReader(response.iter_lines(decode_unicode=True))
-    pipe = RedisWrapper._connection.pipeline(transaction=False)  # pylint: disable=protected-access
+    pipe = RedisWrapper._connection.pipeline(transaction=False)
     count = 0
     for row in dict_reader:
         poi_id = f"osm:{row['osm_id'].replace('/', ':')}"
@@ -98,13 +100,13 @@ def get_poi_covid_status(place_id):
     except CacheNotAvailable:
         logger.exception("Failed to get poi covid status in Redis")
         return None
-    except ValidationError:
+    except Exception:
         logger.exception("Failed to parse poi covid status for %s", place_id)
         return None
 
 
 def covid19_osm_task():
-    global last_check_datetime  # pylint: disable=global-statement
+    global last_check_datetime
 
     if datetime.utcnow() < last_check_datetime + timedelta(minutes=2):
         # Useless to check for data freshness too often
@@ -116,13 +118,13 @@ def covid19_osm_task():
 
     last_check_datetime = datetime.utcnow()
     try:
-        with RedisWrapper._connection.lock(  # pylint: disable=protected-access
+        with RedisWrapper._connection.lock(
             "covid19_osm_task_lock_key", blocking_timeout=1, timeout=COVID19_REDIS_LOCK_TIMEOUT
         ):
             if should_update_covid19_osm_dataset():
                 try:
                     update_covid19_osm_dataset()
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     logger.exception("Failed to update covid19 dataset")
     except LockError:
         logger.info("Failed to acquire lock to run covid19_osm_task")

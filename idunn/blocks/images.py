@@ -72,7 +72,6 @@ class Image(BaseModel):
     source_url: str
 
     @validator("alt", pre=True)
-    @classmethod
     def validate_alt(cls, v):
         if not v:
             return ""

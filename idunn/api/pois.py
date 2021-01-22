@@ -4,7 +4,7 @@ from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.api.utils import fetch_es_poi
 
 
-def get_poi(id: str, lang: str = None) -> POI:  # pylint: disable=redefined-builtin
+def get_poi(id: str, lang: str = None) -> POI:
     """Handler that returns points-of-interest"""
     es = get_elasticsearch()
     if not lang:

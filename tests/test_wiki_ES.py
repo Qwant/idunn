@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument
-
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 import pytest
@@ -91,7 +89,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
         assert resp["address"]["label"] == "1 Rue de la Légion d'Honneur (Paris)"
         assert resp["blocks"][0]["type"] == "opening_hours"
         assert resp["blocks"][1]["type"] == "phone"
-        assert not resp["blocks"][0]["is_24_7"]
+        assert resp["blocks"][0]["is_24_7"] is False
         assert resp.get("blocks")[2].get("blocks")[0].get("blocks") == [
             {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown"},
             {"type": "internet_access", "wifi": True},
@@ -107,7 +105,6 @@ def test_WIKI_ES_KO(wiki_client_ko):
 
 @pytest.fixture(scope="function")
 def undefine_wiki_es():
-    # pylint: disable = import-outside-toplevel, protected-access
     from idunn.api.utils import WikidataConnector
 
     WikidataConnector._wiki_es = None
@@ -163,7 +160,7 @@ def test_POI_not_in_WIKI_ES():
         assert resp["address"]["label"] == "1 Rue de la Légion d'Honneur (Paris)"
         assert resp["blocks"][0]["type"] == "opening_hours"
         assert resp["blocks"][1]["type"] == "phone"
-        assert not resp["blocks"][0]["is_24_7"]
+        assert resp["blocks"][0]["is_24_7"] is False
         assert resp.get("blocks")[2].get("blocks")[0].get("blocks") == [
             {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown"},
             {"type": "internet_access", "wifi": True},

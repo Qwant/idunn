@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument, unused-import
-
 from unittest.mock import ANY
 from fastapi.testclient import TestClient
 

@@ -34,6 +34,3 @@ class Latlon(BasePlace):
 
     def get_coord(self):
         return {"lat": self.lat, "lon": self.lon}
-
-    def get_bbox(self):
-        raise NotImplementedError

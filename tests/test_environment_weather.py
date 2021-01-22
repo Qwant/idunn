@@ -3,8 +3,6 @@ In this module we test the air_quality blocks with kuzzle. Air quality appears w
 or suburd) is called.
 """
 
-# pylint: disable = line-too-long, redefined-outer-name, unused-argument, unused-import
-
 from pydantic import ValidationError
 from pytest import raises
 

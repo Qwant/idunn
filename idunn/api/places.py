@@ -76,11 +76,11 @@ def log_place_request(place: BasePlace, headers):
 
 
 def get_place(
-    id: str,  # pylint: disable=redefined-builtin
+    id: str,
     request: Request,
     background_tasks: BackgroundTasks,
     lang: str = None,
-    type: Optional[PlaceType] = Query(  # pylint: disable=redefined-builtin
+    type: Optional[PlaceType] = Query(
         None, description="Restrict the type of documents to search in."
     ),
     verbosity: Verbosity = Verbosity.default(),
@@ -126,7 +126,7 @@ def get_place_latlon(
     return place.load_place(lang, verbosity)
 
 
-def handle_option(id, request: Request):  # pylint: disable=redefined-builtin, unused-argument
+def handle_option(id, request: Request):  # pylint: disable = unused-argument
     response = Response()
     if settings.get("CORS_OPTIONS_REQUESTS_ENABLED", False) is True:
         response.headers["Access-Control-Allow-Origin"] = "*"

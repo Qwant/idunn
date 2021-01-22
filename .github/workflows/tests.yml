@@ -26,7 +26,18 @@ jobs:
         run: pipenv run black --diff --check .
 
       - name: Run lints
-        run: pipenv run pylint idunn tests
+        run: pipenv run pylint idunn
+
+      # Because of the "hacky" nature of mocks we will disable a few more lints
+      # for tests.
+      - name: Run lints on tests
+        run: >-
+          pipenv run pylint tests --disable="import-outside-toplevel,
+                                             line-too-long,
+                                             protected-access,
+                                             redefined-outer-name,
+                                             unused-argument,
+                                             unused-import"
 
       - name: Run tests
         run: pipenv run pytest

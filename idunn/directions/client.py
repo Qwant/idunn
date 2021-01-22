@@ -38,15 +38,15 @@ class DirectionsClient:
         self.request_timeout = float(settings["DIRECTIONS_TIMEOUT"])
 
     @property
-    def QWANT_BASE_URL(self):  # pylint: disable=invalid-name
+    def QWANT_BASE_URL(self):  # pylint: disable = invalid-name
         return settings["QWANT_DIRECTIONS_API_BASE_URL"]
 
     @property
-    def COMBIGO_BASE_URL(self):  # pylint: disable=invalid-name
+    def COMBIGO_BASE_URL(self):  # pylint: disable = invalid-name
         return settings["COMBIGO_API_BASE_URL"]
 
     @property
-    def MAPBOX_API_ENABLED(self):  # pylint: disable=invalid-name
+    def MAPBOX_API_ENABLED(self):  # pylint: disable = invalid-name
         return bool(settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"])
 
     @staticmethod

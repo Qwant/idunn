@@ -1,5 +1,3 @@
-# pylint: disable = line-too-long
-
 from idunn.blocks.events import OpeningDayEvent
 from idunn.places import Event
 

@@ -51,7 +51,7 @@ class AirQuality(BaseBlock):
 
         try:
             air_quality = get_air_quality(bbox)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.warning("Failed to fetch air quality for %s", es_poi.get_id(), exc_info=True)
             return None
 
@@ -93,7 +93,7 @@ class Weather(BaseBlock):
 
         try:
             weather = get_local_weather(coord)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.warning("Failed to fetch weather for %s", es_poi.get_id(), exc_info=True)
             return None
 

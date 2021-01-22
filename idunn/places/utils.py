@@ -12,7 +12,7 @@ from .latlon import Latlon
 from .exceptions import InvalidPlaceId, RedirectToPlaceId, PlaceNotFound
 
 
-def place_from_id(id: str, type=None, follow_redirect=False):  # pylint: disable = redefined-builtin
+def place_from_id(id: str, type=None, follow_redirect=False):
     """
     :param id: place id
     :param type: Optional type to restrict query in Elasticsearch

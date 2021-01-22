@@ -226,9 +226,6 @@ class PjPOI(BasePlace):
     def get_reviews_url(self):
         return self.get("Links", {}).get("viewReviews", "")
 
-    def get_bbox(self):
-        raise NotImplementedError
-
 
 class PjApiPOI(BasePlace):
     PLACE_TYPE = "poi"
@@ -416,6 +413,3 @@ class PjApiPOI(BasePlace):
             ),
             None,
         )
-
-    def get_bbox(self):
-        raise NotImplementedError

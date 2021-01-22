@@ -1,5 +1,3 @@
-# pylint: disable = line-too-long
-
 import os
 import json
 from contextlib import contextmanager
@@ -16,7 +14,6 @@ def override_settings(overrides):
     """
     A utility function used by some fixtures to override settings
     """
-    # pylint: disable = protected-access
     old_settings = deepcopy(settings._settings)
     settings._settings.update(overrides)
     try:

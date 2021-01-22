@@ -66,7 +66,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
             response_classifier = await classifier_circuit_breaker.call_async(
                 self.post_nlu_classifier, text
             )
-        except httpx.HTTPError:
+        except Exception:
             logger.error("Request to NLU classifier failed", exc_info=True)
             return None
 
@@ -160,9 +160,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
             filter={"q": cat_query, "bbox": bbox}, description={"query": cat_query, "place": place}
         )
 
-    async def build_intention_category(
-        self, cat_query, lang, is_brand=False  # pylint: disable = unused-argument
-    ):
+    async def build_intention_category(self, cat_query, is_brand=False):
         category = await self.classify_category(cat_query, is_brand)
 
         if category:
@@ -230,7 +228,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
             response_nlu = await tagger_circuit_breaker.call_async(
                 self.post_intentions, text, lang, focus
             )
-        except httpx.HTTPError:
+        except Exception:
             logger.error("Request to NLU tagger failed", exc_info=True, extra=logs_extra)
             return []
 
@@ -267,7 +265,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
-                    cat_or_brand_query, lang=lang, is_brand=bool(brand_query)
+                    cat_or_brand_query, is_brand=bool(brand_query)
                 )
 
                 # A query tagged as "category" and not recognized by the classifier often

@@ -20,7 +20,7 @@ ZONE_TYPE_ORDER_KEY = {
     "country": 7,
 }
 
-# pylint: disable = no-self-use, too-many-public-methods
+
 class BasePlace(dict):
     PLACE_TYPE = ""
 
@@ -228,4 +228,4 @@ class BasePlace(dict):
         return ""
 
     def get_bbox(self):
-        raise NotImplementedError
+        return None

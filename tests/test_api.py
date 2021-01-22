@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument
-
 from app import app
 from fastapi.testclient import TestClient
 import pytest
@@ -23,7 +21,7 @@ def test_basic_query():
     assert resp["address"]["label"] == "1 Rue de la Légion d'Honneur (Paris)"
     assert resp["blocks"][0]["type"] == "opening_hours"
     assert resp["blocks"][1]["type"] == "phone"
-    assert not resp["blocks"][0]["is_24_7"]
+    assert resp["blocks"][0]["is_24_7"] is False
 
 
 def test_lang():
@@ -42,7 +40,7 @@ def test_lang():
     assert resp["address"]["label"] == "1 Rue de la Légion d'Honneur (Paris)"
     assert resp["blocks"][0]["type"] == "opening_hours"
     assert resp["blocks"][1]["type"] == "phone"
-    assert not resp["blocks"][0]["is_24_7"]
+    assert resp["blocks"][0]["is_24_7"] is False
 
 
 def test_contact_phone():

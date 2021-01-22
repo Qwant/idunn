@@ -48,7 +48,6 @@ class TransportInfo(BaseModel):
         super().__init__(**data)
 
     @validator("lineColor")
-    @classmethod
     def validate_color(cls, value):
         """
         >>> TransportInfo.validate_color("6eca97")
@@ -98,7 +97,6 @@ class RouteStep(BaseModel):
         super().__init__(**data)
 
     @validator("mode", pre=True)
-    @classmethod
     def transform_mode(cls, value):
         return {
             "cycling": TransportMode.bicycle,
@@ -139,14 +137,12 @@ class RouteLeg(BaseModel):
         super().__init__(**data)
 
     @validator("info", pre=True)
-    @classmethod
     def ignore_empty_info(cls, value):
         if not value:
             return None
         return value
 
     @validator("mode", always=True)
-    @classmethod
     def build_mode(cls, mode, values):
         if mode != TransportMode.unknown:
             return mode
@@ -205,7 +201,6 @@ class DirectionsRoute(BaseModel):
         super().__init__(**data)
 
     @validator("geometry", always=True)
-    @classmethod
     def build_geometry(cls, geometry, values):
         if "legs" not in values:
             return geometry

@@ -1,5 +1,3 @@
-# pylint: disable = line-too-long, unused-argument
-
 import os
 import json
 import pytest

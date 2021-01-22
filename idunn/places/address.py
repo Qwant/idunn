@@ -9,6 +9,3 @@ class Address(BasePlace):
 
     def get_raw_admins(self):
         return self.get_raw_street().get("administrative_regions") or []
-
-    def get_bbox(self):
-        raise NotImplementedError

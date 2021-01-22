@@ -1,5 +1,3 @@
-# pylint: disable = redefined-outer-name, unused-argument
-
 import os
 import json
 import responses
@@ -35,7 +33,6 @@ def mock_directions_car():
 
 @pytest.fixture
 def mock_directions_car_with_rate_limiter(redis, mock_directions_car):
-    # pylint: disable = protected-access
     with override_settings({"REDIS_URL": redis}):
         rate_limiter._init_limiter()
         yield

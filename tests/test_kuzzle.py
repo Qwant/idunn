@@ -1,5 +1,3 @@
-# pylint: disable = line-too-long
-
 from fastapi.testclient import TestClient
 import os
 import re

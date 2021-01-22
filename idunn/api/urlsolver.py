@@ -30,9 +30,7 @@ def hash_url(url: str) -> str:
 
 async def follow_redirection(
     url: str = Query(..., description="An external URL that is expected to redirect."),
-    hash: str = Query(  # pylint: disable=redefined-builtin
-        ..., description="Value of the hash provided by Idunn."
-    ),
+    hash: str = Query(..., description="Value of the hash provided by Idunn."),
 ):
     """
     Redirect to the same page as provided URL which must have been provided by

@@ -32,7 +32,7 @@ def get_directions_with_coordinates(
     t_lon: confloat(ge=-180, le=180) = Path(..., title="Destination point longitude"),
     t_lat: confloat(ge=-90, le=90) = Path(..., title="Destination point latitude"),
     # Query parameters
-    type: str = Query(..., description="Transport mode"),  # pylint: disable=redefined-builtin
+    type: str = Query(..., description="Transport mode"),
     language: str = "en",
     # Request
     request: Request = Depends(directions_request),
@@ -51,7 +51,7 @@ def get_directions(
     # Query parameters
     origin: str = Query(..., description="Origin place id."),
     destination: str = Query(..., description="Destination place id."),
-    type: str = Query(..., description="Transport mode."),  # pylint: disable=redefined-builtin
+    type: str = Query(..., description="Transport mode."),
     language: str = Query("en", description="User language."),
     # Request
     request: Request = Depends(directions_request),

@@ -33,7 +33,7 @@ class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
             name=name,
         )
 
-    # pylint: disable=arguments-differ, broad-except, invalid-overridden-method, protected-access
+    # pylint: disable = arguments-differ, invalid-overridden-method, protected-access
     async def call_async(self, f, *args, **kwargs):
         """
         Run the circuit breaker with native python async.

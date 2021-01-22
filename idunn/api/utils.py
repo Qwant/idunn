@@ -1,6 +1,6 @@
 from enum import Enum
 from fastapi import HTTPException
-from elasticsearch import (  # pylint: disable=redefined-builtin
+from elasticsearch import (
     Elasticsearch,
     ConnectionError,
     NotFoundError,
@@ -217,7 +217,7 @@ class WikidataConnector:
         return wiki
 
 
-def fetch_es_poi(id, es) -> dict:  # pylint: disable=redefined-builtin
+def fetch_es_poi(id, es) -> dict:
     """Returns the raw POI data
     @deprecated by fetch_es_place()
 
@@ -256,7 +256,7 @@ def fetch_es_pois(raw_filters, bbox, max_size) -> list:
                 {"bool": {"must": [{"term": {"poi_type.name": term}} for term in filt]}}
             )
 
-    # pylint: disable=unexpected-keyword-arg
+    # pylint: disable = unexpected-keyword-arg
     bbox_places = es.search(
         index=INDICES["poi"],
         body={
@@ -285,7 +285,7 @@ def fetch_es_pois(raw_filters, bbox, max_size) -> list:
     return bbox_places
 
 
-def fetch_es_place(id, es, type) -> dict:  # pylint: disable=redefined-builtin
+def fetch_es_place(id, es, type) -> dict:
     """Returns the raw Place data
 
     This function gets from Elasticsearch the

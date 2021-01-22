@@ -27,9 +27,6 @@ class POI(BasePlace):
     def get_source(self):
         return PoiSource.OSM
 
-    def get_bbox(self):
-        raise NotImplementedError
-
 
 class BragiPOI(POI):
     def __init__(self, bragi_feature):
@@ -53,6 +50,3 @@ class BragiPOI(POI):
 
     def get_country_codes(self):
         return [c.upper() for c in self.get_raw_address().get("country_codes") or []]
-
-    def get_bbox(self):
-        raise NotImplementedError

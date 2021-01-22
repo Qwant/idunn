@@ -1,5 +1,3 @@
-# pylint: disable = line-too-long, redefined-outer-name, unused-argument, unused-import
-
 import pytest
 import responses
 from app import app
