@@ -152,19 +152,19 @@ class WikipediaBlock(BaseBlock):
     _wiki_session: ClassVar = WikipediaSession()
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         """
         If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
         then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
         else then we fetch the wikipedia API.
         """
-        wikidata_id = es_poi.wikidata_id
+        wikidata_id = place.wikidata_id
         if wikidata_id is not None:
-            wiki_index = es_poi.get_wiki_index(lang)
+            wiki_index = place.get_wiki_index(lang)
             if wiki_index is not None:
                 try:
                     key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = RedisWrapper.cache_it(key, es_poi.get_wiki_info)(
+                    wiki_poi_info = RedisWrapper.cache_it(key, place.get_wiki_info)(
                         wikidata_id, wiki_index
                     )
                     if wiki_poi_info is not None:
@@ -177,7 +177,7 @@ class WikipediaBlock(BaseBlock):
                 except WikiUndefinedException:
                     logger.info("WIKI_ES variable has not been set: call to Wikipedia")
 
-        wikipedia_value = es_poi.properties.get("wikipedia")
+        wikipedia_value = place.properties.get("wikipedia")
         wiki_title = None
 
         if wikipedia_value:

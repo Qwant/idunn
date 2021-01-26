@@ -113,11 +113,11 @@ class ImagesBlock(BaseBlock):
         return raw_url
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        raw_urls = es_poi.get_images_urls()
+    def from_es(cls, place, lang):
+        raw_urls = place.get_images_urls()
         if not raw_urls:
             # Fallback to wikipedia image
-            wiki_resp = es_poi.get_wiki_resp(lang)
+            wiki_resp = place.get_wiki_resp(lang)
             if wiki_resp is not None:
                 raw_url = wiki_resp.get("pageimage_thumb")
                 if raw_url:
@@ -126,10 +126,10 @@ class ImagesBlock(BaseBlock):
         if not raw_urls:
             return None
 
-        place_name = es_poi.get_name(lang)
+        place_name = place.get_name(lang)
         images = []
         for raw_url in raw_urls:
-            source_url = cls.get_source_url(raw_url, place=es_poi)
+            source_url = cls.get_source_url(raw_url, place=place)
             thumbr = cls.get_thumbr_helper()
             if thumbr.is_enabled():
                 thumbr = cls.get_thumbr_helper()

@@ -11,10 +11,10 @@ class InformationBlock(BaseBlock):
     blocks: List[Union[WikipediaBlock, ServicesAndInformationBlock]]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         blocks = []
-        wikipedia_block = WikipediaBlock.from_es(es_poi, lang)
-        services_block = ServicesAndInformationBlock.from_es(es_poi, lang)
+        wikipedia_block = WikipediaBlock.from_es(place, lang)
+        services_block = ServicesAndInformationBlock.from_es(place, lang)
 
         if wikipedia_block is not None:
             blocks.append(wikipedia_block)

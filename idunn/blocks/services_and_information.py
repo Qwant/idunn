@@ -19,10 +19,10 @@ class AccessibilityBlock(BaseBlock):
     )
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        properties = es_poi.get("properties", {})
+    def from_es(cls, place, lang):
+        properties = place.get("properties", {})
 
-        raw_wheelchair = es_poi.get_raw_wheelchair()
+        raw_wheelchair = place.get_raw_wheelchair()
         raw_toilets_wheelchair = properties.get("toilets:wheelchair")
 
         if raw_wheelchair in ("yes", "designated", True):
@@ -54,8 +54,8 @@ class InternetAccessBlock(BaseBlock):
     wifi: bool
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        properties = es_poi.get("properties", {})
+    def from_es(cls, place, lang):
+        properties = place.get("properties", {})
         wifi = properties.get("wifi")
         internet_access = properties.get("internet_access")
 
@@ -76,8 +76,8 @@ class BreweryBlock(BaseBlock):
     beers: List[Beer]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        brewery = es_poi.get("properties", {}).get("brewery")
+    def from_es(cls, place, lang):
+        brewery = place.get("properties", {}).get("brewery")
 
         if brewery is None:
             return None
@@ -114,12 +114,12 @@ class CuisineBlock(BaseBlock):
     gluten_free: str
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        cuisine = es_poi.get("properties", {}).get("cuisine")
+    def from_es(cls, place, lang):
+        cuisine = place.get("properties", {}).get("cuisine")
 
-        vegetarian = get_diet_status("vegetarian", es_poi)
-        vegan = get_diet_status("vegan", es_poi)
-        gluten_free = get_diet_status("gluten_free", es_poi)
+        vegetarian = get_diet_status("vegetarian", place)
+        vegan = get_diet_status("vegan", place)
+        gluten_free = get_diet_status("gluten_free", place)
 
         cuisines = []
         if cuisine is not None:
@@ -139,12 +139,12 @@ class ServicesAndInformationBlock(BaseBlock):
     blocks: List[Union[AccessibilityBlock, InternetAccessBlock, BreweryBlock, CuisineBlock]]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         blocks = []
-        access_block = AccessibilityBlock.from_es(es_poi, lang)
-        internet_block = InternetAccessBlock.from_es(es_poi, lang)
-        brewery_block = BreweryBlock.from_es(es_poi, lang)
-        cuisine_block = CuisineBlock.from_es(es_poi, lang)
+        access_block = AccessibilityBlock.from_es(place, lang)
+        internet_block = InternetAccessBlock.from_es(place, lang)
+        brewery_block = BreweryBlock.from_es(place, lang)
+        cuisine_block = CuisineBlock.from_es(place, lang)
 
         if access_block is not None:
             blocks.append(access_block)

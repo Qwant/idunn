@@ -9,9 +9,9 @@ class WebSiteBlock(BaseBlock):
     label: Optional[str]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        website = es_poi.get_website()
-        label = es_poi.get_website_label()
+    def from_es(cls, place, lang):
+        website = place.get_website()
+        label = place.get_website_label()
 
         if not website:
             return None

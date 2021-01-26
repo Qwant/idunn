@@ -54,17 +54,17 @@ class RecyclingBlock(BaseBlock):
     containers: List[RecyclingContainer]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         if (
             not recycling_client.enabled  # Data source is not configured
-            or es_poi.PLACE_TYPE != "poi"
-            or es_poi.get_class_name() != "recycling"
-            or not is_poi_in_finistere(es_poi)
+            or place.PLACE_TYPE != "poi"
+            or place.get_class_name() != "recycling"
+            or not is_poi_in_finistere(place)
         ):
             return None
 
         try:
-            containers = cls.fetch_containers(es_poi)
+            containers = cls.fetch_containers(place)
         except (RequestException, ValidationError):
             logger.warning("Failed to fetch recycling containers data", exc_info=True)
             return None

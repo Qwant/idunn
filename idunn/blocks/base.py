@@ -12,7 +12,7 @@ class BaseBlock(BaseModel):
             raise Exception(f"Missing type in class {self.__class__.__name__}")
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         raise NotImplementedError
 
     @classmethod

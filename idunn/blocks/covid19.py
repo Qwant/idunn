@@ -40,35 +40,35 @@ class Covid19Block(BaseBlock):
         return f"https://www.caresteouvert.fr/@{lat:.6f},{lon:.6f},17/place/{cro_id}"
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        if es_poi.PLACE_TYPE != "poi":
+    def from_es(cls, place, lang):
+        if place.PLACE_TYPE != "poi":
             return None
 
         if settings["BLOCK_COVID_ENABLED"] is not True:
             return None
 
-        properties = es_poi.properties
-        if es_poi.get_country_code() not in COVID19_BLOCK_COUNTRIES:
+        properties = place.properties
+        if place.get_country_code() not in COVID19_BLOCK_COUNTRIES:
             return None
 
         opening_hours = None
-        note = es_poi.properties.get("description:covid19")
+        note = place.properties.get("description:covid19")
         status = CovidOpeningStatus.unknown
         contribute_url = None
 
         raw_opening_hours = properties.get("opening_hours:covid19")
         covid_status_from_redis = None
 
-        if es_poi.get_meta().source == "osm" and settings["COVID19_USE_REDIS_DATASET"]:
-            covid_status_from_redis = get_poi_covid_status(es_poi.get_id())
+        if place.get_meta().source == "osm" and settings["COVID19_USE_REDIS_DATASET"]:
+            covid_status_from_redis = get_poi_covid_status(place.get_id())
 
         if covid_status_from_redis is not None:
-            contribute_url = cls.get_ca_reste_ouvert_url(es_poi)
+            contribute_url = cls.get_ca_reste_ouvert_url(place)
             note = covid_status_from_redis.infos or None
 
             if covid_status_from_redis.opening_hours:
                 opening_hours = OpeningHourBlock.from_es_with_oh(
-                    es_poi, lang, covid_status_from_redis.opening_hours
+                    place, lang, covid_status_from_redis.opening_hours
                 )
 
             if covid_status_from_redis.status == "ouvert":
@@ -81,7 +81,7 @@ class Covid19Block(BaseBlock):
                 status = CovidOpeningStatus.closed
 
         elif raw_opening_hours == "same":
-            opening_hours = OpeningHourBlock.from_es(es_poi, lang)
+            opening_hours = OpeningHourBlock.from_es(place, lang)
             status = CovidOpeningStatus.open_as_usual
         elif raw_opening_hours == "open":
             status = CovidOpeningStatus.open
@@ -90,7 +90,7 @@ class Covid19Block(BaseBlock):
         elif raw_opening_hours == "off":
             status = CovidOpeningStatus.closed
         elif raw_opening_hours is not None:
-            opening_hours = OpeningHourBlock.from_es_with_oh(es_poi, lang, raw_opening_hours)
+            opening_hours = OpeningHourBlock.from_es_with_oh(place, lang, raw_opening_hours)
             if opening_hours is None:
                 status = CovidOpeningStatus.unknown
             elif opening_hours.status in ["open", "closed"]:

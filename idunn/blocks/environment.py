@@ -36,15 +36,15 @@ class AirQuality(BaseBlock):
     measurements_unit: Optional[str] = None
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         if (
             not settings["BLOCK_AIR_QUALITY_ENABLED"]
-            or es_poi.PLACE_TYPE != "admin"
-            or es_poi.get("zone_type") not in ("city", "city_district", "suburb")
+            or place.PLACE_TYPE != "admin"
+            or place.get("zone_type") not in ("city", "city_district", "suburb")
         ):
             return None
 
-        bbox = es_poi.get_bbox()
+        bbox = place.get_bbox()
 
         if not bbox:
             return None
@@ -52,7 +52,7 @@ class AirQuality(BaseBlock):
         try:
             air_quality = get_air_quality(bbox)
         except Exception:
-            logger.warning("Failed to fetch air quality for %s", es_poi.get_id(), exc_info=True)
+            logger.warning("Failed to fetch air quality for %s", place.get_id(), exc_info=True)
             return None
 
         if not air_quality:
@@ -81,20 +81,20 @@ class Weather(BaseBlock):
     _connection: ClassVar = None
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        if es_poi.PLACE_TYPE != "admin":
+    def from_es(cls, place, lang):
+        if place.PLACE_TYPE != "admin":
             return None
-        if es_poi.get("zone_type") not in ("city", "city_district", "suburd"):
+        if place.get("zone_type") not in ("city", "city_district", "suburd"):
             return None
 
-        coord = es_poi.get_coord()
+        coord = place.get_coord()
         if not coord:
             return None
 
         try:
             weather = get_local_weather(coord)
         except Exception:
-            logger.warning("Failed to fetch weather for %s", es_poi.get_id(), exc_info=True)
+            logger.warning("Failed to fetch weather for %s", place.get_id(), exc_info=True)
             return None
 
         if not weather:
