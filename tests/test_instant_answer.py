@@ -15,8 +15,9 @@ def test_ia_paris(mock_autocomplete_get, mock_NLU_with_city):
     response = client.get("/v1/instant_answer", params={"q": "paris", "lang": "fr"})
     assert response.status_code == 200
     response_json = response.json()
-    assert len(response_json["places"]) == 1
-    place = response_json["places"][0]
+    places = response_json["data"]["result"]["places"]
+    assert len(places) == 1
+    place = places[0]
     assert place["name"] == "Paris"
 
 
@@ -27,8 +28,9 @@ def test_ia_intention_full_text(
     response = client.get("/v1/instant_answer", params={"q": "carrefour à paris", "lang": "fr"})
     assert response.status_code == 200
     response_json = response.json()
-    assert len(response_json["places"]) == 5
-    place = response_json["places"][0]
+    places = response_json["data"]["result"]["places"]
+    assert len(places) == 5
+    place = places[0]
     assert place["name"] == "Carrefour Market"
 
 
@@ -40,6 +42,7 @@ def test_ia_intention_single_result(
     response = client.get("/v1/instant_answer", params={"q": "carrefour à paris", "lang": "fr"})
     assert response.status_code == 200
     response_json = response.json()
-    assert len(response_json["places"]) == 1
-    place = response_json["places"][0]
+    places = response_json["data"]["result"]["places"]
+    assert len(places) == 1
+    place = places[0]
     assert place["name"] == "Carrefour Market"

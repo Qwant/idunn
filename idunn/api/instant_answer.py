@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, validator, HttpUrl
 from idunn import settings
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.places import place_from_id
+from idunn.places import place_from_id, Place
 from idunn.api.places_list import get_places_bbox
 from idunn.utils import maps_urls
 from .constants import PoiSource
@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 
 
-class InstantAnswerResponse(BaseModel):
-    places: List[Any] = Field(
+class InstantAnswerResult(BaseModel):
+    places: List[Place] = Field(
         description="List of relevant places to display on the instant answer. "
         "At most 1 place is returned if no broad intention has been detected."
     )
@@ -44,6 +44,27 @@ class InstantAnswerResponse(BaseModel):
         return tuple(round(x, 6) for x in v)
 
 
+class InstantAnswerQuery(BaseModel):
+    query: str
+    lang: str
+
+
+class InstantAnswerData(BaseModel):
+    query: InstantAnswerQuery
+    result: InstantAnswerResult
+
+
+class InstantAnswerResponse(BaseModel):
+    status: str = "success"
+    data: InstantAnswerData
+
+
+def build_response(result: InstantAnswerResult, query: str, lang: str):
+    return InstantAnswerResponse(
+        data=InstantAnswerData(result=result, query=InstantAnswerQuery(query=query, lang=lang))
+    )
+
+
 def get_instant_answer_single_place(place_id: str, lang: str):
     try:
         place = place_from_id(place_id, follow_redirect=True)
@@ -52,7 +73,7 @@ def get_instant_answer_single_place(place_id: str, lang: str):
         raise HTTPException(status_code=404)
 
     detailed_place = place.load_place(lang=lang)
-    return InstantAnswerResponse(
+    return InstantAnswerResult(
         places=[detailed_place],
         source=place.get_source(),
         intention_bbox=None,
@@ -88,9 +109,10 @@ async def get_instant_answer(
             place_name = place_geocoding["name"]
             # TODO: use smarter condition to allow inexact matches
             if place_name.lower() == q.lower():
-                return await run_in_threadpool(
+                result = await run_in_threadpool(
                     get_instant_answer_single_place, place_id=place_id, lang=lang
                 )
+                return build_response(result, query=q, lang=lang)
         raise HTTPException(404)
 
     intention = intentions[0]
@@ -116,18 +138,20 @@ async def get_instant_answer(
 
     if len(places) == 1:
         place_id = places[0].id
-        return InstantAnswerResponse(
+        result = InstantAnswerResult(
             places=places,
             source=places_bbox_response.source,
             intention_bbox=intention.filter.bbox,
             maps_url=maps_urls.get_place_url(place_id),
             maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
         )
+    else:
+        result = InstantAnswerResult(
+            places=places,
+            source=places_bbox_response.source,
+            intention_bbox=intention.filter.bbox,
+            maps_url=maps_urls.get_places_url(intention.filter),
+            maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
+        )
 
-    return InstantAnswerResponse(
-        places=places,
-        source=places_bbox_response.source,
-        intention_bbox=intention.filter.bbox,
-        maps_url=maps_urls.get_places_url(intention.filter),
-        maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
-    )
+    return build_response(result, query=q, lang=lang)
