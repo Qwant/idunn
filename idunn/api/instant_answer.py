@@ -1,7 +1,7 @@
 import logging
 from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
-from typing import Optional, List, Any, Tuple
+from typing import Optional, List, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
 
 from idunn import settings

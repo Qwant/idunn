@@ -3,6 +3,17 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[scripts]
+lint = "bash -c 'pipenv run lint-src && pipenv run lint-tests'"
+lint-src = "pipenv run pylint idunn"
+lint-tests = """pipenv run pylint tests --disable='import-outside-toplevel, \
+                                                   line-too-long, \
+                                                   protected-access, \
+                                                   redefined-outer-name, \
+                                                   unused-argument, \
+                                                   unused-import'"""
+
+
 [dev-packages]
 pytest = "*"
 lovely-pytest-docker = "*"
