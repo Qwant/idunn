@@ -29,7 +29,7 @@ redis = "*"
 python-redis-rate-limit = "*"
 python-json-logger = "*"
 gunicorn = "*"
-uvicorn = "*"
+uvicorn = {version = "*", extras = ["standard"]}
 phonenumbers = "*"
 deepmerge = "*"
 prometheus-client = "*"
