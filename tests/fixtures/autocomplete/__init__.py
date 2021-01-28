@@ -1,5 +1,6 @@
 import re
 import pytest
+from httpx import Response
 
 from tests.utils import override_settings, read_fixture
 
@@ -18,8 +19,8 @@ def mock_NLU_for(httpx_mock, dataset):
         {"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL, "PJ_ES": ES_URL}
     ):
         nlu_json = read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
-        httpx_mock.post(NLU_URL, content=nlu_json)
-        httpx_mock.post(CLASSIF_URL, content=FIXTURE_CLASSIF_pharmacy)
+        httpx_mock.post(NLU_URL).respond(json=nlu_json)
+        httpx_mock.post(CLASSIF_URL).respond(json=FIXTURE_CLASSIF_pharmacy)
         yield nlu_json
 
 
@@ -56,29 +57,30 @@ def mock_NLU_with_city(httpx_mock):
 @pytest.fixture
 def mock_autocomplete_get(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*"),
-            content=read_fixture("fixtures/autocomplete/paris.json"),
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*")).respond(
+            json=read_fixture("fixtures/autocomplete/paris.json")
         )
-        httpx_mock.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=auchan.*"),
-            content=read_fixture("fixtures/autocomplete/auchan.json"),
+
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete.*q=auchan.*")).respond(
+            json=read_fixture("fixtures/autocomplete/auchan.json")
         )
-        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
+
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=FIXTURE_AUTOCOMPLETE)
+
         yield
 
 
 @pytest.fixture
 def mock_autocomplete_post(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete"), content=FIXTURE_AUTOCOMPLETE)
+        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=FIXTURE_AUTOCOMPLETE)
         yield
 
 
 @pytest.fixture
 def mock_autocomplete_unavailable(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete"), status_code=502)
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete")).respond(502)
         yield
 
 
@@ -89,5 +91,5 @@ def mock_bragi_carrefour_in_bbox(request, httpx_mock):
     if limit is not None:
         bragi_response["features"] = bragi_response["features"][:limit]
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete"), content=bragi_response)
+        httpx_mock.post(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=bragi_response)
         yield

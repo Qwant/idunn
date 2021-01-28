@@ -28,7 +28,7 @@ def test_v1_status_es_red(mimir_es):
 
 @patch.object(ClusterClient, "health")
 def test_v1_status_es_unreachable(mock_es_health, mimir_es):
-    mock_es_health.side_effect = ConnectionError
+    mock_es_health.side_effect = ConnectionError("N/A", "Mocked connection error", None)
 
     client = TestClient(app)
     response = client.get("http://localhost/v1/status")

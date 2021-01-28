@@ -14,12 +14,6 @@ from .fixtures.autocomplete import (
 )
 
 
-BASE_URL = "http://qwant.bragi"
-NLU_URL = "http://qwant.nlu/"
-CLASSIF_URL = "http://qwant.classif"
-ES_URL = "http://qwant.es"
-
-
 def assert_ok_with(client, params, extra=None):
     url = "http://localhost/v1/autocomplete"
 
