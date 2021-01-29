@@ -147,7 +147,6 @@ FOCUS_DECAY: 0.4 # minimal penality outside of the radius
 #######################
 ## OpenAPI DOCS
 DOCS_ENABLED: False
-DOCS_URL_PREFIX: "/"
 
 # Covid19 API
 BLOCK_COVID_ENABLED: False

@@ -12,8 +12,13 @@ responses = "*"
 black = "==19.10b0"
 respx = "*"
 
+# Temporary as a workaround to https://github.com/ipython/ipython/issues/12745
+jedi = "==0.17.2"
+parso = "==0.7.1"
+
+
 [packages]
-fastapi="==0.55.*"
+fastapi="==0.63.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = ">=2.20.0"
 tzwhere = "*"
@@ -24,7 +29,7 @@ redis = "*"
 python-redis-rate-limit = "*"
 python-json-logger = "*"
 gunicorn = "*"
-uvicorn = "*"
+uvicorn = {version = "*", extras = ["standard"]}
 phonenumbers = "*"
 deepmerge = "*"
 prometheus-client = "*"
