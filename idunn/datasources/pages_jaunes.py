@@ -134,8 +134,7 @@ class ApiPjSource(PjSource):
             and res.context.pages.next_page_url
         ):
             pois += self.get_places_from_url(
-                res.context.pages.next_page_url.replace("/pros/find", "/pros/search"),
-                size=size - len(pois),
+                res.context.pages.next_page_url, size=size - len(pois),
             )
 
         return pois
@@ -144,11 +143,14 @@ class ApiPjSource(PjSource):
         query_params = {
             "what": " ".join(c.pj_what() for c in categories),
             "where": self.format_where(bbox),
-            "max": min(self.PJ_RESULT_MAX_SIZE, size),
+            # The API may return less than 'max' items per page, so let's use 'size + 5'
+            # as a margin to avoid requesting a second page unnecessarily.
+            "max": min(self.PJ_RESULT_MAX_SIZE, size + 5),
         }
 
         if query:
             query_params["what"] += " " + query
+            query_params["what"] = query_params["what"].strip()
 
         return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
