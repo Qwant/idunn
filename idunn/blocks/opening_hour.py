@@ -68,16 +68,15 @@ def get_days(oh, dt):
 
     for x in range(0, 7):
         day = last_monday + timedelta(days=x)
+        intervals = oh.get_open_intervals_at_date(day, overlap_next_day=True)
         days.append(
             {
                 "dayofweek": day.isoweekday(),
                 "local_date": day.isoformat(),
-                "status": OPEN if oh.is_open_at_date(day) else CLOSED,
+                "status": OPEN if len(intervals) > 0 else CLOSED,
                 "opening_hours": [
                     {"beginning": start.strftime("%H:%M"), "end": end.strftime("%H:%M")}
-                    for start, end, _unknown, _comment in oh.get_open_intervals_at_date(
-                        day, overlap_next_day=True
-                    )
+                    for start, end, _unknown, _comment in intervals
                 ],
             }
         )
@@ -96,7 +95,7 @@ class OpeningHourBlock(BaseBlock):
 
     @classmethod
     def init_class(cls, status, next_transition_datetime, time_before_next, oh, curr_dt, raw):
-        is_24_7 = oh.is_24_7(curr_dt)
+        is_24_7 = status == OPEN and next_transition_datetime is None
         return cls(
             status=status,
             next_transition_datetime=next_transition_datetime if not is_24_7 else None,
@@ -141,18 +140,17 @@ class OpeningHourBlock(BaseBlock):
             )
             return None
 
-        if oh.is_open(curr_dt):
-            status = OPEN
-        else:
-            status = CLOSED
-
-        if cls == OpeningHourBlock and oh.is_24_7(curr_dt):
-            return cls.init_class(status, None, None, oh, curr_dt, raw_oh)
-
         next_transition = oh.next_change(curr_dt)
 
-        if next_transition is None:
-            return None
+        if oh.is_open(curr_dt):
+            status = OPEN
+            if next_transition is None:
+                # open 24/7
+                return cls.init_class(status, None, None, oh, curr_dt, raw_oh)
+        else:
+            status = CLOSED
+            if next_transition is None:
+                return None
 
         # Then we localize the next_change transition datetime in the local POI timezone.
         next_transition = round_dt_to_minute(next_transition)
