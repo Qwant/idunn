@@ -26,7 +26,6 @@ def test_undefined_wheelchairs():
     response = client.get(url="http://localhost/v1/pois/osm:node:738042332?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -48,7 +47,6 @@ def test_wheelchair():
     response = client.get(url="http://localhost/v1/pois/osm:node:36153811?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 

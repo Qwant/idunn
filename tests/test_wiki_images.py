@@ -27,7 +27,6 @@ def test_orsay_images():
     response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
     resp = response.json()
 
     assert resp["blocks"][4]["type"] == "images"
@@ -47,7 +46,6 @@ def test_image_for_unnamed_poi():
     response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
     resp = response.json()
 
     assert resp["blocks"][4]["type"] == "images"

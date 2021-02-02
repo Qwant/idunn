@@ -21,7 +21,6 @@ def test_full_query_admin():
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/admin:osm:relation:123057?lang=fr")
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -66,7 +65,6 @@ def test_full_query_street():
     response = client.get(url="http://localhost/v1/places/street:35460343?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -146,7 +144,6 @@ def test_full_query_address():
     response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -225,7 +222,6 @@ def test_full_query_poi():
     response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -364,7 +360,6 @@ def test_type_query_admin():
         url="http://localhost/v1/places/admin:osm:relation:123057?lang=fr&type=admin",
     )
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -392,7 +387,6 @@ def test_type_query_street():
     response = client.get(url="http://localhost/v1/places/street:35460343?lang=fr&type=street")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -407,7 +401,6 @@ def test_type_query_address():
     response = client.get(url=f"http://localhost/v1/places/{id_moulin}?lang=fr&type=address")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -420,7 +413,6 @@ def test_type_query_poi():
     response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
 
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
@@ -483,7 +475,6 @@ def test_basic_short_query_poi():
         url="http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=short",
     )
     assert response.status_code == 200
-    assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
     resp = response.json()
 
