@@ -24,10 +24,6 @@ black = "==19.10b0"
 respx = "*"
 pylint = "*"
 
-# Temporary as a workaround to https://github.com/ipython/ipython/issues/12745
-jedi = "==0.17.2"
-parso = "==0.7.1"
-
 
 [packages]
 fastapi="==0.63.*"
