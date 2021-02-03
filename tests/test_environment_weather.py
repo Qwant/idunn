@@ -1,3 +1,8 @@
+"""
+In this module we test the air_quality blocks with kuzzle. Air quality appears when an admin (city
+or suburd) is called.
+"""
+
 from pydantic import ValidationError
 from pytest import raises
 
@@ -9,11 +14,6 @@ import responses
 import re
 from .utils import enable_weather_api
 
-"""
-In this module we test the air_quality blocks with kuzzle. Air quality appears when an admin (city or suburd)
-is called
-
-"""
 
 # places info ok (correspond to city or suburd)
 testee = {
@@ -167,7 +167,7 @@ def test_weather_from_region():
     Check result is none when place is not a city
     """
     res = Weather.from_es(Admin(testee_nok), lang="en")
-    assert res == None
+    assert res is None
 
 
 def test_weather_with_no_kuzzle():
@@ -175,4 +175,4 @@ def test_weather_with_no_kuzzle():
     Check the result None when kuzzle url is not set
     """
     res = Weather.from_es(Admin(testee_nok), lang="en")
-    assert res == None
+    assert res is None

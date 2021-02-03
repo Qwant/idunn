@@ -25,5 +25,12 @@ jobs:
       - name: Check formatting
         run: pipenv run black --diff --check .
 
+      - name: Run lints
+        run: pipenv run lint-src
+
+      - name: Run lints on tests
+        run: >-
+          pipenv run lint-tests
+
       - name: Run tests
         run: pipenv run pytest

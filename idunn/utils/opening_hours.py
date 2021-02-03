@@ -77,14 +77,14 @@ class OpeningHours:
     def next_change(self, dt):
         """Get datetime of next change of state"""
         assert isinstance(dt, datetime)
-        date = engine.call(
+        naive_date = engine.call(
             "wrapNextChange", self.raw, self.nmt_obj, dt.astimezone(self.tz).isoformat()
         )
 
-        if date is None:
+        if naive_date is None:
             return None
 
-        return self.tz.localize(datetime.fromisoformat(date))
+        return self.tz.localize(datetime.fromisoformat(naive_date))
 
     def get_open_intervals(self, start, end):
         """Get opened intervals for a period of time"""

@@ -35,18 +35,17 @@ def mock_long_wikipedia_response():
         rsps.add(
             responses.GET,
             "https://es.wikipedia.org/api/rest_v1/page/summary/Museo%20del%20Louvre",
-            json={
-                "extract": "El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia El Museo del Louvre es el museo nacional de Francia ..."
-            },
+            json={"extract": "El Museo del Louvre es el museo nacional de Francia " * 25},
         )
         yield
 
 
 def test_wiki_size_limit(wiki_max_size):
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
     assert response.status_code == 200
     resp = response.json()
 
-    # Test that the wiki block description string is not longer than WIKI_DESC_MAX_SIZE (here only 10 chars)
+    # Test that the wiki block description string is not longer than
+    # WIKI_DESC_MAX_SIZE (here only 10 chars).
     assert resp["blocks"][2].get("blocks")[0].get("description") == "El Museo d..."

@@ -3,7 +3,7 @@ from .base import BaseBlock
 from idunn.blocks.services_and_information import ServicesAndInformationBlock
 from idunn.blocks.wikipedia import WikipediaBlock
 
-from typing import ClassVar, List, Literal, Union
+from typing import List, Literal, Union
 
 
 class InformationBlock(BaseBlock):
@@ -11,11 +11,10 @@ class InformationBlock(BaseBlock):
     blocks: List[Union[WikipediaBlock, ServicesAndInformationBlock]]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         blocks = []
-
-        wikipedia_block = WikipediaBlock.from_es(es_poi, lang)
-        services_block = ServicesAndInformationBlock.from_es(es_poi, lang)
+        wikipedia_block = WikipediaBlock.from_es(place, lang)
+        services_block = ServicesAndInformationBlock.from_es(place, lang)
 
         if wikipedia_block is not None:
             blocks.append(wikipedia_block)
@@ -24,3 +23,5 @@ class InformationBlock(BaseBlock):
 
         if len(blocks) > 0:
             return cls(blocks=blocks)
+
+        return None

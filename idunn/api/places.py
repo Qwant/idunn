@@ -15,7 +15,6 @@ from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
 from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
-from idunn.places import Place
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
 
@@ -50,7 +49,7 @@ def log_place_request(place: BasePlace, headers):
                 custom_data["lon"] = float(pos[0])
                 custom_data["lat"] = float(pos[1])
                 custom_data["zoom"] = float(pos[2])
-            except Exception:
+            except ValueError:
                 logger.warning(
                     'Invalid data given through "X-QwantMaps-FocusPosition" header', exc_info=True
                 )
@@ -64,7 +63,7 @@ def log_place_request(place: BasePlace, headers):
             try:
                 ranking = int(ranking)
                 custom_data["ranking"] = ranking
-            except Exception:
+            except ValueError:
                 logger.warning(
                     'Invalid data given through "X-QwantMaps-SuggestionRank" header', exc_info=True
                 )
@@ -91,9 +90,9 @@ def get_place(
     try:
         place = place_from_id(id, type)
     except InvalidPlaceId as e:
-        raise HTTPException(status_code=404, detail=e.message)
+        raise HTTPException(status_code=404, detail=e.message) from e
     except PlaceNotFound as e:
-        raise HTTPException(status_code=404, detail=e.message)
+        raise HTTPException(status_code=404, detail=e.message) from e
     except RedirectToPlaceId as e:
         path_prefix = request.headers.get("x-forwarded-prefix", "").rstrip("/")
         path = request.app.url_path_for("get_place", id=e.target_id)
@@ -127,7 +126,7 @@ def get_place_latlon(
     return place.load_place(lang, verbosity)
 
 
-def handle_option(id, request: Request):
+def handle_option(id, request: Request):  # pylint: disable = unused-argument
     response = Response()
     if settings.get("CORS_OPTIONS_REQUESTS_ENABLED", False) is True:
         response.headers["Access-Control-Allow-Origin"] = "*"

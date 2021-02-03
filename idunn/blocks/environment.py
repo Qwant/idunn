@@ -37,14 +37,15 @@ class AirQuality(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
-        if not settings["BLOCK_AIR_QUALITY_ENABLED"]:
-            return None
-        if place.PLACE_TYPE != "admin":
-            return None
-        if place.get("zone_type") not in ("city", "city_district", "suburb"):
+        if (
+            not settings["BLOCK_AIR_QUALITY_ENABLED"]
+            or place.PLACE_TYPE != "admin"
+            or place.get("zone_type") not in ("city", "city_district", "suburb")
+        ):
             return None
 
         bbox = place.get_bbox()
+
         if not bbox:
             return None
 
@@ -56,6 +57,7 @@ class AirQuality(BaseBlock):
 
         if not air_quality:
             return None
+
         for x in ["CO", "PM10", "O3", "NO2", "SO2", "PM2_5"]:
             if x not in air_quality:
                 continue

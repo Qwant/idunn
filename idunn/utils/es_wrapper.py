@@ -1,17 +1,14 @@
+from functools import lru_cache
+
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from idunn import settings
 
-ES_CONNECTION = None
 
-
+@lru_cache
 def get_elasticsearch():
-    global ES_CONNECTION
+    kwargs = {}
 
-    if ES_CONNECTION is None:
-        if settings["VERIFY_HTTPS"] is False:
-            ES_CONNECTION = Elasticsearch(
-                settings["MIMIR_ES"], verify_certs=False, connection_class=RequestsHttpConnection
-            )
-        else:
-            ES_CONNECTION = Elasticsearch(settings["MIMIR_ES"])
-    return ES_CONNECTION
+    if settings["VERIFY_HTTPS"] is False:
+        kwargs.update({"verify_certs": False, "connection_class": RequestsHttpConnection})
+
+    return Elasticsearch(settings["MIMIR_ES"], **kwargs)

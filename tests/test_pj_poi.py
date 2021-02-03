@@ -82,10 +82,6 @@ def test_pj_place(enable_pj_source):
 
     assert blocks[4]["type"] == "images"
     assert len(blocks[4]["images"]) == 3
-    # TODO
-    #  assert blocks[4]["images"][0]["source_url"] == "https://[VOIR_TOUTES_PHOTOS]"
-
-    print(blocks)
     assert blocks[5]["type"] == "grades"
     assert blocks[5]["total_grades_count"] == 8
     assert blocks[5]["global_grade"] == 4.0

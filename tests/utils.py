@@ -1,9 +1,7 @@
 import os
 import json
-import pytest
 from contextlib import contextmanager
 from copy import deepcopy
-from functools import wraps
 
 from idunn import settings
 from idunn.api import places_list

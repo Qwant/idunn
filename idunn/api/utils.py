@@ -159,13 +159,10 @@ ANY = "*"
 
 class WikidataConnector:
     _wiki_es = None
-    _es_lang = None
 
     @classmethod
     def get_wiki_index(cls, lang):
-        if cls._es_lang is None:
-            cls._es_lang = settings["ES_WIKI_LANG"].split(",")
-        if lang in cls._es_lang:
+        if lang in settings["ES_WIKI_LANG"].split(","):
             return "wikidata_{}".format(lang)
         return None
 
@@ -178,10 +175,10 @@ class WikidataConnector:
 
             if wiki_es is None:
                 raise WikiUndefinedException
-            else:
-                cls._wiki_es = Elasticsearch(
-                    wiki_es, max_retries=wiki_es_max_retries, timeout=wiki_es_timeout
-                )
+
+            cls._wiki_es = Elasticsearch(
+                wiki_es, max_retries=wiki_es_max_retries, timeout=wiki_es_timeout
+            )
 
     @classmethod
     def get_wiki_info(cls, wikidata_id, wiki_index):
@@ -209,7 +206,7 @@ class WikidataConnector:
                 exc_info=True,
             )
             return None
-        except ElasticsearchException as e:
+        except ElasticsearchException:
             logger.warning("Wiki ES failure: unknown elastic error", exc_info=True)
             return None
 
@@ -230,7 +227,7 @@ def fetch_es_poi(id, es) -> dict:
     try:
         return fetch_es_place(id, es, type="poi")["_source"]
     except PlaceNotFound as e:
-        raise HTTPException(status_code=404, detail=e.message)
+        raise HTTPException(status_code=404, detail=e.message) from e
 
 
 def fetch_es_pois(raw_filters, bbox, max_size) -> list:
@@ -259,6 +256,7 @@ def fetch_es_pois(raw_filters, bbox, max_size) -> list:
                 {"bool": {"must": [{"term": {"poi_type.name": term}} for term in filt]}}
             )
 
+    # pylint: disable = unexpected-keyword-arg
     bbox_places = es.search(
         index=INDICES["poi"],
         body={
@@ -308,8 +306,8 @@ def fetch_es_place(id, es, type) -> dict:
             _source_exclude=["boundary"],
         )
     except ElasticsearchException as error:
-        logger.warning(f"error with database: {error}")
-        raise HTTPException(detail="database issue", status_code=503)
+        logger.warning("error with database: %s", error)
+        raise HTTPException(detail="database issue", status_code=503) from error
 
     es_place = es_places.get("hits", {}).get("hits", [])
     if len(es_place) == 0:
@@ -395,7 +393,7 @@ def get_geom(es_place):
     True
 
     >>> get_geom(POI({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}}))
-    {'type': 'Point', 'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944990157640612, 48.858260156496016]}
+    {'type': 'Point', 'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944...
     """
     geom = None
     coord = es_place.get_coord()
@@ -410,13 +408,12 @@ def get_geom(es_place):
 
 
 def get_name(properties, lang):
-    """Return the Place name from the properties field of the elastic response
-    Here 'name' corresponds to the POI name in the language of the user request (i.e. 'name:{lang}' field).
+    """
+    Return the Place name from the properties field of the elastic response. Here 'name'
+    corresponds to the POI name in the language of the user request (i.e. 'name:{lang}' field).
 
-    If lang is None or if name:lang is not in the properties
-    Then name receives the local name value
-
-    'local_name' corresponds to the name in the language of the country where the POI is located.
+    If lang is None or if name:lang is not in the properties then name receives the local name
+    value.
 
     >>> get_name({}, 'fr') is None
     True

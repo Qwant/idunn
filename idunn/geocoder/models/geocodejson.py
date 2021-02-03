@@ -170,7 +170,9 @@ class Intention(BaseModel):
     )
     description: IntentionDescription = Field(
         ...,
-        description="Details about the detected intention, useful to format a human-readable description",
+        description=(
+            "Details about the detected intention, useful to format a human-readable description"
+        ),
     )
 
 

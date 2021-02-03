@@ -6,7 +6,7 @@ from fastapi import HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
-from idunn.places import Place, POI, BragiPOI
+from idunn.places import POI, BragiPOI
 from idunn.api.utils import fetch_es_pois, Verbosity
 from idunn.places.event import Event
 from idunn.geocoder.bragi_client import bragi_client
@@ -32,7 +32,7 @@ class CommonQueryParam(BaseModel):
     bbox: Tuple[float, float, float, float] = None
     size: int = None
     lang: str = None
-    verbosity: Verbosity
+    verbosity: Verbosity = Field(...)
 
     @validator("lang", pre=True, always=True)
     def valid_lang(cls, v):
@@ -71,9 +71,7 @@ class PlacesQueryParam(CommonQueryParam):
         try:
             super().__init__(**data)
         except ValidationError as e:
-            raise HTTPException(
-                status_code=400, detail=e.errors(),
-            )
+            raise HTTPException(status_code=400, detail=e.errors()) from e
 
     @validator("source", pre=True, always=True)
     def valid_source(cls, v):
@@ -119,11 +117,17 @@ class PlacesBboxResponse(BaseModel):
     places: List[Any]
     source: PoiSource
     bbox: Optional[Tuple[float, float, float, float]] = Field(
-        description="Minimal bbox containing all results. `null` if no result is found. May be larger than or outside of the original bbox passed in the query if `?extend_bbox=true` was set.",
+        description=(
+            "Minimal bbox containing all results. `null` if no result is found. May be larger than "
+            "or outside of the original bbox passed in the query if `?extend_bbox=true` was set."
+        ),
         example=(2.32, 48.85, 2.367, 48.866),
     )
     bbox_extended: bool = Field(
-        description="`true` if `?extend_bbox=true` was set and search has been executed on an extended bbox, after no result was found in the original bbox passed in the query."
+        description=(
+            "`true` if `?extend_bbox=true` was set and search has been executed on an extended "
+            "bbox, after no result was found in the original bbox passed in the query."
+        )
     )
 
     @validator("bbox")
@@ -133,6 +137,8 @@ class PlacesBboxResponse(BaseModel):
         return tuple(round(x, 6) for x in v)
 
 
+# TODO: using `Depends` could probably help since `locals()` seems quite dirty
+# pylint: disable = unused-argument
 async def get_places_bbox(
     bbox: str = Query(
         ...,
@@ -246,8 +252,8 @@ def get_events_bbox(
             }
         )
     except ValidationError as e:
-        logger.info(f"Validation Error: {e.json()}")
-        raise HTTPException(status_code=400, detail=e.errors())
+        logger.info("Validation Error: %s", e.json())
+        raise HTTPException(status_code=400, detail=e.errors()) from e
 
     current_outing_lang = None
 

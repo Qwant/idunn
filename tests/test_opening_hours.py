@@ -1,18 +1,16 @@
+"""
+In this module we test that the opening_hours block for a POI located in a
+different timezone (Moscow) contains the correct information.
+
+For each test we freeze time at different datetimes and for each we create a
+fake different OpeningHourBlock from a raw json extracted from a POI located in
+Moscow city.
+"""
+
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
 from idunn.places import POI
-
-"""
-In this module we test that the opening_hours block for
-a POI located in a different timezone (Moscow) contains
-the correct information.
-
-For each test we freeze time at different datetimes and
-for each we create a fake different OpeningHourBlock from
-a raw json extracted from a POI located in Moscow city.
-
-"""
 
 
 def get_oh_block(opening_hours, lat=48.0, lon=2.0, country_code="FR"):
@@ -115,7 +113,7 @@ def test_opening_hour_close():
     assert oh_block.status == "closed"
     assert oh_block.next_transition_datetime == "2018-06-15T10:00:00+03:00"
     assert oh_block.seconds_before_next_transition == 34200
-    assert oh_block.is_24_7 == False
+    assert oh_block.is_24_7 is False
     assert oh_block.raw == "Mo-Su 10:00-22:00"
     assert len(oh_block.days) == 7
     assert all(d.status == "open" for d in oh_block.days)

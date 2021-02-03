@@ -254,8 +254,7 @@ class PjApiPOI(BasePlace):
     def get_contact_infos(self):
         if isinstance(self.data, pj_info.Response):
             return (contact for ins in self.data.inscriptions for contact in ins.contact_infos)
-        else:
-            return (contact for ins in self.data.inscriptions for contact in ins.contact_info)
+        return (contact for ins in self.data.inscriptions for contact in ins.contact_info)
 
     def get_phone(self):
         return next(
@@ -300,7 +299,7 @@ class PjApiPOI(BasePlace):
     def get_raw_opening_hours(self):
         if isinstance(self.data, pj_info.Response) and self.data.schedules:
             return self.data.schedules.opening_hours
-        elif isinstance(self.data, pj_find.Listing):
+        if isinstance(self.data, pj_find.Listing):
             return self.data.opening_hours
         return None
 

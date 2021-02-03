@@ -38,15 +38,15 @@ class DirectionsClient:
         self.request_timeout = float(settings["DIRECTIONS_TIMEOUT"])
 
     @property
-    def QWANT_BASE_URL(self):
+    def QWANT_BASE_URL(self):  # pylint: disable = invalid-name
         return settings["QWANT_DIRECTIONS_API_BASE_URL"]
 
     @property
-    def COMBIGO_BASE_URL(self):
+    def COMBIGO_BASE_URL(self):  # pylint: disable = invalid-name
         return settings["COMBIGO_API_BASE_URL"]
 
     @property
-    def MAPBOX_API_ENABLED(self):
+    def MAPBOX_API_ENABLED(self):  # pylint: disable = invalid-name
         return bool(settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"])
 
     @staticmethod
@@ -66,7 +66,8 @@ class DirectionsClient:
             )
         return True
 
-    def place_to_url_coords(self, place):
+    @staticmethod
+    def place_to_url_coords(place):
         coord = place.get_coord()
         lat, lon = coord["lat"], coord["lon"]
         return (f"{lon:.5f}", f"{lat:.5f}")
@@ -127,7 +128,8 @@ class DirectionsClient:
         response.raise_for_status()
         return DirectionsResponse(**response.json())
 
-    def place_to_combigo_location(self, place, lang):
+    @staticmethod
+    def place_to_combigo_location(place, lang):
         coord = place.get_coord()
         location = {"lat": coord["lat"], "lng": coord["lon"]}
         if place.PLACE_TYPE != "latlon":
@@ -189,13 +191,13 @@ class DirectionsClient:
         elif mode in ("publictransport", "taxi", "vtc", "carpool"):
             method = self.directions_combigo
             kwargs = {}
-            mode = mode
         else:
             raise HTTPException(status_code=400, detail=f"unknown mode {mode}")
 
         method_name = method.__name__
         logger.info(
-            f"Calling directions API '{method_name}'",
+            "Calling directions API '%s'",
+            method_name,
             extra={
                 "method": method_name,
                 "mode": mode,

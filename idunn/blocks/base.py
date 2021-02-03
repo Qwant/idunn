@@ -1,6 +1,5 @@
-import pydantic
-from pydantic import BaseModel, conint, constr
-from typing import Any, List
+from pydantic import BaseModel
+from typing import Any
 
 
 class BaseBlock(BaseModel):
@@ -10,10 +9,10 @@ class BaseBlock(BaseModel):
         super().__init__(*args, **kwargs)
 
         if not self.type:
-            raise Exception("Missing type in class %s", self.__class__.__name__)
+            raise Exception(f"Missing type in class {self.__class__.__name__}")
 
     @classmethod
-    def from_es(cls, es_poi, lang):
+    def from_es(cls, place, lang):
         raise NotImplementedError
 
     @classmethod

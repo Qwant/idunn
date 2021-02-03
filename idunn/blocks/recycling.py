@@ -45,7 +45,7 @@ class RecyclingContainer(BaseModel):
     def validate_datetime(cls, dt):
         dt = dt.replace(microsecond=0)
         if dt.tzinfo is None:
-            return UTC.localize(dt)
+            return UTC().localize(dt)
         return dt.astimezone(UTC)
 
 
@@ -55,17 +55,12 @@ class RecyclingBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
-        if not recycling_client.enabled:
-            # Data source is not configured
-            return None
-
-        if place.PLACE_TYPE != "poi":
-            return None
-
-        if place.get_class_name() != "recycling":
-            return None
-
-        if not is_poi_in_finistere(place):
+        if (
+            not recycling_client.enabled  # Data source is not configured
+            or place.PLACE_TYPE != "poi"
+            or place.get_class_name() != "recycling"
+            or not is_poi_in_finistere(place)
+        ):
             return None
 
         try:

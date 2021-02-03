@@ -62,7 +62,7 @@ def get_directions(
         from_place = place_from_id(origin, follow_redirect=True)
         to_place = place_from_id(destination, follow_redirect=True)
     except IdunnPlaceError as exc:
-        raise HTTPException(status_code=404, detail=exc.message)
+        raise HTTPException(status_code=404, detail=exc.message) from exc
 
     return directions_client.get_directions(
         from_place, to_place, type, language, params=request.query_params

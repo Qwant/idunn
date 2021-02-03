@@ -8,6 +8,55 @@ from unittest.mock import ANY
 from app import app
 
 
+OH_BLOCK = {
+    "type": "opening_hours",
+    "status": "open",
+    "next_transition_datetime": "2018-06-14T21:45:00+02:00",
+    "seconds_before_next_transition": 40500,
+    "is_24_7": False,
+    "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
+    "days": [
+        {"dayofweek": 1, "local_date": "2018-06-11", "status": "closed", "opening_hours": [],},
+        {
+            "dayofweek": 2,
+            "local_date": "2018-06-12",
+            "status": "open",
+            "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
+        },
+        {
+            "dayofweek": 3,
+            "local_date": "2018-06-13",
+            "status": "open",
+            "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
+        },
+        {
+            "dayofweek": 4,
+            "local_date": "2018-06-14",
+            "status": "open",
+            "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
+        },
+        {
+            "dayofweek": 5,
+            "local_date": "2018-06-15",
+            "status": "open",
+            "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
+        },
+        {
+            "dayofweek": 6,
+            "local_date": "2018-06-16",
+            "status": "open",
+            "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
+        },
+        {
+            "dayofweek": 7,
+            "local_date": "2018-06-17",
+            "status": "open",
+            "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
+        },
+    ],
+}
+
+
 @pytest.fixture(scope="function")
 def mock_external_requests():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
@@ -21,7 +70,7 @@ def test_full(mock_external_requests):
     Exhaustive test that checks all possible blocks
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:way:7777778?lang=es")
+    response = client.get(url="http://localhost/v1/pois/osm:way:7777778?lang=es")
 
     assert response.status_code == 200
 
@@ -69,58 +118,7 @@ def test_full(mock_external_requests):
             "country_code": "FR",
         },
         "blocks": [
-            {
-                "type": "opening_hours",
-                "status": "open",
-                "next_transition_datetime": "2018-06-14T21:45:00+02:00",
-                "seconds_before_next_transition": 40500,
-                "is_24_7": False,
-                "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-                "days": [
-                    {
-                        "dayofweek": 1,
-                        "local_date": "2018-06-11",
-                        "status": "closed",
-                        "opening_hours": [],
-                    },
-                    {
-                        "dayofweek": 2,
-                        "local_date": "2018-06-12",
-                        "status": "open",
-                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                    },
-                    {
-                        "dayofweek": 3,
-                        "local_date": "2018-06-13",
-                        "status": "open",
-                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                    },
-                    {
-                        "dayofweek": 4,
-                        "local_date": "2018-06-14",
-                        "status": "open",
-                        "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
-                    },
-                    {
-                        "dayofweek": 5,
-                        "local_date": "2018-06-15",
-                        "status": "open",
-                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                    },
-                    {
-                        "dayofweek": 6,
-                        "local_date": "2018-06-16",
-                        "status": "open",
-                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                    },
-                    {
-                        "dayofweek": 7,
-                        "local_date": "2018-06-17",
-                        "status": "open",
-                        "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                    },
-                ],
-            },
+            OH_BLOCK,
             {
                 "type": "phone",
                 "url": "tel:+33140494814",

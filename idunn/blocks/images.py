@@ -5,7 +5,7 @@ import posixpath
 import urllib.parse
 from urllib.parse import urlsplit, unquote
 from pydantic import BaseModel, validator
-from typing import ClassVar, List, Literal
+from typing import List, Literal
 
 from idunn import settings
 from .base import BaseBlock
@@ -28,25 +28,28 @@ class ThumbrHelper:
     def is_enabled(self):
         return bool(self._thumbr_enabled)
 
-    def get_thumbr_url(self, hash):
-        n = int(hash[0], 16) % (len(self._thumbr_urls))
+    def get_thumbr_url(self, img_hash):
+        n = int(img_hash[0], 16) % (len(self._thumbr_urls))
         return self._thumbr_urls[n]
 
     def get_url_remote_thumbnail(
-        self, source, width=0, height=0, bestFit=True, progressive=False, animated=False
+        self,
+        source,
+        width=0,
+        height=0,
+        bestFit=True,
+        progressive=False,
+        animated=False,
+        displayErrorImage=False,
     ):
-        displayErrorImage = False
-
-        salt = self.get_salt()
-        token = f"{source}{width}x{height}{salt}"
-        hash = hashlib.sha256(bytes(token, encoding="utf8")).hexdigest()
-        base_url = self.get_thumbr_url(hash)
-
         size = f"{width}x{height}"
-        hashURLpart = f"{hash[0]}/{hash[1]}/{hash[2:]}"
+        token = f"{source}{size}{self.get_salt()}"
+        img_hash = hashlib.sha256(bytes(token, encoding="utf8")).hexdigest()
+        base_url = self.get_thumbr_url(img_hash)
 
-        url_path = urlsplit(source).path
-        filename = posixpath.basename(unquote(url_path))
+        hashURLpart = f"{img_hash[0]}/{img_hash[1]}/{img_hash[2:]}"
+        filename = posixpath.basename(unquote(urlsplit(source).path))
+
         if not bool(re.match(r"^.*\.(jpg|jpeg|png|gif)$", filename, re.IGNORECASE)):
             filename += ".jpg"
 
@@ -82,8 +85,6 @@ class ImagesBlock(BaseBlock):
 
     @classmethod
     def is_enabled(cls):
-        from app import settings
-
         return settings["BLOCK_IMAGES_ENABLED"]
 
     @classmethod
@@ -112,11 +113,11 @@ class ImagesBlock(BaseBlock):
         return raw_url
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        raw_urls = es_poi.get_images_urls()
+    def from_es(cls, place, lang):
+        raw_urls = place.get_images_urls()
         if not raw_urls:
             # Fallback to wikipedia image
-            wiki_resp = es_poi.get_wiki_resp(lang)
+            wiki_resp = place.get_wiki_resp(lang)
             if wiki_resp is not None:
                 raw_url = wiki_resp.get("pageimage_thumb")
                 if raw_url:
@@ -125,10 +126,10 @@ class ImagesBlock(BaseBlock):
         if not raw_urls:
             return None
 
-        place_name = es_poi.get_name(lang)
+        place_name = place.get_name(lang)
         images = []
         for raw_url in raw_urls:
-            source_url = cls.get_source_url(raw_url, place=es_poi)
+            source_url = cls.get_source_url(raw_url, place=place)
             thumbr = cls.get_thumbr_helper()
             if thumbr.is_enabled():
                 thumbr = cls.get_thumbr_helper()

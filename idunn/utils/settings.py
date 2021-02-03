@@ -28,18 +28,16 @@ class SettingsComponent:
     - the settings found in the default_settings.yaml
     - a yaml settings file given with an env var ({project}_CONFIG_FILE, eg. IDUNN_CONFIG_FILE)
     - env var only for already existing settings.
-        The env var need to be defined as {project}_{var_name} eg. IDUNN_ES to override the "ES" settings.
+        The env var need to be defined as {project}_{var_name} eg. IDUNN_ES to override the "ES"
+        settings.
     """
 
     def __init__(self, project_name) -> None:
         self._settings = Settings()
         self._load_default_config()
-
         self._load_specific_config(project_name)
-
         self._load_from_env_var(project_name)
-
-        logging.getLogger(__name__).debug(f"config: {self._settings}")
+        logging.getLogger(__name__).debug("config: %s", self._settings)
 
     def _load_default_config(self):
         """
@@ -74,7 +72,8 @@ class SettingsComponent:
                     overridden_value = False
                 self._settings[k] = overridden_value
 
-    def can_handle_parameter(self, parameter: Parameter) -> bool:
+    @staticmethod
+    def can_handle_parameter(parameter: Parameter) -> bool:
         # Micro-optimization given that we know that this component
         # only ever injects values of type Settings.
         return parameter.annotation is Settings

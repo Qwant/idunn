@@ -2,8 +2,8 @@ import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, utc
 from tzwhere import tzwhere
-from pydantic import BaseModel, Schema, conint, constr
-from typing import ClassVar, List, Literal, Optional
+from pydantic import BaseModel, conint, constr
+from typing import List, Literal, Optional
 
 from .base import BaseBlock
 from idunn.utils.opening_hours import OpeningHours
@@ -27,11 +27,11 @@ def get_tz(poi_tzname, lat, lon):
     return None
 
 
-def get_coord(es_poi):
+def get_coord(place):
     """
     Returns the coordinates from the POI json
     """
-    coord = es_poi.get_coord()
+    coord = place.get_coord()
     if coord:
         lon = coord.get("lon")
         lat = coord.get("lat")
@@ -107,26 +107,20 @@ class OpeningHourBlock(BaseBlock):
         )
 
     @staticmethod
-    def get_raw_oh(es_poi):
-        return es_poi.get_raw_opening_hours()
+    def get_raw_oh(place):
+        return place.get_raw_opening_hours()
 
     @classmethod
-    def from_es(cls, es_poi, lang, raw_oh=None):
-        if not raw_oh:
-            raw_oh = cls.get_raw_oh(es_poi)
-
-        if not raw_oh:
-            return None
-
+    def from_es_with_oh(cls, place, _lang, raw_oh):
         # Fallback to London coordinates if POI coordinates are not known.
-        poi_lat, poi_lon = get_coord(es_poi) or (51.5, 0)
-        poi_country_code = es_poi.get_country_code()
+        poi_lat, poi_lon = get_coord(place) or (51.5, 0)
+        poi_country_code = place.get_country_code()
 
         poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
         poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
 
         if poi_tz is None:
-            logger.info("No timezone found for poi %s", es_poi.get("id"))
+            logger.info("No timezone found for poi %s", place.get("id"))
             return None
 
         oh = OpeningHours(raw_oh, poi_tz, poi_country_code)
@@ -135,7 +129,7 @@ class OpeningHourBlock(BaseBlock):
         if not oh.validate():
             logger.info(
                 "Failed to validate opening_hours field, id:'%s' raw:'%s'",
-                es_poi.get_id(),
+                place.get_id(),
                 raw_oh,
                 exc_info=True,
             )
@@ -162,3 +156,12 @@ class OpeningHourBlock(BaseBlock):
         return cls.init_class(
             status, next_transition.isoformat(), time_before_next, oh, curr_dt, raw_oh
         )
+
+    @classmethod
+    def from_es(cls, place, lang):
+        raw_oh = cls.get_raw_oh(place)
+
+        if raw_oh is None:
+            return None
+
+        return cls.from_es_with_oh(place, lang, raw_oh)

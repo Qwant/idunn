@@ -1,16 +1,10 @@
 from idunn.blocks.events import DescriptionEvent
 from idunn.places import Event
 
-"""
-    In this module we test the events block DescriptionEvent. check if fields
-    are correctly returned
-
-"""
-
 
 def get_event_information_complete_fields():
     """
-    returns an DescriptionEvent with all features (type, description, free_text, pricing_info)
+    Returns an DescriptionEvent with all features (type, description, free_text, pricing_info).
     """
     return DescriptionEvent.from_es(
         Event(
@@ -27,9 +21,7 @@ def get_event_information_complete_fields():
 
 
 def get_event_information_missing_fields():
-    """
-    returns an DescriptionEvent with feature free_text missing
-    """
+    """Returns an DescriptionEvent with feature free_text missing"""
     return DescriptionEvent.from_es(
         Event(
             {
@@ -43,15 +35,13 @@ def get_event_information_missing_fields():
 
 
 def get_event_information_no_fields():
-    """
-    returns an DescriptionEvent with no features
-    """
+    """Returns an DescriptionEvent with no features"""
     return DescriptionEvent.from_es(Event({}), lang="en")
 
 
 def test_event_information_complete():
     """
-    test DescriptionEvent block ok with all features (type, description, free_text, pricing_info)
+    Test DescriptionEvent block ok with all features (type, description, free_text, pricing_info).
     """
     ode_block = get_event_information_complete_fields()
 
@@ -65,9 +55,7 @@ def test_event_information_complete():
 
 
 def test_event_information_missing_fields():
-    """
-    test DescriptionEvent block ok with feature free_text missing
-    """
+    """Test DescriptionEvent block ok with feature free_text missing"""
     ode_block = get_event_information_missing_fields()
 
     assert ode_block == DescriptionEvent(
@@ -80,9 +68,7 @@ def test_event_information_missing_fields():
 
 
 def test_event_information_no_fields():
-    """
-    test DescriptionEvent block ok with no feature
-    """
+    """Test DescriptionEvent block ok with no feature"""
     ode_block = get_event_information_no_fields()
 
     assert ode_block is None

@@ -21,8 +21,8 @@ def place_from_id(id: str, type=None, follow_redirect=False):
     """
     try:
         namespace, suffix = id.split(":", 1)
-    except ValueError:
-        raise InvalidPlaceId(id)
+    except ValueError as exc:
+        raise InvalidPlaceId(id) from exc
 
     # Handle place from "pages jaunes"
     if namespace == pj_source.PLACE_ID_NAMESPACE:
@@ -36,7 +36,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
     es = get_elasticsearch()
     try:
         es_place = fetch_es_place(id, es, type)
-    except PlaceNotFound:
+    except PlaceNotFound as exc:
         if namespace == "addr":
             # A Latlon place can be used as a substitute for a "addr:<lon>;<lat>" id
             # that is not present in the database anymore
@@ -46,10 +46,9 @@ def place_from_id(id: str, type=None, follow_redirect=False):
             except ValueError:
                 pass
             else:
-                if follow_redirect:
-                    return place_from_id(latlon_id, follow_redirect=False)
-                else:
-                    raise RedirectToPlaceId(latlon_id)
+                if not follow_redirect:
+                    raise RedirectToPlaceId(latlon_id) from exc
+                return place_from_id(latlon_id, follow_redirect=False)
         raise
 
     places = {

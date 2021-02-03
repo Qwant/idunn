@@ -1,3 +1,5 @@
+# pylint: disable = protected-access
+
 import logging
 import csv
 import json
@@ -8,11 +10,13 @@ from idunn.utils.redis import RedisWrapper, CacheNotAvailable
 from pydantic import BaseModel
 from redis.lock import LockError
 
+
 logger = logging.getLogger(__name__)
 COVID19_OSM_DATASET_STATE_KEY = "covid19_osm_dataset_state"
 COVID19_POI_STATUS_KEY_PREFIX = "covid19_poi_"
 COVID19_REDIS_LOCK_TIMEOUT = 900  # seconds
 
+# mutated by function `covid19_osm_task`
 last_check_datetime = datetime(2020, 1, 1)
 
 
@@ -103,6 +107,7 @@ def get_poi_covid_status(place_id):
 
 def covid19_osm_task():
     global last_check_datetime
+
     if datetime.utcnow() < last_check_datetime + timedelta(minutes=2):
         # Useless to check for data freshness too often
         return

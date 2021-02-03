@@ -4,9 +4,9 @@ from app import app
 from fastapi.testclient import TestClient
 
 
-@pytest.fixture(scope="module", autouse=True)
-def mock_wikipedia_response():
-    with responses.RequestsMock() as rsps:
+@pytest.fixture
+def mock_wikipedia_response(redis):
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             responses.GET,
             "https://fr.wikipedia.org/w/api.php",
@@ -57,17 +57,17 @@ def mock_wikipedia_response():
                 "extract_html": "<p>El <b>Museo del Louvre</b> es el museo nacional de Francia consagrado...</p>",
             },
         )
-        yield
+        yield rsps
 
 
-def test_wikipedia_another_language():
+def test_wikipedia_another_language(mock_wikipedia_response):
     """
     The louvre museum has the tag 'wikipedia' with value 'fr:Musée du Louvre'
     We check that wikipedia block is built using data from the wikipedia page
     in another language.
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
 
     assert response.status_code == 200
 

@@ -121,5 +121,5 @@ class RedisWrapperWeather(RedisWrapper):
     _redis = RedisWrapper
 
     @classmethod
-    def cache_it(cls, key, f):
-        return cls._redis.cache_it(key, f, settings["WEATHER_CACHE_TIMEOUT"])
+    def cache_it(cls, key, f, expire=settings["WEATHER_CACHE_TIMEOUT"]):
+        return cls._redis.cache_it(key, f, expire)

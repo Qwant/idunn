@@ -30,11 +30,8 @@ class IdunnRateLimiter:
             logger.warning("Redis URL not configured: rate limiter not started")
             self._limiter = None
         else:
-            """
-            If a redis is configured,
-            then we use the corresponding redis
-            service in the rate limiter.
-            """
+            # If a redis is configured, then we use the corresponding redis service in the rate
+            # limiter.
             self._limiter = RateLimiter(
                 resource=self.resource,
                 max_requests=self.max_requests,
@@ -51,7 +48,7 @@ class IdunnRateLimiter:
             try:
                 with self._limiter.limit(client):
                     yield
-            except RedisError as e:
+            except RedisError:
                 if ignore_redis_error:
                     logger.warning(
                         "Ignoring RedisError in rate limiter for %s",
@@ -69,5 +66,5 @@ class IdunnRateLimiter:
         try:
             with self.limit(client=client_id, ignore_redis_error=True):
                 pass
-        except TooManyRequestsException:
-            raise HTTPException(status_code=429, detail="Too Many Requests")
+        except TooManyRequestsException as exc:
+            raise HTTPException(status_code=429, detail="Too Many Requests") from exc

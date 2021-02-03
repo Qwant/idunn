@@ -1,5 +1,5 @@
 from .base import BaseBlock
-from typing import ClassVar, Optional, Literal
+from typing import Optional, Literal
 
 
 class GradesBlock(BaseBlock):
@@ -9,8 +9,8 @@ class GradesBlock(BaseBlock):
     url: Optional[str]
 
     @classmethod
-    def from_es(cls, es_poi, lang):
-        raw_grades = es_poi.get_raw_grades() or {}
+    def from_es(cls, place, lang):
+        raw_grades = place.get_raw_grades() or {}
         total_grades_count = raw_grades.get("total_grades_count", None)
         global_grade = raw_grades.get("global_grade", None)
 
@@ -20,5 +20,5 @@ class GradesBlock(BaseBlock):
         return cls(
             total_grades_count=total_grades_count,
             global_grade=global_grade,
-            url=es_poi.get_reviews_url() or None,
+            url=place.get_reviews_url() or None,
         )

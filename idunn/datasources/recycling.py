@@ -1,5 +1,3 @@
-from time import time
-import requests
 import logging
 from itertools import islice
 from geopy.distance import distance
@@ -58,11 +56,13 @@ class RecyclingDataSource:
     def get_latest_measures(self, lat, lon, max_distance, size=50):
         """
         If cache is used, latest measures will be fetched and cached with a larger radius.
+
         Arbitrary values are used in that case:
             max_distance: 10 km
             lat and lon: rounded to 1 decimal
-        This ensures that all measure points are covered by at least 1 cache key, with a tolerance of 2km.
-        At the equator: distance((0,0),(0.05,0.05)) is 7.9 km
+
+        This ensures that all measure points are covered by at least 1 cache key, with a tolerance
+        of 2km. At the equator, distance((0,0),(0.05,0.05)) is 7.9 km.
         """
         if not self.use_cache:
             return self._fetch_latest_measures(lat, lon, max_distance=max_distance, size=size)

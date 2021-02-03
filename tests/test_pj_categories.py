@@ -3,8 +3,8 @@ from idunn.places import PjPOI
 
 def test_categories_pj():
     poi = PjPOI({"Category": ["None"]})
-    assert poi.get_class_name() == None
-    assert poi.get_subclass_name() == None
+    assert poi.get_class_name() is None
+    assert poi.get_subclass_name() is None
 
     poi = PjPOI({"Category": ["restaurants"]})
     assert poi.get_class_name() == "restaurant"

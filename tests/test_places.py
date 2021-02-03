@@ -1,25 +1,25 @@
+"""
+This module tests basic query against the endpoint '/places/'
+
+The purpose of the 4 following tests 'test_full' is to describe the response
+format for each possible spatial objects (Admin, Street, Address, POI).
+"""
+
 import urllib
 from unittest.mock import ANY
 from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from elasticsearch import ElasticsearchException
+from elasticsearch import Elasticsearch, ElasticsearchException
+from unittest.mock import patch
 
-"""
-    This module tests basic query against the endpoint '/places/'
-
-    The purpose of the 4 following tests 'test_full'
-    is to describe the response format for each possible
-    spatial objects (Admin, Street, Address, POI)
-"""
+from .test_full import OH_BLOCK
 
 
 def test_full_query_admin():
-    """
-        Test the response format to an admin query
-    """
+    """Test the response format to an admin query"""
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/admin:osm:relation:123057?lang=fr")
+    response = client.get(url="http://localhost/v1/places/admin:osm:relation:123057?lang=fr")
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
@@ -63,7 +63,7 @@ def test_full_query_street():
         Test the response format to a street query
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr")
+    response = client.get(url="http://localhost/v1/places/street:35460343?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -222,7 +222,7 @@ def test_full_query_poi():
         Test the response format to a POI query
     """
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr")
+    response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -323,58 +323,7 @@ def test_full_query_poi():
         "country_code": "FR",
     }
     assert resp["blocks"] == [
-        {
-            "type": "opening_hours",
-            "status": "open",
-            "next_transition_datetime": "2018-06-14T21:45:00+02:00",
-            "seconds_before_next_transition": 40500,
-            "is_24_7": False,
-            "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
-            "days": [
-                {
-                    "dayofweek": 1,
-                    "local_date": "2018-06-11",
-                    "status": "closed",
-                    "opening_hours": [],
-                },
-                {
-                    "dayofweek": 2,
-                    "local_date": "2018-06-12",
-                    "status": "open",
-                    "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                },
-                {
-                    "dayofweek": 3,
-                    "local_date": "2018-06-13",
-                    "status": "open",
-                    "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                },
-                {
-                    "dayofweek": 4,
-                    "local_date": "2018-06-14",
-                    "status": "open",
-                    "opening_hours": [{"beginning": "09:30", "end": "21:45"}],
-                },
-                {
-                    "dayofweek": 5,
-                    "local_date": "2018-06-15",
-                    "status": "open",
-                    "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                },
-                {
-                    "dayofweek": 6,
-                    "local_date": "2018-06-16",
-                    "status": "open",
-                    "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                },
-                {
-                    "dayofweek": 7,
-                    "local_date": "2018-06-17",
-                    "status": "open",
-                    "opening_hours": [{"beginning": "09:30", "end": "18:00"}],
-                },
-            ],
-        },
+        OH_BLOCK,
         {
             "type": "phone",
             "url": "tel:+33140494814",
@@ -412,7 +361,7 @@ def test_full_query_poi():
 def test_type_query_admin():
     client = TestClient(app)
     response = client.get(
-        url=f"http://localhost/v1/places/admin:osm:relation:123057?lang=fr&type=admin",
+        url="http://localhost/v1/places/admin:osm:relation:123057?lang=fr&type=admin",
     )
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -425,7 +374,7 @@ def test_type_query_admin():
 
 def test_admin_i18n_name():
     client = TestClient(app)
-    response = client.get(f"http://localhost/v1/places/admin:osm:relation:139610?lang=de")
+    response = client.get("http://localhost/v1/places/admin:osm:relation:139610?lang=de")
 
     assert response.status_code == 200
     resp = response.json()
@@ -440,7 +389,7 @@ def test_admin_i18n_name():
 
 def test_type_query_street():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/street:35460343?lang=fr&type=street")
+    response = client.get(url="http://localhost/v1/places/street:35460343?lang=fr&type=street")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -468,7 +417,7 @@ def test_type_query_address():
 
 def test_type_query_poi():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
+    response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -482,7 +431,7 @@ def test_type_query_poi():
     assert resp["subclass_name"] == "museum"
     assert resp["blocks"][0]["type"] == "opening_hours"
     assert resp["blocks"][1]["type"] == "phone"
-    assert resp["blocks"][0]["is_24_7"] == False
+    assert not resp["blocks"][0]["is_24_7"]
 
 
 def test_type_unknown():
@@ -497,21 +446,21 @@ def test_type_unknown():
 
 def test_not_found_with_type():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/street:4242?lang=fr&type=poi")
+    response = client.get(url="http://localhost/v1/places/street:4242?lang=fr&type=poi")
     assert response.status_code == 404
     assert response.json() == {"detail": "place 'street:4242' not found with type=poi"}
 
 
 def test_invalid_place_id():
     client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places/invalid_place?lang=fr")
+    response = client.get(url="http://localhost/v1/places/invalid_place?lang=fr")
     assert response.status_code == 404
 
 
 def test_redirect_obsolete_address_with_lat_lon():
     client = TestClient(app)
     response = client.get(
-        url=f"http://localhost/v1/places/addr:-1.12;45.6?lang=fr", allow_redirects=False
+        url="http://localhost/v1/places/addr:-1.12;45.6?lang=fr", allow_redirects=False
     )
     assert response.status_code == 303
     assert response.headers["location"] == "/v1/places/latlon:45.60000:-1.12000?lang=fr"
@@ -531,7 +480,7 @@ def test_redirect_obsolete_address_with_url_prefix():
 def test_basic_short_query_poi():
     client = TestClient(app)
     response = client.get(
-        url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=short",
+        url="http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=short",
     )
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -551,7 +500,7 @@ def test_wrong_verbosity():
     client = TestClient(app)
 
     response = client.get(
-        url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=shoooooort",
+        url="http://localhost/v1/places/osm:way:63178753?lang=fr&verbosity=shoooooort",
     )
     assert response.status_code == 422
     assert response.json()["detail"][0]["type"] == "type_error.enum"
@@ -561,13 +510,9 @@ def mock_search(detail, *args, **kwargs):
     raise ElasticsearchException
 
 
-from elasticsearch import Elasticsearch
-from unittest.mock import patch
-
-
 @patch.object(Elasticsearch, "search", new=mock_search)
 def test_no_es():
     client = TestClient(app)
 
-    response = client.get(url=f"http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
+    response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr&type=poi")
     assert response.status_code == 503

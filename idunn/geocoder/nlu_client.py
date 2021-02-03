@@ -4,17 +4,17 @@ import logging
 import re
 from collections import Counter
 from shapely.geometry import mapping
-from idunn import settings
 from unidecode import unidecode
 
-logger = logging.getLogger(__name__)
-
+from idunn import settings
 from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
 from idunn.api.utils import Category
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 
 from .models.geocodejson import Intention
 from .bragi_client import bragi_client
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_BBOX_WIDTH = 0.02
 DEFAULT_BBOX_HEIGHT = 0.01
@@ -47,7 +47,7 @@ classifier_circuit_breaker = IdunnCircuitBreaker(
 )
 
 
-class NLU_Helper:
+class NLU_Helper:  # pylint: disable = invalid-name
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
 
@@ -160,7 +160,7 @@ class NLU_Helper:
             filter={"q": cat_query, "bbox": bbox}, description={"query": cat_query, "place": place}
         )
 
-    async def build_intention_category(self, cat_query, lang, is_brand=False):
+    async def build_intention_category(self, cat_query, is_brand=False):
         category = await self.classify_category(cat_query, is_brand)
 
         if category:
@@ -200,7 +200,7 @@ class NLU_Helper:
 
         return " ".join(tags)
 
-    async def post_intentions(self, text, lang, focus=None):
+    async def post_intentions(self, text, lang, _focus=None):
         tagger_url = settings["NLU_TAGGER_URL"]
         tagger_domain = settings["NLU_TAGGER_DOMAIN"]
         # this settings is an immutable string required as a parameter for the NLU API
@@ -265,7 +265,7 @@ class NLU_Helper:
             else:
                 # 1 category or brand
                 intention = await self.build_intention_category(
-                    cat_or_brand_query, lang=lang, is_brand=bool(brand_query)
+                    cat_or_brand_query, is_brand=bool(brand_query)
                 )
 
                 # A query tagged as "category" and not recognized by the classifier often

@@ -34,7 +34,7 @@ def test_basket_ball():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
+        response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert response.status_code == 200
 
@@ -44,16 +44,19 @@ def test_basket_ball():
             "type": "wikipedia",
             "url": "https://fr.wikipedia.org/wiki/Pleyber-Christ_Basket_Club",
             "title": "Pleyber-Christ Basket Club",
-            "description": "Le Pleyber-Christ Basket Club est un club français de basket-ball dont la section senior féminine a accédé jusqu'au championnat professionnel de Ligue 2 (2e division nationale), performance remarquée pour un village de 3000 habitants. Le club est basé dans la ville de Pleyber-Christ. Il accueille aussi de jeunes joueuses de...",
+            "description": (
+                "Le Pleyber-Christ Basket Club est un club français de basket-ball dont la section "
+                "senior féminine a accédé jusqu'au championnat professionnel de Ligue 2 (2e "
+                "division nationale), performance remarquée pour un village de 3000 habitants. Le "
+                "club est basé dans la ville de Pleyber-Christ. Il accueille aussi de jeunes "
+                "joueuses de..."
+            ),
         }
 
-        """
-        Even after 10 requests for a POI in the WIKI_ES
-        we should not observe any call to the Wikipedia
-        API
-        """
-        for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
+        # Even after 10 requests for a POI in the WIKI_ES we should not observe
+        # any call to the Wikipedia API.
+        for _ in range(10):
+            response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert len(rsps.calls) == 0
 
@@ -71,8 +74,8 @@ def test_WIKI_ES_KO(wiki_client_ko):
             "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
 
-        for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr")
+        for _ in range(10):
+            response = client.get(url="http://localhost/v1/pois/osm:way:63178753?lang=fr")
 
         assert len(rsps.calls) == 0
 
@@ -86,7 +89,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
         assert resp["address"]["label"] == "1 Rue de la Légion d'Honneur (Paris)"
         assert resp["blocks"][0]["type"] == "opening_hours"
         assert resp["blocks"][1]["type"] == "phone"
-        assert resp["blocks"][0]["is_24_7"] == False
+        assert resp["blocks"][0]["is_24_7"] is False
         assert resp.get("blocks")[2].get("blocks")[0].get("blocks") == [
             {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown"},
             {"type": "internet_access", "wifi": True},
@@ -96,10 +99,7 @@ def test_WIKI_ES_KO(wiki_client_ko):
             },
         ]
 
-        """
-        We check that there is no Wikipedia block
-        in the answer
-        """
+        # We check that there is no Wikipedia block in the answer.
         assert all(b["type"] != "wikipedia" for b in resp["blocks"][2].get("blocks"))
 
 
@@ -108,9 +108,7 @@ def undefine_wiki_es():
     from idunn.api.utils import WikidataConnector
 
     WikidataConnector._wiki_es = None
-    wiki_es_ip = settings[
-        "WIKI_ES"
-    ]  # temporary variable to store the ip of WIKI_ES to reset it after the test
+    wiki_es_ip = settings["WIKI_ES"]
     settings._settings["WIKI_ES"] = None
     yield
     settings._settings["WIKI_ES"] = wiki_es_ip  # put back the correct ip for next tests
@@ -128,8 +126,8 @@ def test_undefined_WIKI_ES(undefine_wiki_es):
             "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
 
-        for i in range(10):
-            response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=fr")
+        for _ in range(10):
+            client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
         assert len(rsps.calls) == 10
 
@@ -144,18 +142,14 @@ def test_POI_not_in_WIKI_ES():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:63178753?lang=fr")
+        response = client.get(url="http://localhost/v1/pois/osm:way:63178753?lang=fr")
 
         assert response.status_code == 200
 
-        """
-        First we check that no call to Wikipedia have been done
-        """
+        # First we check that no call to Wikipedia have been done.
         assert len(rsps.calls) == 0
 
-        """
-        Then we check the answer is correct anyway
-        """
+        # Then we check the answer is correct anyway.
         resp = response.json()
 
         assert resp["id"] == "osm:way:63178753"
@@ -166,7 +160,7 @@ def test_POI_not_in_WIKI_ES():
         assert resp["address"]["label"] == "1 Rue de la Légion d'Honneur (Paris)"
         assert resp["blocks"][0]["type"] == "opening_hours"
         assert resp["blocks"][1]["type"] == "phone"
-        assert resp["blocks"][0]["is_24_7"] == False
+        assert resp["blocks"][0]["is_24_7"] is False
         assert resp.get("blocks")[2].get("blocks")[0].get("blocks") == [
             {"type": "accessibility", "wheelchair": "yes", "toilets_wheelchair": "unknown"},
             {"type": "internet_access", "wifi": True},
@@ -189,9 +183,6 @@ def test_no_lang_WIKI_ES():
             "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
 
-        """
-        We make a request in russian language ("ru")
-        """
-        response = client.get(url=f"http://localhost/v1/pois/osm:way:7777777?lang=ru")
-
+        # We make a request in russian language ("ru")
+        client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=ru")
         assert len(rsps.calls) == 1
