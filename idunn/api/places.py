@@ -2,7 +2,7 @@ import logging
 import urllib.parse
 from enum import Enum
 from starlette.datastructures import URL
-from fastapi import HTTPException, BackgroundTasks, Request, Response, Query
+from fastapi import HTTPException, BackgroundTasks, Request, Query
 from fastapi.responses import JSONResponse
 from typing import Optional
 from pydantic import confloat
@@ -124,16 +124,3 @@ def get_place_latlon(
         closest_place = None
     place = Latlon(lat, lon, closest_address=closest_place)
     return place.load_place(lang, verbosity)
-
-
-def handle_option(id, request: Request):  # pylint: disable = unused-argument
-    response = Response()
-    if settings.get("CORS_OPTIONS_REQUESTS_ENABLED", False) is True:
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        response.headers["Access-Control-Allow-Headers"] = request.headers.get(
-            "Access-Control-Request-Headers", "*"
-        )
-        response.headers["Access-Control-Allow-Methods"] = "GET"
-    else:
-        response.status_code = 405
-    return response

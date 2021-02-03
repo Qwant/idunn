@@ -103,7 +103,8 @@ WEATHER_CACHE_TIMEOUT: 300 # seconds
 
 #######################
 ## CORS
-CORS_OPTIONS_REQUESTS_ENABLED: False
+CORS_ALLOW_ORIGINS: "*"
+CORS_ALLOW_HEADERS: "*"
 
 #######################
 ## Directions

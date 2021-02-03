@@ -2,7 +2,8 @@ from idunn import settings
 from idunn.api.urls import get_api_urls
 from idunn.utils.encoders import override_datetime_encoder
 from idunn.utils.prometheus import handle_errors
-from fastapi import FastAPI, APIRouter, Request
+from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from urllib.parse import urlparse
 
@@ -21,14 +22,12 @@ app = FastAPI(
 v1_routes = get_api_urls(settings)
 app.include_router(APIRouter(routes=v1_routes), prefix="/v1")
 
-
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    response = await call_next(request)
-    # TODO: only set it when there is an Origin header!
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
-
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings["CORS_ALLOW_ORIGINS"].split(","),
+    allow_headers=settings["CORS_ALLOW_HEADERS"].split(","),
+)
 
 # Override FastAPI defaults
 app.add_exception_handler(Exception, handle_errors)

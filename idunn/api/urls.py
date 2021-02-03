@@ -1,5 +1,5 @@
 from .pois import get_poi
-from .places import get_place, get_place_latlon, handle_option
+from .places import get_place, get_place_latlon
 from .status import get_status
 from .places_list import get_places_bbox, get_events_bbox, PlacesBboxResponse
 from .categories import AllCategoriesResponse, get_all_categories
@@ -44,7 +44,6 @@ def get_api_urls(settings):
             responses={400: {"description": "Client Error in query params"}},
         ),
         APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon, response_model=Place),
-        APIRoute("/places/{id}", handle_option, methods=["OPTIONS"], include_in_schema=False),
         APIRoute("/places/{id}", get_place, response_model=Place),
         # Categories
         APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),

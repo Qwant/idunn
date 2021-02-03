@@ -1,12 +1,13 @@
 from app import app
 from fastapi.testclient import TestClient
-import pytest
-from .utils import override_settings
 
 
 def test_basic_query():
     client = TestClient(app)
-    response = client.get(url="http://localhost/v1/pois/osm:way:63178753?lang=fr")
+    response = client.get(
+        url="http://localhost/v1/pois/osm:way:63178753?lang=fr",
+        headers={"Origin": "http://cors.qwant.test"},
+    )
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
@@ -135,24 +136,18 @@ def test_exc_scenario():
     assert response.status_code == 404
 
 
-@pytest.fixture(scope="function")
-def options_test_with_options():
-    with override_settings({"CORS_OPTIONS_REQUESTS_ENABLED": True}):
-        yield
-
-
-def test_options_requests(options_test_with_options):
+def test_cors_options_request():
     client = TestClient(app)
-    response = client.options(url="http://localhost/v1/places/35460343")
+    response = client.options(
+        url="http://localhost/v1/places/35460343",
+        headers={
+            "Origin": "http://cors.qwant.test",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "SomeCustomHeader",
+        },
+    )
 
     assert response.status_code == 200
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
-    assert response.headers.get("Access-Control-Allow-Headers") == "*"
+    assert response.headers.get("Access-Control-Allow-Headers") == "SomeCustomHeader"
     assert response.headers.get("Access-Control-Allow-Methods") == "GET"
-
-
-def test_options_requests_disabled():
-    client = TestClient(app)
-    response = client.options(url="http://localhost/v1/places/35460343")
-
-    assert response.status_code == 405
