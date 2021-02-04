@@ -1,5 +1,6 @@
 import logging
 from fastapi import HTTPException, Query
+from fastapi.responses import ORJSONResponse
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
@@ -65,8 +66,10 @@ class InstantAnswerResponse(BaseModel):
 
 
 def build_response(result: InstantAnswerResult, query: str, lang: str):
-    return InstantAnswerResponse(
-        data=InstantAnswerData(result=result, query=InstantAnswerQuery(query=query, lang=lang))
+    return ORJSONResponse(
+        InstantAnswerResponse(
+            data=InstantAnswerData(result=result, query=InstantAnswerQuery(query=query, lang=lang)),
+        ).dict()
     )
 
 
