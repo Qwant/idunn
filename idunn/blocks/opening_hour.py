@@ -125,7 +125,7 @@ def get_days(oh, dt):
                 "status": OPEN if len(intervals) > 0 else CLOSED,
                 "opening_hours": [
                     {"beginning": start.strftime("%H:%M"), "end": end.strftime("%H:%M")}
-                    for start, end,  _comment in intervals
+                    for start, end, _comment in intervals
                 ],
             }
         )
@@ -171,10 +171,9 @@ class OpeningHourBlock(BaseBlock):
             logger.info("No timezone found for poi %s", place.get("id"))
             return None
 
-        oh = OpeningHours(raw_oh, poi_tz, poi_country_code)
-        curr_dt = utc.localize(datetime.utcnow())
-
-        if not oh.validate():
+        try:
+            oh = OpeningHours(raw_oh, poi_tz, poi_country_code)
+        except SyntaxError:
             logger.info(
                 "Failed to validate opening_hours field, id:'%s' raw:'%s'",
                 place.get_id(),
@@ -183,6 +182,7 @@ class OpeningHourBlock(BaseBlock):
             )
             return None
 
+        curr_dt = utc.localize(datetime.utcnow())
         next_transition = oh.next_change(curr_dt)
 
         if oh.is_open(curr_dt):

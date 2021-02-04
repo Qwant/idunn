@@ -2,25 +2,53 @@ import os
 from datetime import date, datetime, time, timedelta
 
 import opening_hours
+import logging
+
+
+def timelog(f, method=True):
+    def wrapped(*args, **kwargs):
+        import time
+
+        start = time.time()
+        res = f(*args, **kwargs)
+        end = time.time()
+
+        if method:
+            args = args[1:]
+
+        args = ", ".join([str(a) for a in args] + [f"{key}={val}" for key, val in kwargs.items()])
+        print(f"{f.__name__}({args}) in {end - start:.06f}s")
+
+        return res
+
+    return wrapped
+
+
+logger = logging.getLogger(__name__)
 
 
 class OpeningHours:
+    @timelog
     def __init__(self, oh, tz, _country_code):
+        oh = oh.replace(" ; PH off", "").replace(" ; ", "; ")
         self.raw = oh
         self.tz = tz
         self.oh = opening_hours.OpeningHours(oh)
 
+    @timelog
     def is_24_7(self, dt):
         """Check if this is always open starting from a given date"""
         assert isinstance(dt, datetime)
         # TODO: add is_24_7
         return self.oh.next_change(dt) is None
 
+    @timelog
     def is_open(self, dt):
         """Check if open at a given time"""
         assert isinstance(dt, datetime)
         return self.oh.is_open(dt.astimezone(self.tz))
 
+    @timelog
     def is_open_at_date(self, d):
         """Check if this is open at some point in a given date"""
         assert isinstance(d, date)
@@ -28,16 +56,18 @@ class OpeningHours:
         end = datetime.combine(d + timedelta(days=1), time(0, 0))
         return bool(self.get_open_intervals(start, end))
 
+    @timelog
     def next_change(self, dt):
         """Get datetime of next change of state"""
         assert isinstance(dt, datetime)
         date = self.oh.next_change(dt.astimezone(self.tz))
 
-        if naive_date is None:
+        if date is None:
             return None
 
         return self.tz.localize(date)
 
+    @timelog
     def get_open_intervals(self, start, end):
         """Get opened intervals for a period of time"""
         assert isinstance(start, datetime)
@@ -51,6 +81,7 @@ class OpeningHours:
         ]
         return res
 
+    @timelog
     def get_open_intervals_at_date(self, d, overlap_next_day=False):
         """
         Get opening intervals at given date. By default the intervals will be
