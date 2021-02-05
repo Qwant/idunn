@@ -51,6 +51,55 @@ class DaysType(BaseModel):
     opening_hours: List[OpeningHoursType]
 
 
+def parse_time_block(cls, es_poi, lang, raw):
+    if not raw:
+        return None
+
+    # Fallback to London coordinates if POI coordinates are not known.
+    poi_lat, poi_lon = get_coord(es_poi) or (51.5, 0)
+    poi_country_code = es_poi.get_country_code()
+
+    poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
+    poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
+
+    if poi_tz is None:
+        logger.info("No timezone found for poi %s", es_poi.get("id"))
+        return None
+
+    try:
+        oh = OpeningHours(raw, poi_tz, poi_country_code)
+    except SyntaxError:
+        logger.info(
+            "Failed to validate opening_hours field, id:'%s' raw:'%s'",
+            es_poi.get_id(),
+            raw,
+            exc_info=True,
+        )
+        return None
+
+    curr_dt = utc.localize(datetime.utcnow())
+
+    if oh.is_open(curr_dt):
+        status = cls.STATUSES[0]
+    else:
+        status = cls.STATUSES[1]
+
+    if cls.BLOCK_TYPE == OpeningHourBlock.BLOCK_TYPE and oh.is_24_7(curr_dt):
+        return cls.init_class(status, None, None, oh, curr_dt, raw)
+
+    next_transition = oh.next_change(curr_dt)
+
+    if next_transition is None:
+        return None
+
+    # Then we localize the next_change transition datetime in the local POI timezone.
+    next_transition = round_dt_to_minute(next_transition)
+    delta = next_transition - curr_dt
+    time_before_next = int(delta.total_seconds())
+
+    return cls.init_class(status, next_transition.isoformat(), time_before_next, oh, curr_dt, raw)
+
+
 def round_dt_to_minute(dt):
     dt += timedelta(seconds=30)
     return dt.replace(second=0, microsecond=0)
@@ -76,7 +125,7 @@ def get_days(oh, dt):
                 "status": OPEN if len(intervals) > 0 else CLOSED,
                 "opening_hours": [
                     {"beginning": start.strftime("%H:%M"), "end": end.strftime("%H:%M")}
-                    for start, end, _unknown, _comment in intervals
+                    for start, end, _comment in intervals
                 ],
             }
         )
@@ -122,10 +171,9 @@ class OpeningHourBlock(BaseBlock):
             logger.info("No timezone found for poi %s", place.get("id"))
             return None
 
-        oh = OpeningHours(raw_oh, poi_tz, poi_country_code)
-        curr_dt = utc.localize(datetime.utcnow())
-
-        if not oh.validate():
+        try:
+            oh = OpeningHours(raw_oh, poi_tz, poi_country_code)
+        except SyntaxError:
             logger.info(
                 "Failed to validate opening_hours field, id:'%s' raw:'%s'",
                 place.get_id(),
@@ -134,6 +182,7 @@ class OpeningHourBlock(BaseBlock):
             )
             return None
 
+        curr_dt = utc.localize(datetime.utcnow())
         next_transition = oh.next_change(curr_dt)
 
         if oh.is_open(curr_dt):
