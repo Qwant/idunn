@@ -29,18 +29,24 @@ def enable_pj_source(request):
 
     with override_settings(updated_settings), init_pj_source(source_type):
         if method == "legacy":
-            api_mock = mock.patch.object(
+            mock_search = mock.patch.object(
                 places_utils.pj_source.es,
                 "search",
                 new=lambda *x, **y: {"hits": {"hits": [api_result]}},
             )
+            mock_search_template = mock.patch.object(
+                places_utils.pj_source.es,
+                "search_template",
+                new=lambda *x, **y: {"hits": {"hits": [api_result]}},
+            )
+            with mock_search, mock_search_template:
+                yield
         else:
             api_mock = mock.patch.object(
                 places_utils.pj_source, "get_from_params", new=lambda *x, **y: api_result,
             )
-
-        with api_mock:
-            yield
+            with api_mock:
+                yield
 
 
 @pytest.mark.parametrize(

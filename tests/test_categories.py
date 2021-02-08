@@ -629,3 +629,16 @@ def test_endpoint_categories():
 
     assert categories[0] == {"name": "restaurant", "raw_filters": ["restaurant,*", "fast_food,*"]}
     assert categories[1] == {"name": "hotel", "raw_filters": ["*,hotel"]}
+
+
+@pytest.mark.parametrize(
+    "enable_pj_source", [("legacy", "musee_picasso_short")], indirect=True,
+)
+def test_pj_categories_filter_legacy(enable_pj_source):
+    client = TestClient(app)
+    response = client.get(url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=museum")
+    assert response.status_code == 200
+    resp = response.json()
+    assert len(resp["places"]) == 1
+    assert resp["places"][0]["id"] == "pj:05360257"
+    assert resp["places"][0]["name"] == "Musée Picasso"
