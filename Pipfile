@@ -13,7 +13,6 @@ lint-tests = """pipenv run pylint tests --disable='import-outside-toplevel, \
                                                    unused-argument, \
                                                    unused-import'"""
 
-
 [dev-packages]
 pytest = "*"
 lovely-pytest-docker = "*"
@@ -23,7 +22,6 @@ responses = "*"
 black = "==19.10b0"
 respx = "*"
 pylint = "*"
-
 
 [packages]
 fastapi="==0.63.*"
@@ -47,6 +45,7 @@ geopy = "*"
 py-mini-racer = "*"
 geojson-pydantic = "*"
 orjson = "*"
+jellyfish = "*"
 
 [requires]
 python_version = "3.8"
