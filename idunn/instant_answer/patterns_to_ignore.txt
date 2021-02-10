@@ -1,0 +1,25 @@
+qwant ?maps?
+maps? qwant
+google ?maps?
+maps? google
+maps?( of)?
+carte( des?| du)?
+plan( de| du)?
+add?resse?
+((num(e|é)ro)|n(o|°)?)( de)? ?t(e|é)l(e|é)phone
+num(e|é)ro$
+t(e|é)l(e|é)phone
+horaires?( (d('| ))?ouvertures?)?
+(prendre )?rdv
+avis
+menu$
+commune de
+quartier de
+ville de
+code postale?
+(google )?street ?view
+itin(e|é)raires?
+lieu dit
+localisation
+o(ù|u) (se|ce) (trouve|situe)( (le|la))?
+where is

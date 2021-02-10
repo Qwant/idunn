@@ -6,6 +6,13 @@ from idunn.geocoder.models.geocodejson import IntentionFilter
 MAPS_BASE_URL = settings["MAPS_BASE_URL"]
 
 
+def get_default_url(no_ui=False):
+    url = MAPS_BASE_URL
+    if no_ui:
+        url += "?no_ui=1"
+    return url
+
+
 def get_place_url(place_id, no_ui=False):
     url = f"{MAPS_BASE_URL}place/{place_id}"
     if no_ui:

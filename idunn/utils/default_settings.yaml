@@ -171,3 +171,7 @@ RECYCLING_MAX_DISTANCE_AROUND_POI: 100 # meters
 RECYCLING_DATA_STORE_IN_CACHE: True # Recycling data will be cached if Redis is configured
 RECYCLING_DATA_EXPIRE: 1800 # seconds
 RECYCLING_MEASURES_MAX_AGE_IN_HOURS: 168 # 7 days (Older measures will be ignored)
+
+##########################
+## Instant Answer
+IA_SUCCESS_ON_GENERIC_QUERIES: False
