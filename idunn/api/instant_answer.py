@@ -189,7 +189,23 @@ class PlaceFilter(BaseModel):
         if self.type == PlaceType.ADDRESS:
             return self.filter_address(query)
 
-        return self.name.lower() == query.lower()
+        # The defined behavior only compares the query to the result's name:
+        #   - all words from the query must match a word in the result's name
+        #   - at least 2/3 of the words in the result's name must be matched
+        name_words = self.words(self.name)
+        query_words = self.words(query)
+
+        name_coverage = lambda: sum(
+            any(self.word_matches(query_word, name_word) for query_word in query_words)
+            for name_word in name_words
+        )
+
+        query_matches = lambda: all(
+            any(self.word_matches(query_word, name_word) for name_word in name_words)
+            for query_word in query_words
+        )
+
+        return query_matches() and 3 * name_coverage() >= 2 * len(name_words)
 
     def filter_address(self, query):
         query = [
