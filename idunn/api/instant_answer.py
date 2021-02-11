@@ -71,7 +71,7 @@ class InstantAnswerResponse(BaseModel):
 
 
 NoInstantAnswerToDisplay = HTTPException(status_code=404, detail="No instant answer to display")
-NUM_SUFFIXES = ["bis", "ter", "quad", "e", "eme", "ème", "er", "st", "nd", "rd", "th"]
+ADDR_NUM_SUFFIXES = ["bis", "ter", "quad", "e", "è", "eme", "ème", "er", "st", "nd", "rd", "th"]
 
 
 class PlaceFilter(BaseModel):
@@ -138,7 +138,7 @@ class PlaceFilter(BaseModel):
         if word.isnumeric():
             return word
 
-        for suffix in NUM_SUFFIXES:
+        for suffix in ADDR_NUM_SUFFIXES:
             if word.lower().endswith(suffix):
                 prefix = word[: -len(suffix)]
 
@@ -186,53 +186,54 @@ class PlaceFilter(BaseModel):
         )
 
     def filter(self, query):
-        if self.type == PlaceType.ADDRESS:
-            return self.filter_address(query)
-
-        # The defined behavior only compares the query to the result's name:
-        #   - all words from the query must match a word in the result's name
-        #   - at least 2/3 of the words in the result's name must be matched
-        name_words = self.words(self.name)
         query_words = self.words(query)
+        name_words = self.words(self.name)
 
-        name_coverage = lambda: sum(
-            any(self.word_matches(query_word, name_word) for query_word in query_words)
-            for name_word in name_words
-        )
+        if self.type == PlaceType.ADDRESS:
+            query_words = [word for word in query_words if word not in ADDR_NUM_SUFFIXES]
 
-        query_matches = lambda: all(
-            any(self.word_matches(query_word, name_word) for name_word in name_words)
-            for query_word in query_words
-        )
-
-        return query_matches() and 3 * name_coverage() >= 2 * len(name_words)
-
-    def filter_address(self, query):
-        query = [
-            word
-            for word in self.words(query)
-            if (len(word) > 2 or word.isnumeric()) and word.lower() not in NUM_SUFFIXES
-        ]
-
-        if len(query) <= 2:
-            return False
-
+        # Check if all words of the query match a word in the result
         full_label = [
             *self.words(self.name),
             *self.postcodes,
             *(w for admin in self.admins for w in self.words(admin)),
         ]
 
-        for q_word in query:
+        for q_word in query_words:
             if not any(self.word_matches(q_word, l_word) for l_word in full_label):
-                logger.warning(
+                logger.info(
                     "Removed `%s` from results because queried `%s` does not match the result",
                     self.name,
                     q_word,
                 )
                 return False
 
+        # Check if at least 2/3 of the result's name is covered by the query
+        def coverage(terms):
+            return sum(
+                any(self.word_matches(query_word, term) for query_word in query_words)
+                for term in terms
+            ) / len(terms)
+
+        check_coverage = any(
+            coverage(terms) >= (2 / 3)
+            for terms in [
+                name_words,
+                *[name_words + self.words(admin) for admin in self.admins],
+                *[name_words + [postcode] for postcode in self.postcodes],
+            ]
+        )
+
+        if not check_coverage:
+            logger.info(
+                "Removed `%s` from results because query `%s` is not enough accurate",
+                self.name,
+                query,
+            )
+            return False
+
         return True
+
 
 
 def build_response(result: InstantAnswerResult, query: str, lang: str):
@@ -288,6 +289,8 @@ async def get_instant_answer(
             intentions = []
     else:
         intentions = []
+
+    print(intentions)
 
     if not intentions:
         bragi_response = await bragi_client.raw_autocomplete(
