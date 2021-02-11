@@ -86,11 +86,15 @@ def test_ia_filters():
     assert place_filter.filter("5 Bis rue gustave zede")
     assert place_filter.filter("5Ter rue gustave zede")
 
+    # Support some abreviations
+    assert place_filter.filter("5 r gustave zédé")
+    assert not place_filter.filter("5 u gustave zédé")
+
     # Queries that match a small part of the request are ignored, postcode and
-    # admins matter in relevant matching volume.
-    assert PlaceFilter(type=PlaceType.ADMIN, name="2e Arrondissement", admins=["Paris"]).filter(
-        "Paris 2e"
-    )
+    # admins matter in relevant matching words.
+    assert PlaceFilter(
+        type=PlaceType.ADMIN, name="2e Arrondissement", admins=["Paris"], postcodes=["75002"]
+    ).filter("Paris 2e")
     assert not PlaceFilter(type=PlaceType.ADDRESS, name="101 rue des dalmatiens").filter(
         "101 dalmatiens"
     )

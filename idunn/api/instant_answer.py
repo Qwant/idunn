@@ -71,7 +71,15 @@ class InstantAnswerResponse(BaseModel):
 
 
 NoInstantAnswerToDisplay = HTTPException(status_code=404, detail="No instant answer to display")
+
 ADDR_NUM_SUFFIXES = ["bis", "ter", "quad", "e", "è", "eme", "ème", "er", "st", "nd", "rd", "th"]
+
+ABREVIATIONS = {
+    "av": "avenue",
+    "bd": "boulevard",
+    "r": "rue",
+    "st": "saint",
+}
 
 
 class PlaceFilter(BaseModel):
@@ -120,7 +128,7 @@ class PlaceFilter(BaseModel):
         >>> PlaceFilter.words("17, rue jaune ; Levallois-Peret")
         ['17', 'rue', 'jaune', 'Levallois', 'Peret']
         """
-        separators = [" ", "-", ",", ";"]
+        separators = [" ", "-", ",", ";", "\\.", "'"]
         return [word for word in re.split("|".join(separators), text) if word]
 
     @staticmethod
@@ -132,8 +140,7 @@ class PlaceFilter(BaseModel):
         '17'
         >>> PlaceFilter.word_as_number("17bis")
         '17'
-        >>> PlaceFilter.word_as_number("17rue") is None
-        True
+        >>> assert PlaceFilter.word_as_number("17rue") is None
         """
         if word.isnumeric():
             return word
@@ -147,6 +154,17 @@ class PlaceFilter(BaseModel):
 
         return None
 
+    @staticmethod
+    def word_matches_abreviation(word_1, word_2):
+        """
+        Check if a word is the abreviation of the other.
+
+        >>> assert PlaceFilter.word_matches_abreviation("bd", "boulevard")
+        >>> assert PlaceFilter.word_matches_abreviation("avenue", "av")
+        >>> assert not PlaceFilter.word_matches_abreviation("av", "bd")
+        """
+        return ABREVIATIONS.get(word_1) == word_2 or ABREVIATIONS.get(word_2) == word_1
+
     @classmethod
     def word_matches(cls, query_word, label_word):
         """
@@ -155,32 +173,33 @@ class PlaceFilter(BaseModel):
         A single spelling mistake is allowed, defined as either a wrong letter
         (insertion, deletion or replaced) or the inversion of two consecutive
         letters. If an accent is defined in the query, then it must appear in
-        the result (or it will count as a spelling mistake).
+        the result (or it will count as a spelling mistake). Abreviations are
+        supported as defined in word_matches_abreviation.
 
         Numbers have a special treatment: if word from the query is a number
         (without potential suffix), then it must exactly match the word from
         the result (a number, potentialy with suffix removed).
 
-        >>> PlaceFilter.word_matches("42ter", "42")
-        True
-        >>> PlaceFilter.word_matches("42ter", "42bis")
-        True
-        >>> PlaceFilter.word_matches("321", "322")
-        False
+        >>> assert PlaceFilter.word_matches("42ter", "42")
+        >>> assert PlaceFilter.word_matches("42ter", "42bis")
+        >>> assert not PlaceFilter.word_matches("321", "322")
+        >>> assert not PlaceFilter.word_matches("5", "u")
+        >>> assert not PlaceFilter.word_matches("u", "5")
 
-        >>> PlaceFilter.word_matches("eiffel", "ieffel")
-        True
-        >>> PlaceFilter.word_matches("eiffel", "ifefel")
-        False
-        >>> PlaceFilter.word_matches("eveque", "évêque")
-        True
-        >>> PlaceFilter.word_matches("évêque", "eveque")
-        False
+        >>> assert PlaceFilter.word_matches("eiffel", "ieffel")
+        >>> assert not PlaceFilter.word_matches("eiffel", "ifefel")
+        >>> assert PlaceFilter.word_matches("eveque", "évêque")
+        >>> assert not PlaceFilter.word_matches("évêque", "eveque")
+
+        >>> assert PlaceFilter.word_matches("bd", "boulevard")
         """
-        if (query_word_as_num := cls.word_as_number(query_word)) is not None:
-            return cls.word_as_number(label_word) == query_word_as_num
+        query_word_as_num = cls.word_as_number(query_word)
+        label_word_as_num = cls.word_as_number(label_word)
 
-        return any(
+        if query_word_as_num is not None or label_word_as_num is not None:
+            return query_word_as_num == label_word_as_num
+
+        return cls.word_matches_abreviation(query_word.lower(), label_word.lower()) or any(
             damerau_levenshtein_distance(query_word.lower(), s) <= 1
             for s in [label_word.lower(), unidecode(label_word.lower())]
         )
@@ -190,7 +209,7 @@ class PlaceFilter(BaseModel):
         name_words = self.words(self.name)
 
         if self.type == PlaceType.ADDRESS:
-            query_words = [word for word in query_words if word not in ADDR_NUM_SUFFIXES]
+            query_words = [word for word in query_words if word.lower() not in ADDR_NUM_SUFFIXES]
 
         # Check if all words of the query match a word in the result
         full_label = [
@@ -233,7 +252,6 @@ class PlaceFilter(BaseModel):
             return False
 
         return True
-
 
 
 def build_response(result: InstantAnswerResult, query: str, lang: str):
@@ -289,8 +307,6 @@ async def get_instant_answer(
             intentions = []
     else:
         intentions = []
-
-    print(intentions)
 
     if not intentions:
         bragi_response = await bragi_client.raw_autocomplete(
