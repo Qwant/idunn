@@ -161,7 +161,10 @@ disable=print-statement,
 # NOTE: Doesn't operate well with pydantic's decorator `validator`
 #       https://github.com/samuelcolvin/pydantic/issues/568
         no-self-argument,
-        no-self-use
+        no-self-use,
+# NOTE: Reports false positive with assignment expression
+# https://github.com/PyCQA/pylint/issues/3249
+        superfluous-parens,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

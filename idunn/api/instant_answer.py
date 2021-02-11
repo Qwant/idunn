@@ -11,6 +11,7 @@ from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id, Place
 from idunn.api.places_list import get_places_bbox
 from idunn.utils import maps_urls
+from idunn.instant_answer import normalize
 from .constants import PoiSource
 
 logger = logging.getLogger(__name__)
@@ -65,6 +66,9 @@ class InstantAnswerResponse(BaseModel):
     data: InstantAnswerData
 
 
+NoInstantAnswerToDisplay = HTTPException(status_code=404, detail="No instant answer to display")
+
+
 def build_response(result: InstantAnswerResult, query: str, lang: str):
     return ORJSONResponse(
         InstantAnswerResponse(
@@ -85,8 +89,8 @@ def get_instant_answer_single_place(place_id: str, lang: str):
         places=[detailed_place],
         source=place.get_source(),
         intention_bbox=None,
-        maps_url=f"https://www.qwant.com/maps/place/{place_id}",
-        maps_frame_url=f"https://www.qwant.com/maps/place/{place_id}?no_ui=1",
+        maps_url=maps_urls.get_place_url(place_id),
+        maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
     )
 
 
@@ -100,23 +104,35 @@ async def get_instant_answer(
     This should not be confused with "Get Places Bbox" as this endpoint will
     run more restrictive checks on its results.
     """
-    q = q.strip()
+    normalized_query = normalize(q)
+    if normalized_query == "":
+        if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
+            result = InstantAnswerResult(
+                places=[],
+                maps_url=maps_urls.get_default_url(),
+                maps_frame_url=maps_urls.get_default_url(no_ui=True),
+            )
+            return build_response(result, query=q, lang=lang)
+        raise NoInstantAnswerToDisplay
+
     if lang in nlu_allowed_languages:
         try:
-            intentions = await nlu_client.get_intentions(text=q, lang=lang)
+            intentions = await nlu_client.get_intentions(text=normalized_query, lang=lang)
         except NluClientException:
             intentions = []
     else:
         intentions = []
 
     if not intentions:
-        bragi_response = await bragi_client.raw_autocomplete({"q": q, "lang": lang, "limit": 1})
+        bragi_response = await bragi_client.raw_autocomplete(
+            {"q": normalized_query, "lang": lang, "limit": 1}
+        )
         if len(bragi_response["features"]) > 0:
             place_geocoding = bragi_response["features"][0]["properties"]["geocoding"]
             place_id = place_geocoding["id"]
             place_name = place_geocoding["name"]
             # TODO: use smarter condition to allow inexact matches
-            if place_name.lower() == q.lower():
+            if place_name.lower() == normalized_query:
                 result = await run_in_threadpool(
                     get_instant_answer_single_place, place_id=place_id, lang=lang
                 )
