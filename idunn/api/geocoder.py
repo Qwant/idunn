@@ -7,6 +7,7 @@ from ..geocoder.nlu_client import nlu_client, NluClientException
 from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings
+from idunn.utils import result_filter
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +30,7 @@ def post_filter_intention(intention, bragi_response, limit):
     for geocoding in geocodings:
         if geocoding.get("type") != "poi":
             continue
-        name = geocoding.get("name", "")
-        if nlu_client.fuzzy_match(intention.description.query, name):
+        if result_filter.check_bragi_response(intention.description.query, geocoding):
             matches += 1
             if matches > expected_matches:
                 return True

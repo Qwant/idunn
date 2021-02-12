@@ -142,6 +142,7 @@ disable=print-statement,
 # Not disabled in default config
         broad-except,
         consider-using-get,
+        dangerous-default-value,
         global-statement,
         missing-class-docstring,
         missing-function-docstring,
