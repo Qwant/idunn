@@ -16,7 +16,12 @@ NUM_SUFFIXES = ["bis", "ter", "quad", "e", "è", "eme", "ème", "er", "st", "nd"
 ABREVIATIONS = {
     "av": "avenue",
     "bd": "boulevard",
+    "bld": "boulevard",
+    "bvd": "boulevard",
+    "rle": "ruelle",
     "r": "rue",
+    "rte": "route",
+    "ste": "sainte",
     "st": "saint",
 }
 
