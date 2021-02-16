@@ -273,8 +273,12 @@ class PjApiPOI(BasePlace):
         return resolve_url(self.data.website_urls[0].website_url)
 
     def get_website_label(self):
-        if isinstance(self.data, pj_find.Listing) or not self.data.website_urls:
+        if not self.data.website_urls:
             return None
+
+        if isinstance(self.data, pj_find.Listing):
+            # FIXME: Ideally the Listing would include a "suggested_label" too
+            return self.get_local_name()
 
         suggested_label = self.data.website_urls[0].suggested_label
         prefix = "Voir le site "

@@ -7,4 +7,6 @@ def test_website_block():
         POI({"properties": {"contact:website": "http://www.pershinghall.com"}}), lang="en"
     )
 
-    assert web_block == WebSiteBlock(url="http://www.pershinghall.com")
+    assert web_block == WebSiteBlock(
+        url="http://www.pershinghall.com", label="www.pershinghall.com",
+    )
