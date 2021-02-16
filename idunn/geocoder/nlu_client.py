@@ -2,13 +2,13 @@ import asyncio
 import httpx
 import logging
 import re
-from collections import Counter
 from shapely.geometry import mapping
 from unidecode import unidecode
 
 from idunn import settings
 from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
 from idunn.api.utils import Category
+from idunn.utils import result_filter
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 
 from .models.geocodejson import Intention
@@ -97,25 +97,22 @@ class NLU_Helper:  # pylint: disable = invalid-name
         return self.regex_classifier(text, is_brand=is_brand)
 
     @classmethod
-    def fuzzy_match(cls, query, response):
+    def fuzzy_match(cls, query, bragi_res):
         """ Does the response match the query reasonably well ?
-        >>> NLU_Helper.fuzzy_match("bastille", "Beuzeville-la-Bastille")
+        >>> NLU_Helper.fuzzy_match("bastille", {"name": "Beuzeville-la-Bastille"})
         False
-        >>> NLU_Helper.fuzzy_match("paris 20", "Paris 20e Arrondissement")
+        >>> NLU_Helper.fuzzy_match("paris 20", {"name": "Paris 20e Arrondissement"})
         True
-        >>> NLU_Helper.fuzzy_match("av victor hugo paris", "Avenue Victor Hugo")
+        >>> NLU_Helper.fuzzy_match(
+        ...     "av victor hugo paris",
+        ...     {"name": "Avenue Victor Hugo", "administrative_regions": [{"name": "Paris"}]},
+        ... )
         True
         """
         q = unidecode(query.strip()).lower()
-        r = unidecode(response).lower()
-        if r[: len(q)] == q:
-            # Response starts with query
+        if unidecode(bragi_res["name"]).lower().startswith(q):
             return True
-        if sum((Counter(r) - Counter(q)).values()) < len(q):
-            # Number of missing chars to match the response is low
-            # compared to the query length
-            return True
-        return False
+        return result_filter.check_bragi_response(q, bragi_res)
 
     async def build_intention_category_place(self, cat_query, place_query, lang, is_brand=False):
         async def get_category():
@@ -130,7 +127,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
             raise NluClientException("no matching place")
 
         place = bragi_result["features"][0]
-        if not self.fuzzy_match(place_query, place["properties"]["geocoding"]["name"]):
+        if not self.fuzzy_match(place_query, place["properties"]["geocoding"]):
             raise NluClientException("matching place too different from query")
 
         bbox = place["properties"]["geocoding"].get("bbox")

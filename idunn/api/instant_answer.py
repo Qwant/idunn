@@ -10,7 +10,7 @@ from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id, Place
 from idunn.api.places_list import get_places_bbox
-from idunn.utils import maps_urls
+from idunn.utils import maps_urls, result_filter
 from idunn.instant_answer import normalize
 from .constants import PoiSource
 
@@ -130,9 +130,7 @@ async def get_instant_answer(
         if len(bragi_response["features"]) > 0:
             place_geocoding = bragi_response["features"][0]["properties"]["geocoding"]
             place_id = place_geocoding["id"]
-            place_name = place_geocoding["name"]
-            # TODO: use smarter condition to allow inexact matches
-            if place_name.lower() == normalized_query:
+            if result_filter.check_bragi_response(normalized_query, place_geocoding):
                 result = await run_in_threadpool(
                     get_instant_answer_single_place, place_id=place_id, lang=lang
                 )
