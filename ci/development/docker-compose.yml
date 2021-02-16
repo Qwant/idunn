@@ -15,9 +15,7 @@ services:
       - IDUNN_PJ_ES=http://wiki-es:9200
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
-      - IDUNN_CORS_OPTIONS_REQUESTS_ENABLED=true  # Allow cross-origin requests with custom headers (for development only)
       - IDUNN_DOCS_ENABLED=true
-      - IDUNN_DOCS_URL_PREFIX=/maps/detail/
       - IDUNN_NLU_TAGGER_URL=http://1701_nlu:9009/nlu
       - IDUNN_NLU_TAGGER_DOMAIN=MAPS
       - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key
@@ -30,6 +28,7 @@ services:
       - IDUNN_RECYCLING_MEASURES_MAX_AGE_IN_HOURS=2400 # 100 days, for demonstration purposes (7 days by default)
       - IDUNN_SECRET=public_for_dev_only
       - IDUNN_BASE_URL=https://maps.dev.qwant.ninja/maps/detail/
+      - IDUNN_MAPS_BASE_URL=https://maps.dev.qwant.ninja/maps/
       - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PLIVE}
       - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PLIVE}
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,1701_nlu
