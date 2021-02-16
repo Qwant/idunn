@@ -51,7 +51,7 @@ def word_as_number(word):
         return word
 
     for suffix in NUM_SUFFIXES:
-        if word.lower().endswith(suffix):
+        if word.endswith(suffix):
             prefix = word[: -len(suffix)]
 
             if prefix.isnumeric():
@@ -104,9 +104,9 @@ def word_matches(query_word, label_word):
     if query_word_as_num is not None or label_word_as_num is not None:
         return query_word_as_num == label_word_as_num
 
-    return word_matches_abreviation(query_word.lower(), label_word.lower()) or any(
-        damerau_levenshtein_distance(query_word.lower(), s) <= 1
-        for s in [label_word.lower(), unidecode(label_word.lower())]
+    return word_matches_abreviation(query_word, label_word) or any(
+        damerau_levenshtein_distance(query_word, s) <= 1
+        for s in [label_word, unidecode(label_word)]
     )
 
 
@@ -117,15 +117,16 @@ def check(
     postcodes: List[str] = [],
     is_address: bool = True,
 ) -> bool:
-    query_words = words(query)
-    name_words = words(name)
+    query_words = words(query.lower())
+    name_words = words(name.lower())
+    admins = list(map(str.lower, admins))
 
     if is_address:
-        query_words = [word for word in query_words if word.lower() not in NUM_SUFFIXES]
+        query_words = [word for word in query_words if word not in NUM_SUFFIXES]
 
     # Check if all words of the query match a word in the result
     full_label = [
-        *words(name),
+        *name_words,
         *postcodes,
         *(w for admin in admins for w in words(admin)),
     ]
