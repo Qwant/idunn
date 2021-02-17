@@ -87,7 +87,11 @@ def test_bbox():
                         "local_format": "01 40 49 48 14",
                         "url": "tel:+33140494814",
                     },
-                    {"type": "website", "url": "http://www.musee-orsay.fr", "label": None},
+                    {
+                        "type": "website",
+                        "url": "http://www.musee-orsay.fr",
+                        "label": "www.musee-orsay.fr",
+                    },
                 ],
                 "meta": {
                     "source": "osm",
@@ -118,7 +122,7 @@ def test_bbox():
                     {
                         "type": "website",
                         "url": "http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html",
-                        "label": None,
+                        "label": "www.paris.catholique.fr",
                     },
                 ],
                 "meta": ANY,
@@ -195,7 +199,7 @@ def test_bbox():
                         "type": "phone",
                         "url": "tel:+33140205229",
                     },
-                    {"type": "website", "url": "http://www.louvre.fr", "label": None},
+                    {"type": "website", "url": "http://www.louvre.fr", "label": "www.louvre.fr"},
                 ],
                 "meta": ANY,
             },
@@ -292,7 +296,11 @@ def test_size_list():
                         "type": "phone",
                         "url": "tel:+33140494814",
                     },
-                    {"type": "website", "url": "http://www.musee-orsay.fr", "label": None},
+                    {
+                        "type": "website",
+                        "url": "http://www.musee-orsay.fr",
+                        "label": "www.musee-orsay.fr",
+                    },
                 ],
                 "meta": ANY,
             }
@@ -424,7 +432,7 @@ def test_single_raw_filter():
                     {
                         "type": "website",
                         "url": "http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html",
-                        "label": None,
+                        "label": "www.paris.catholique.fr",
                     },
                 ],
                 "meta": ANY,
