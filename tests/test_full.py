@@ -157,6 +157,8 @@ def test_full(mock_external_requests):
         ],
         "meta": {
             "source": "osm",
+            "source_url": "https://www.openstreetmap.org/way/7777778",
+            "contribute_url": "https://www.openstreetmap.org/edit?way=7777778&hashtags=QwantMaps",
             "maps_place_url": "https://www.qwant.com/maps/place/osm:way:7777778",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=osm%3Away%3A7777778",
         },

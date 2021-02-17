@@ -5,6 +5,10 @@ from typing import List, Optional
 
 class PlaceMeta(BaseModel):
     source: Optional[str]
+    source_url: Optional[str] = Field(description="URL to the place details at the source")
+    contribute_url: Optional[str] = Field(
+        description="Url to edit place details. Defined for OSM POIs only."
+    )
     maps_place_url: HttpUrl = Field(description="Direct URL to the place details on Qwant Maps.")
     maps_directions_url: HttpUrl = Field(
         description=(

@@ -220,6 +220,12 @@ class PjPOI(BasePlace):
     def get_source(self):
         return PoiSource.PAGESJAUNES
 
+    def get_source_url(self):
+        business_id = self.get("BusinessId")
+        if not business_id:
+            return None
+        return f"https://www.pagesjaunes.fr/pros/{business_id}"
+
     def get_raw_grades(self):
         return self.get("grades")
 
@@ -387,6 +393,16 @@ class PjApiPOI(BasePlace):
 
     def get_source(self):
         return PoiSource.PAGESJAUNES
+
+    def get_source_url(self):
+        return next(
+            (
+                ins.urls.merchant_url
+                for ins in self.data.inscriptions
+                if ins.urls and ins.urls.merchant_url
+            ),
+            None,
+        )
 
     def get_raw_grades(self):
         grade_count = sum(

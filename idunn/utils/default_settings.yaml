@@ -86,6 +86,9 @@ PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
 PJ_API_ID:
 PJ_API_SECRET:
 
+# OSM
+OSM_CONTRIBUTION_HASHTAGS: "QwantMaps" # separated by ",". Used in osm.org/edit URL.
+
 #######################
 ## Data Publishing
 

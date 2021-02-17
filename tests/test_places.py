@@ -51,6 +51,8 @@ def test_full_query_admin():
         "blocks": [],
         "meta": {
             "source": None,
+            "source_url": None,
+            "contribute_url": None,
             "maps_place_url": "https://www.qwant.com/maps/place/admin:osm:relation:123057",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=admin%3Aosm%3Arelation%3A123057",
         },
@@ -128,6 +130,8 @@ def test_full_query_street():
         "blocks": [],
         "meta": {
             "source": None,
+            "source_url": None,
+            "contribute_url": None,
             "maps_place_url": "https://www.qwant.com/maps/place/street:35460343",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=street%3A35460343",
         },
@@ -207,6 +211,8 @@ def test_full_query_address():
         "blocks": [],
         "meta": {
             "source": None,
+            "source_url": None,
+            "contribute_url": None,
             "maps_place_url": "https://www.qwant.com/maps/place/addr:5.108632;48.810273",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=addr%3A5.108632%3B48.810273",
         },

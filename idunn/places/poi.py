@@ -1,6 +1,12 @@
+from functools import cached_property
+from urllib.parse import urlencode
+
 from .base import BasePlace
+from idunn import settings
 from idunn.api.utils import get_name
 from idunn.api.constants import PoiSource
+
+OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
 
 
 class POI(BasePlace):
@@ -26,6 +32,32 @@ class POI(BasePlace):
 
     def get_source(self):
         return PoiSource.OSM
+
+    @cached_property
+    def osm_id_tuple(self):
+        poi_id = self.get_id()
+        try:
+            _prefix, osm_kind, osm_id = poi_id.rsplit(":", 2)
+            return (osm_kind, osm_id)
+        except ValueError:
+            return tuple()
+
+    def get_source_url(self):
+        try:
+            osm_kind, osm_id = self.osm_id_tuple
+            return f"https://www.openstreetmap.org/{osm_kind}/{osm_id}"
+        except ValueError:
+            return None
+
+    def get_contribute_url(self):
+        try:
+            osm_kind, osm_id = self.osm_id_tuple
+            edit_params = {osm_kind: osm_id}
+            if OSM_CONTRIBUTION_HASHTAGS:
+                edit_params["hashtags"] = OSM_CONTRIBUTION_HASHTAGS
+            return f"https://www.openstreetmap.org/edit?{urlencode(edit_params)}"
+        except ValueError:
+            return None
 
 
 class BragiPOI(POI):
