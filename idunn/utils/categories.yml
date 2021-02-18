@@ -14,15 +14,20 @@ categories:
         raw_filters:
             - "*,hotel"
         regex: "hotel"
-    leisure:
-        pj_what: "loisir"
+    cinema:
+        pj_what: "cinéma"
         pj_filters:
             - "salles de cinéma"
-            - "salles de concerts, de spectacles"
         raw_filters:
             - "cinema,*"
+        regex: "^cine"
+    theatre:
+        pj_what: "théatre"
+        pj_filters:
+            - "salles de concerts, de spectacles"
+        raw_filters:
             - "theatre,*"
-        regex: "^cine|leisure|loisir|theat"
+        regex: "^theat"
     pharmacy:
         pj_what: "pharmacie"
         pj_filters:
@@ -31,7 +36,7 @@ categories:
             - "pharmacy,*"
         regex: "pharmac"
     supermarket:
-        pj_what: "supermarchés hypermarchés"
+        pj_what: "supermarchés"
         pj_filters:
             - "supermarchés, hypermarchés"
         raw_filters:
@@ -46,7 +51,7 @@ categories:
             - "bank,*"
         regex: "^(bank|banque|credit|caisse|atm$)"
     education:
-        pj_what: "scolaire"
+        pj_what: "école"
         pj_filters:
             - "écoles maternelles publiques"
             - "écoles primaires publiques"
@@ -63,7 +68,7 @@ categories:
             - "college,*"
         regex: "^ecole|^college|^universit|educat"
     bar:
-        pj_what: "cafés bars"
+        pj_what: "bars"
         pj_filters:
             - "cafés, bars"
         raw_filters:
@@ -78,7 +83,7 @@ categories:
             - "museum,*"
         regex: "^(museum|musee)"
     health:
-        pj_what: "santé"
+        pj_what: "hopital"
         pj_filters:
             - "Centre médico-social"
             - "Chirurgien-dentiste"
@@ -93,22 +98,21 @@ categories:
     service:
         pj_what: "poste"
         pj_filters:
-            - "plombiers"
-            - "garages automobiles"
             - "envoi, distribution de courrier, de colis"
-            - "serrurerie, métallerie"
-            - "dépannage serrurerie"
-            - "mairies"
-            - "services de gendarmerie, de police"
-            - "sapeurs-pompiers, centres de secours"
-            - "préfectures, sous-préfectures"
         raw_filters:
             - "car_repair,*"
             - "post_office,*"
             - "townhall,*"
             - "police,*"
             - "fire_station,*"
-        regex: "service|car repair|post office|police|garage|poste|gendarmerie|pompiers"
+        regex: "(^| )post"
+    police:
+        pj_what: "police"
+        pj_filters:
+            - "services de gendarmerie, de police"
+        raw_filters:
+            - "police,*"
+        regex: "(^| )poli"
     fitness:
         pj_what: "sport"
         pj_filters:

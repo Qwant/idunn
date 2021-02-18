@@ -544,7 +544,7 @@ def test_valid_category():
     """
     client = TestClient(app)
 
-    response = client.get(url=f"http://localhost/v1/places?bbox={BBOX_BREST}&category=leisure")
+    response = client.get(url=f"http://localhost/v1/places?bbox={BBOX_BREST}&category=cinema")
 
     assert response.status_code == 200
 
@@ -582,7 +582,7 @@ def test_places_with_explicit_source_osm(enable_pj_source):
     """
     client = TestClient(app)
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_BREST}&category=leisure&source=osm"
+        url=f"http://localhost/v1/places?bbox={BBOX_BREST}&category=cinema&source=osm"
     )
 
     assert response.status_code == 200
