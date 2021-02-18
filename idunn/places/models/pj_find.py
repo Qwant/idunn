@@ -68,12 +68,14 @@ class Reviews(BaseModel):
 class Urls(BaseModel):
     """
     Omitted fields:
-      - merchant_url: Link to the merchant page on PagesJaunes.fr
       - map_url: Link to the map URL on PagesJaunes.fr
       - immersive_url: (Deprecated) Link to the immersive view on PagesJaunes.fr
       - itinerary_url: Link to the detailed route to that place.fr
     """
 
+    merchant_url: Optional[str] = Field(
+        None, description="Link to the merchant page on PagesJaunes.fr"
+    )
     reviews_url: Optional[str] = Field(
         None, description="Link to the business reviews on PagesJaunes.fr"
     )

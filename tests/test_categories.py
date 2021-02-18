@@ -95,6 +95,8 @@ def test_bbox():
                 ],
                 "meta": {
                     "source": "osm",
+                    "source_url": "https://www.openstreetmap.org/way/63178753",
+                    "contribute_url": "https://www.openstreetmap.org/edit?way=63178753&hashtags=QwantMaps",
                     "maps_place_url": "https://www.qwant.com/maps/place/osm:way:63178753",
                     "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=osm%3Away%3A63178753",
                 },
@@ -563,7 +565,13 @@ def test_valid_category():
                 "geometry": ANY,
                 "address": ANY,
                 "blocks": [],
-                "meta": {"source": "osm", "maps_place_url": ANY, "maps_directions_url": ANY,},
+                "meta": {
+                    "source": "osm",
+                    "source_url": ANY,
+                    "contribute_url": ANY,
+                    "maps_place_url": ANY,
+                    "maps_directions_url": ANY,
+                },
             }
         ],
         "bbox": ANY,
@@ -601,7 +609,13 @@ def test_places_with_explicit_source_osm(enable_pj_source):
                 "geometry": ANY,
                 "address": ANY,
                 "blocks": [],
-                "meta": {"source": "osm", "maps_place_url": ANY, "maps_directions_url": ANY,},
+                "meta": {
+                    "source": "osm",
+                    "source_url": ANY,
+                    "contribute_url": ANY,
+                    "maps_place_url": ANY,
+                    "maps_directions_url": ANY,
+                },
             }
         ],
         "bbox": ANY,

@@ -196,10 +196,18 @@ class BasePlace(dict):
     def get_source(self):
         return None
 
+    def get_source_url(self):
+        return None
+
+    def get_contribute_url(self):
+        return None
+
     def get_meta(self):
         place_id = self.get_id()
         return PlaceMeta(
             source=self.get_source(),
+            source_url=self.get_source_url(),
+            contribute_url=self.get_contribute_url(),
             maps_place_url=maps_urls.get_place_url(place_id),
             maps_directions_url=maps_urls.get_directions_url(place_id),
         )
