@@ -176,10 +176,15 @@ class BasePlace(dict):
         return None
 
     def get_phone(self):
-        return self.find_property_value(["phone", "contact:phone"])
+        phone = self.find_property_value(["phone", "contact:phone", "contact:mobile"])
+        if phone is None:
+            return None
+        return phone.split(";")[0]
 
     def get_website(self):
-        return self.find_property_value(["contact:website", "website", "facebook"])
+        return self.find_property_value(
+            ["contact:website", "website", "facebook", "contact:facebook"]
+        )
 
     def get_website_label(self):
         return None
