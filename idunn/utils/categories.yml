@@ -21,6 +21,15 @@ categories:
         raw_filters:
             - "cinema,*"
         regex: "^cine"
+    # NOTE: This is a legacy alias of `cinema`.
+    #       It may be removed once erdapfel don't rely on it anymore.
+    leisure:
+        pj_what: "cinéma"
+        pj_filters:
+            - "salles de cinéma"
+        raw_filters:
+            - "cinema,*"
+        regex: "^cine"
     theatre:
         pj_what: "théatre"
         pj_filters:
