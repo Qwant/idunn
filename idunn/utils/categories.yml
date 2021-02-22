@@ -29,7 +29,6 @@ categories:
             - "salles de cinéma"
         raw_filters:
             - "cinema,*"
-        regex: "^cine"
     theatre:
         pj_what: "théatre"
         pj_filters:
@@ -45,7 +44,7 @@ categories:
             - "pharmacy,*"
         regex: "pharmac"
     supermarket:
-        pj_what: "supermarchés"
+        pj_what: "alimentation"
         pj_filters:
             - "supermarchés, hypermarchés"
         raw_filters:
@@ -60,7 +59,7 @@ categories:
             - "bank,*"
         regex: "^(bank|banque|credit|caisse|atm$)"
     education:
-        pj_what: "école"
+        pj_what: "école collège lycée"
         pj_filters:
             - "écoles maternelles publiques"
             - "écoles primaires publiques"
@@ -121,7 +120,7 @@ categories:
             - "services de gendarmerie, de police"
         raw_filters:
             - "police,*"
-        regex: "(^| )poli"
+        regex: "(^| )(poli|gendar)"
     fitness:
         pj_what: "sport"
         pj_filters:
