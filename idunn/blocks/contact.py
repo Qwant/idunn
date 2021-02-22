@@ -5,6 +5,7 @@ from typing import Literal
 class ContactBlock(BaseBlock):
     type: Literal["contact"] = "contact"
     url: str
+    email: str
 
     @classmethod
     def from_es(cls, place, lang):
@@ -13,4 +14,4 @@ class ContactBlock(BaseBlock):
         if not mail or not isinstance(mail, str):
             return None
 
-        return cls(url=f"mailto:{mail}")
+        return cls(url=f"mailto:{mail}", email=mail)
