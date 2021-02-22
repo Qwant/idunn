@@ -7,4 +7,6 @@ def test_contact_block():
         POI({"properties": {"contact:email": "info@pershinghall.com"}}), lang="en"
     )
 
-    assert web_block == ContactBlock(url="mailto:info@pershinghall.com")
+    assert web_block == ContactBlock(
+        url="mailto:info@pershinghall.com", email="info@pershinghall.com",
+    )
