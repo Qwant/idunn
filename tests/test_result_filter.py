@@ -1,4 +1,4 @@
-from idunn.utils.result_filter import check
+from idunn.utils.result_filter import check, rank
 
 
 def test_filter():
@@ -50,3 +50,22 @@ def test_filter():
     assert check(
         query="Paris 2e", names=["2e Arrondissement"], admins=["Paris"], postcodes=["75002"]
     )
+
+
+def test_rank():
+    rennes = {
+        "names": ["rue de Paris"],
+        "admins": ["Rennes"],
+        "postcodes": ["35000", "35200", "35700"],
+        "is_street": True,
+    }
+
+    paris = {
+        "names": ["rue de Rennes"],
+        "admins": ["Paris"],
+        "postcodes": ["75006"],
+        "is_street": True,
+    }
+
+    assert rank("rue de Paris, Rennes", **rennes) > rank("rue de Rennes, Paris", **rennes)
+    assert rank("rue de Rennes, Paris", **paris) > rank("rue de Paris, Rennes", **paris)

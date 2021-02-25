@@ -1,7 +1,7 @@
 import logging
 import re
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 from unidecode import unidecode
 
 from jellyfish import damerau_levenshtein_distance
@@ -112,13 +112,40 @@ def word_matches(query_word, label_word):
     )
 
 
-def check(
+def count_adj_in_same_block(terms: List[str], blocks: List[List[str]]) -> int:
+    """
+    Count the number of consecutive terms that both match a word in a same
+    block.
+
+    >>> count_adj_in_same_block(
+    ...     ["rue", "de", "paris", "lille"],
+    ...     [["rue", "de", "paris"], ["lille"]],
+    ... )
+    2
+    >>> count_adj_in_same_block(
+    ...     ["rue", "de", "paris", "lille"],
+    ...     [["rue", "de", "lille"], ["paris"]],
+    ... )
+    1
+    """
+
+    def contains(word: str, block: List[str]) -> bool:
+        return any(word_matches(word, block_word) for block_word in block)
+
+    return sum(
+        any(contains(word_1, block) and contains(word_2, block) for block in blocks)
+        for word_1, word_2 in zip(terms[:-1], terms[1:])
+    )
+
+
+def rank(
     query: str,
     names: List[str],
     admins: List[str] = [],
     postcodes: List[str] = [],
-    is_address: bool = True,
-) -> bool:
+    is_address: bool = False,
+    is_street: bool = False,
+) -> Optional[float]:
     query_words = words(query.lower())
     names = list(map(str.lower, names))
     admins = list(map(str.lower, admins))
@@ -140,7 +167,7 @@ def check(
                 names[0],
                 q_word,
             )
-            return False
+            return None
 
     # Check if at least 2/3 of the result is covered by the query in one of these cases:
     #   - over one of the result names
@@ -167,15 +194,37 @@ def check(
             names[0],
             query,
         )
-        return False
+        return None
 
-    return True
+    if (is_street or is_address) and len(query_words) > 1:
+        # Count the number of adjacent words from the query which are both
+        # part of a same field. The intention is to avoid swapping words
+        # between name and admin.
+        # (eg. "rue de Rennes, Paris" vs. "rue de Paris", Rennes)
+        rank_val = (
+            count_adj_in_same_block(
+                query_words,
+                [*map(words, names), *map(words, admins)],
+            )
+            / (len(query_words) - 1)
+        )
+    else:
+        rank_val = 1.0
+
+    return rank_val
 
 
-def check_bragi_response(query: str, bragi_response: dict) -> bool:
+def check(*args, **kwargs) -> bool:
+    return rank(*args, **kwargs) is not None
+
+
+def rank_bragi_response(query: str, bragi_response: dict) -> Optional[float]:
     """
     Filter a feature from bragi responses, please provide the field
     bragi_response["features"][..]["properties"]["geocoding"].
+
+    If the response doesn't match, return None, overwise return an
+    indicative relevance that takes value in [0, 1.0].
     """
     if bragi_response.get("postcode"):
         postcodes = bragi_response["postcode"].split(";")
@@ -195,10 +244,19 @@ def check_bragi_response(query: str, bragi_response: dict) -> bool:
         if prop["key"].startswith("name:") or prop["key"].startswith("alt_name:")
     ]
 
-    return check(
+    return rank(
         query,
         [name] + local_names,
         [admin["name"] for admin in bragi_response.get("administrative_regions", [])],
         postcodes,
         bragi_response.get("type") == "address",
+        bragi_response.get("type") == "street",
     )
+
+
+def check_bragi_response(query: str, bragi_response: dict) -> bool:
+    """
+    Filter a feature from bragi responses, please provide the field
+    bragi_response["features"][..]["properties"]["geocoding"].
+    """
+    return rank_bragi_response(query, bragi_response) is not None
