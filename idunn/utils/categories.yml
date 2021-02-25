@@ -120,7 +120,7 @@ categories:
             - "services de gendarmerie, de police"
         raw_filters:
             - "police,*"
-        regex: "(^| )(poli|gendar)"
+        regex: "(^| )(police|gendar)"
     fitness:
         pj_what: "sport"
         pj_filters:
