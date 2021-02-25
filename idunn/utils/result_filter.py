@@ -112,13 +112,13 @@ def word_matches(query_word, label_word):
 
 def check(
     query: str,
-    name: str,
+    names: List[str],
     admins: List[str] = [],
     postcodes: List[str] = [],
     is_address: bool = True,
 ) -> bool:
     query_words = words(query.lower())
-    name_words = words(name.lower())
+    names = list(map(str.lower, names))
     admins = list(map(str.lower, admins))
 
     if is_address:
@@ -126,7 +126,7 @@ def check(
 
     # Check if all words of the query match a word in the result
     full_label = [
-        *name_words,
+        *(w for name in names for w in words(name)),
         *postcodes,
         *(w for admin in admins for w in words(admin)),
     ]
@@ -135,12 +135,15 @@ def check(
         if not any(word_matches(q_word, l_word) for l_word in full_label):
             logger.info(
                 "Removed `%s` from results because queried `%s` does not match the result",
-                name,
+                names[0],
                 q_word,
             )
             return False
 
-    # Check if at least 2/3 of the result's name is covered by the query
+    # Check if at least 2/3 of the result is covered by the query in one of these cases:
+    #   - over one of the result names
+    #   - over one of the result names together with one of the admin names
+    #   - over one of the result names together with a postcode
     def coverage(terms):
         return sum(
             any(word_matches(query_word, term) for query_word in query_words) for term in terms
@@ -148,6 +151,7 @@ def check(
 
     check_coverage = any(
         coverage(terms) >= (2 / 3)
+        for name_words in map(words, names)
         for terms in [
             name_words,
             *[name_words + words(admin) for admin in admins],
@@ -158,7 +162,7 @@ def check(
     if not check_coverage:
         logger.info(
             "Removed `%s` from results because query `%s` is not accurate enough",
-            name,
+            names[0],
             query,
         )
         return False
@@ -182,9 +186,16 @@ def check_bragi_response(query: str, bragi_response: dict) -> bool:
             }
         )
 
+    name = bragi_response["name"]
+    local_names = [
+        prop["value"]
+        for prop in bragi_response.get("properties", [])
+        if prop["key"].startswith("name:") or prop["key"].startswith("alt_name:")
+    ]
+
     return check(
         query,
-        bragi_response["name"],
+        [name] + local_names,
         [admin["name"] for admin in bragi_response.get("administrative_regions", [])],
         postcodes,
         bragi_response.get("type") == "address",
