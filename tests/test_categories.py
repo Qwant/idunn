@@ -259,8 +259,8 @@ def test_bbox():
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
 def test_size_list():
     """
-        Test the bbox query with a list size=1:
-        Same test as test_bbox but with a max list size of 1
+    Test the bbox query with a list size=1:
+    Same test as test_bbox but with a max list size of 1
     """
     client = TestClient(app)
 
@@ -481,7 +481,7 @@ def test_extend_bbox():
 
 def test_invalid_bbox():
     """
-        Test an invalid bbox query:
+    Test an invalid bbox query:
     """
     client = TestClient(app)
 
@@ -512,7 +512,7 @@ def test_invalid_bbox():
 
 def test_category_and_raw_filter():
     """
-        Test we get a 400 if category and raw_filter are both present:
+    Test we get a 400 if category and raw_filter are both present:
     """
     client = TestClient(app)
 
@@ -529,7 +529,7 @@ def test_category_and_raw_filter():
 
 def test_category_or_raw_filter():
     """
-        Test we get a 400 if none of category or raw_filter is present:
+    Test we get a 400 if none of category or raw_filter is present:
     """
     client = TestClient(app)
 
@@ -542,7 +542,7 @@ def test_category_or_raw_filter():
 
 def test_valid_category():
     """
-        Test a valid category filter which should fetch only one cinema in a bbox around Brest city.
+    Test a valid category filter which should fetch only one cinema in a bbox around Brest city.
     """
     client = TestClient(app)
 
@@ -586,7 +586,7 @@ def test_valid_category():
 )
 def test_places_with_explicit_source_osm(enable_pj_source):
     """
-        If source=osm is passed to the query, pj_source should be ignored
+    If source=osm is passed to the query, pj_source should be ignored
     """
     client = TestClient(app)
     response = client.get(
@@ -625,7 +625,7 @@ def test_places_with_explicit_source_osm(enable_pj_source):
 
 def test_invalid_category():
     """
-        Test we get a 400 if the parameter category is invalid:
+    Test we get a 400 if the parameter category is invalid:
     """
     client = TestClient(app)
     response = client.get(
@@ -638,7 +638,7 @@ def test_invalid_category():
 
 def test_endpoint_categories():
     """
-        Test the endpoint 'categories':
+    Test the endpoint 'categories':
     """
     client = TestClient(app)
 
@@ -654,7 +654,9 @@ def test_endpoint_categories():
 
 
 @pytest.mark.parametrize(
-    "enable_pj_source", [("legacy", "musee_picasso_short")], indirect=True,
+    "enable_pj_source",
+    [("legacy", "musee_picasso_short")],
+    indirect=True,
 )
 def test_pj_categories_filter_legacy(enable_pj_source):
     client = TestClient(app)

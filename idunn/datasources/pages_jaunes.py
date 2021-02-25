@@ -140,7 +140,8 @@ class ApiPjSource(PjSource):
             and res.context.pages.next_page_url
         ):
             pois += self.get_places_from_url(
-                res.context.pages.next_page_url, size=size - len(pois),
+                res.context.pages.next_page_url,
+                size=size - len(pois),
             )
 
         return pois

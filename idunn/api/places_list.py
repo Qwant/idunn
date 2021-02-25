@@ -193,7 +193,10 @@ async def get_places_bbox(
     )
 
     return PlacesBboxResponse(
-        places=result_places, source=params.source, bbox=results_bbox, bbox_extended=bbox_extended,
+        places=result_places,
+        source=params.source,
+        bbox=results_bbox,
+        bbox_extended=bbox_extended,
     )
 
 
@@ -220,7 +223,10 @@ async def _fetch_places_list(params: PlacesQueryParam):
         raw_filters = [f for c in params.category for f in c.raw_filters()]
 
     bbox_places = await run_in_threadpool(
-        fetch_es_pois, raw_filters=raw_filters, bbox=params.bbox, max_size=params.size,
+        fetch_es_pois,
+        raw_filters=raw_filters,
+        bbox=params.bbox,
+        max_size=params.size,
     )
     return [POI(p["_source"]) for p in bbox_places]
 

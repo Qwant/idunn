@@ -157,7 +157,9 @@ def check(
 
     if not check_coverage:
         logger.info(
-            "Removed `%s` from results because query `%s` is not accurate enough", name, query,
+            "Removed `%s` from results because query `%s` is not accurate enough",
+            name,
+            query,
         )
         return False
 

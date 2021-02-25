@@ -127,7 +127,12 @@ def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_
     assert_intention(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lat": 48.9, "lon": 2.3},
-        expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"},}],
+        expected_intention=[
+            {
+                "filter": {"q": "auchan"},
+                "description": {"query": "auchan"},
+            }
+        ],
         expected_intention_place=None,
     )
 
@@ -183,6 +188,11 @@ def test_no_intention_for_brand_with_no_matching_feature(
 
     assert_intention(
         client,
-        params={"q": "this is not a brand", "lang": "fr", "limit": 7, "nlu": True,},
+        params={
+            "q": "this is not a brand",
+            "lang": "fr",
+            "limit": 7,
+            "nlu": True,
+        },
         expected_intention=[],
     )

@@ -16,7 +16,12 @@ OH_BLOCK = {
     "is_24_7": False,
     "raw": "Tu-Su 09:30-18:00; Th 09:30-21:45",
     "days": [
-        {"dayofweek": 1, "local_date": "2018-06-11", "status": "closed", "opening_hours": [],},
+        {
+            "dayofweek": 1,
+            "local_date": "2018-06-11",
+            "status": "closed",
+            "opening_hours": [],
+        },
         {
             "dayofweek": 2,
             "local_date": "2018-06-12",

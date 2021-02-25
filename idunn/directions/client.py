@@ -174,7 +174,8 @@ class DirectionsClient:
     def get_directions(self, from_place, to_place, mode, lang, params: QueryParams):
         if not DirectionsClient.is_in_allowed_zone(mode, from_place, to_place):
             raise HTTPException(
-                status_code=422, detail="requested path is not inside an allowed area",
+                status_code=422,
+                detail="requested path is not inside an allowed area",
             )
 
         method = self.directions_qwant

@@ -19,7 +19,9 @@ def mock_directions_car():
         }
     ):
         fixture_path = os.path.join(
-            os.path.dirname(__file__), "fixtures/directions", "qwant_directions_car.json",
+            os.path.dirname(__file__),
+            "fixtures/directions",
+            "qwant_directions_car.json",
         )
         with responses.RequestsMock() as rsps:
             rsps.add(
@@ -44,7 +46,9 @@ def mock_directions_car_with_rate_limiter(redis, mock_directions_car):
 def mock_directions_public_transport():
     with override_settings({"COMBIGO_API_BASE_URL": "http://api.test"}):
         fixture_path = os.path.join(
-            os.path.dirname(__file__), "fixtures/directions", "combigo_v1.1_publictransport.json",
+            os.path.dirname(__file__),
+            "fixtures/directions",
+            "combigo_v1.1_publictransport.json",
         )
         with responses.RequestsMock() as rsps:
             rsps.add(
@@ -183,7 +187,10 @@ def test_directions_public_transport_restricted_areas():
 
 def test_directions_not_configured():
     with override_settings(
-        {"QWANT_DIRECTIONS_API_BASE_URL": None, "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,}
+        {
+            "QWANT_DIRECTIONS_API_BASE_URL": None,
+            "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,
+        }
     ):
         client = TestClient(app)
         response = client.get(

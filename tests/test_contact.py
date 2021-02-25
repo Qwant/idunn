@@ -8,5 +8,6 @@ def test_contact_block():
     )
 
     assert web_block == ContactBlock(
-        url="mailto:info@pershinghall.com", email="info@pershinghall.com",
+        url="mailto:info@pershinghall.com",
+        email="info@pershinghall.com",
     )

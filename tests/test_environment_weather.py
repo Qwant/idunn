@@ -147,7 +147,12 @@ def test_weather_city():
 
         res = Weather.from_es(Admin(testee), lang="en")
 
-    assert res == Weather(**{"temperature": 291.89, "icon": "01d",})
+    assert res == Weather(
+        **{
+            "temperature": 291.89,
+            "icon": "01d",
+        }
+    )
 
 
 @enable_weather_api()
@@ -157,7 +162,10 @@ def test_wrong_icon_value():
     """
     with raises(ValidationError):
         Weather(
-            **{"temperature": 291.89, "icon": "01g",}
+            **{
+                "temperature": 291.89,
+                "icon": "01g",
+            }
         )
 
 

@@ -74,7 +74,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
     @staticmethod
     def regex_classifier(text, is_brand=False):
-        """ Match text with a category, using 'regex'
+        """Match text with a category, using 'regex'
         >>> NLU_Helper.regex_classifier("restau").value
         'restaurant'
         >>> NLU_Helper.regex_classifier("pub").value
@@ -98,7 +98,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
     @classmethod
     def fuzzy_match(cls, query, bragi_res):
-        """ Does the response match the query reasonably well ?
+        """Does the response match the query reasonably well ?
         >>> NLU_Helper.fuzzy_match("bastille", {"name": "Beuzeville-la-Bastille"})
         False
         >>> NLU_Helper.fuzzy_match("paris 20", {"name": "Paris 20e Arrondissement"})
