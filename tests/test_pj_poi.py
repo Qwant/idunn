@@ -43,14 +43,18 @@ def enable_pj_source(request):
                 yield
         else:
             api_mock = mock.patch.object(
-                places_utils.pj_source, "get_from_params", new=lambda *x, **y: api_result,
+                places_utils.pj_source,
+                "get_from_params",
+                new=lambda *x, **y: api_result,
             )
             with api_mock:
                 yield
 
 
 @pytest.mark.parametrize(
-    "enable_pj_source", [("legacy", "musee_picasso"), ("api", "api_musee_picasso")], indirect=True,
+    "enable_pj_source",
+    [("legacy", "musee_picasso"), ("api", "api_musee_picasso")],
+    indirect=True,
 )
 def test_pj_place(enable_pj_source):
     client = TestClient(app)

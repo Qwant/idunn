@@ -7,8 +7,7 @@ ES_RUNNING_STATUS = ("green", "yellow")
 
 
 def get_status():
-    """Returns the status of the elastic cluster
-    """
+    """Returns the status of the elastic cluster"""
     es = get_elasticsearch()
     try:
         cluster_health = es.cluster.health()

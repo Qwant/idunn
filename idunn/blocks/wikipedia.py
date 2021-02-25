@@ -48,7 +48,9 @@ class WikipediaSession:
                 except pybreaker.CircuitBreakerError:
                     prometheus.exception("CircuitBreakerError")
                     logger.error(
-                        "Got CircuitBreakerError in %s", f.__name__, exc_info=True,
+                        "Got CircuitBreakerError in %s",
+                        f.__name__,
+                        exc_info=True,
                     )
                 except HTTPError:
                     prometheus.exception("HTTPError")

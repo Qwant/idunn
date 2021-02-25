@@ -52,7 +52,9 @@ def expose_metrics_multiprocess():
 
 
 REQUEST_DURATION = Histogram(
-    "http_request_duration_seconds", "Time spent processing a request.", ["method", "handler"],
+    "http_request_duration_seconds",
+    "Time spent processing a request.",
+    ["method", "handler"],
 )
 REQUEST_COUNT = Counter(
     "http_requests_total",
@@ -60,7 +62,9 @@ REQUEST_COUNT = Counter(
     ["method", "handler", "code"],
 )
 REQUESTS_INPROGRESS = Gauge(
-    "http_requests_inprogress", "Requests in progress by method and handler", ["method", "handler"],
+    "http_requests_inprogress",
+    "Requests in progress by method and handler",
+    ["method", "handler"],
 )
 
 

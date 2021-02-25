@@ -8,5 +8,6 @@ def test_website_block():
     )
 
     assert web_block == WebSiteBlock(
-        url="http://www.pershinghall.com", label="www.pershinghall.com",
+        url="http://www.pershinghall.com",
+        label="www.pershinghall.com",
     )

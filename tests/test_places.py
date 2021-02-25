@@ -38,7 +38,9 @@ def test_full_query_admin():
             "bbox": [1.1777833, 44.5547916, 1.2237663, 44.5978805],
         },
         "address": {
-            "admin": {"label": "Goujounac (46250), Lot, Occitanie, France",},
+            "admin": {
+                "label": "Goujounac (46250), Lot, Occitanie, France",
+            },
             "admins": [ANY, ANY, ANY],
             "id": None,
             "label": None,
@@ -61,7 +63,7 @@ def test_full_query_admin():
 
 def test_full_query_street():
     """
-        Test the response format to a street query
+    Test the response format to a street query
     """
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/street:35460343?lang=fr")
@@ -140,7 +142,7 @@ def test_full_query_street():
 
 def test_full_query_address():
     """
-        Test the response format to an address query
+    Test the response format to an address query
     """
     client = TestClient(app)
     id_moulin = urllib.parse.quote_plus("addr:5.108632;48.810273")
@@ -222,7 +224,7 @@ def test_full_query_address():
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)
 def test_full_query_poi():
     """
-        Test the response format to a POI query
+    Test the response format to a POI query
     """
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/osm:way:63178753?lang=fr")

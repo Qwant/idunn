@@ -38,7 +38,9 @@ class InstantAnswerResult(BaseModel):
         ),
         example=(2.32, 48.85, 2.367, 48.866),
     )
-    maps_url: HttpUrl = Field(description="Direct URL to the result(s) on Qwant Maps.",)
+    maps_url: HttpUrl = Field(
+        description="Direct URL to the result(s) on Qwant Maps.",
+    )
     maps_frame_url: HttpUrl = Field(
         description="URL to the map displaying the results on Qwant Maps, with no user interface. "
         "This URL can be used to display an `<iframe>`."

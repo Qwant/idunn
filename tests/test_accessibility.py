@@ -13,7 +13,16 @@ def test_accessibility_block():
 
 
 def test_accessibility_unknown():
-    web_block = AccessibilityBlock.from_es(POI({"properties": {"wheelchair": "toto",}}), lang="en")
+    web_block = AccessibilityBlock.from_es(
+        POI(
+            {
+                "properties": {
+                    "wheelchair": "toto",
+                }
+            }
+        ),
+        lang="en",
+    )
     assert web_block is None
 
 

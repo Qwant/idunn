@@ -22,7 +22,10 @@ def test_recycling():
     client = TestClient(app)
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
-            "POST", re.compile(r"^http://recycling.test/.*"), status=200, json=recycling_response,
+            "POST",
+            re.compile(r"^http://recycling.test/.*"),
+            status=200,
+            json=recycling_response,
         )
 
         response = client.get(url="http://localhost/v1/pois/osm:node:36153800")

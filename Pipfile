@@ -19,7 +19,7 @@ lovely-pytest-docker = "*"
 freezegun = "*"
 ipython = "*"
 responses = "*"
-black = "==19.10b0"
+black = "==20.8b1"
 respx = "*"
 pylint = "*"
 
