@@ -1,5 +1,6 @@
 import logging
 import re
+from functools import lru_cache
 from typing import List
 from unidecode import unidecode
 
@@ -71,6 +72,7 @@ def word_matches_abreviation(word_1, word_2):
     return ABREVIATIONS.get(word_1) == word_2 or ABREVIATIONS.get(word_2) == word_1
 
 
+@lru_cache(10000)
 def word_matches(query_word, label_word):
     """
     Check if two words match with an high degree of confidence.
