@@ -57,7 +57,7 @@ def mock_NLU_with_city(httpx_mock):
 @pytest.fixture
 def mock_autocomplete_get(httpx_mock):
     with override_settings({"BRAGI_BASE_URL": BASE_URL}):
-        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete.*q=paris.*")).respond(
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete.*q=(paris|parigi).*")).respond(
             json=read_fixture("fixtures/autocomplete/paris.json")
         )
 

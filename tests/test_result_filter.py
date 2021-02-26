@@ -3,7 +3,7 @@ from idunn.utils.result_filter import check
 
 def test_filter():
     place_infos = {
-        "name": "5 rue Gustave Zédé",
+        "names": ["5 rue Gustave Zédé", "5, Zédéstraße"],
         "postcodes": ["79000"],
         "is_address": True,
     }
@@ -41,7 +41,12 @@ def test_filter():
     assert check("5 r gustave zédé", **place_infos)
     assert not check("5 u gustave zédé", **place_infos)
 
+    # Either names can match
+    assert check("5 zédéstraße", **place_infos)
+
     # Queries that match a small part of the request are ignored, postcode and
     # admins matter in relevant matching words.
-    assert not check("101 dalmatiens", name="101 rue des dalmatiens", is_address=True)
-    assert check(query="Paris 2e", name="2e Arrondissement", admins=["Paris"], postcodes=["75002"])
+    assert not check("101 dalmatiens", names=["101 rue des dalmatiens"], is_address=True)
+    assert check(
+        query="Paris 2e", names=["2e Arrondissement"], admins=["Paris"], postcodes=["75002"]
+    )

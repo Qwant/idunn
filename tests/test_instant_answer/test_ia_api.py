@@ -23,6 +23,20 @@ def test_ia_paris(mock_autocomplete_get, mock_NLU_with_city):
     assert place["name"] == "Paris"
 
 
+def test_ia_paris_request_international(mock_autocomplete_get, mock_NLU_with_city):
+    """
+    The user queries for the name in Italian while lang = "fr".
+    """
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "parigi", "lang": "fr"})
+    assert response.status_code == 200
+    response_json = response.json()
+    places = response_json["data"]["result"]["places"]
+    assert len(places) == 1
+    place = places[0]
+    assert place["name"] == "Paris"
+
+
 def test_ia_intention_full_text(
     mock_NLU_with_brand_and_city, mock_autocomplete_get, mock_bragi_carrefour_in_bbox
 ):

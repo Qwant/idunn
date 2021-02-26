@@ -160,6 +160,10 @@
             48.8155755,
             2.4697602,
             48.902156
+          ],
+          "properties": [
+              {"key": "name:fr", "value":"Paris"},
+              {"key": "name:it", "value": "Parigi"}
           ]
         }
       }
