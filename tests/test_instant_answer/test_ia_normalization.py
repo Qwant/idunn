@@ -12,3 +12,4 @@ def test_normalization():
     assert normalize("ou se trouve la tour Eiffel") == "tour eiffel"
     assert normalize("qwantmaps") == ""
     assert normalize("Restaurants lille avis") == "restaurants lille"
+    assert normalize("hotel bordeaux booking") == "hotel bordeaux"
