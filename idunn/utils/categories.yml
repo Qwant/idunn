@@ -138,7 +138,7 @@ categories:
     recycling:
         raw_filters:
             - "recycling,*"
-        regex: "recycl|tri selectif|dechett?erie"
+        regex: "recycl|tri selectif|dechett?err?ie"
         match_brand: True
     parking:
         raw_filters:
