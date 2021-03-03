@@ -178,3 +178,9 @@ RECYCLING_MEASURES_MAX_AGE_IN_HOURS: 168 # 7 days (Older measures will be ignore
 ##########################
 ## Instant Answer
 IA_SUCCESS_ON_GENERIC_QUERIES: False
+
+###########################
+## Ban check, for anti-scraping purposes
+QWANT_API_BASE_URL:
+BANCHECK_ENABLED: False
+BANCHECK_TIMEOUT: "0.3" # seconds
