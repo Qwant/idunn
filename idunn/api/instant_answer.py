@@ -127,16 +127,28 @@ async def get_instant_answer(
 
     if not intentions:
         bragi_response = await bragi_client.raw_autocomplete(
-            {"q": normalized_query, "lang": lang, "limit": 1}
+            {"q": normalized_query, "lang": lang, "limit": 5}
         )
-        if len(bragi_response["features"]) > 0:
-            place_geocoding = bragi_response["features"][0]["properties"]["geocoding"]
-            place_id = place_geocoding["id"]
-            if result_filter.check_bragi_response(normalized_query, place_geocoding):
-                result = await run_in_threadpool(
-                    get_instant_answer_single_place, place_id=place_id, lang=lang
+        geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
+        geocodings = sorted(
+            (
+                (
+                    result_filter.rank_bragi_response(normalized_query, feature),
+                    feature,
                 )
-                return build_response(result, query=q, lang=lang)
+                for feature in geocodings
+                if result_filter.check_bragi_response(normalized_query, feature)
+            ),
+            key=lambda item: -item[0],  # sort by descending rank
+        )
+
+        if geocodings:
+            place_id = geocodings[0][1]["id"]
+            result = await run_in_threadpool(
+                get_instant_answer_single_place, place_id=place_id, lang=lang
+            )
+            return build_response(result, query=q, lang=lang)
+
         raise HTTPException(404)
 
     intention = intentions[0]
