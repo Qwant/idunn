@@ -26,6 +26,9 @@ ABREVIATIONS = {
     "st": "saint",
 }
 
+# Regex recognizing any word separators
+WORD_SEPARATORS = re.compile("|".join([" ", "-", ",", ";", "\\.", "'"]))
+
 
 def words(text):
     """
@@ -34,8 +37,7 @@ def words(text):
     >>> words("17, rue jaune ; Levallois-Peret")
     ['17', 'rue', 'jaune', 'Levallois', 'Peret']
     """
-    separators = [" ", "-", ",", ";", "\\.", "'"]
-    return [word for word in re.split("|".join(separators), text) if word]
+    return [word for word in WORD_SEPARATORS.split(text) if word]
 
 
 def word_as_number(word):
@@ -106,9 +108,14 @@ def word_matches(query_word, label_word):
     if query_word_as_num is not None or label_word_as_num is not None:
         return query_word_as_num == label_word_as_num
 
-    return word_matches_abreviation(query_word, label_word) or any(
-        damerau_levenshtein_distance(query_word, s) <= 1
-        for s in [label_word, unidecode(label_word)]
+    # The label can be matched with or without accent
+    label_variants = [label_word, unidecode(label_word)]
+
+    return (
+        # This first check is redundant with the second one but is less expensive to compute
+        any(query_word == s for s in label_variants)
+        or any(damerau_levenshtein_distance(query_word, s) <= 1 for s in label_variants)
+        or any(word_matches_abreviation(query_word, s) for s in label_variants)
     )
 
 
