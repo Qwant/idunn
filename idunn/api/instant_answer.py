@@ -129,17 +129,15 @@ async def get_instant_answer(
         bragi_response = await bragi_client.raw_autocomplete(
             {"q": normalized_query, "lang": lang, "limit": 5}
         )
-
+        geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
         geocodings = sorted(
             (
-                (rank, feature["properties"]["geocoding"])
-                for feature in bragi_response["features"]
-                for rank in [
-                    result_filter.rank_bragi_response(
-                        normalized_query, feature["properties"]["geocoding"]
-                    )
-                ]
-                if rank is not None
+                (
+                    result_filter.rank_bragi_response(normalized_query, feature),
+                    feature,
+                )
+                for feature in geocodings
+                if result_filter.check_bragi_response(normalized_query, feature)
             ),
             key=lambda item: -item[0],  # sort by descending rank
         )

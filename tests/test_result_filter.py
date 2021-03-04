@@ -5,7 +5,7 @@ def test_filter():
     place_infos = {
         "names": ["5 rue Gustave Zédé", "5, Zédéstraße"],
         "postcodes": ["79000"],
-        "is_address": True,
+        "place_type": "address",
     }
 
     # Case is ignored
@@ -46,9 +46,13 @@ def test_filter():
 
     # Queries that match a small part of the request are ignored, postcode and
     # admins matter in relevant matching words.
-    assert not check("101 dalmatiens", names=["101 rue des dalmatiens"], is_address=True)
+    assert not check("101 dalmatiens", names=["101 rue des dalmatiens"], place_type="address")
     assert check(
-        query="Paris 2e", names=["2e Arrondissement"], admins=["Paris"], postcodes=["75002"]
+        query="Paris 2e",
+        names=["2e Arrondissement"],
+        admins=["Paris"],
+        postcodes=["75002"],
+        place_type="admin",
     )
 
 
@@ -56,15 +60,13 @@ def test_rank():
     rennes = {
         "names": ["rue de Paris"],
         "admins": ["Rennes"],
-        "postcodes": ["35000", "35200", "35700"],
-        "is_street": True,
+        "place_type": "street",
     }
 
     paris = {
         "names": ["rue de Rennes"],
         "admins": ["Paris"],
-        "postcodes": ["75006"],
-        "is_street": True,
+        "place_type": "street",
     }
 
     assert rank("rue de Paris, Rennes", **rennes) > rank("rue de Rennes, Paris", **rennes)

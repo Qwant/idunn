@@ -138,19 +138,18 @@ def count_adj_in_same_block(terms: List[str], blocks: List[List[str]]) -> int:
     )
 
 
-def rank(
+def check(
     query: str,
     names: List[str],
+    place_type: str,
     admins: List[str] = [],
     postcodes: List[str] = [],
-    is_address: bool = False,
-    is_street: bool = False,
 ) -> Optional[float]:
     query_words = words(query.lower())
     names = list(map(str.lower, names))
     admins = list(map(str.lower, admins))
 
-    if is_address:
+    if place_type == "address":
         query_words = [word for word in query_words if word not in NUM_SUFFIXES]
 
     # Check if all words of the query match a word in the result
@@ -167,7 +166,7 @@ def rank(
                 names[0],
                 q_word,
             )
-            return None
+            return False
 
     # Check if at least 2/3 of the result is covered by the query in one of these cases:
     #   - over one of the result names
@@ -194,9 +193,24 @@ def rank(
             names[0],
             query,
         )
-        return None
+        return False
 
-    if (is_street or is_address) and len(query_words) > 1:
+    return True
+
+
+def rank(
+    query: str,
+    names: List[str],
+    place_type: str,
+    admins: List[str] = [],
+    postcodes: List[str] = [],  # pylint: disable = unused-argument
+) -> float:
+    query_words = words(query.lower())
+
+    if place_type == "address":
+        query_words = [word for word in query_words if word not in NUM_SUFFIXES]
+
+    if place_type in ["street", "address"] and len(query_words) > 1:
         # Count the number of adjacent words from the query which are both
         # part of a same field. The intention is to avoid swapping words
         # between name and admin.
@@ -214,18 +228,23 @@ def rank(
     return rank_val
 
 
-def check(*args, **kwargs) -> bool:
-    return rank(*args, **kwargs) is not None
-
-
 def rank_bragi_response(query: str, bragi_response: dict) -> Optional[float]:
+    """
+    Return an indicative relevance that takes value in [0, 1.0] to reorder
+    results in respect with the query.
+    """
+    return rank(**build_params_from_bragi(query, bragi_response))
+
+
+def check_bragi_response(query: str, bragi_response: dict) -> bool:
     """
     Filter a feature from bragi responses, please provide the field
     bragi_response["features"][..]["properties"]["geocoding"].
-
-    If the response doesn't match, return None, overwise return an
-    indicative relevance that takes value in [0, 1.0].
     """
+    return check(**build_params_from_bragi(query, bragi_response))
+
+
+def build_params_from_bragi(query: str, bragi_response: dict) -> dict:
     if bragi_response.get("postcode"):
         postcodes = bragi_response["postcode"].split(";")
     else:
@@ -244,19 +263,10 @@ def rank_bragi_response(query: str, bragi_response: dict) -> Optional[float]:
         if prop["key"].startswith("name:") or prop["key"].startswith("alt_name:")
     ]
 
-    return rank(
-        query,
-        [name] + local_names,
-        [admin["name"] for admin in bragi_response.get("administrative_regions", [])],
-        postcodes,
-        bragi_response.get("type") == "address",
-        bragi_response.get("type") == "street",
-    )
-
-
-def check_bragi_response(query: str, bragi_response: dict) -> bool:
-    """
-    Filter a feature from bragi responses, please provide the field
-    bragi_response["features"][..]["properties"]["geocoding"].
-    """
-    return rank_bragi_response(query, bragi_response) is not None
+    return {
+        "query": query,
+        "names": [name] + local_names,
+        "admins": [admin["name"] for admin in bragi_response.get("administrative_regions", [])],
+        "postcodes": postcodes,
+        "place_type": bragi_response.get("type"),
+    }
