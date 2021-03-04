@@ -62,3 +62,9 @@ def test_ia_intention_single_result(
     assert len(places) == 1
     place = places[0]
     assert place["name"] == "Carrefour Market"
+
+
+def test_ia_query_too_long():
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "A" * 101})
+    assert response.status_code == 404
