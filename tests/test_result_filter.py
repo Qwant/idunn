@@ -69,5 +69,5 @@ def test_rank():
         "place_type": "street",
     }
 
-    assert rank("rue de Paris, Rennes", **rennes) > rank("rue de Rennes, Paris", **rennes)
-    assert rank("rue de Rennes, Paris", **paris) > rank("rue de Paris, Rennes", **paris)
+    assert rank("rue de Rennes, Paris", **paris) > rank("rue de Rennes, Paris", **rennes)
+    assert rank("rue de Paris, Rennes", **rennes) > rank("rue de Paris, Rennes", **paris)
