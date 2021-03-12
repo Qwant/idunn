@@ -1,4 +1,5 @@
 import logging
+from geopy import Point
 
 from idunn.api.utils import Verbosity, WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
@@ -191,6 +192,10 @@ class BasePlace(dict):
 
     def get_coord(self):
         return self.get("coord")
+
+    def get_point(self):
+        coord = self.get_coord()
+        return Point(latitude=coord["lat"], longitude=coord["lon"])
 
     def get_raw_opening_hours(self):
         return self.properties.get("opening_hours")
