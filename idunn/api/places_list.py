@@ -1,5 +1,7 @@
 import logging
 
+from geopy.point import Point
+from geopy.distance import distance
 from shapely.geometry import MultiPoint, box
 from shapely.affinity import scale
 from fastapi import HTTPException, Query
@@ -157,6 +159,13 @@ async def get_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
+    return await get_places_bbox_impl(params)
+
+
+async def get_places_bbox_impl(
+    params: PlacesQueryParam,
+    sort_by_distance: Optional[Point] = None,
+) -> PlacesBboxResponse:
     source = params.source
     if source is None:
         if (
@@ -187,6 +196,9 @@ async def get_places_bbox(
     else:
         points = MultiPoint([(p.get_coord()["lon"], p.get_coord()["lat"]) for p in places_list])
         results_bbox = points.bounds
+
+    if sort_by_distance:
+        places_list.sort(key=lambda p: distance(sort_by_distance, p.get_point()))
 
     result_places = await run_in_threadpool(
         lambda: [p.load_place(params.lang, params.verbosity) for p in places_list]

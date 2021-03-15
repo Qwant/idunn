@@ -4,15 +4,17 @@ from fastapi.responses import ORJSONResponse
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
+from geopy import Point
 
 from idunn import settings
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places import place_from_id, Place
-from idunn.api.places_list import get_places_bbox
+from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
 from idunn.utils import maps_urls, result_filter
 from idunn.instant_answer import normalize
 from .constants import PoiSource
+from .utils import Verbosity
 
 logger = logging.getLogger(__name__)
 
@@ -157,15 +159,28 @@ async def get_instant_answer(
 
     category = intention.filter.category
 
-    places_bbox_response = await get_places_bbox(
-        category=[category] if category else [],
-        bbox=intention.filter.bbox,
-        q=intention.filter.q,
-        raw_filter=None,
-        source=None,
-        size=10,
-        lang=lang,
-        extend_bbox=True,
+    # For intention results around a point, rerank results by distance
+    intention_around_point = None
+    intention_place = intention.description.place
+    if intention_place and intention_place.properties.geocoding.type == "poi":
+        place_coord = intention_place.geometry.get("coordinates")
+        if place_coord and len(place_coord) == 2:
+            lon, lat = place_coord
+            intention_around_point = Point(latitude=lat, longitude=lon)
+
+    places_bbox_response = await get_places_bbox_impl(
+        PlacesQueryParam(
+            category=[category] if category else [],
+            bbox=intention.filter.bbox,
+            q=intention.filter.q,
+            raw_filter=None,
+            source=None,
+            size=10,
+            lang=lang,
+            extend_bbox=True,
+            verbosity=Verbosity.default_list(),
+        ),
+        sort_by_distance=intention_around_point,
     )
 
     places = places_bbox_response.places
