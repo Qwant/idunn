@@ -38,10 +38,13 @@ services:
       - IDUNN_MAPS_BASE_URL=https://www.qwant.com/maps/
       # - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PROD}
       # - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PROD}
-      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu
+      - IDUNN_BANCHECK_ENABLED=true
+      - IDUNN_QWANT_API_BASE_URL=http://foundation
+      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation
     extra_hosts:
       - "wiki-es:10.100.8.40"
       - "geocoder-varnish:10.103.13.1"
+      - "foundation:10.110.3.12"
     networks:
       - product-maps-production_default
 

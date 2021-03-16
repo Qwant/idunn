@@ -34,10 +34,13 @@ services:
       - IDUNN_MAPS_BASE_URL=https://www.qwant.plive/maps/
       - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PLIVE}
       - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PLIVE}
-      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu
+      - IDUNN_BANCHECK_ENABLED=true
+      - IDUNN_QWANT_API_BASE_URL=http://foundation
+      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation
     extra_hosts:
       - "wiki-es:10.100.33.34"
       - "geocoder-varnish:10.104.1.7"
+      - "foundation:10.108.3.44"
     networks:
       - product-maps-prelive_default
 
