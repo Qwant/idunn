@@ -151,7 +151,7 @@ def check(
     place_type: str,
     admins: List[str] = [],
     postcodes: List[str] = [],
-) -> Optional[float]:
+) -> bool:
     query_words = words(query.lower())
     names = list(map(str.lower, names))
     admins = list(map(str.lower, admins))
@@ -168,7 +168,7 @@ def check(
 
     for q_word in query_words:
         if not any(word_matches(q_word, l_word) for l_word in full_label):
-            logger.info(
+            logger.debug(
                 "Removed `%s` from results because queried `%s` does not match the result",
                 names[0],
                 q_word,
@@ -195,7 +195,7 @@ def check(
     )
 
     if not check_coverage:
-        logger.info(
+        logger.debug(
             "Removed `%s` from results because query `%s` is not accurate enough",
             names[0],
             query,
