@@ -19,6 +19,7 @@ from .utils import Verbosity
 logger = logging.getLogger(__name__)
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
+ia_max_query_length = int(settings["IA_MAX_QUERY_LENGTH"])
 
 
 class InstantAnswerResult(BaseModel):
@@ -86,7 +87,7 @@ def get_instant_answer_single_place(place_id: str, lang: str):
         place = place_from_id(place_id, follow_redirect=True)
     except Exception as exc:
         logger.warning("Failed to get place for instant answer", exc_info=True)
-        raise HTTPException(status_code=404) from exc
+        raise NoInstantAnswerToDisplay from exc
 
     detailed_place = place.load_place(lang=lang)
     return InstantAnswerResult(
@@ -109,6 +110,10 @@ async def get_instant_answer(
     run more restrictive checks on its results.
     """
     normalized_query = normalize(q)
+
+    if len(normalized_query) > ia_max_query_length:
+        raise NoInstantAnswerToDisplay
+
     if normalized_query == "":
         if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
             result = InstantAnswerResult(
@@ -151,11 +156,11 @@ async def get_instant_answer(
             )
             return build_response(result, query=q, lang=lang)
 
-        raise HTTPException(404)
+        raise NoInstantAnswerToDisplay
 
     intention = intentions[0]
     if not intention.filter.bbox:
-        raise HTTPException(404)
+        raise NoInstantAnswerToDisplay
 
     category = intention.filter.category
 
@@ -185,7 +190,7 @@ async def get_instant_answer(
 
     places = places_bbox_response.places
     if len(places) == 0:
-        raise HTTPException(404)
+        raise NoInstantAnswerToDisplay
 
     if len(places) == 1:
         place_id = places[0].id

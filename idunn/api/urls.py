@@ -1,3 +1,5 @@
+from fastapi import Depends
+
 from .pois import get_poi
 from .places import get_place, get_place_latlon
 from .status import get_status
@@ -10,13 +12,13 @@ from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
 from .instant_answer import get_instant_answer, InstantAnswerResponse
-
 from ..places.place import Address, Place
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
     MonitoredAPIRoute as APIRoute,
 )
+from ..utils.ban_check import check_banned_client
 
 
 def get_metric_handler(settings):
@@ -85,6 +87,7 @@ def get_api_urls(settings):
         APIRoute(
             "/instant_answer",
             get_instant_answer,
+            dependencies=[Depends(check_banned_client)],
             response_model=InstantAnswerResponse,
             responses={
                 200: {"description": "Details about place(s) to display"},
