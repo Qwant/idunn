@@ -11,7 +11,7 @@ from prometheus_client import (
     multiprocess,
 )
 
-from fastapi import Request, Response
+from fastapi import Request, Response, HTTPException
 from fastapi.responses import PlainTextResponse
 from fastapi.routing import APIRoute
 
@@ -76,20 +76,26 @@ class MonitoredAPIRoute(APIRoute):
         async def custom_handler(request: Request) -> Response:
             method = request["method"]
             REQUESTS_INPROGRESS.labels(method=method, handler=handler_name).inc()
+            before_time = time.monotonic()
             try:
-                before_time = time.monotonic()
                 response = await original_handler(request)
-                after_time = time.monotonic()
-            except Exception as e:
-                raise e from None
+            except HTTPException as exc:
+                REQUEST_COUNT.labels(
+                    method=method, handler=handler_name, code=exc.status_code
+                ).inc()
+                raise
+            except Exception:
+                REQUEST_COUNT.labels(method=method, handler=handler_name, code="EXC").inc()
+                raise
             else:
-                REQUEST_DURATION.labels(method=method, handler=handler_name).observe(
-                    after_time - before_time
-                )
                 REQUEST_COUNT.labels(
                     method=method, handler=handler_name, code=response.status_code
                 ).inc()
             finally:
+                after_time = time.monotonic()
+                REQUEST_DURATION.labels(method=method, handler=handler_name).observe(
+                    after_time - before_time
+                )
                 REQUESTS_INPROGRESS.labels(method=method, handler=handler_name).dec()
             return response
 
