@@ -71,10 +71,36 @@ class InstantAnswerResponse(BaseModel):
     data: InstantAnswerData
 
 
-NoInstantAnswerToDisplay = HTTPException(status_code=404, detail="No instant answer to display")
+class NoInstantAnswerToDisplay(HTTPException):
+    def __init__(self, query=None, lang=None):
+        super().__init__(status_code=404, detail="No instant answer to display")
+        if query is not None:
+            logger.info(
+                "get_instant_answer: no answer",
+                extra={
+                    "request": {
+                        "query": query,
+                        "lang": lang,
+                    }
+                },
+            )
 
 
 def build_response(result: InstantAnswerResult, query: str, lang: str):
+    nb_places = len(result.places)
+    logger.info(
+        "get_instant_answer: OK",
+        extra={
+            "request": {
+                "query": query,
+                "lang": lang,
+            },
+            "response": {
+                "nb_places": nb_places,
+                "place_id": result.places[0].id if nb_places == 1 else None,
+            },
+        },
+    )
     return ORJSONResponse(
         InstantAnswerResponse(
             data=InstantAnswerData(result=result, query=InstantAnswerQuery(query=query, lang=lang)),
@@ -86,7 +112,9 @@ def get_instant_answer_single_place(place_id: str, lang: str):
     try:
         place = place_from_id(place_id, follow_redirect=True)
     except Exception as exc:
-        logger.warning("Failed to get place for instant answer", exc_info=True)
+        logger.warning(
+            "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
+        )
         raise NoInstantAnswerToDisplay from exc
 
     detailed_place = place.load_place(lang=lang)
@@ -112,7 +140,7 @@ async def get_instant_answer(
     normalized_query = normalize(q)
 
     if len(normalized_query) > ia_max_query_length:
-        raise NoInstantAnswerToDisplay
+        raise NoInstantAnswerToDisplay(query=q, lang=lang)
 
     if normalized_query == "":
         if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
@@ -122,7 +150,7 @@ async def get_instant_answer(
                 maps_frame_url=maps_urls.get_default_url(no_ui=True),
             )
             return build_response(result, query=q, lang=lang)
-        raise NoInstantAnswerToDisplay
+        raise NoInstantAnswerToDisplay(query=q, lang=lang)
 
     if lang in nlu_allowed_languages:
         try:
@@ -156,7 +184,7 @@ async def get_instant_answer(
             )
             return build_response(result, query=q, lang=lang)
 
-        raise NoInstantAnswerToDisplay
+        raise NoInstantAnswerToDisplay(query=q, lang=lang)
 
     intention = intentions[0]
     if not intention.filter.bbox:
@@ -190,7 +218,7 @@ async def get_instant_answer(
 
     places = places_bbox_response.places
     if len(places) == 0:
-        raise NoInstantAnswerToDisplay
+        raise NoInstantAnswerToDisplay(query=q, lang=lang)
 
     if len(places) == 1:
         place_id = places[0].id
