@@ -70,6 +70,17 @@ class QueryParams:
         description="Perform NLU analysis to extract location and intention from the request.",
     )
 
+    @classmethod
+    def build(cls, *args, **kwargs):
+        """
+        Build an instance of `QueryParams` explicitly.
+
+        Dataclasses don't support `Query` annotations correctly through their
+        constructor, but we can initialize the object using the inner model
+        through this method.
+        """
+        return cls(**cls.__pydantic_model__(*args, **kwargs).dict())  # pylint: disable = no-member
+
     def bragi_query_dict(self):
         """
         Return a dict with parameters accepted by the bragi API

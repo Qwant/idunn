@@ -9,9 +9,11 @@ from geopy import Point
 from idunn import settings
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
+from idunn.geocoder.models import QueryParams
 from idunn.places import place_from_id, Place
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
 from idunn.utils import maps_urls, result_filter
+from idunn.utils.regions import get_region_lonlat
 from idunn.instant_answer import normalize
 from .constants import PoiSource
 from .utils import Verbosity
@@ -71,7 +73,7 @@ class InstantAnswerResponse(BaseModel):
     data: InstantAnswerData
 
 
-def no_instant_answer(query=None, lang=None):
+def no_instant_answer(query=None, lang=None, region=None):
     if query is not None:
         logger.info(
             "get_instant_answer: no answer",
@@ -79,6 +81,7 @@ def no_instant_answer(query=None, lang=None):
                 "request": {
                     "query": query,
                     "lang": lang,
+                    "region": region,
                 }
             },
         )
@@ -182,7 +185,9 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
 
 
 async def get_instant_answer(
-    q: str = Query(..., title="Query string"), lang: str = Query("en", title="Language")
+    q: str = Query(..., title="Query string"),
+    lang: str = Query("en", title="Language"),
+    user_country: Optional[str] = Query(None, title="Region where the user is located"),
 ):
     """
     Perform a query with result intended to be displayed as an instant answer
@@ -194,7 +199,13 @@ async def get_instant_answer(
     normalized_query = normalize(q)
 
     if len(normalized_query) > ia_max_query_length:
-        return no_instant_answer(query=q, lang=lang)
+        return no_instant_answer(query=q, lang=lang, region=user_country)
+
+    extra_geocoder_params = {}
+
+    if user_country and get_region_lonlat(user_country) is not None:
+        extra_geocoder_params["lon"], extra_geocoder_params["lat"] = get_region_lonlat(user_country)
+        extra_geocoder_params["zoom"] = 6
 
     if normalized_query == "":
         if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
@@ -204,11 +215,13 @@ async def get_instant_answer(
                 maps_frame_url=maps_urls.get_default_url(no_ui=True),
             )
             return build_response(result, query=q, lang=lang)
-        return no_instant_answer(query=q, lang=lang)
+        return no_instant_answer(query=q, lang=lang, region=user_country)
 
     if lang in nlu_allowed_languages:
         try:
-            intentions = await nlu_client.get_intentions(text=normalized_query, lang=lang)
+            intentions = await nlu_client.get_intentions(
+                normalized_query, lang, extra_geocoder_params
+            )
             if intentions:
                 return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
         except NluClientException:
@@ -216,9 +229,8 @@ async def get_instant_answer(
             pass
 
     # Direct geocoding query
-    bragi_response = await bragi_client.raw_autocomplete(
-        {"q": normalized_query, "lang": lang, "limit": 5}
-    )
+    query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
+    bragi_response = await bragi_client.autocomplete(query)
     geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
     geocodings = sorted(
         (
@@ -233,7 +245,7 @@ async def get_instant_answer(
     )
 
     if not geocodings:
-        return no_instant_answer(query=q, lang=lang)
+        return no_instant_answer(query=q, lang=lang, region=user_country)
 
     place_id = geocodings[0][1]["id"]
     result = await run_in_threadpool(get_instant_answer_single_place, place_id=place_id, lang=lang)

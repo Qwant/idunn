@@ -14,7 +14,7 @@ class BragiClient:
     def __init__(self):
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
-    async def autocomplete(self, query: QueryParams, extra: ExtraParams):
+    async def autocomplete(self, query: QueryParams, extra: ExtraParams = ExtraParams()):
         params = query.bragi_query_dict()
         body = None
         if extra.shape:
