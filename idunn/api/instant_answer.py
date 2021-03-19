@@ -71,10 +71,35 @@ class InstantAnswerResponse(BaseModel):
     data: InstantAnswerData
 
 
-NoInstantAnswerToDisplay = HTTPException(status_code=404, detail="No instant answer to display")
+def no_instant_answer(query=None, lang=None):
+    if query is not None:
+        logger.info(
+            "get_instant_answer: no answer",
+            extra={
+                "request": {
+                    "query": query,
+                    "lang": lang,
+                }
+            },
+        )
+    raise HTTPException(status_code=404, detail="No instant answer to display")
 
 
 def build_response(result: InstantAnswerResult, query: str, lang: str):
+    nb_places = len(result.places)
+    logger.info(
+        "get_instant_answer: OK",
+        extra={
+            "request": {
+                "query": query,
+                "lang": lang,
+            },
+            "response": {
+                "nb_places": nb_places,
+                "place_id": result.places[0].id if nb_places == 1 else None,
+            },
+        },
+    )
     return ORJSONResponse(
         InstantAnswerResponse(
             data=InstantAnswerData(result=result, query=InstantAnswerQuery(query=query, lang=lang)),
@@ -85,9 +110,11 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
 def get_instant_answer_single_place(place_id: str, lang: str):
     try:
         place = place_from_id(place_id, follow_redirect=True)
-    except Exception as exc:
-        logger.warning("Failed to get place for instant answer", exc_info=True)
-        raise NoInstantAnswerToDisplay from exc
+    except Exception:
+        logger.warning(
+            "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
+        )
+        return no_instant_answer()
 
     detailed_place = place.load_place(lang=lang)
     return InstantAnswerResult(
@@ -99,68 +126,9 @@ def get_instant_answer_single_place(place_id: str, lang: str):
     )
 
 
-async def get_instant_answer(
-    q: str = Query(..., title="Query string"), lang: str = Query("en", title="Language")
-):
-    """
-    Perform a query with result intended to be displayed as an instant answer
-    on *qwant.com*.
-
-    This should not be confused with "Get Places Bbox" as this endpoint will
-    run more restrictive checks on its results.
-    """
-    normalized_query = normalize(q)
-
-    if len(normalized_query) > ia_max_query_length:
-        raise NoInstantAnswerToDisplay
-
-    if normalized_query == "":
-        if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
-            result = InstantAnswerResult(
-                places=[],
-                maps_url=maps_urls.get_default_url(),
-                maps_frame_url=maps_urls.get_default_url(no_ui=True),
-            )
-            return build_response(result, query=q, lang=lang)
-        raise NoInstantAnswerToDisplay
-
-    if lang in nlu_allowed_languages:
-        try:
-            intentions = await nlu_client.get_intentions(text=normalized_query, lang=lang)
-        except NluClientException:
-            intentions = []
-    else:
-        intentions = []
-
-    if not intentions:
-        bragi_response = await bragi_client.raw_autocomplete(
-            {"q": normalized_query, "lang": lang, "limit": 5}
-        )
-        geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
-        geocodings = sorted(
-            (
-                (
-                    result_filter.rank_bragi_response(normalized_query, feature),
-                    feature,
-                )
-                for feature in geocodings
-                if result_filter.check_bragi_response(normalized_query, feature)
-            ),
-            key=lambda item: -item[0],  # sort by descending rank
-        )
-
-        if geocodings:
-            place_id = geocodings[0][1]["id"]
-            result = await run_in_threadpool(
-                get_instant_answer_single_place, place_id=place_id, lang=lang
-            )
-            return build_response(result, query=q, lang=lang)
-
-        raise NoInstantAnswerToDisplay
-
-    intention = intentions[0]
+async def get_instant_answer_intention(intention, query: str, lang: str):
     if not intention.filter.bbox:
-        raise NoInstantAnswerToDisplay
+        return no_instant_answer(query=query, lang=lang)
 
     category = intention.filter.category
 
@@ -190,7 +158,7 @@ async def get_instant_answer(
 
     places = places_bbox_response.places
     if len(places) == 0:
-        raise NoInstantAnswerToDisplay
+        return no_instant_answer(query=query, lang=lang)
 
     if len(places) == 1:
         place_id = places[0].id
@@ -210,4 +178,63 @@ async def get_instant_answer(
             maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
         )
 
+    return build_response(result, query=query, lang=lang)
+
+
+async def get_instant_answer(
+    q: str = Query(..., title="Query string"), lang: str = Query("en", title="Language")
+):
+    """
+    Perform a query with result intended to be displayed as an instant answer
+    on *qwant.com*.
+
+    This should not be confused with "Get Places Bbox" as this endpoint will
+    run more restrictive checks on its results.
+    """
+    normalized_query = normalize(q)
+
+    if len(normalized_query) > ia_max_query_length:
+        return no_instant_answer(query=q, lang=lang)
+
+    if normalized_query == "":
+        if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
+            result = InstantAnswerResult(
+                places=[],
+                maps_url=maps_urls.get_default_url(),
+                maps_frame_url=maps_urls.get_default_url(no_ui=True),
+            )
+            return build_response(result, query=q, lang=lang)
+        return no_instant_answer(query=q, lang=lang)
+
+    if lang in nlu_allowed_languages:
+        try:
+            intentions = await nlu_client.get_intentions(text=normalized_query, lang=lang)
+            if intentions:
+                return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
+        except NluClientException:
+            # No intention could be interpreted from query
+            pass
+
+    # Direct geocoding query
+    bragi_response = await bragi_client.raw_autocomplete(
+        {"q": normalized_query, "lang": lang, "limit": 5}
+    )
+    geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
+    geocodings = sorted(
+        (
+            (
+                result_filter.rank_bragi_response(normalized_query, feature),
+                feature,
+            )
+            for feature in geocodings
+            if result_filter.check_bragi_response(normalized_query, feature)
+        ),
+        key=lambda item: -item[0],  # sort by descending rank
+    )
+
+    if not geocodings:
+        return no_instant_answer(query=q, lang=lang)
+
+    place_id = geocodings[0][1]["id"]
+    result = await run_in_threadpool(get_instant_answer_single_place, place_id=place_id, lang=lang)
     return build_response(result, query=q, lang=lang)
