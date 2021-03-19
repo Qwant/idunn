@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from fastapi import Body, Depends
-from shapely.geometry import Point
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.nlu_client import nlu_client, NluClientException
 from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
@@ -65,12 +64,8 @@ async def get_autocomplete(
         if not query.nlu and not autocomplete_nlu_shadow_enabled:
             return None
 
-        focus = None
-        if query.lon and query.lat:
-            focus = Point(query.lon, query.lat)
-
         try:
-            return await nlu_client.get_intentions(text=query.q, lang=query.lang, focus=focus)
+            return await nlu_client.get_intentions(text=query.q, lang=query.lang)
         except NluClientException as exp:
             logger.info("Ignored NLU for '%s': %s", query.q, exp.reason(), extra=exp.extra)
             return []

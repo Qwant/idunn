@@ -2,14 +2,14 @@ import asyncio
 import httpx
 import logging
 import re
-from shapely.geometry import mapping
 from unidecode import unidecode
 
-from idunn import settings
 from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
 from idunn.api.utils import Category
-from idunn.utils import result_filter
+from idunn.geocoder.models.params import QueryParams as GeocoderParams
+from idunn import settings
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
+from idunn.utils import result_filter
 
 from .models.geocodejson import Intention
 from .bragi_client import bragi_client
@@ -114,12 +114,26 @@ class NLU_Helper:  # pylint: disable = invalid-name
             return True
         return result_filter.check_bragi_response(q, bragi_res)
 
-    async def build_intention_category_place(self, cat_query, place_query, lang, is_brand=False):
+    async def build_intention_category_place(
+        self,
+        cat_query,
+        place_query,
+        lang,
+        is_brand=False,
+        extra_geocoder_params=None,
+    ):
         async def get_category():
             return await self.classify_category(cat_query, is_brand=is_brand)
 
+        bragi_params = GeocoderParams.build(
+            q=place_query,
+            lang=lang,
+            limit=1,
+            **(extra_geocoder_params or {}),
+        )
+
         bragi_result, category = await asyncio.gather(
-            bragi_client.raw_autocomplete(params={"q": place_query, "lang": lang, "limit": 1}),
+            bragi_client.autocomplete(bragi_params),
             get_category(),
         )
 
@@ -197,7 +211,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
         return " ".join(tags)
 
-    async def post_intentions(self, text, lang, _focus=None):
+    async def post_intentions(self, text, lang):
         tagger_url = settings["NLU_TAGGER_URL"]
         tagger_domain = settings["NLU_TAGGER_DOMAIN"]
         # this settings is an immutable string required as a parameter for the NLU API
@@ -212,19 +226,17 @@ class NLU_Helper:  # pylint: disable = invalid-name
         response_nlu.raise_for_status()
         return response_nlu
 
-    async def get_intentions(self, text, lang, focus=None) -> [Intention]:
+    async def get_intentions(self, text, lang, extra_geocoder_params=None) -> [Intention]:
         logs_extra = {
             "intention_detection": {
                 "text": text,
                 "lang": lang,
-                "focus": mapping(focus).get("coordinates") if focus is not None else None,
+                "extra_geocoder_params": extra_geocoder_params,
             }
         }
 
         try:
-            response_nlu = await tagger_circuit_breaker.call_async(
-                self.post_intentions, text, lang, focus
-            )
+            response_nlu = await tagger_circuit_breaker.call_async(self.post_intentions, text, lang)
         except Exception:
             logger.error("Request to NLU tagger failed", exc_info=True, extra=logs_extra)
             return []
@@ -257,7 +269,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 # Brands are handled the same way categories except that we don't want to process
                 # them with the classifier.
                 intention = await self.build_intention_category_place(
-                    cat_or_brand_query, place_query, lang=lang, is_brand=bool(brand_query)
+                    cat_or_brand_query, place_query, lang, bool(brand_query), extra_geocoder_params
                 )
             else:
                 # 1 category or brand
