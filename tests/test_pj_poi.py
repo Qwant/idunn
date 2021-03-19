@@ -95,7 +95,7 @@ def test_pj_place(enable_pj_source):
     assert blocks[5]["type"] == "grades"
     assert blocks[5]["total_grades_count"] == 8
     assert blocks[5]["global_grade"] == 4.0
-    assert blocks[5]["url"] == "https://[VOIR_TOUS_AVIS]"
+    assert blocks[5]["url"] == "https://www.pagesjaunes.fr/pros/05360257#ancreBlocAvis"
 
 
 @pytest.mark.parametrize(
