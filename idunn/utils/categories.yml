@@ -93,26 +93,17 @@ categories:
     health:
         pj_what: "hopital"
         pj_filters:
-            - "Centre médico-social"
-            - "Chirurgien-dentiste"
-            - "Médecin généraliste"
             - "Hôpital"
         raw_filters:
             - "clinic,*"
-            - "dentist,*"
-            - "doctors,*"
             - "hospital,*"
-        regex: "health|sante|hopital|hospital|clinic|clinique|dentist|doctor|docteur"
+        regex: "health|sante|hopital|hospital|clinic|clinique"
     service:
         pj_what: "poste"
         pj_filters:
             - "envoi, distribution de courrier, de colis"
         raw_filters:
-            - "car_repair,*"
             - "post_office,*"
-            - "townhall,*"
-            - "police,*"
-            - "fire_station,*"
         regex: "(^| )post"
     police:
         pj_what: "police"
