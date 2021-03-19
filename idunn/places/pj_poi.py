@@ -395,14 +395,7 @@ class PjApiPOI(BasePlace):
         return PoiSource.PAGESJAUNES
 
     def get_source_url(self):
-        return next(
-            (
-                ins.urls.merchant_url
-                for ins in self.data.inscriptions
-                if ins.urls and ins.urls.merchant_url
-            ),
-            None,
-        )
+        return f"https://www.pagesjaunes.fr/pros/{self.data.merchant_id}"
 
     def get_raw_grades(self):
         grade_count = sum(
@@ -425,11 +418,4 @@ class PjApiPOI(BasePlace):
         }
 
     def get_reviews_url(self):
-        return next(
-            (
-                ins.urls.reviews_url
-                for ins in self.data.inscriptions
-                if ins.urls and ins.urls.reviews_url
-            ),
-            None,
-        )
+        return self.get_source_url() + "#ancreBlocAvis"
