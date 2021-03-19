@@ -114,10 +114,11 @@ class ApiPjSource(PjSource):
     PJ_RESULT_MAX_SIZE = 30
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
     PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
+    PJ_API_TIMEOUT = float(settings.get("PJ_API_TIMEOUT"))
 
     def __init__(self):
         super().__init__()
-        self.session = PjAuthSession()
+        self.session = PjAuthSession(refresh_timeout=self.PJ_API_TIMEOUT)
 
     @staticmethod
     def format_where(bbox):
@@ -125,7 +126,7 @@ class ApiPjSource(PjSource):
         return f"gZ{left},{top},{right},{bot}"
 
     def get_from_params(self, url, params=None) -> PjApiPOI:
-        res = self.session.get(url, params=params)
+        res = self.session.get(url, params=params, timeout=self.PJ_API_TIMEOUT)
         res.raise_for_status()
         return res.json()
 
