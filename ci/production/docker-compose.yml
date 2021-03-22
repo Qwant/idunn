@@ -36,8 +36,8 @@ services:
       - IDUNN_SECRET=${QMAPS_SECRET_PROD}
       - IDUNN_BASE_URL=https://www.qwant.com/maps/detail/
       - IDUNN_MAPS_BASE_URL=https://www.qwant.com/maps/
-      # - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PROD}
-      # - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PROD}
+      - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PROD}
+      - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PROD}
       - IDUNN_BANCHECK_ENABLED=true
       - IDUNN_BANCHECK_TIMEOUT=0.5
       - IDUNN_QWANT_API_BASE_URL=http://foundation
