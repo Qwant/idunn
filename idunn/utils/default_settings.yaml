@@ -136,6 +136,11 @@ NLU_TAGGER_LOWERCASE: True
 NLU_CLASSIFIER_URL:
 NLU_CLASSIFIER_DOMAIN: "poi"
 
+# Classifier parameters
+NLU_CLASSIFIER_MIN_UNK_IGNORED: 0.1 # Minimum value for "unk" to consider query as unclassified
+NLU_CLASSIFIER_CATEGORY_MIN_WEIGHT: 0.15 # Minimum weight required for a category
+NLU_CLASSIFIER_MAX_WEIGHT_RATIO: 0.6 # Maximal ratio with the second best result
+
 NLU_BREAKER_TIMEOUT: 120 # timeout period in seconds
 NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
