@@ -2,6 +2,7 @@ import asyncio
 import httpx
 import logging
 import re
+from typing import Optional
 from unidecode import unidecode
 
 from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
@@ -48,6 +49,10 @@ classifier_circuit_breaker = IdunnCircuitBreaker(
 
 
 class NLU_Helper:  # pylint: disable = invalid-name
+    CLASSIF_MIN_UNK_IGNORED = float(settings["NLU_CLASSIFIER_MIN_UNK_IGNORED"])
+    CLASSIF_CATEGORY_MIN_WEIGHT = float(settings["NLU_CLASSIFIER_CATEGORY_MIN_WEIGHT"])
+    CLASSIF_MAX_WEIGHT_RATIO = float(settings["NLU_CLASSIFIER_MAX_WEIGHT_RATIO"])
+
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
 
@@ -56,12 +61,55 @@ class NLU_Helper:  # pylint: disable = invalid-name
         classifier_domain = settings["NLU_CLASSIFIER_DOMAIN"]
         response_classifier = await self.client.post(
             classifier_url,
-            json={"text": text, "domain": classifier_domain, "language": "fr", "count": 1},
+            json={
+                "text": text,
+                "domain": classifier_domain,
+                "language": "fr",
+                "count": 10,
+            },
         )
         response_classifier.raise_for_status()
         return response_classifier
 
-    async def nlu_classifier(self, text):
+    @classmethod
+    def nlu_classifier_handle_response(cls, response) -> Optional[Category]:
+        """
+        Analyze raw classifier response to find an unambiguous category from
+        its result if any.
+
+        >>> NLU_Helper.nlu_classifier_handle_response({
+        ...     "intention": [(0.95, "restaurant"), (0.01, "cinema")],
+        ... }).value
+        'restaurant'
+        >>> NLU_Helper.nlu_classifier_handle_response({
+        ...     "intention": [(0.02, "restaurant"), (0.01, "cinema")],
+        ... }) is None
+        True
+        """
+        categories = {cat: weight for weight, cat in response["intention"]}
+
+        if (
+            # The classifier puts high probability to be unclassified ("unk").
+            categories.pop("unk", 0) >= cls.CLASSIF_MIN_UNK_IGNORED
+            # No category found by the classifier.
+            or not categories
+        ):
+            return None
+
+        best, max_weight = max(categories.items(), key=lambda x: x[1])
+        del categories[best]
+
+        if (
+            # There is no category with a fair probability.
+            max_weight < cls.CLASSIF_CATEGORY_MIN_WEIGHT
+            # There is at least one category with a weight close to the best one.
+            or (categories and max(categories.values()) > cls.CLASSIF_MAX_WEIGHT_RATIO * max_weight)
+        ):
+            return None
+
+        return Category.__members__.get(best)
+
+    async def nlu_classifier(self, text) -> Optional[Category]:
         try:
             response_classifier = await classifier_circuit_breaker.call_async(
                 self.post_nlu_classifier, text
@@ -70,10 +118,10 @@ class NLU_Helper:  # pylint: disable = invalid-name
             logger.error("Request to NLU classifier failed", exc_info=True)
             return None
 
-        return response_classifier.json()["intention"][0][1]
+        return self.nlu_classifier_handle_response(response_classifier.json())
 
     @staticmethod
-    def regex_classifier(text, is_brand=False):
+    def regex_classifier(text, is_brand=False) -> Optional[Category]:
         """Match text with a category, using 'regex'
         >>> NLU_Helper.regex_classifier("restau").value
         'restaurant'

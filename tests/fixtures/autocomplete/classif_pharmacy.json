@@ -3,8 +3,16 @@
     "domain": "poi",
     "intention": [
         [
+            1.0000003385357559e-05,
+            "health_other"
+        ],
+        [
             1.0000100135803223,
             "pharmacy"
+        ],
+        [
+            1.0000003385357559e-05,
+            "place_of_worship"
         ]
     ],
     "text": "pharmacy",
