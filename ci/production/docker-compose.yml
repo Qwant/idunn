@@ -39,6 +39,7 @@ services:
       # - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PROD}
       # - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PROD}
       - IDUNN_BANCHECK_ENABLED=true
+      - IDUNN_BANCHECK_TIMEOUT=0.5
       - IDUNN_QWANT_API_BASE_URL=http://foundation
       - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation
     extra_hosts:
