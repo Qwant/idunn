@@ -164,15 +164,15 @@ class ApiPjSource(PjSource):
 
         api_places = self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
-        # Remove duplicated merchant ids that may be returned in different pages
+        # Remove null merchant ids
+        # or duplicated merchant ids that may be returned in different pages
         merchant_ids = set()
         places = []
         for p in api_places:
             merchant_id = p.data.merchant_id
-            if merchant_id not in merchant_ids:
+            if merchant_id and (merchant_id not in merchant_ids):
                 places.append(p)
-                if merchant_id:
-                    merchant_ids.add(merchant_id)
+                merchant_ids.add(merchant_id)
         return places
 
     def get_place(self, poi_id) -> PjApiPOI:
