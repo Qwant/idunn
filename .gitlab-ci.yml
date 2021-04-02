@@ -1,8 +1,12 @@
 stages:
   - build
+  - configure
   - development
   - prelive
   - production
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 
 
 before_script:
@@ -50,6 +54,35 @@ build:
       - ci/production/docker-compose.yml
       - docker-compose.yml
 
+build classifier:
+  stage: build
+  variables:
+    DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
+    TARGET_IMAGE: "$CI_REGISTRY_IMAGE/classifier/maps:1"
+    SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:qmaps-1984"
+  script:
+    - docker pull "$SOURCE_IMAGE"
+    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
+    - docker push "$TARGET_IMAGE"
+  tags:
+    - edge
+    - shell
+
+configure:
+  stage: configure
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - source ci/bootstrap.sh
+  script:
+    - configure-values ci/values/
+  artifacts:
+    paths:
+      - ci/
+  dependencies:
+    - build
+  tags:
+    - light
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.09
@@ -72,12 +105,31 @@ build:
     STACK_NAME: "$CI_PROJECT_ID"
   when: manual
 
+.deploy-kube:
+  image: registry.qwant.ninja/docker/kubectl:master
+  tags:
+    - light-docker
+  before_script:
+    - source ci/bootstrap.sh
+    - helm registry login
+      --username "$CI_REGISTRY_USER"
+      --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
+  script:
+    - kubeconfig
+    - helm chart pull "$HELM_CHART_REF"
+    - helm chart export "$HELM_CHART_REF" -d ci/
+    - helm-deploy
+  variables:
+    GIT_STRATEGY: none
+    HELM_EXPERIMENTAL_OCI: 1
+    HELM_VALUE_FILES: "ci/values/$COMPONENT_NAME/common.yaml:ci/values/$COMPONENT_NAME/$CI_JOB_STAGE.yaml"
+  resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
 
 deploy development:
   extends: .deploy
   stage: development
   environment:
-    name: development
+    name: "development/idunn"
     url: "http://maps.dev.qwant.ninja/maps"
   script:
     - deploy
@@ -85,16 +137,35 @@ deploy development:
     KUZZLE_SERVICE_NAME: "1216_kuzzle"
     NLU_SERVICE_NAME: "1701_nlu"
 
+deploy classifier development:
+  extends: .deploy-kube
+  stage: development
+  environment:
+    name: "development/classifier"
+  variables:
+    COMPONENT_NAME: classifier
+    HELM_RELEASE: "classifier"
+    HELM_CHART: "ci/text-classifier"
+    HELM_CHART_REF: "$CI_REGISTRY/helm/text-classifier@sha256:882657f07417c47b3e7813e3edf8970ce89f083c7a9b30cdb5ae402d94ccbcf3"
+    KUBE_ENV: development
+  when: manual
 
 deploy prelive:
   extends: "deploy development"
   stage: prelive
   environment:
-    name: prelive
+    name: "prelive/idunn"
     url: "https://www.qwant.plive/maps"
   variables:
     DOCKER_HOST: "tcp://10.103.9.1:2375"
 
+deploy classifier prelive:
+  extends: deploy classifier development
+  stage: prelive
+  environment:
+    name: "prelive/classifier"
+  variables:
+    KUBE_ENV: integration
 
 deploy production:
   extends: "deploy prelive"

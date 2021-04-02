@@ -1,0 +1,41 @@
+nameOverride: classifier
+
+global:
+  labels:
+    job: "${CI_JOB_ID}"
+    pipeline: "${CI_PIPELINE_ID}"
+    product: "${CI_PRODUCT_ID}"
+    ref: "${CI_COMMIT_REF_NAME}"
+
+  registry:
+    url: "${CI_REGISTRY}"
+    username: "${CI_DEPLOY_USER}"
+    password: "${CI_DEPLOY_PASSWORD}"
+
+image: ${CI_REGISTRY}/product/maps/idunn/classifier/maps:1
+
+port: 9009
+configPath: "/usr/local/share/text-classifier/configs/models_config_maps.yaml"
+nThreads: 2
+debug: 1
+
+resources:
+  requests:
+    cpu: 0.5
+    memory: 256Mi
+  limits:
+    cpu: 1
+    memory: 500Mi 
+
+service:
+  type: "ClusterIP"
+  ingress: true
+
+networkPolicies:
+  ingress:
+  - ports:
+    - port: 80
+      protocol: TCP
+  - ports:
+    - port: 9009
+      protocol: TCP
