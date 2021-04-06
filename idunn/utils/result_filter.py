@@ -101,6 +101,7 @@ def word_matches(query_word, label_word):
     >>> assert not word_matches("évêque", "eveque")
 
     >>> assert word_matches("bd", "boulevard")
+    >>> assert not word_matches("la", "da")
     """
     query_word_as_num = word_as_number(query_word)
     label_word_as_num = word_as_number(label_word)
@@ -109,12 +110,14 @@ def word_matches(query_word, label_word):
         return query_word_as_num == label_word_as_num
 
     # The label can be matched with or without accent
-    label_variants = [label_word, unidecode(label_word)]
+    label_variants = {label_word, unidecode(label_word)}
 
     return (
         # This first check is redundant with the second one but is less expensive to compute
         any(query_word == s for s in label_variants)
-        or any(damerau_levenshtein_distance(query_word, s) <= 1 for s in label_variants)
+        or any(
+            damerau_levenshtein_distance(query_word, s) <= 1 for s in label_variants if len(s) > 2
+        )
         or any(word_matches_abreviation(query_word, s) for s in label_variants)
     )
 
