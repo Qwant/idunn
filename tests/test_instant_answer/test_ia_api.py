@@ -97,4 +97,4 @@ def test_ia_intention_single_result(
 def test_ia_query_too_long():
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "A" * 101})
-    assert response.status_code == 404
+    assert response.status_code == 204

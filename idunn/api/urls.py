@@ -91,7 +91,7 @@ def get_api_urls(settings):
             response_model=InstantAnswerResponse,
             responses={
                 200: {"description": "Details about place(s) to display"},
-                404: {"description": "No instant answer to display"},
+                204: {"description": "No instant answer to display"},
             },
         ),
     ]

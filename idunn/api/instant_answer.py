@@ -1,6 +1,6 @@
 import logging
-from fastapi import HTTPException, Query
-from fastapi.responses import ORJSONResponse
+from fastapi import Query
+from fastapi.responses import ORJSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Tuple
 from pydantic import BaseModel, Field, validator, HttpUrl
@@ -85,7 +85,7 @@ def no_instant_answer(query=None, lang=None, region=None):
                 }
             },
         )
-    raise HTTPException(status_code=404, detail="No instant answer to display")
+    return Response(status_code=204)
 
 
 def build_response(result: InstantAnswerResult, query: str, lang: str):
