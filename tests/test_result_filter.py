@@ -5,7 +5,7 @@ def test_filter():
     place_infos = {
         "names": ["5 rue Gustave Zédé", "5, Zédéstraße"],
         "postcodes": ["79000"],
-        "place_type": "address",
+        "place_type": "house",
     }
 
     # Case is ignored
