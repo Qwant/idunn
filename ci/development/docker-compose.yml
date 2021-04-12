@@ -31,6 +31,7 @@ services:
       - IDUNN_MAPS_BASE_URL=https://maps.dev.qwant.ninja/maps/
       - IDUNN_PJ_API_ID=${QMAPS_PJ_ID_PLIVE}
       - IDUNN_PJ_API_SECRET=${QMAPS_PJ_SECRET_PLIVE}
+      - IDUNN_IA_SUCCESS_ON_GENERIC_QUERIES=true
       - no_proxy=es,bragi,wiki-es,1216_kuzzle,1701_nlu
     extra_hosts:
       - "wiki-es:10.100.31.26"

@@ -37,6 +37,7 @@ services:
       - IDUNN_BANCHECK_ENABLED=true
       - IDUNN_BANCHECK_TIMEOUT=0.5
       - IDUNN_QWANT_API_BASE_URL=http://foundation
+      - IDUNN_IA_SUCCESS_ON_GENERIC_QUERIES=true
       - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation
     extra_hosts:
       - "wiki-es:10.100.33.34"
