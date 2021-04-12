@@ -98,3 +98,12 @@ def test_ia_query_too_long():
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "A" * 101})
     assert response.status_code == 204
+
+
+def test_ia_addresses_ranking(mock_autocomplete_get):
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "43 rue de paris rennes"})
+    assert response.status_code == 200
+    places = response.json()["data"]["result"]["places"]
+    assert len(places) == 1
+    assert places[0]["name"] == "43 Rue de Paris"

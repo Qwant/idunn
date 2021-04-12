@@ -1,0 +1,503 @@
+{
+  "type": "FeatureCollection",
+  "geocoding": {
+    "version": "0.1.0",
+    "query": ""
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          2.332839,
+          48.853273
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "geocoding": {
+          "id": "addr:2.332839;48.853273:43",
+          "type": "house",
+          "label": "43 Rue de Rennes (Paris)",
+          "name": "43 Rue de Rennes",
+          "housenumber": "43",
+          "street": "Rue de Rennes",
+          "postcode": "75006",
+          "city": "Paris",
+          "citycode": "75056",
+          "administrative_regions": [
+            {
+              "id": "admin:osm:relation:2188547",
+              "insee": "",
+              "level": 10,
+              "label": "Quartier de Saint-Germain-des-Prés (75006), Paris 6e Arrondissement, Paris, Île-de-France, France",
+              "name": "Quartier de Saint-Germain-des-Prés",
+              "zip_codes": [
+                "75006"
+              ],
+              "coord": {
+                "lon": 2.333654916632788,
+                "lat": 48.85528688406656
+              },
+              "bbox": [
+                2.3286189,
+                48.8518682,
+                2.3369915999999997,
+                48.859350199999994
+              ],
+              "zone_type": "suburb",
+              "parent_id": "admin:osm:relation:9527",
+              "codes": [
+                {
+                  "name": "ref:TRIRIS",
+                  "value": "7510624"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q604717"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:9527",
+              "insee": "75106",
+              "level": 9,
+              "label": "Paris 6e Arrondissement (75006), Paris, Île-de-France, France",
+              "name": "Paris 6e Arrondissement",
+              "zip_codes": [
+                "75006"
+              ],
+              "coord": {
+                "lon": 2.3329507,
+                "lat": 48.8504333
+              },
+              "bbox": [
+                2.3165728,
+                48.8396547,
+                2.3445787,
+                48.859350199999994
+              ],
+              "zone_type": "city_district",
+              "parent_id": "admin:osm:relation:7444",
+              "codes": [
+                {
+                  "name": "ref:INSEE",
+                  "value": "75106"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q245546"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:7444",
+              "insee": "75056",
+              "level": 8,
+              "label": "Paris (75000-75116), Île-de-France, France",
+              "name": "Paris",
+              "zip_codes": [
+                "75000",
+                "75001",
+                "75002",
+                "75003",
+                "75004",
+                "75005",
+                "75006",
+                "75007",
+                "75008",
+                "75009",
+                "75010",
+                "75011",
+                "75012",
+                "75013",
+                "75014",
+                "75015",
+                "75016",
+                "75017",
+                "75018",
+                "75019",
+                "75020",
+                "75116"
+              ],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                2.224122,
+                48.8155755,
+                2.4697602,
+                48.902156
+              ],
+              "zone_type": "city",
+              "parent_id": "admin:osm:relation:71525",
+              "codes": [
+                {
+                  "name": "ref:FR:MGP",
+                  "value": "T1"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "75056"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q90"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:71525",
+              "insee": "75",
+              "level": 6,
+              "label": "Paris, Île-de-France, France",
+              "name": "Paris",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                2.224122,
+                48.8155755,
+                2.4697602,
+                48.902156
+              ],
+              "zone_type": "state_district",
+              "parent_id": "admin:osm:relation:8649",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-75"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "75"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR101"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:8649",
+              "insee": "11",
+              "level": 4,
+              "label": "Île-de-France, France",
+              "name": "Île-de-France",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                1.4462445,
+                48.1201456,
+                3.5592208,
+                49.241431
+              ],
+              "zone_type": "state",
+              "parent_id": "admin:osm:relation:2202162",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-IDF"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "11"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR10"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q13917"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:2202162",
+              "insee": "",
+              "level": 2,
+              "label": "France",
+              "name": "France",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                -178.3873749,
+                -50.2187169,
+                172.30571519999998,
+                51.3055721
+              ],
+              "zone_type": "country",
+              "parent_id": null,
+              "codes": [
+                {
+                  "name": "ISO3166-1",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha2",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha3",
+                  "value": "FRA"
+                },
+                {
+                  "name": "ISO3166-1:numeric",
+                  "value": "250"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q142"
+                }
+              ]
+            }
+          ],
+          "country_codes": [
+            "FR"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          -1.66647,
+          48.11255
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "geocoding": {
+          "id": "addr:-1.666470;48.112550:43",
+          "type": "house",
+          "label": "43 Rue de Paris (Rennes)",
+          "name": "43 Rue de Paris",
+          "housenumber": "43",
+          "street": "Rue de Paris",
+          "postcode": "35000;35200;35700",
+          "city": "Rennes",
+          "citycode": "35238",
+          "administrative_regions": [
+            {
+              "id": "admin:osm:relation:5511316",
+              "insee": "",
+              "level": 10,
+              "label": "Thabor - Saint-Hélier - Alphonse Guérin, Quartiers Centre, Rennes, Ille-et-Vilaine, Bretagne, France",
+              "name": "Thabor - Saint-Hélier - Alphonse Guérin",
+              "zip_codes": [],
+              "coord": {
+                "lon": -1.6654067,
+                "lat": 48.1128919
+              },
+              "bbox": [
+                -1.6812492,
+                48.1026455,
+                -1.6333381,
+                48.1248639
+              ],
+              "zone_type": "suburb",
+              "parent_id": "admin:osm:relation:5833873",
+              "codes": [
+                {
+                  "name": "wikidata",
+                  "value": "Q3413143"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:5833873",
+              "insee": "",
+              "level": 9,
+              "label": "Quartiers Centre, Rennes, Ille-et-Vilaine, Bretagne, France",
+              "name": "Quartiers Centre",
+              "zip_codes": [],
+              "coord": {
+                "lon": -1.6670346191366074,
+                "lat": 48.11171169402503
+              },
+              "bbox": [
+                -1.6882338,
+                48.1016348,
+                -1.6333381,
+                48.1248639
+              ],
+              "zone_type": "city_district",
+              "parent_id": "admin:osm:relation:54517",
+              "codes": []
+            },
+            {
+              "id": "admin:osm:relation:54517",
+              "insee": "35238",
+              "level": 8,
+              "label": "Rennes (35000-35700), Ille-et-Vilaine, Bretagne, France",
+              "name": "Rennes",
+              "zip_codes": [
+                "35000",
+                "35200",
+                "35700"
+              ],
+              "coord": {
+                "lon": -1.6800198,
+                "lat": 48.1113387
+              },
+              "bbox": [
+                -1.7525876,
+                48.0769155,
+                -1.6244045,
+                48.1549705
+              ],
+              "zone_type": "city",
+              "parent_id": "admin:osm:relation:7465",
+              "codes": [
+                {
+                  "name": "ref:FR:SIREN",
+                  "value": "213502388"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "35238"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q647"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:7465",
+              "insee": "35",
+              "level": 6,
+              "label": "Ille-et-Vilaine, Bretagne, France",
+              "name": "Ille-et-Vilaine",
+              "zip_codes": [],
+              "coord": {
+                "lon": -1.6800198,
+                "lat": 48.1113387
+              },
+              "bbox": [
+                -2.2889839999999997,
+                47.6313855,
+                -1.01569,
+                48.7220079
+              ],
+              "zone_type": "state_district",
+              "parent_id": "admin:osm:relation:102740",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-35"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "35"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR523"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q12549"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:102740",
+              "insee": "53",
+              "level": 4,
+              "label": "Bretagne, France",
+              "name": "Bretagne",
+              "zip_codes": [],
+              "coord": {
+                "lon": -1.6800198,
+                "lat": 48.1113387
+              },
+              "bbox": [
+                -5.1440329,
+                47.277755,
+                -1.01569,
+                48.9086459
+              ],
+              "zone_type": "state",
+              "parent_id": "admin:osm:relation:2202162",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-BRE"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "53"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR52"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q12130"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:2202162",
+              "insee": "",
+              "level": 2,
+              "label": "France",
+              "name": "France",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                -178.3873749,
+                -50.2187169,
+                172.30571519999998,
+                51.3055721
+              ],
+              "zone_type": "country",
+              "parent_id": null,
+              "codes": [
+                {
+                  "name": "ISO3166-1",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha2",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha3",
+                  "value": "FRA"
+                },
+                {
+                  "name": "ISO3166-1:numeric",
+                  "value": "250"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q142"
+                }
+              ]
+            }
+          ],
+          "country_codes": [
+            "FR"
+          ]
+        }
+      }
+    }
+  ]
+}
