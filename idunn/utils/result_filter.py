@@ -159,7 +159,7 @@ def check(
     names = list(map(str.lower, names))
     admins = list(map(str.lower, admins))
 
-    if place_type == "address":
+    if place_type == "house":
         query_words = [word for word in query_words if word not in NUM_SUFFIXES]
 
     # Check if all words of the query match a word in the result
@@ -217,10 +217,10 @@ def rank(
 ) -> float:
     query_words = words(query.lower())
 
-    if place_type == "address":
+    if place_type == "house":
         query_words = [word for word in query_words if word not in NUM_SUFFIXES]
 
-    if place_type in ["street", "address"] and len(query_words) > 1:
+    if place_type in ["street", "house"] and len(query_words) > 1:
         # Count the number of adjacent words from the query which are both
         # part of a same field. The intention is to avoid swapping words
         # between name and admin.

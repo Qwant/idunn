@@ -65,6 +65,10 @@ def mock_autocomplete_get(httpx_mock):
             json=read_fixture("fixtures/autocomplete/auchan.json")
         )
 
+        httpx_mock.get(
+            re.compile(rf"^{BASE_URL}/autocomplete.*q=43\+rue\+de\+paris\+rennes.*")
+        ).respond(json=read_fixture("fixtures/autocomplete/43_rue_de_paris_rennes.json"))
+
         httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=FIXTURE_AUTOCOMPLETE)
 
         yield
