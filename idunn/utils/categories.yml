@@ -81,7 +81,7 @@ categories:
     food_pizza:
         raw_filters:
           - "restaurant,pizza"
-        pj_what: "pizzaria"
+        pj_what: "pizzeria"
 
     food_burger:
         raw_filters:
@@ -100,47 +100,47 @@ categories:
 
     food_sandwich:
         raw_filters:
-          - "restaurant,*sandwich*"
+          - "restaurant,sandwich"
         pj_what: "sandwicherie"
 
     food_asian:
         raw_filters:
-          - "restaurant,*asian*"
+          - "restaurant,asian"
         pj_what: "restaurant asiatique"
 
     food_japanese:
         raw_filters:
-          - "restaurant,*japanese*"
+          - "restaurant,japanese"
         pj_what: "restaurant japonais"
 
     food_chinese:
         raw_filters:
-          - "restaurant,*chinese*"
+          - "restaurant,chinese"
         pj_what: "restaurant chinois"
 
     food_crepe:
         raw_filters:
-          - "restaurant,*crepe*"
+          - "restaurant,crepe"
         pj_what: "crêperie"
 
     food_indian:
         raw_filters:
-          - "restaurant,*indian*"
+          - "restaurant,indian"
         pj_what: "restaurant indien"
 
     food_thai:
         raw_filters:
-          - "restaurant,*thai*"
+          - "restaurant,thai"
         pj_what: "restaurant thaï"
 
     food_vietnamese:
         raw_filters:
-          - "restaurant,*vietnamese*"
+          - "restaurant,vietnamese"
         pj_what: "restaurant vietnamien"
 
     food_lebanese:
         raw_filters:
-          - "restaurant,*lebanese*"
+          - "restaurant,lebanese"
         pj_what: "restaurant libanais"
 
     parking:
@@ -168,7 +168,6 @@ categories:
         regex: "cathedral|church|eglise|mosque|synagogue|temple"
         raw_filters:
           - "place_of_worship,*"
-        pj_what: "lieu de culte"
 
     recycling:
         regex: "recycl|tri selectif|dechett?err?ie"
@@ -184,21 +183,20 @@ categories:
         regex: "^ecole|^college"
         raw_filters:
           - "school,*"
-        pj_what: "école"
+        pj_what: "école collège lycée"
 
     park:
         raw_filters:
           - "park,*"
           - "garden,*"
           - "dog_park,*"
-          - "water_park,*"
 
     shop_bakery:
         raw_filters:
           - "shop,bakery"
           - "shop,confectionery"
           - "shop,chocolate"
-        pj_what: "pâtisserie"
+        pj_what: "boulangerie"
 
     shop_clothes:
         raw_filters:
@@ -254,14 +252,7 @@ categories:
     hotel:
         regex: "hotel"
         raw_filters:
-          - "*,hotel"
-          - "*,chalet"
-          - "*,hostel"
-          - "*,alpine_hut"
-          - "*,motel"
-          - "*,bed_and_breakfast"
-          - "*,guest_house"
-          - "*,dormitory"
+          - "lodging,*"
         pj_what: "hôtels"
         pj_filters:
           - "hôtels"
@@ -289,7 +280,6 @@ categories:
           - "well,*"
           - "folly,*"
           - "ruins,*"
-        pj_what: "monument historique"
 
     post_office:
         raw_filters:
@@ -304,7 +294,6 @@ categories:
     community_centre:
         raw_filters:
           - "*,community_centre"
-        pj_what: "centre communal"
 
     shop_convenience:
         raw_filters:
@@ -333,9 +322,7 @@ categories:
         regex: "^gare( |$)"
         raw_filters:
           - "railway,station"
-          - "railway,tram_stop"
           - "railway,halt"
-        pj_what: "gare"
 
     shop_butcher:
         raw_filters:
@@ -353,7 +340,7 @@ categories:
           - "tourism,attraction"
           - "tourism,theme_park"
           - "tourism,zoo"
-        pj_what: "loisir"
+          - "water_park,*"
 
     health_hospital:
         raw_filters:
@@ -431,7 +418,7 @@ categories:
 
     grave_yard:
         raw_filters:
-          - "grave_yard,*"
+          - "cemetery,*"
         pj_what: "cimetière"
 
     shop_beauty:
@@ -461,7 +448,7 @@ categories:
           - "*,hardware"
         pj_what: "magasin de bricolage"
 
-    tourismebicycle_rental:
+    bicycle_rental:
         raw_filters:
           - "bicycle_rental,*"
         pj_what: "location de vélo"
@@ -566,11 +553,6 @@ categories:
           - "*,travel_agency"
         pj_what: "agence de voyage"
 
-    shop_other:
-        raw_filters:
-          - "shop,*"
-        pj_what: "magasin"
-
     sport_other:
         raw_filters:
           - "sport,*"
@@ -595,7 +577,6 @@ categories:
     marketplace:
         raw_filters:
           - "*,marketplace"
-        pj_what: "marché"
 
 
 outing_types:
