@@ -6,9 +6,10 @@ from ..geocoder.nlu_client import nlu_client, NluClientException
 from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings
-from idunn.utils import result_filter
+from idunn.utils.result_filter import ResultFilter
 
 logger = logging.getLogger(__name__)
+result_filter = ResultFilter()
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 autocomplete_nlu_shadow_enabled = settings["AUTOCOMPLETE_NLU_SHADOW_ENABLED"]

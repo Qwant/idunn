@@ -4,10 +4,12 @@ from fastapi import Body, Depends
 from idunn import settings
 from idunn.api.geocoder import get_autocomplete
 from idunn.utils import result_filter
+from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
 from ..geocoder.models import ExtraParams, QueryParams, IdunnAutocomplete
 
 logger = logging.getLogger(__name__)
+result_filter = ResultFilter(match_word_prefix=True, min_matching_words=3)
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 

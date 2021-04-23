@@ -10,12 +10,13 @@ from idunn.api.utils import Category
 from idunn.geocoder.models.params import QueryParams as GeocoderParams
 from idunn import settings
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
-from idunn.utils import result_filter
+from idunn.utils.result_filter import ResultFilter
 
 from .models.geocodejson import Intention
 from .bragi_client import bragi_client
 
 logger = logging.getLogger(__name__)
+result_filter = ResultFilter()
 
 DEFAULT_BBOX_WIDTH = 0.02
 DEFAULT_BBOX_HEIGHT = 0.01
