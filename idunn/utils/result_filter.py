@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # Typical suffixes found after numbers such as "4bis", "4th", ...
 NUM_SUFFIXES = ["bis", "ter", "quad", "e", "è", "eme", "ème", "er", "st", "nd", "rd", "th"]
 
-# Abrevation typical found in places, addresses, ...
+# Abrevation typicaly found in places, addresses, ...
 ABREVIATIONS = {
     "av": "avenue",
     "bd": "boulevard",
@@ -192,8 +192,8 @@ def check(
         for name_words in map(words, names)
         for terms in [
             name_words,
-            *[name_words + words(admin) for admin in admins],
-            *[name_words + [postcode] for postcode in postcodes],
+            *(name_words + words(admin) for admin in admins),
+            *(name_words + [postcode] for postcode in postcodes),
         ]
     )
 
