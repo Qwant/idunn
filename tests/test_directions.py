@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app import app
 from idunn.api.directions import rate_limiter
+from freezegun import freeze_time
 
 from .utils import override_settings
 
@@ -60,6 +61,7 @@ def mock_directions_public_transport():
             yield rsps
 
 
+@freeze_time("2018-06-14 8:30:00", tz_offset=0)
 def test_direction_car(mock_directions_car):
     client = TestClient(app)
     response = client.get(
@@ -72,6 +74,8 @@ def test_direction_car(mock_directions_car):
     response_data = response.json()
     assert response_data["status"] == "success"
     assert len(response_data["data"]["routes"]) == 3
+    assert response_data["data"]["routes"][0]["start_time"] == "2018-06-14T08:30:00"
+    assert response_data["data"]["routes"][0]["end_time"] == "2018-06-14T09:00:19.200000"
     assert all(r["geometry"] for r in response_data["data"]["routes"])
     assert response_data["data"]["routes"][0]["duration"] == 1819
     assert len(response_data["data"]["routes"][0]["legs"]) == 1
@@ -118,6 +122,9 @@ def test_direction_public_transport(mock_directions_public_transport):
     assert all(r["geometry"] for r in response_data["data"]["routes"])
 
     route = response_data["data"]["routes"][0]
+    assert route["start_time"] == "2020-01-01T00:00:00"
+    assert route["end_time"] == "2020-01-01T00:30:00"
+
     geometry = route["geometry"]
     assert geometry["type"] == "FeatureCollection"
     assert geometry["features"][1]["properties"] == {

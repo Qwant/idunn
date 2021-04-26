@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Optional, Tuple
 from pydantic import BaseModel, Field, validator
@@ -180,6 +181,8 @@ class DirectionsRoute(BaseModel):
     price: Optional[RoutePrice]
     legs: List[RouteLeg]
     geometry: dict = Field({}, description="GeoJSON")
+    start_time: str
+    end_time: str
 
     def __init__(self, **data):
         price = data.get("price")
@@ -197,6 +200,18 @@ class DirectionsRoute(BaseModel):
                     }
                     features_list.append(feature)
             data["geometry"] = {"type": "FeatureCollection", "features": features_list}
+
+        if "start_time" not in data or "end_time" not in data:
+            if "dTime" in data and "aTime" in data:
+                # Handle combigo's output format
+                start = datetime.utcfromtimestamp(int(data["dTime"]) / 1000)
+                end = datetime.utcfromtimestamp(int(data["aTime"]) / 1000)
+            else:
+                start = datetime.utcnow()
+                end = start + timedelta(0, data.get("duration", 0))
+
+            data["start_time"] = start.isoformat()
+            data["end_time"] = end.isoformat()
 
         super().__init__(**data)
 
@@ -222,6 +237,7 @@ class DirectionsData(BaseModel):
 
     def __init__(self, **data):
         if "results" in data:
+            # Handle combigo's output format
             data["routes"] = data.pop("results")
         super().__init__(**data)
 
