@@ -75,7 +75,7 @@ def test_direction_car(mock_directions_car):
     assert response_data["status"] == "success"
     assert len(response_data["data"]["routes"]) == 3
     assert response_data["data"]["routes"][0]["start_time"] == "2018-06-14T08:30:00"
-    assert response_data["data"]["routes"][0]["end_time"] == "2018-06-14T09:00:19.200000"
+    assert response_data["data"]["routes"][0]["end_time"] == "2018-06-14T09:00:19"
     assert all(r["geometry"] for r in response_data["data"]["routes"])
     assert response_data["data"]["routes"][0]["duration"] == 1819
     assert len(response_data["data"]["routes"][0]["legs"]) == 1

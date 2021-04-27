@@ -208,10 +208,10 @@ class DirectionsRoute(BaseModel):
                 end = datetime.utcfromtimestamp(int(data["aTime"]) / 1000)
             else:
                 start = datetime.utcnow()
-                end = start + timedelta(0, data.get("duration", 0))
+                end = start + timedelta(seconds=data.get("duration", 0))
 
-            data["start_time"] = start.isoformat()
-            data["end_time"] = end.isoformat()
+            data["start_time"] = start.isoformat(timespec="seconds")
+            data["end_time"] = end.isoformat(timespec="seconds")
 
         super().__init__(**data)
 
