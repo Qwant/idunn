@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta
 from enum import Enum
-from typing import List, Optional, Tuple
 from pydantic import BaseModel, Field, validator
+from pytz import utc
+from typing import List, Optional, Tuple
 
 
 class TransportMode(str, Enum):
@@ -180,9 +182,13 @@ class DirectionsRoute(BaseModel):
     price: Optional[RoutePrice]
     legs: List[RouteLeg]
     geometry: dict = Field({}, description="GeoJSON")
+    start_time: str
+    end_time: str
 
     def __init__(self, **data):
+        context = data.get("context")
         price = data.get("price")
+
         if price is not None and price.get("value") is None:
             data.pop("price")
 
@@ -197,6 +203,18 @@ class DirectionsRoute(BaseModel):
                     }
                     features_list.append(feature)
             data["geometry"] = {"type": "FeatureCollection", "features": features_list}
+
+        if "start_time" not in data or "end_time" not in data:
+            if "dTime" in data and "aTime" in data:
+                # Handle combigo's output format
+                start = utc.localize(datetime.utcfromtimestamp(int(data["dTime"]) / 1000))
+                end = utc.localize(datetime.utcfromtimestamp(int(data["aTime"]) / 1000))
+            else:
+                start = utc.localize(datetime.utcnow())
+                end = start + timedelta(seconds=data.get("duration", 0))
+
+            data["start_time"] = start.astimezone(context["start_tz"]).isoformat(timespec="seconds")
+            data["end_time"] = end.astimezone(context["end_tz"]).isoformat(timespec="seconds")
 
         super().__init__(**data)
 
@@ -221,8 +239,15 @@ class DirectionsData(BaseModel):
     code: Optional[str]  # in case of errors
 
     def __init__(self, **data):
+        context = data.get("context")
+
         if "results" in data:
+            # Handle combigo's output format
             data["routes"] = data.pop("results")
+
+        for route in data["routes"]:
+            route["context"] = context
+
         super().__init__(**data)
 
 

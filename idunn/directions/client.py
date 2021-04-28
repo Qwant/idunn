@@ -99,7 +99,9 @@ class DirectionsClient:
             )
             return JSONResponse(content=response.json(), status_code=response.status_code)
         response.raise_for_status()
-        return DirectionsResponse(status="success", data=response.json())
+        data = response.json()
+        data["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
+        return DirectionsResponse(status="success", data=data)
 
     def directions_qwant(self, start, end, mode, lang, extra=None):
         if not self.QWANT_BASE_URL:
@@ -126,7 +128,9 @@ class DirectionsClient:
             # Proxy client errors
             return JSONResponse(content=response.json(), status_code=response.status_code)
         response.raise_for_status()
-        return DirectionsResponse(**response.json())
+        res = response.json()
+        res["data"]["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
+        return DirectionsResponse(**res)
 
     @staticmethod
     def place_to_combigo_location(place, lang):
@@ -169,7 +173,9 @@ class DirectionsClient:
             timeout=self.request_timeout,
         )
         response.raise_for_status()
-        return DirectionsResponse(status="success", data=response.json())
+        data = response.json()
+        data["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
+        return DirectionsResponse(status="success", data=data)
 
     def get_directions(self, from_place, to_place, mode, lang, params: QueryParams):
         if not DirectionsClient.is_in_allowed_zone(mode, from_place, to_place):
