@@ -1,11 +1,11 @@
 import logging
 from datetime import datetime, timedelta, date
 from pytz import timezone, utc
-from tzwhere import tzwhere
 from pydantic import BaseModel, conint, constr
 from typing import List, Literal, Optional
 
 from .base import BaseBlock
+from idunn.utils import tz
 from idunn.utils.opening_hours import OpeningHours
 
 OPEN = "open"
@@ -13,9 +13,6 @@ CLOSED = "closed"
 
 
 logger = logging.getLogger(__name__)
-
-# We load the tz structure once when Idunn starts since it's a time consuming step
-tz = tzwhere.tzwhere(forceTZ=True)
 
 
 def get_tz(poi_tzname, lat, lon):

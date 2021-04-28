@@ -1,10 +1,11 @@
 import logging
 from geopy import Point
+from pytz import timezone
 
 from idunn.api.utils import Verbosity, WikidataConnector, get_geom, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
 from idunn.utils.redis import RedisWrapper
-from idunn.utils import maps_urls
+from idunn.utils import maps_urls, tz
 from .place import Place, PlaceMeta
 
 
@@ -247,3 +248,8 @@ class BasePlace(dict):
 
     def get_bbox(self):
         return None
+
+    def get_tz(self):
+        coords = self.get_coord()
+        tz_name = tz.tzNameAt(latitude=coords["lat"], longitude=coords["lon"], forceTZ=True)
+        return timezone(tz_name)

@@ -74,8 +74,8 @@ def test_direction_car(mock_directions_car):
     response_data = response.json()
     assert response_data["status"] == "success"
     assert len(response_data["data"]["routes"]) == 3
-    assert response_data["data"]["routes"][0]["start_time"] == "2018-06-14T08:30:00"
-    assert response_data["data"]["routes"][0]["end_time"] == "2018-06-14T09:00:19"
+    assert response_data["data"]["routes"][0]["start_time"] == "2018-06-14T10:30:00+02:00"
+    assert response_data["data"]["routes"][0]["end_time"] == "2018-06-14T11:00:19+02:00"
     assert all(r["geometry"] for r in response_data["data"]["routes"])
     assert response_data["data"]["routes"][0]["duration"] == 1819
     assert len(response_data["data"]["routes"][0]["legs"]) == 1
@@ -122,8 +122,8 @@ def test_direction_public_transport(mock_directions_public_transport):
     assert all(r["geometry"] for r in response_data["data"]["routes"])
 
     route = response_data["data"]["routes"][0]
-    assert route["start_time"] == "2020-01-01T00:00:00"
-    assert route["end_time"] == "2020-01-01T00:30:00"
+    assert route["start_time"] == "2020-01-01T01:00:00+01:00"
+    assert route["end_time"] == "2020-01-01T01:30:00+01:00"
 
     geometry = route["geometry"]
     assert geometry["type"] == "FeatureCollection"
