@@ -1,15 +1,12 @@
 import logging
 from fastapi import Depends, HTTPException
-from fastapi.concurrency import run_in_threadpool
-from typing import Optional
-from pydantic import BaseModel, Field
 
 from idunn import settings
 from idunn.api.places_list import PlacesBboxResponse
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models.geocodejson import Intention
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
-from idunn.places import place_from_id, Place
+from idunn.places import place_from_id
 from idunn.utils import result_filter
 from idunn.instant_answer import normalize
 from .instant_answer import get_instant_answer_intention
@@ -18,15 +15,6 @@ from ..geocoder.models import QueryParams, IdunnAutocomplete
 logger = logging.getLogger(__name__)
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
-
-
-class SearchResult(BaseModel):
-    """Exactly one of the fields `places` or `place` are defined."""
-
-    bbox_places: Optional[PlacesBboxResponse] = Field(
-        None, description="A list of places as results."
-    )
-    place: Optional[Place] = Field(None, description="A list of places as results.")
 
 
 def no_search_result(query=None, lang=None):
@@ -40,25 +28,27 @@ def no_search_result(query=None, lang=None):
                 }
             },
         )
-    return SearchResult()
+    return IdunnAutocomplete()
 
 
-async def search_intention(intention: Intention, query: str, lang: str) -> SearchResult:
+async def search_intention(intention: Intention, query: str, lang: str) -> IdunnAutocomplete:
     try:
         ia_result = await get_instant_answer_intention(intention, query, lang)
     except HTTPException(status_code=404):
-        return SearchResult()
+        return IdunnAutocomplete()
 
     if len(ia_result.places) == 1:
-        result = SearchResult(place=ia_result.places[0])
+        result = IdunnAutocomplete(place=ia_result.places[0])
     else:
-        result = SearchResult(
-            bbox_places=PlacesBboxResponse(
-                places=ia_result.places,
-                source=ia_result.source,
-                bbox=ia_result.intention_bbox,
-                bbox_extended=False,
-            ),
+        result = IdunnAutocomplete(
+            bbox_places=[
+                PlacesBboxResponse(
+                    places=ia_result.places,
+                    source=ia_result.source,
+                    bbox=ia_result.intention_bbox,
+                    bbox_extended=False,
+                )
+            ],
         )
 
     return result
@@ -72,7 +62,7 @@ def search_single_place(place_id: str, lang: str):
         return no_search_result()
 
     detailed_place = place.load_place(lang=lang)
-    return SearchResult(place=detailed_place)
+    return IdunnAutocomplete(features=[detailed_place])
 
 
 async def search(query: QueryParams = Depends(QueryParams)) -> IdunnAutocomplete:
@@ -88,7 +78,7 @@ async def search(query: QueryParams = Depends(QueryParams)) -> IdunnAutocomplete
         try:
             intentions = await nlu_client.get_intentions(text=query.q, lang=query.lang)
             if intentions:
-                return await search_intention(intentions[0], query=query.q, lang=query.lang)
+                return IdunnAutocomplete(intentions=intentions)
         except NluClientException:
             # No intention could be interpreted from query
             pass
@@ -97,19 +87,18 @@ async def search(query: QueryParams = Depends(QueryParams)) -> IdunnAutocomplete
     bragi_response = await bragi_client.raw_autocomplete(
         {"q": query.q, "lang": query.lang, "limit": 5}
     )
-    geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
-    geocodings = sorted(
+
+    features = sorted(
         (
-            (result_filter.rank_bragi_response(query.q, feature), feature)
-            for feature in geocodings
-            if result_filter.check_bragi_response(query.q, feature)
+            (result_filter.rank_bragi_response(query.q, geocoding), feature)
+            for feature in bragi_response["features"]
+            for geocoding in [feature["properties"]["geocoding"]]
+            if result_filter.check_bragi_response(query.q, geocoding)
         ),
         key=lambda item: -item[0],  # sort by descending rank
     )
 
-    if not geocodings:
+    if not features:
         return no_search_result(query=query.q, lang=query.lang)
 
-    place_id = geocodings[0][1]["id"]
-    result = await run_in_threadpool(search_single_place, place_id=place_id, lang=query.lang)
-    return result
+    return IdunnAutocomplete(features=[features[0][1]])

@@ -98,7 +98,7 @@ class GeocodingPlace(BaseModel):
 
     # The following fields are part of the GeocodeJson specification but are
     # currently disabled in Bragi:
-    #  https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs#L194-L199
+    # https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs#L194-L199
     #
     # accuracy: Optional[PositiveInt]
     # district: Optional[str]

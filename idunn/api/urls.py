@@ -13,7 +13,7 @@ from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
 from .instant_answer import get_instant_answer, InstantAnswerResponse
 from ..places.place import Address, Place
-from .search import search, SearchResult
+from .search import search
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
@@ -78,7 +78,7 @@ def get_api_urls(settings):
         APIRoute(
             "/search",
             search,
-            response_model=SearchResult,
+            response_model=IdunnAutocomplete,
         ),
         # Solve URLs
         APIRoute(
