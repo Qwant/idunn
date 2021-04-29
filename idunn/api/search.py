@@ -4,7 +4,6 @@ from fastapi import Depends
 from idunn import settings
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
-from idunn.places import place_from_id
 from idunn.utils import result_filter
 from idunn.instant_answer import normalize
 from ..geocoder.models import QueryParams, IdunnAutocomplete
@@ -26,17 +25,6 @@ def no_search_result(query=None, lang=None):
             },
         )
     return IdunnAutocomplete()
-
-
-def search_single_place(place_id: str, lang: str):
-    try:
-        place = place_from_id(place_id, follow_redirect=True)
-    except Exception:
-        logger.warning("search: Failed to get place with id '%s'", place_id, exc_info=True)
-        return no_search_result()
-
-    detailed_place = place.load_place(lang=lang)
-    return IdunnAutocomplete(features=[detailed_place])
 
 
 async def search(query: QueryParams = Depends(QueryParams)) -> IdunnAutocomplete:
