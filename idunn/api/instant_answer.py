@@ -181,7 +181,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
             maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
         )
 
-    return result
+    return build_response(result, query=query, lang=lang)
 
 
 async def get_instant_answer(
@@ -223,11 +223,7 @@ async def get_instant_answer(
                 normalized_query, lang, extra_geocoder_params
             )
             if intentions:
-                return build_response(
-                    await get_instant_answer_intention(intentions[0], query=q, lang=lang),
-                    q,
-                    lang,
-                )
+                return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query
             pass
