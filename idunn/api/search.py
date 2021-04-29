@@ -1,15 +1,12 @@
 import logging
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 
 from idunn import settings
-from idunn.api.places_list import PlacesBboxResponse
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.geocoder.models.geocodejson import Intention
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.places import place_from_id
 from idunn.utils import result_filter
 from idunn.instant_answer import normalize
-from .instant_answer import get_instant_answer_intention
 from ..geocoder.models import QueryParams, IdunnAutocomplete
 
 logger = logging.getLogger(__name__)
@@ -29,29 +26,6 @@ def no_search_result(query=None, lang=None):
             },
         )
     return IdunnAutocomplete()
-
-
-async def search_intention(intention: Intention, query: str, lang: str) -> IdunnAutocomplete:
-    try:
-        ia_result = await get_instant_answer_intention(intention, query, lang)
-    except HTTPException(status_code=404):
-        return IdunnAutocomplete()
-
-    if len(ia_result.places) == 1:
-        result = IdunnAutocomplete(place=ia_result.places[0])
-    else:
-        result = IdunnAutocomplete(
-            bbox_places=[
-                PlacesBboxResponse(
-                    places=ia_result.places,
-                    source=ia_result.source,
-                    bbox=ia_result.intention_bbox,
-                    bbox_extended=False,
-                )
-            ],
-        )
-
-    return result
 
 
 def search_single_place(place_id: str, lang: str):
