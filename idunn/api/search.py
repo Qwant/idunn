@@ -1,12 +1,12 @@
 import logging
-from fastapi import Depends
+from fastapi import Body, Depends
 
 from idunn import settings
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.utils import result_filter
 from idunn.instant_answer import normalize
-from ..geocoder.models import QueryParams, IdunnAutocomplete
+from ..geocoder.models import ExtraParams, QueryParams, IdunnAutocomplete
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,9 @@ def no_search_result(query=None, lang=None):
     return IdunnAutocomplete()
 
 
-async def search(query: QueryParams = Depends(QueryParams)) -> IdunnAutocomplete:
+async def search(
+    query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
+) -> IdunnAutocomplete:
     """
     Perform a query which is intended to display a relevant result directly (as
     opposed to `autocomplete` which gives a list of plausible results).
@@ -46,10 +48,7 @@ async def search(query: QueryParams = Depends(QueryParams)) -> IdunnAutocomplete
             pass
 
     # Direct geocoding query
-    bragi_response = await bragi_client.raw_autocomplete(
-        {"q": query.q, "lang": query.lang, "limit": 5}
-    )
-
+    bragi_response = await bragi_client.autocomplete(query, extra)
     features = sorted(
         (
             (result_filter.rank_bragi_response(query.q, geocoding), feature)
