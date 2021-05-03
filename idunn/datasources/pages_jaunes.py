@@ -122,8 +122,13 @@ class ApiPjSource(PjSource):
 
     @staticmethod
     def format_where(bbox):
+        """
+        >>> ApiPjSource.format_where([2e-5,-0.5,2,0.5])
+        'gZ0.000020,-0.500000,2.000000,0.500000'
+
+        """
         left, bot, right, top = bbox
-        return f"gZ{left},{top},{right},{bot}"
+        return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     def get_from_params(self, url, params=None) -> PjApiPOI:
         res = self.session.get(url, params=params, timeout=self.PJ_API_TIMEOUT)
