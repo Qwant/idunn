@@ -82,4 +82,4 @@ async def get_autocomplete(
                 )
             )
         autocomplete_response["intentions"] = intentions
-    return autocomplete_response
+    return IdunnAutocomplete(**autocomplete_response)
