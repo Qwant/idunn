@@ -78,7 +78,9 @@ def get_api_urls(settings):
         APIRoute(
             "/search",
             search,
+            methods=["GET", "POST"],
             response_model=IdunnAutocomplete,
+            response_model_exclude_unset=True,
         ),
         # Solve URLs
         APIRoute(

@@ -38,7 +38,7 @@ async def search(
     """
     query.q = normalize(query.q)
 
-    if query.lang in nlu_allowed_languages:
+    if query.nlu and query.lang in nlu_allowed_languages:
         try:
             intentions = await nlu_client.get_intentions(text=query.q, lang=query.lang)
             if intentions:
