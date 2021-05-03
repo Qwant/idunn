@@ -57,7 +57,6 @@ def get_directions(
     request: Request = Depends(directions_request),
 ):
     """Get directions to get from a places to another."""
-    rate_limiter.check_limit_per_client(request)
     try:
         from_place = place_from_id(origin, follow_redirect=True)
         to_place = place_from_id(destination, follow_redirect=True)
