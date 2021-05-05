@@ -12,13 +12,15 @@ from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models import QueryParams
 from idunn.places import place_from_id, Place
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
-from idunn.utils import maps_urls, result_filter
+from idunn.utils import maps_urls
 from idunn.utils.regions import get_region_lonlat
+from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
 from .constants import PoiSource
 from .utils import Verbosity
 
 logger = logging.getLogger(__name__)
+result_filter = ResultFilter()
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 ia_max_query_length = int(settings["IA_MAX_QUERY_LENGTH"])
