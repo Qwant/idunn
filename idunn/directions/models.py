@@ -56,9 +56,10 @@ class TransportInfo(BaseModel):
         '6eca97'
         >>> TransportInfo.validate_color("7852")
         '007852'
+        >>> assert TransportInfo.validate_color("0123456") is None
         >>> assert TransportInfo.validate_color(None) is None
         """
-        if not value:
+        if not value or len(value) > 6:
             return None
         if len(value) < 6:
             return f"000000{value}"[-6:]
