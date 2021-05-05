@@ -112,7 +112,7 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
     )
 
 
-def get_instant_answer_single_place(place_id: str, lang: str):
+def get_instant_answer_single_place(place_id: str, query: str, lang: str) -> Response:
     try:
         place = place_from_id(place_id, follow_redirect=True)
     except Exception:
@@ -122,13 +122,14 @@ def get_instant_answer_single_place(place_id: str, lang: str):
         return no_instant_answer()
 
     detailed_place = place.load_place(lang=lang)
-    return InstantAnswerResult(
+    result = InstantAnswerResult(
         places=[detailed_place],
         source=place.get_source(),
         intention_bbox=None,
         maps_url=maps_urls.get_place_url(place_id),
         maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
     )
+    return build_response(result, query=query, lang=lang)
 
 
 async def get_instant_answer_intention(intention, query: str, lang: str):
@@ -250,5 +251,6 @@ async def get_instant_answer(
         return no_instant_answer(query=q, lang=lang, region=user_country)
 
     place_id = geocodings[0][1]["id"]
-    result = await run_in_threadpool(get_instant_answer_single_place, place_id=place_id, lang=lang)
-    return build_response(result, query=q, lang=lang)
+    return await run_in_threadpool(
+        get_instant_answer_single_place, place_id=place_id, query=q, lang=lang
+    )

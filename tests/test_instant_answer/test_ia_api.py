@@ -23,6 +23,12 @@ def test_ia_paris(mock_autocomplete_get, mock_NLU_with_city):
     assert place["name"] == "Paris"
 
 
+def test_ia_item_not_found_in_db(mock_autocomplete_get, mock_NLU_with_city):
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "pavillon paris", "lang": "fr"})
+    assert response.status_code == 204
+
+
 def test_ia_paris_with_region(mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get(
