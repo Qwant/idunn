@@ -1,6 +1,6 @@
-reste replicas: 1
+replicas: 3
 
 service:
   type: "LoadBalancer"
-  IP: 10.108.3.63
+  IP: 10.108.3.64
   externalTrafficPolicy: "Cluster"

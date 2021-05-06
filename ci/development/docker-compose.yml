@@ -16,6 +16,8 @@ services:
       - IDUNN_PJ_ES_QUERY_TEMPLATE=pagesjaunes_query
       - IDUNN_KUZZLE_CLUSTER_URL=http://1216_kuzzle:7512
       - IDUNN_DOCS_ENABLED=true
+      - IDUNN_NLU_CLASSIFIER_URL=http://10.108.3.63/classify
+      - IDUNN_NLU_CLASSIFIER_DOMAIN=maps
       - IDUNN_NLU_TAGGER_URL=http://1701_nlu:9009/nlu
       - IDUNN_NLU_TAGGER_DOMAIN=MAPS
       - IDUNN_COMBIGO_API_KEY=cd6dc00c-81f7-4aaa-816e-5436bf1f7136  # Development key

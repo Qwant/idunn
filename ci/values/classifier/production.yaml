@@ -1,1 +1,6 @@
 replicas: 3
+
+service:
+  type: "LoadBalancer"
+  IP: 10.110.3.14
+  externalTrafficPolicy: "Cluster"

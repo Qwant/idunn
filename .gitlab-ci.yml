@@ -8,7 +8,6 @@ stages:
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-
 before_script:
   - source ci/bootstrap.sh
   - docker login
@@ -79,6 +78,8 @@ configure:
   artifacts:
     paths:
       - ci/
+      - docker-compose.yml
+      - docker-content-digest.env
   dependencies:
     - build
   tags:
@@ -92,7 +93,7 @@ configure:
       --username "$CI_DEPLOY_USER" 
       --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
   dependencies:
-    - build
+    - configure
   tags:
     - light-docker
   variables:
@@ -120,10 +121,14 @@ configure:
     - helm chart export "$HELM_CHART_REF" -d ci/
     - helm-deploy
   variables:
-    GIT_STRATEGY: none
     HELM_EXPERIMENTAL_OCI: 1
     HELM_VALUE_FILES: "ci/values/$COMPONENT_NAME/common.yaml:ci/values/$COMPONENT_NAME/$CI_JOB_STAGE.yaml"
+    HELM_CHART_REF: "$CI_REGISTRY/helm/text-classifier@sha256:5976865357088765a040027b3ad15116070f891302f2df9d0fa9550808e7d3bd"
+    COMPONENT_NAME: classifier
+    HELM_RELEASE: "classifier"
+    HELM_CHART: "ci/text-classifier"
   resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
+  when: manual
 
 deploy development:
   extends: .deploy
@@ -143,12 +148,7 @@ deploy classifier development:
   environment:
     name: "development/classifier"
   variables:
-    COMPONENT_NAME: classifier
-    HELM_RELEASE: "classifier"
-    HELM_CHART: "ci/text-classifier"
-    HELM_CHART_REF: "$CI_REGISTRY/helm/text-classifier@sha256:882657f07417c47b3e7813e3edf8970ce89f083c7a9b30cdb5ae402d94ccbcf3"
     KUBE_ENV: development
-  when: manual
 
 deploy prelive:
   extends: "deploy development"
@@ -160,7 +160,7 @@ deploy prelive:
     DOCKER_HOST: "tcp://10.103.9.1:2375"
 
 deploy classifier prelive:
-  extends: deploy classifier development
+  extends: .deploy-kube
   stage: prelive
   environment:
     name: "prelive/classifier"
@@ -180,3 +180,11 @@ deploy production:
     DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
     DOCKER_TLS_VERIFY: "1"
     ROUTER_SERVICE_NAME: "product-maps-production_traefik"
+
+deploy classifier production:
+  extends: .deploy-kube
+  stage: production
+  environment:
+    name: "production/classifier"
+  variables:
+    KUBE_ENV: production

@@ -25,11 +25,7 @@ resources:
     memory: 256Mi
   limits:
     cpu: 1
-    memory: 500Mi 
-
-service:
-  type: "ClusterIP"
-  ingress: true
+    memory: 500Mi
 
 networkPolicies:
   ingress:
