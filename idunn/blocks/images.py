@@ -140,7 +140,14 @@ class ImagesBlock(BaseBlock):
         raw_url = wiki_resp.get("pageimage_thumb")
         if not raw_url:
             return None
-        if "street_enseigne" in raw_url or "location_map" in raw_url:
+        if any(
+            deny in raw_url
+            for deny in (
+                "street_enseigne",
+                "location_map",
+                "Open_Street_Map",
+            )
+        ):
             # Exclude irrelevant thumbnail
             return None
         return cls.build_image(
