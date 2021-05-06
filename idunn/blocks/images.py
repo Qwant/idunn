@@ -8,6 +8,7 @@ from pydantic import BaseModel, validator
 from typing import List, Literal
 
 from idunn import settings
+from idunn.api.constants import PoiSource
 from .base import BaseBlock
 
 
@@ -94,16 +95,10 @@ class ImagesBlock(BaseBlock):
         return cls._thumb_helper
 
     @staticmethod
-    def get_source_url(raw_url, place):
-        if "Links" in place:
-            # Use pagesjaunes photos link when possible
-            link = place.get("Links", {}).get("viewPhotos")
-            if link:
-                return link
-
-        # Use wikimedia commons media viewer when possible
+    def get_source_url(raw_url):
+        # Wikimedia commons media viewer when possible
         match = re.match(
-            r"^https://upload.wikimedia.org/wikipedia/commons/(?:.+/)?\w{1}/\w{2}/([^/]+)", raw_url
+            r"^https?://upload.wikimedia.org/wikipedia/commons/(?:.+/)?\w{1}/\w{2}/([^/]+)", raw_url
         )
         if match:
             commons_file_name = match.group(1)
@@ -113,30 +108,95 @@ class ImagesBlock(BaseBlock):
         return raw_url
 
     @classmethod
-    def from_es(cls, place, lang):
+    def build_image(cls, raw_url, **kwargs):
+        thumbr = cls.get_thumbr_helper()
+        if thumbr.is_enabled():
+            thumb_url = thumbr.get_url_remote_thumbnail(raw_url)
+        else:
+            thumb_url = raw_url
+        return Image(url=thumb_url, **kwargs)
+
+    @classmethod
+    def get_pages_jaunes_images(cls, place, lang):
+        source_url = None
+        if "Links" in place:
+            # Use pagesjaunes photos link when possible
+            # (defined in legacy datafeed)
+            source_url = place.get("Links", {}).get("viewPhotos")
+        if not source_url:
+            source_url = place.get_source_url() + "#ancrePhotoVideo"
+
         raw_urls = place.get_images_urls()
-        if not raw_urls:
-            # Fallback to wikipedia image
-            wiki_resp = place.get_wiki_resp(lang)
-            if wiki_resp is not None:
-                raw_url = wiki_resp.get("pageimage_thumb")
-                if raw_url:
-                    raw_urls.append(raw_url)
-
-        if not raw_urls:
-            return None
-
         place_name = place.get_name(lang)
+        return [
+            cls.build_image(raw_url, alt=place_name, source_url=source_url) for raw_url in raw_urls
+        ]
+
+    @classmethod
+    def get_wikipedia_thumbnail(cls, place, lang):
+        wiki_resp = place.get_wiki_resp(lang)
+        if wiki_resp is None:
+            return None
+        raw_url = wiki_resp.get("pageimage_thumb")
+        if not raw_url:
+            return None
+        if "street_enseigne" in raw_url or "location_map" in raw_url:
+            # Exclude irrelevant thumbnail
+            return None
+        return cls.build_image(
+            raw_url, alt=wiki_resp.get("originalTitle", ""), source_url=cls.get_source_url(raw_url)
+        )
+
+    @classmethod
+    def get_mapillary_image(cls, image_key):
+        image_url = f"https://images.mapillary.com/{image_key}/thumb-1024.jpg"
+        source_url = f"https://www.mapillary.com/app/?focus=photo&pKey={image_key}"
+        return cls.build_image(
+            image_url,
+            source_url=source_url,
+            alt="Mapillary",
+            credits="From Mapillary, licensed under CC-BY-SA",
+        )
+
+    @classmethod
+    def get_images(cls, place, lang):
+        # Raw urls defined by the data source (Kuzzle, etc.)
+        raw_urls = place.get_images_urls()
+        if raw_urls:
+            return [
+                cls.build_image(raw_url, source_url=raw_url, alt=place.get_name(lang))
+                for raw_url in raw_urls
+            ]
+
         images = []
-        for raw_url in raw_urls:
-            source_url = cls.get_source_url(raw_url, place=place)
-            thumbr = cls.get_thumbr_helper()
-            if thumbr.is_enabled():
-                thumbr = cls.get_thumbr_helper()
-                thumb_url = thumbr.get_url_remote_thumbnail(raw_url)
-            else:
-                thumb_url = raw_url
 
-            images.append(Image(url=thumb_url, alt=place_name, source_url=source_url))
+        # Tag "image"
+        raw_url = place.properties.get("image")
+        if raw_url and raw_url.startswith("http"):
+            images.append(
+                cls.build_image(
+                    raw_url, source_url=cls.get_source_url(raw_url), alt=place.get_name(lang)
+                )
+            )
+        else:
+            # Thumbnail from Wikipedia extract as fallback
+            wikipedia_thumb = cls.get_wikipedia_thumbnail(place, lang)
+            if wikipedia_thumb:
+                images.append(wikipedia_thumb)
 
+        # Tag "mapillary"
+        mapillary_image_key = place.properties.get("mapillary")
+        if mapillary_image_key and settings["BLOCK_IMAGES_INCLUDE_MAPILLARY"]:
+            images.append(cls.get_mapillary_image(mapillary_image_key))
+
+        return images
+
+    @classmethod
+    def from_es(cls, place, lang):
+        if place.get_source() == PoiSource.PAGESJAUNES:
+            images = cls.get_pages_jaunes_images(place, lang)
+        else:
+            images = cls.get_images(place, lang)
+        if not images:
+            return None
         return cls(images=images)
