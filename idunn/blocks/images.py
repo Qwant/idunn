@@ -3,7 +3,7 @@ import logging
 import hashlib
 import posixpath
 import urllib.parse
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit, unquote, quote
 from pydantic import BaseModel, validator
 from typing import List, Literal
 
@@ -149,6 +149,7 @@ class ImagesBlock(BaseBlock):
 
     @classmethod
     def get_mapillary_image(cls, image_key):
+        image_key = quote(image_key)
         image_url = f"https://images.mapillary.com/{image_key}/thumb-1024.jpg"
         source_url = f"https://www.mapillary.com/app/?focus=photo&pKey={image_key}"
         return cls.build_image(
