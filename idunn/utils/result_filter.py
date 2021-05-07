@@ -28,7 +28,7 @@ class ResultFilter:
     }
 
     # Regex recognizing any word separators
-    WORD_SEPARATORS = re.compile("|".join([" ", "-", ",", ";", "\\.", "'"]))
+    WORD_SEPARATORS = re.compile("|".join([r"\s+", "-", ",", ";", "\\.", "'"]))
 
     def __init__(
         self,
@@ -53,6 +53,8 @@ class ResultFilter:
         >>> filter = ResultFilter()
         >>> filter.words("17, rue jaune ; Levallois-Peret")
         ['17', 'rue', 'jaune', 'Levallois', 'Peret']
+        >>> filter.words("Rue Censier\xa0Domont")
+        ['Rue', 'Censier', 'Domont']
         """
         return [word for word in cls.WORD_SEPARATORS.split(text) if word]
 
