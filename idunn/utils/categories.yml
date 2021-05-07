@@ -29,7 +29,7 @@ categories:
 
     # NOTE: This is a legacy alias for shop_supermarket
     supermarket:
-        pj_what: "alimentation"
+        pj_what: "alimentation grande surface"
         pj_filters:
           - "supermarchés, hypermarchés"
         raw_filters:
@@ -168,6 +168,7 @@ categories:
         regex: "cathedral|church|eglise|mosque|synagogue|temple"
         raw_filters:
           - "place_of_worship,*"
+        match_brand: True
 
     recycling:
         regex: "recycl|tri selectif|dechett?err?ie"
@@ -221,7 +222,7 @@ categories:
         raw_filters:
           - "supermarket,*"
           - "mall,*"
-        pj_what: "supermarché"
+        pj_what: "alimentation grande surface"
         pj_filters:
           - "supermarchés, hypermarchés"
 

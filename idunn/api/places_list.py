@@ -169,7 +169,7 @@ async def get_places_bbox_impl(
     source = params.source
     if source is None:
         if (
-            params.q or (params.category and all(c.pj_filters() for c in params.category))
+            params.q or (params.category and all(c.pj_what() for c in params.category))
         ) and pj_source.bbox_is_covered(params.bbox):
             params.source = PoiSource.PAGESJAUNES
         else:
