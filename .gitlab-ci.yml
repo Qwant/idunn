@@ -57,8 +57,8 @@ build classifier:
   stage: build
   variables:
     DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
-    TARGET_IMAGE: "$CI_REGISTRY_IMAGE/classifier/maps:1"
-    SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:qmaps-1984"
+    TARGET_IMAGE: &target-nlu-image "$CI_REGISTRY_IMAGE/classifier/maps:1.1"
+    SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:qmaps-2160"
   script:
     - docker pull "$SOURCE_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
@@ -71,6 +71,7 @@ configure:
   stage: configure
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+    TARGET_NLU_IMAGE: *target-nlu-image
   before_script:
     - source ci/bootstrap.sh
   script:
@@ -123,7 +124,8 @@ configure:
   variables:
     HELM_EXPERIMENTAL_OCI: 1
     HELM_VALUE_FILES: "ci/values/$COMPONENT_NAME/common.yaml:ci/values/$COMPONENT_NAME/$CI_JOB_STAGE.yaml"
-    HELM_CHART_REF: "$CI_REGISTRY/helm/text-classifier@sha256:5976865357088765a040027b3ad15116070f891302f2df9d0fa9550808e7d3bd"
+    # https://git.qwant.ninja/helm/text-classifier/-/commit/1f3bc2514052476e008bf1c8c9e5bb7f5b81c125
+    HELM_CHART_REF: "$CI_REGISTRY/helm/text-classifier@sha256:b57cd48a1a9e9443a697320b38b4e3694fd345bdbc94ad2f126690bd32ad6d85"
     COMPONENT_NAME: classifier
     HELM_RELEASE: "classifier"
     HELM_CHART: "ci/text-classifier"

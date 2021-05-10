@@ -12,12 +12,14 @@ global:
     username: "${CI_DEPLOY_USER}"
     password: "${CI_DEPLOY_PASSWORD}"
 
-image: ${CI_REGISTRY}/product/maps/idunn/classifier/maps:1
+image: ${TARGET_NLU_IMAGE}
+
+containerUID: 999
 
 port: 9009
 configPath: "/usr/local/share/text-classifier/configs/models_config_maps.yaml"
-nThreads: 2
-debug: 1
+nThreads: "2"
+debug: "0"
 
 resources:
   requests:

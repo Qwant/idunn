@@ -1,4 +1,4 @@
-reste replicas: 1
+replicas: 1
 
 service:
   type: "LoadBalancer"

@@ -24,6 +24,8 @@ services:
       - IDUNN_MAPBOX_DIRECTIONS_ACCESS_TOKEN=$QMAPS_MAPBOX_TOKEN_PLIVE
       - IDUNN_BLOCK_COVID_ENABLED=false
       - IDUNN_COVID19_BLOCK_COUNTRIES=FR,CH,ES,FI
+      - IDUNN_NLU_CLASSIFIER_URL=http://nlu/classify
+      - IDUNN_NLU_CLASSIFIER_DOMAIN=maps
       - IDUNN_NLU_TAGGER_URL=http://1701_nlu:9009/nlu
       - IDUNN_NLU_TAGGER_DOMAIN=MAPS
       - IDUNN_RECYCLING_SERVER_URL=https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
@@ -40,8 +42,9 @@ services:
       - IDUNN_IA_SUCCESS_ON_GENERIC_QUERIES=true
       - IDUNN_DIRECTIONS_RL_MAX_REQUESTS=20
       - IDUNN_DIRECTIONS_RL_EXPIRE=180 # per 3 minutes
-      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation
+      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation,nlu
     extra_hosts:
+      - "nlu:10.108.3.64"
       - "wiki-es:10.100.33.34"
       - "geocoder-varnish:10.104.1.7"
       - "foundation:10.108.3.44"
