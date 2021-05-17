@@ -389,7 +389,7 @@ class PjApiPOI(BasePlace):
         if isinstance(self.data, pj_info.Response):
             images += [photo.url for photo in self.data.photos]
 
-        return images or None
+        return images
 
     def get_source(self):
         return PoiSource.PAGESJAUNES

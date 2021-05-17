@@ -6,7 +6,8 @@ from fastapi.testclient import TestClient
 from app import app
 
 from idunn.blocks.images import ImagesBlock
-from idunn.places import POI
+from idunn.places import POI, PjApiPOI
+from idunn.places.models.pj_find import Listing
 
 
 @pytest.fixture(scope="module")
@@ -107,3 +108,8 @@ def test_tag_mapillary():
             }
         ],
     }
+
+
+def test_pj_poi_no_image():
+    block = ImagesBlock.from_es(PjApiPOI(Listing()), lang="fr")
+    assert block is None
