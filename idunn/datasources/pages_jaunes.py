@@ -36,6 +36,10 @@ class PjSource:
     def internal_id(self, poi_id):
         return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
 
+    # pylint: disable = unused-argument
+    def search_places(self, query: str, size=10) -> List[PjApiPOI]:
+        return []
+
     def get_places_bbox(self, categories: List[CategoryEnum], bbox, size=10, query=""):
         raise NotImplementedError
 
@@ -151,6 +155,10 @@ class ApiPjSource(PjSource):
             )
 
         return pois
+
+    def search_places(self, query: str, size=10) -> List[PjApiPOI]:
+        query_params = {"q": f"{query} france"}
+        return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
     def get_places_bbox(
         self, categories: List[CategoryEnum], bbox, size=10, query=""

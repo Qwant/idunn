@@ -12,7 +12,7 @@ from idunn import settings
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 from idunn.utils.result_filter import ResultFilter
 
-from .models.geocodejson import Intention
+from .models.geocodejson import Intention, IntentionType
 from .bragi_client import bragi_client
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ NLU_POI_TAGS = ["POI", "other"]
 NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
+NLU_STREET_TAGS = ["street"]
 
 
 class NluClientException(Exception):
@@ -148,20 +149,33 @@ class NLU_Helper:  # pylint: disable = invalid-name
     @classmethod
     def fuzzy_match(cls, query, bragi_res):
         """Does the response match the query reasonably well ?
-        >>> NLU_Helper.fuzzy_match("bastille", {"name": "Beuzeville-la-Bastille"})
+        >>> NLU_Helper.fuzzy_match(
+        ...     "bastille",
+        ...     {"properties": {"geocoding": {"name": "Beuzeville-la-Bastille"}}},
+        ... )
         False
-        >>> NLU_Helper.fuzzy_match("paris 20", {"name": "Paris 20e Arrondissement"})
+        >>> NLU_Helper.fuzzy_match(
+        ...     "paris 20",
+        ...     {"properties": {"geocoding": {"name": "Paris 20e Arrondissement"}}},
+        ... )
         True
         >>> NLU_Helper.fuzzy_match(
         ...     "av victor hugo paris",
-        ...     {"name": "Avenue Victor Hugo", "administrative_regions": [{"name": "Paris"}]},
+        ...     {
+        ...         "properties": {
+        ...             "geocoding": {
+        ...                 "name": "Avenue Victor Hugo",
+        ...                 "administrative_regions": [{"name": "Paris"}],
+        ...             },
+        ...         },
+        ...     },
         ... )
         True
         """
         q = unidecode(query.strip()).lower()
-        if unidecode(bragi_res["name"]).lower().startswith(q):
+        if unidecode(bragi_res["properties"]["geocoding"]["name"]).lower().startswith(q):
             return True
-        return result_filter.check_bragi_response(q, bragi_res)
+        return bool(result_filter.filter_bragi_features(q, [bragi_res]))
 
     async def build_intention_category_place(
         self,
@@ -190,7 +204,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
             raise NluClientException("no matching place")
 
         place = bragi_result["features"][0]
-        if not self.fuzzy_match(place_query, place["properties"]["geocoding"]):
+        if not self.fuzzy_match(place_query, place):
             raise NluClientException("matching place too different from query")
 
         bbox = place["properties"]["geocoding"].get("bbox")
@@ -212,26 +226,42 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
         if category:
             return Intention(
+                type=IntentionType.CATEGORY,
                 filter={"category": category, "bbox": bbox},
                 description={"category": category, "place": place},
             )
 
         return Intention(
-            filter={"q": cat_query, "bbox": bbox}, description={"query": cat_query, "place": place}
+            type=IntentionType.BRAND,
+            filter={"q": cat_query, "bbox": bbox},
+            description={"query": cat_query, "place": place},
         )
 
     async def build_intention_category(self, cat_query, is_brand=False):
         category = await self.classify_category(cat_query, is_brand)
 
         if category:
-            return Intention(filter={"category": category}, description={"category": category})
+            return Intention(
+                type=IntentionType.CATEGORY,
+                filter={"category": category},
+                description={"category": category},
+            )
 
-        return Intention(filter={"q": cat_query}, description={"query": cat_query})
+        return Intention(
+            type=IntentionType.BRAND,
+            filter={"q": cat_query},
+            description={"query": cat_query},
+        )
 
     @classmethod
     def is_poi_request(cls, tags_list):
         """Check if a request is addressed to a POI"""
         return any(t.get("tag") in NLU_POI_TAGS for t in tags_list)
+
+    @classmethod
+    def is_street_request(cls, tags_list):
+        """Check if a request is addressed to a POI"""
+        return all(t.get("tag") in NLU_STREET_TAGS for t in tags_list)
 
     @classmethod
     def build_brand_query(cls, tags_list):
@@ -275,7 +305,13 @@ class NLU_Helper:  # pylint: disable = invalid-name
         response_nlu.raise_for_status()
         return response_nlu
 
-    async def get_intentions(self, text, lang, extra_geocoder_params=None) -> [Intention]:
+    async def get_intentions(
+        self,
+        text,
+        lang,
+        extra_geocoder_params=None,
+        allow_types=[IntentionType.BRAND, IntentionType.BRAND],
+    ) -> [Intention]:
         logs_extra = {
             "intention_detection": {
                 "text": text,
@@ -293,8 +329,30 @@ class NLU_Helper:  # pylint: disable = invalid-name
         tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
 
         if self.is_poi_request(tags_list):
-            logger.info("Detected POI request for '%s'", text, extra=logs_extra)
-            return []
+            if IntentionType.POI not in allow_types:
+                logger.info("Detected POI request for '%s'", text, extra=logs_extra)
+                return []
+
+            return [
+                Intention(
+                    type=IntentionType.POI,
+                    filter={"q": text},
+                    description={"query": text},
+                )
+            ]
+
+        if self.is_street_request(tags_list):
+            if IntentionType.STREET not in allow_types:
+                logger.info("Detected street request for '%s'", text, extra=logs_extra)
+                return []
+
+            return [
+                Intention(
+                    type=IntentionType.STREET,
+                    filter={"q": text},
+                    description={"query": text},
+                )
+            ]
 
         brand_query = self.build_brand_query(tags_list)
         cat_query = self.build_category_query(tags_list)
@@ -309,7 +367,16 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 raise NluClientException("detected a category and a brand")
 
             if not brand_query and not cat_query:
-                raise NluClientException("no category or brand detected")
+                if IntentionType.PLACE not in allow_types:
+                    raise NluClientException("no category or brand detected")
+
+                return [
+                    Intention(
+                        type=IntentionType.PLACE,
+                        filter={"q": text},
+                        description={"query": text},
+                    )
+                ]
 
             cat_or_brand_query = brand_query or cat_query
 

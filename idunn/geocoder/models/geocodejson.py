@@ -3,6 +3,7 @@ Implement GeocodeJson specification as defined here:
  - https://github.com/geocoders/geocodejson-spec/tree/master/draft
  - https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs
 """
+from enum import Enum
 from typing import List, Optional, Tuple
 from pydantic import BaseModel, confloat, Field, validator
 
@@ -163,6 +164,14 @@ class Feature(BaseModel):
     context: Optional[Context]
 
 
+class IntentionType(Enum):
+    BRAND = "brand"
+    CATEGORY = "category"
+    PLACE = "place"
+    POI = "poi"
+    STREET = "street"
+
+
 class IntentionFilter(BaseModel):
     q: Optional[str]
     bbox: Optional[Rect]
@@ -177,6 +186,7 @@ class IntentionDescription(BaseModel):
 
 
 class Intention(BaseModel):
+    type: IntentionType
     filter: IntentionFilter = Field(
         ..., description="Filter params that can be passed to /places endpoint"
     )
