@@ -69,6 +69,7 @@ RATE_LIMITER_REDIS_DB: 0
 ## Images
 
 BLOCK_IMAGES_ENABLED: True
+BLOCK_IMAGES_INCLUDE_MAPILLARY: True
 THUMBR_SALT:
 THUMBR_ENABLED: True # Set to False if you want to keep raw image urls instead of Thumbr
 THUMBR_URLS: "https://s1.qwant.com/thumbr,https://s2.qwant.com/thumbr"
