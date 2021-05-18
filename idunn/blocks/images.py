@@ -179,8 +179,11 @@ class ImagesBlock(BaseBlock):
         images = []
 
         # Tag "image"
-        raw_url = place.properties.get("image")
-        if raw_url and raw_url.startswith("http"):
+        raw_url = place.properties.get("image") or ""
+        is_wikipedia_image = "wikipedia.org" in raw_url
+        if raw_url.startswith("http") and not is_wikipedia_image:
+            # Image from "wikipedia.org" are ignored as the .jpg URL often points
+            # to a HTML document, instead of a usable image.
             images.append(
                 cls.build_image(
                     raw_url, source_url=cls.get_source_url(raw_url), alt=place.get_name(lang)

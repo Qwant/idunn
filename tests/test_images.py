@@ -113,3 +113,17 @@ def test_tag_mapillary():
 def test_pj_poi_no_image():
     block = ImagesBlock.from_es(PjApiPOI(Listing()), lang="fr")
     assert block is None
+
+
+def test_image_tag_wikipedia():
+    block = ImagesBlock.from_es(
+        POI(
+            {
+                "properties": {
+                    "image": "https://fr.wikipedia.org/wiki/Fichier:Tour_Eiffel_Wikimedia_Commons.jpg"
+                }
+            }
+        ),
+        lang="fr",
+    )
+    assert block is None
