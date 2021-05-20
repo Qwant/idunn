@@ -3,7 +3,7 @@ import re
 from functools import lru_cache
 from typing import List, Optional
 from unidecode import unidecode
-
+from itertools import chain
 from jellyfish import damerau_levenshtein_distance
 
 
@@ -145,6 +145,13 @@ class ResultFilter:
             or any(self.word_matches_abreviation(query_word, s) for s in label_variants)
         )
 
+    def postcode_matches(self, query_word, postcode):
+        if query_word == postcode:
+            return True
+        if len(query_word) < 2:
+            return False
+        return postcode.startswith(query_word)
+
     def count_adj_in_same_block(self, terms: List[str], blocks: List[List[str]]) -> int:
         """
         Count the number of consecutive terms that both match a word in a same
@@ -189,13 +196,13 @@ class ResultFilter:
         # Check if all words of the query match a word in the result
         full_label = [
             *(w for name in names for w in self.words(name)),
-            *postcodes,
             *(w for admin in admins for w in self.words(admin)),
         ]
 
         # Check if enough words in the query are matched in the result
         query_matches = (
             any(self.word_matches(q_word, l_word) for l_word in full_label)
+            or any(self.postcode_matches(q_word, postcode) for postcode in postcodes)
             for q_word in query_words
         )
 
@@ -221,14 +228,15 @@ class ResultFilter:
         #   - over one of the result names
         #   - over one of the result names together with one of the admin names
         #   - over one of the result names together with a postcode
+        #   - postcode only, if the query consists of a single word
         def coverage(terms):
             return sum(
                 any(self.word_matches(query_word, term) for query_word in query_words)
                 for term in terms
             ) / len(terms)
 
-        check_coverage = any(
-            coverage(terms) >= (2 / 3)
+        candidate_terms_to_cover = (
+            terms
             for name_words in map(self.words, names)
             for terms in [
                 name_words,
@@ -236,6 +244,12 @@ class ResultFilter:
                 *(name_words + [postcode] for postcode in postcodes),
             ]
         )
+        if len(query_words) == 1:
+            candidate_terms_to_cover = chain(
+                candidate_terms_to_cover, ([postcode] for postcode in postcodes)
+            )
+
+        check_coverage = any(coverage(terms) >= (2 / 3) for terms in candidate_terms_to_cover)
 
         if not check_coverage:
             logger.debug(
