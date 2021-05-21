@@ -252,8 +252,14 @@ async def get_instant_answer(
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
             return []
 
+        place_in_query = any(it.description.place for it in intentions)
+
         try:
-            return await run_in_threadpool(pj_source.search_places, normalized_query)
+            return await run_in_threadpool(
+                pj_source.search_places,
+                normalized_query,
+                place_in_query,
+            )
         except HTTPException as exc:
             logger.warning("Failed to query pagejaunes: %s", exc)
             return []

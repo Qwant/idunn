@@ -37,7 +37,7 @@ class PjSource:
         return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
 
     # pylint: disable = unused-argument
-    def search_places(self, query: str, size=10) -> List[PjApiPOI]:
+    def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
         return []
 
     def get_places_bbox(self, categories: List[CategoryEnum], bbox, size=10, query=""):
@@ -156,8 +156,8 @@ class ApiPjSource(PjSource):
 
         return pois
 
-    def search_places(self, query: str, size=10) -> List[PjApiPOI]:
-        query_params = {"q": f"{query} france"}
+    def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
+        query_params = {"q": query if place_in_query else f"{query} france"}
         return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
     def get_places_bbox(
