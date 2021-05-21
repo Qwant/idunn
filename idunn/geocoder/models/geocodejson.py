@@ -165,11 +165,11 @@ class Feature(BaseModel):
 
 
 class IntentionType(Enum):
+    ADDRESS = "address"
     BRAND = "brand"
     CATEGORY = "category"
-    PLACE = "place"
     POI = "poi"
-    STREET = "street"
+    ANY_PLACE = "any_place"
 
 
 class IntentionFilter(BaseModel):

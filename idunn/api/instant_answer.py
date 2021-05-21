@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from fastapi import Query
+from fastapi import HTTPException, Query
 from fastapi.responses import ORJSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Tuple
@@ -232,8 +232,8 @@ async def get_instant_answer(
                 allow_types=[
                     IntentionType.BRAND,
                     IntentionType.CATEGORY,
-                    IntentionType.PLACE,
                     IntentionType.POI,
+                    IntentionType.ANY_PLACE,
                 ],
             )
             if intentions and intentions[0].type in [
@@ -248,16 +248,21 @@ async def get_instant_answer(
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
 
-    if intentions:
-        bragi_response, pj_response = await asyncio.gather(
-            bragi_client.autocomplete(query),
-            run_in_threadpool(pj_source.search_places, normalized_query),
-        )
-        pj_response = result_filter.filter_places(normalized_query, pj_response)
-    else:
-        bragi_response = await bragi_client.autocomplete(query)
-        pj_response = None
+    async def fetch_pj_response():
+        if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
+            return []
 
+        try:
+            return await run_in_threadpool(pj_source.search_places, normalized_query)
+        except HTTPException as exc:
+            logger.warning("Failed to query pagejaunes: %s", exc)
+            return []
+
+    bragi_response, pj_response = await asyncio.gather(
+        bragi_client.autocomplete(query), fetch_pj_response()
+    )
+
+    pj_response = result_filter.filter_places(normalized_query, pj_response)
     bragi_features = result_filter.filter_bragi_features(
         normalized_query, bragi_response["features"]
     )

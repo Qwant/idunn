@@ -260,8 +260,22 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
     @classmethod
     def is_street_request(cls, tags_list):
-        """Check if a request is addressed to a POI"""
-        return all(t.get("tag") in NLU_STREET_TAGS for t in tags_list)
+        """
+        Check if a request only contains a street description.
+        >>> NLU_Helper.is_street_request([
+        ...     {"phrase": "3 rue des Rosiers", "tag": "street"},
+        ...     {"phrase": "Paris", "tag": "city"},
+        ... ])
+        True
+        >>> NLU_Helper.is_street_request([
+        ...     {"phrase": "restaurant", "tag": "cat"},
+        ...     {"phrase": "rue des Rosiers, Paris", "tag": "street"},
+        ... ])
+        False
+        """
+        contains_street_tag = any(t.get("tag") in NLU_STREET_TAGS for t in tags_list)
+        only_place_tags = all(t.get("tag") in NLU_STREET_TAGS + NLU_PLACE_TAGS for t in tags_list)
+        return contains_street_tag and only_place_tags
 
     @classmethod
     def build_brand_query(cls, tags_list):
@@ -310,7 +324,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
         text,
         lang,
         extra_geocoder_params=None,
-        allow_types=[IntentionType.BRAND, IntentionType.BRAND],
+        allow_types=[IntentionType.BRAND, IntentionType.CATEGORY],
     ) -> [Intention]:
         logs_extra = {
             "intention_detection": {
@@ -342,13 +356,13 @@ class NLU_Helper:  # pylint: disable = invalid-name
             ]
 
         if self.is_street_request(tags_list):
-            if IntentionType.STREET not in allow_types:
+            if IntentionType.ADDRESS not in allow_types:
                 logger.info("Detected street request for '%s'", text, extra=logs_extra)
                 return []
 
             return [
                 Intention(
-                    type=IntentionType.STREET,
+                    type=IntentionType.ADDRESS,
                     filter={"q": text},
                     description={"query": text},
                 )
@@ -367,12 +381,12 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 raise NluClientException("detected a category and a brand")
 
             if not brand_query and not cat_query:
-                if IntentionType.PLACE not in allow_types:
+                if IntentionType.ANY_PLACE not in allow_types:
                     raise NluClientException("no category or brand detected")
 
                 return [
                     Intention(
-                        type=IntentionType.PLACE,
+                        type=IntentionType.ANY_PLACE,
                         filter={"q": text},
                         description={"query": text},
                     )
