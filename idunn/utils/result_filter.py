@@ -238,11 +238,11 @@ class ResultFilter:
         candidate_terms_to_cover = (
             terms
             for name_words in map(self.words, names)
-            for terms in [
-                name_words,
-                *(name_words + self.words(admin) for admin in admins),
-                *(name_words + [postcode] for postcode in postcodes),
-            ]
+            for terms in chain(
+                [name_words],
+                (name_words + self.words(admin) for admin in admins),
+                (name_words + [postcode] for postcode in postcodes),
+            )
         )
         if len(query_words) == 1:
             candidate_terms_to_cover = chain(
