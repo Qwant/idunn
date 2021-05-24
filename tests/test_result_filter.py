@@ -108,3 +108,26 @@ def test_min_matching_words():
 
     assert filter.check("5 rue Gustave Eiffel", **place_infos)
     assert not filter.check("5 rue Paul Dupont", **place_infos)
+
+
+def test_match_postcode_by_prefix():
+    filter = ResultFilter()
+    place_infos = {
+        "names": ["Niort"],
+        "postcodes": ["79000"],
+        "place_type": "admin",
+    }
+    assert filter.check("Niort 79", **place_infos)
+    # At least 2 chars must match
+    assert not filter.check("Niort 7", **place_infos)
+
+
+def test_match_postcode_only():
+    filter = ResultFilter()
+    place_infos = {
+        "names": ["Niort"],
+        "postcodes": ["79000"],
+        "place_type": "admin",
+    }
+    assert filter.check("79000", **place_infos)
+    assert not filter.check("79", **place_infos)

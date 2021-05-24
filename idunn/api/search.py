@@ -3,7 +3,6 @@ from fastapi import Body, Depends
 
 from idunn import settings
 from idunn.api.geocoder import get_autocomplete
-from idunn.utils import result_filter
 from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
 from ..geocoder.models import ExtraParams, QueryParams, IdunnAutocomplete
