@@ -230,6 +230,8 @@ class ResultFilter:
         #   - over one of the result names together with a postcode
         #   - postcode only, if the query consists of a single word
         def coverage(terms):
+            if len(terms) == 0:
+                return 0.0
             return sum(
                 any(self.word_matches(query_word, term) for query_word in query_words)
                 for term in terms
