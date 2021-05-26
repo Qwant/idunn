@@ -1,11 +1,10 @@
 import logging
 from datetime import datetime, timedelta, date
-from pytz import timezone, utc
+from pytz import utc
 from pydantic import BaseModel, conint, constr
 from typing import List, Literal, Optional
 
 from .base import BaseBlock
-from idunn.utils import tz
 from idunn.utils.opening_hours import OpeningHours
 
 OPEN = "open"
@@ -13,15 +12,6 @@ CLOSED = "closed"
 
 
 logger = logging.getLogger(__name__)
-
-
-def get_tz(poi_tzname, lat, lon):
-    """
-    Returns the timezone corresponding to the coordinates of the POI.
-    """
-    if lon is not None and lat is not None:
-        return timezone(poi_tzname)
-    return None
 
 
 def get_coord(place):
@@ -109,15 +99,8 @@ class OpeningHourBlock(BaseBlock):
     @classmethod
     def from_es_with_oh(cls, place, _lang, raw_oh):
         # Fallback to London coordinates if POI coordinates are not known.
-        poi_lat, poi_lon = get_coord(place) or (51.5, 0)
         poi_country_code = place.get_country_code()
-
-        poi_tzname = tz.tzNameAt(poi_lat, poi_lon, forceTZ=True)
-        poi_tz = get_tz(poi_tzname, poi_lat, poi_lon)
-
-        if poi_tz is None:
-            logger.info("No timezone found for poi %s", place.get("id"))
-            return None
+        poi_tz = place.get_tz()
 
         oh = OpeningHours(raw_oh, poi_tz, poi_country_code)
         curr_dt = utc.localize(datetime.utcnow())
