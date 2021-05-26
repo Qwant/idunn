@@ -27,3 +27,21 @@ def test_admin():
     assert admin.get_name("fr") == "Dunkerque"
     assert admin.get_name("da") == ""
     assert admin.wikidata_id == "Q7652"
+
+
+def test_admin_bbox_override():
+    admin = Admin(
+        {
+            "zone_type": "city",
+            "codes": [{"name": "wikidata", "value": "Q142"}],
+            "names": {
+                "fr": "France",
+            },
+            "labels": {
+                "fr": "France",
+            },
+        }
+    )
+
+    assert admin.wikidata_id == "Q142"
+    assert admin.get_bbox() == [-5.4517733, 41.2611155, 9.8282225, 51.3055721]

@@ -378,35 +378,6 @@ def build_blocks(es_poi, lang, verbosity):
     return blocks
 
 
-def get_geom(es_place):
-    """Return the correct geometry from the elastic response
-
-    A correct geometry means both lat and lon coordinates are required
-    >>> from idunn.places import POI
-    >>> get_geom(POI({})) is None
-    True
-
-    >>> get_geom(POI({'coord':{"lon": None, "lat": 48.858260156496016}})) is None
-    True
-
-    >>> get_geom(POI({'coord':{"lon": 2.2944990157640612, "lat": None}})) is None
-    True
-
-    >>> get_geom(POI({'coord':{"lon": 2.2944990157640612, "lat": 48.858260156496016}}))
-    {'type': 'Point', 'coordinates': [2.2944990157640612, 48.858260156496016], 'center': [2.2944...
-    """
-    geom = None
-    coord = es_place.get_coord()
-    if coord is not None:
-        lon = coord.get("lon")
-        lat = coord.get("lat")
-        if lon is not None and lat is not None:
-            geom = {"type": "Point", "coordinates": [lon, lat], "center": [lon, lat]}
-            if "bbox" in es_place:
-                geom["bbox"] = es_place.get("bbox")
-    return geom
-
-
 def get_name(properties, lang):
     """
     Return the Place name from the properties field of the elastic response. Here 'name'

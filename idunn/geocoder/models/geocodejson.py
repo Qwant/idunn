@@ -4,7 +4,9 @@ Implement GeocodeJson specification as defined here:
  - https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs
 """
 from typing import List, Optional, Tuple
-from pydantic import BaseModel, confloat, Field
+from pydantic import BaseModel, confloat, Field, validator
+
+from idunn.api.constants import WIKIDATA_TO_BBOX_OVERRIDE
 from .cosmogony import ZoneType
 
 
@@ -125,6 +127,16 @@ class GeocodingPlace(BaseModel):
     feed_publishers: List[FeedPublished] = []
     bbox: Optional[Rect]
     country_codes: List[str] = []
+
+    @validator("bbox")
+    def override_bbox(cls, v, values):
+        if not v:
+            return v
+        codes = values["codes"]
+        wikidata_id = next((c.value for c in codes if c.name == "wikidata"), None)
+        if wikidata_id in WIKIDATA_TO_BBOX_OVERRIDE:
+            return WIKIDATA_TO_BBOX_OVERRIDE[wikidata_id]
+        return v
 
 
 class FeatureProperties(BaseModel):
