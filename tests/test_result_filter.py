@@ -131,3 +131,13 @@ def test_match_postcode_only():
     }
     assert filter.check("79000", **place_infos)
     assert not filter.check("79", **place_infos)
+
+
+def test_empty_names():
+    filter = ResultFilter()
+    place_infos = {
+        "names": [".", "Niort"],
+        "postcodes": ["12345"],
+        "place_type": "admin",
+    }
+    assert filter.check("Niort", **place_infos)
