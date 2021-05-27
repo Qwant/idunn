@@ -20,6 +20,7 @@ from ..utils.prometheus import (
     MonitoredAPIRoute as APIRoute,
 )
 from ..utils.ban_check import check_banned_client
+from ..utils.rate_limiter import rate_limiter_dependency
 
 
 def get_metric_handler(settings):
@@ -43,6 +44,13 @@ def get_api_urls(settings):
         APIRoute(
             "/places",
             get_places_bbox,
+            dependencies=[
+                rate_limiter_dependency(
+                    resource="idunn.get_places_bbox",
+                    max_requests=int(settings["LIST_PLACES_RL_MAX_REQUESTS"]),
+                    expire=int(settings["LIST_PLACES_RL_EXPIRE"]),
+                )
+            ],
             response_model=PlacesBboxResponse,
             responses={400: {"description": "Client Error in query params"}},
         ),

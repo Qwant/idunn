@@ -1,5 +1,5 @@
 import logging
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends, Request
 from contextlib import contextmanager
 from redis import RedisError
 from redis_rate_limit import RateLimiter, TooManyRequests
@@ -68,3 +68,12 @@ class IdunnRateLimiter:
                 pass
         except TooManyRequestsException as exc:
             raise HTTPException(status_code=429, detail="Too Many Requests") from exc
+
+
+def rate_limiter_dependency(**kwargs):
+    rate_limiter = IdunnRateLimiter(**kwargs)
+
+    def dependency(request: Request):
+        rate_limiter.check_limit_per_client(request)
+
+    return Depends(dependency)
