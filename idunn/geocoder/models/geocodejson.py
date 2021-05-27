@@ -183,6 +183,7 @@ class IntentionDescription(BaseModel):
     query: Optional[str]
     category: Optional[str]
     place: Optional[Feature]
+    place_in_query: bool = False
 
 
 class Intention(BaseModel):

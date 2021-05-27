@@ -351,7 +351,10 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 Intention(
                     type=IntentionType.POI,
                     filter={"q": text},
-                    description={"query": text},
+                    description={
+                        "query": text,
+                        "place_in_query": any(t.get("tag") in NLU_PLACE_TAGS for t in tags_list),
+                    },
                 )
             ]
 

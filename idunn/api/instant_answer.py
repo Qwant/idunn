@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from fastapi import HTTPException, Query
+from fastapi import Query
 from fastapi.responses import ORJSONResponse, Response
 from fastapi.concurrency import run_in_threadpool
 from typing import Optional, List, Tuple
@@ -203,7 +203,9 @@ async def get_instant_answer(
     run more restrictive checks on its results.
     """
     normalized_query = normalize(q)
-    user_country = user_country.lower()
+
+    if user_country is not None:
+        user_country = user_country.lower()
 
     if len(normalized_query) > ia_max_query_length:
         return no_instant_answer(query=q, lang=lang, region=user_country)
@@ -253,8 +255,11 @@ async def get_instant_answer(
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
             return []
 
-        place_in_query = any(it.description.place for it in intentions)
-        return await run_in_threadpool(pj_source.search_places, normalized_query, place_in_query)
+        return await run_in_threadpool(
+            pj_source.search_places,
+            normalized_query,
+            intentions.place_in_query,
+        )
 
     bragi_response, pj_response = await asyncio.gather(
         bragi_client.autocomplete(query), fetch_pj_response()
