@@ -2,7 +2,7 @@ import logging
 from geopy import Point
 from pytz import timezone
 
-from idunn.api.utils import Verbosity, WikidataConnector, get_geom, build_blocks
+from idunn.api.utils import Verbosity, WikidataConnector, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
 from idunn.utils.redis import RedisWrapper
 from idunn.utils import maps_urls, tz
@@ -231,7 +231,7 @@ class BasePlace(dict):
             local_name=self.get_local_name(),
             class_name=self.get_class_name(),
             subclass_name=self.get_subclass_name(),
-            geometry=get_geom(self),
+            geometry=self.get_geometry(),
             address=self.build_address(lang),
             blocks=build_blocks(self, lang, verbosity),
             meta=self.get_meta(),
@@ -253,3 +253,27 @@ class BasePlace(dict):
         coords = self.get_coord()
         tz_name = tz.tzNameAt(latitude=coords["lat"], longitude=coords["lon"], forceTZ=True)
         return timezone(tz_name)
+
+    def get_geometry(self):
+        """Returns GeoJSON-like geometry. Requires "lon" and "lat" coordinates.
+        >>> from idunn.places import POI
+        >>> assert POI({}).get_geometry() is None
+
+        >>> assert POI({'coord':{"lon": None, "lat": 48.85}}).get_geometry() is None
+
+        >>> assert POI({'coord':{"lon": 2.29, "lat": None}}).get_geometry() is None
+
+        >>> POI({'coord':{"lon": 2.29, "lat": 48.85}}).get_geometry()
+        {'type': 'Point', 'coordinates': [2.29, 48.85], 'center': [2.29, 48.85]}
+        """
+        geom = None
+        coord = self.get_coord()
+        if coord is not None:
+            lon = coord.get("lon")
+            lat = coord.get("lat")
+            if lon is not None and lat is not None:
+                geom = {"type": "Point", "coordinates": [lon, lat], "center": [lon, lat]}
+                bbox = self.get_bbox()  # pylint: disable=assignment-from-none
+                if bbox is not None:
+                    geom["bbox"] = bbox
+        return geom
