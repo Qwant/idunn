@@ -1,6 +1,6 @@
 import logging
 from geopy import Point
-from pytz import timezone
+from pytz import timezone, UTC
 
 from idunn.api.utils import Verbosity, WikidataConnector, build_blocks
 from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
@@ -250,8 +250,21 @@ class BasePlace(dict):
         return None
 
     def get_tz(self):
+        """
+        >>> from idunn.places import POI
+
+        >>> poi1 = POI({"coord": {"lon": 2.3, "lat":48.9}})
+        >>> poi1.get_tz().zone
+        'Europe/Paris'
+
+        >>> poi2 = POI({'coord':{"lon":-12.8218, "lat": 37.5118}})
+        >>> poi2.get_tz().zone
+        'UTC'
+        """
         coords = self.get_coord()
         tz_name = tz.tzNameAt(latitude=coords["lat"], longitude=coords["lon"], forceTZ=True)
+        if tz_name is None:
+            return UTC
         return timezone(tz_name)
 
     def get_geometry(self):
