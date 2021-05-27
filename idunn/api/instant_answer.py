@@ -203,6 +203,7 @@ async def get_instant_answer(
     run more restrictive checks on its results.
     """
     normalized_query = normalize(q)
+    user_country = user_country.lower()
 
     if len(normalized_query) > ia_max_query_length:
         return no_instant_answer(query=q, lang=lang, region=user_country)
@@ -253,16 +254,7 @@ async def get_instant_answer(
             return []
 
         place_in_query = any(it.description.place for it in intentions)
-
-        try:
-            return await run_in_threadpool(
-                pj_source.search_places,
-                normalized_query,
-                place_in_query,
-            )
-        except HTTPException as exc:
-            logger.warning("Failed to query pagejaunes: %s", exc)
-            return []
+        return await run_in_threadpool(pj_source.search_places, normalized_query, place_in_query)
 
     bragi_response, pj_response = await asyncio.gather(
         bragi_client.autocomplete(query), fetch_pj_response()

@@ -2,6 +2,7 @@ from os import path
 from typing import List
 
 import logging
+import requests
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
 from requests import HTTPError as RequestsHTTPError
@@ -140,7 +141,12 @@ class ApiPjSource(PjSource):
         return res.json()
 
     def get_places_from_url(self, url, params=None, size=10):
-        res = pj_find.Response(**self.get_from_params(url, params))
+        try:
+            res = pj_find.Response(**self.get_from_params(url, params))
+        except requests.RequestException as exc:
+            logger.error("Failed to query pagejaunes: %s", exc)
+            return []
+
         pois = [PjApiPOI(listing) for listing in res.search_results.listings[:size] or []]
 
         if (
