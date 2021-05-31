@@ -1,5 +1,3 @@
-# pylint: disable = protected-access
-
 import logging
 import csv
 import json

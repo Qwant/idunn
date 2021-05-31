@@ -3,8 +3,9 @@ Implement GeocodeJson specification as defined here:
  - https://github.com/geocoders/geocodejson-spec/tree/master/draft
  - https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/model.rs
 """
+from enum import Enum
 from typing import List, Optional, Tuple
-from pydantic import BaseModel, confloat, Field, validator
+from pydantic import BaseModel, PrivateAttr, confloat, Field, validator
 
 from idunn.api.constants import WIKIDATA_TO_BBOX_OVERRIDE
 from .cosmogony import ZoneType
@@ -163,6 +164,14 @@ class Feature(BaseModel):
     context: Optional[Context]
 
 
+class IntentionType(Enum):
+    ADDRESS = "address"
+    BRAND = "brand"
+    CATEGORY = "category"
+    POI = "poi"
+    ANY_PLACE = "any_place"
+
+
 class IntentionFilter(BaseModel):
     q: Optional[str]
     bbox: Optional[Rect]
@@ -174,9 +183,11 @@ class IntentionDescription(BaseModel):
     query: Optional[str]
     category: Optional[str]
     place: Optional[Feature]
+    _place_in_query: bool = PrivateAttr(False)
 
 
 class Intention(BaseModel):
+    type: IntentionType
     filter: IntentionFilter = Field(
         ..., description="Filter params that can be passed to /places endpoint"
     )

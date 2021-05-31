@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from fastapi import Query
 from fastapi.responses import ORJSONResponse, Response
@@ -7,9 +8,11 @@ from pydantic import BaseModel, Field, validator, HttpUrl
 from geopy import Point
 
 from idunn import settings
+from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models import QueryParams
+from idunn.geocoder.models.geocodejson import IntentionType
 from idunn.places import place_from_id, Place
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
 from idunn.utils import maps_urls
@@ -201,6 +204,9 @@ async def get_instant_answer(
     """
     normalized_query = normalize(q)
 
+    if user_country is not None:
+        user_country = user_country.lower()
+
     if len(normalized_query) > ia_max_query_length:
         return no_instant_answer(query=q, lang=lang, region=user_country)
 
@@ -223,34 +229,61 @@ async def get_instant_answer(
     if lang in nlu_allowed_languages:
         try:
             intentions = await nlu_client.get_intentions(
-                normalized_query, lang, extra_geocoder_params
+                normalized_query,
+                lang,
+                extra_geocoder_params,
+                allow_types=[
+                    IntentionType.BRAND,
+                    IntentionType.CATEGORY,
+                    IntentionType.POI,
+                ],
             )
-            if intentions:
+            if intentions and intentions[0].type in [
+                IntentionType.BRAND,
+                IntentionType.CATEGORY,
+            ]:
                 return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query
-            pass
+            intentions = []
 
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
-    bragi_response = await bragi_client.autocomplete(query)
-    geocodings = (feature["properties"]["geocoding"] for feature in bragi_response["features"])
-    geocodings = sorted(
-        (
-            (
-                result_filter.rank_bragi_response(normalized_query, feature),
-                feature,
-            )
-            for feature in geocodings
-            if result_filter.check_bragi_response(normalized_query, feature)
-        ),
-        key=lambda item: -item[0],  # sort by descending rank
+
+    async def fetch_pj_response():
+        if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
+            return []
+
+        return await run_in_threadpool(
+            pj_source.search_places,
+            normalized_query,
+            intentions[0].description._place_in_query,
+        )
+
+    bragi_response, pj_response = await asyncio.gather(
+        bragi_client.autocomplete(query), fetch_pj_response()
     )
 
-    if not geocodings:
+    pj_response = result_filter.filter_places(normalized_query, pj_response)
+    bragi_features = result_filter.filter_bragi_features(
+        normalized_query, bragi_response["features"]
+    )
+
+    if bragi_features:
+        place_id = bragi_features[0]["properties"]["geocoding"]["id"]
+        res = await run_in_threadpool(
+            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
+        )
+    elif pj_response:
+        place_id = pj_response[0].get_id()
+        result = InstantAnswerResult(
+            places=[pj_response[0].load_place(lang)],
+            source=pj_response[0].get_source(),
+            maps_url=maps_urls.get_place_url(place_id),
+            maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
+        )
+        res = build_response(result, query=q, lang=lang)
+    else:
         return no_instant_answer(query=q, lang=lang, region=user_country)
 
-    place_id = geocodings[0][1]["id"]
-    return await run_in_threadpool(
-        get_instant_answer_single_place, place_id=place_id, query=q, lang=lang
-    )
+    return res

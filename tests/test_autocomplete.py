@@ -101,6 +101,7 @@ def test_autocomplete_with_nlu_brand_and_city(mock_autocomplete_get, mock_NLU_wi
         params={"q": "auchan à paris", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
             {
+                "type": "brand",
                 "filter": {"q": "auchan", "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156]},
                 "description": {
                     "query": "auchan",
@@ -117,7 +118,13 @@ def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_wi
     assert_intention(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[{"filter": {"q": "auchan"}, "description": {"query": "auchan"}}],
+        expected_intention=[
+            {
+                "type": "brand",
+                "filter": {"q": "auchan"},
+                "description": {"query": "auchan"},
+            }
+        ],
         expected_intention_place=None,
     )
 
@@ -129,6 +136,7 @@ def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lat": 48.9, "lon": 2.3},
         expected_intention=[
             {
+                "type": "brand",
                 "filter": {"q": "auchan"},
                 "description": {"query": "auchan"},
             }
@@ -143,7 +151,11 @@ def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
         client,
         params={"q": "pharmacie", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
-            {"filter": {"category": "pharmacy"}, "description": {"category": "pharmacy"}}
+            {
+                "type": "category",
+                "filter": {"category": "pharmacy"},
+                "description": {"category": "pharmacy"},
+            }
         ],
         expected_intention_place=None,
     )
@@ -156,6 +168,7 @@ def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_cat_
         params={"q": "pharmacie à paris, france", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention=[
             {
+                "type": "category",
                 "filter": {
                     "category": "pharmacy",
                     "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],

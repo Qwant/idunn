@@ -1,11 +1,15 @@
 import logging
 import re
 from functools import lru_cache
-from typing import List, Optional
+from typing import Callable, List, Optional, TypeVar
 from unidecode import unidecode
 from itertools import chain
 from jellyfish import damerau_levenshtein_distance
 
+from idunn.places.base import BasePlace
+
+
+T = TypeVar("T")
 
 logger = logging.getLogger(__name__)
 
@@ -186,6 +190,10 @@ class ResultFilter:
         admins: List[str] = [],
         postcodes: List[str] = [],
     ) -> bool:
+        """
+        Filter a feature from bragi responses, please provide the field
+        bragi_response["features"][..]["properties"]["geocoding"].
+        """
         query_words = self.words(query.lower())
         names = list(map(str.lower, names))
         admins = list(map(str.lower, admins))
@@ -293,19 +301,27 @@ class ResultFilter:
 
         return rank_val
 
-    def rank_bragi_response(self, query: str, bragi_response: dict) -> Optional[float]:
+    def filter(self, places: List[T], build_params: Callable[[T], dict]) -> List[T]:
         """
-        Return an indicative relevance that takes value in [0, 1.0] to reorder
-        results in respect with the query.
+        Filter relevent results from input list of places and return them
+        sorted by relevance.
         """
-        return self.rank(**self.build_params_from_bragi(query, bragi_response))
+        return sorted(
+            (place for place in places if self.check(**build_params(place))),
+            key=lambda place: -self.rank(**build_params(place)),
+        )
 
-    def check_bragi_response(self, query: str, bragi_response: dict) -> bool:
-        """
-        Filter a feature from bragi responses, please provide the field
-        bragi_response["features"][..]["properties"]["geocoding"].
-        """
-        return self.check(**self.build_params_from_bragi(query, bragi_response))
+    def filter_bragi_features(self, query: str, bragi_responses: List[dict]) -> List[dict]:
+        return self.filter(
+            bragi_responses,
+            lambda res: self.build_params_from_bragi(query, res["properties"]["geocoding"]),
+        )
+
+    def filter_places(self, query: str, places: List[BasePlace]) -> List[BasePlace]:
+        return self.filter(
+            places,
+            lambda place: self.build_params_from_place(query, place),
+        )
 
     @classmethod
     def build_params_from_bragi(cls, query: str, bragi_response: dict) -> dict:
@@ -333,4 +349,14 @@ class ResultFilter:
             "admins": [admin["name"] for admin in bragi_response.get("administrative_regions", [])],
             "postcodes": postcodes,
             "place_type": bragi_response.get("type"),
+        }
+
+    @classmethod
+    def build_params_from_place(cls, query: str, place: BasePlace) -> dict:
+        return {
+            "query": query,
+            "names": [place.get_local_name()],
+            "admins": [admin["name"] for admin in place.build_admins()],
+            "postcodes": place.get_postcodes() or [],
+            "place_type": place.PLACE_TYPE,
         }

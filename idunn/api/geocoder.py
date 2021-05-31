@@ -25,15 +25,19 @@ def post_filter_intention(intention, bragi_response, limit):
     # To avoid false positives, let's ignore the intention if matching
     # results among geocoded features seem to be too rare.
     expected_matches = limit / 2
-    matches = 0
-    geocodings = [f.get("properties", {}).get("geocoding", {}) for f in bragi_response["features"]]
-    for geocoding in geocodings:
-        if geocoding.get("type") != "poi":
-            continue
-        if result_filter.check_bragi_response(intention.description.query, geocoding):
-            matches += 1
-            if matches > expected_matches:
-                return True
+    matches = len(
+        result_filter.filter_bragi_features(
+            intention.description.query,
+            [
+                feat
+                for feat in bragi_response["features"]
+                if feat.get("properties", {}).get("geocoding", {}).get("type") == "poi"
+            ],
+        )
+    )
+
+    if matches > expected_matches:
+        return True
 
     logging.info(
         "Ignored intention which doesn't match enough geocoding results `%s`",
@@ -41,8 +45,11 @@ def post_filter_intention(intention, bragi_response, limit):
         extra={
             "intention": intention.dict(),
             "bragi_response": [
-                {"id": geocoding.get("id"), "label": geocoding.get("label")}
-                for geocoding in geocodings
+                {
+                    "id": feat.get("properties", {}).get("geocoding", {}).get("id"),
+                    "label": feat.get("properties", {}).get("geocoding", {}).get("label"),
+                }
+                for feat in bragi_response["features"]
             ],
             "limit": limit,
         },

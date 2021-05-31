@@ -32,20 +32,11 @@ async def search(
         return response
 
     # Filter relevent features
-    feasible_features = filter(
-        lambda ft: result_filter.check_bragi_response(query.q, ft.properties.geocoding.dict()),
-        response.features,
-    )
+    feasible_features = result_filter.filter_bragi_features(query.q, response.dict()["features"])
 
     # Pick most relevant feature, if any
-    best_feature = max(
-        feasible_features,
-        default=None,
-        key=lambda ft: result_filter.rank_bragi_response(query.q, ft.properties.geocoding.dict()),
-    )
-
-    if best_feature:
-        response.features = [best_feature]
+    if feasible_features:
+        response.features = [feasible_features[0]]
     else:
         response.features = []
 

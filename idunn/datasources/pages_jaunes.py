@@ -2,6 +2,7 @@ from os import path
 from typing import List
 
 import logging
+import requests
 from elasticsearch import Elasticsearch
 from fastapi import HTTPException
 from requests import HTTPError as RequestsHTTPError
@@ -35,6 +36,10 @@ class PjSource:
 
     def internal_id(self, poi_id):
         return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
+
+    # pylint: disable = unused-argument
+    def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
+        return []
 
     def get_places_bbox(self, categories: List[CategoryEnum], bbox, size=10, query=""):
         raise NotImplementedError
@@ -136,7 +141,12 @@ class ApiPjSource(PjSource):
         return res.json()
 
     def get_places_from_url(self, url, params=None, size=10):
-        res = pj_find.Response(**self.get_from_params(url, params))
+        try:
+            res = pj_find.Response(**self.get_from_params(url, params))
+        except requests.RequestException as exc:
+            logger.error("Failed to query pagejaunes: %s", exc)
+            return []
+
         pois = [PjApiPOI(listing) for listing in res.search_results.listings[:size] or []]
 
         if (
@@ -151,6 +161,10 @@ class ApiPjSource(PjSource):
             )
 
         return pois
+
+    def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
+        query_params = {"q": query if place_in_query else f"{query} france"}
+        return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
     def get_places_bbox(
         self, categories: List[CategoryEnum], bbox, size=10, query=""
