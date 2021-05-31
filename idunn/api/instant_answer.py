@@ -236,7 +236,6 @@ async def get_instant_answer(
                     IntentionType.BRAND,
                     IntentionType.CATEGORY,
                     IntentionType.POI,
-                    IntentionType.ANY_PLACE,
                 ],
             )
             if intentions and intentions[0].type in [
@@ -258,7 +257,7 @@ async def get_instant_answer(
         return await run_in_threadpool(
             pj_source.search_places,
             normalized_query,
-            intentions[0]._place_in_query,
+            intentions[0].description._place_in_query,
         )
 
     bragi_response, pj_response = await asyncio.gather(
