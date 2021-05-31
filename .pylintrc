@@ -155,6 +155,7 @@ disable=print-statement,
         too-many-locals,
         too-many-public-methods,
         too-many-return-statements,
+        protected-access,
 # TODO: we may be interested in adding these
         wrong-import-order,
         fixme,

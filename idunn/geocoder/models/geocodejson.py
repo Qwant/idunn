@@ -5,7 +5,7 @@ Implement GeocodeJson specification as defined here:
 """
 from enum import Enum
 from typing import List, Optional, Tuple
-from pydantic import BaseModel, confloat, Field, validator
+from pydantic import BaseModel, PrivateAttr, confloat, Field, validator
 
 from idunn.api.constants import WIKIDATA_TO_BBOX_OVERRIDE
 from .cosmogony import ZoneType
@@ -183,7 +183,7 @@ class IntentionDescription(BaseModel):
     query: Optional[str]
     category: Optional[str]
     place: Optional[Feature]
-    place_in_query: bool = False
+    _place_in_query: bool = PrivateAttr(False)
 
 
 class Intention(BaseModel):

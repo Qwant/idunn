@@ -258,7 +258,7 @@ async def get_instant_answer(
         return await run_in_threadpool(
             pj_source.search_places,
             normalized_query,
-            intentions.place_in_query,
+            intentions[0]._place_in_query,
         )
 
     bragi_response, pj_response = await asyncio.gather(

@@ -347,16 +347,17 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 logger.info("Detected POI request for '%s'", text, extra=logs_extra)
                 return []
 
-            return [
-                Intention(
-                    type=IntentionType.POI,
-                    filter={"q": text},
-                    description={
-                        "query": text,
-                        "place_in_query": any(t.get("tag") in NLU_PLACE_TAGS for t in tags_list),
-                    },
-                )
-            ]
+            intention = Intention(
+                type=IntentionType.POI,
+                filter={"q": text},
+                description={"query": text},
+            )
+
+            intention.description._place_in_query = any(
+                t.get("tag") in NLU_PLACE_TAGS for t in tags_list
+            )
+
+            return [intention]
 
         if self.is_street_request(tags_list):
             if IntentionType.ADDRESS not in allow_types:
