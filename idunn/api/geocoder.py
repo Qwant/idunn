@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from fastapi import Body, Depends
+from fastapi.responses import ORJSONResponse
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.nlu_client import nlu_client, NluClientException
 from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
@@ -91,3 +92,7 @@ async def get_autocomplete(
             )
         autocomplete_response["intentions"] = intentions
     return IdunnAutocomplete(**autocomplete_response)
+
+
+async def get_autocomplete_response(autocomplete: IdunnAutocomplete = Depends(get_autocomplete)):
+    return ORJSONResponse(autocomplete.dict(exclude_unset=True))
