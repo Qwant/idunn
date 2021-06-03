@@ -39,6 +39,7 @@ class PjSource:
 
     # pylint: disable = unused-argument
     def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
+        logger.warning("calling unimplemented `search_places` with deprecated LegacyPjSource")
         return []
 
     def get_places_bbox(self, categories: List[CategoryEnum], bbox, size=10, query=""):

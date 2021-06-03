@@ -1,0 +1,13 @@
+{
+    "NLU": [
+        {
+            "phrase": "musée picasso",
+            "tag": "POI",
+            "value": {}
+        }
+    ],
+    "domain": "MAPS",
+    "lang": "fr",
+    "text": "musée picasso",
+    "tokenized": "musée picasso"
+}

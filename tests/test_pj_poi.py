@@ -41,7 +41,7 @@ def enable_pj_source(request):
             )
             with mock_search, mock_search_template:
                 yield
-        else:
+        elif method == "api":
             api_mock = mock.patch.object(
                 places_utils.pj_source,
                 "get_from_params",
@@ -49,6 +49,16 @@ def enable_pj_source(request):
             )
             with api_mock:
                 yield
+        elif method == "api_find":
+            api_mock = mock.patch.object(
+                places_utils.pj_source,
+                "get_from_params",
+                new=lambda *x, **y: {"search_results": {"listings": [api_result]}},
+            )
+            with api_mock:
+                yield
+        else:
+            raise Exception(f"invalid PJ method `{method}`")
 
 
 @pytest.mark.parametrize(

@@ -49,6 +49,11 @@ def mock_NLU_with_poi(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_poi")
 
 
+@pytest.fixture
+def mock_NLU_with_picasso(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_picasso")
+
+
 @pytest.fixture()
 def mock_NLU_with_city(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_city")
