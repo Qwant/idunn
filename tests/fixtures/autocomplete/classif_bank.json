@@ -1,0 +1,21 @@
+{
+    "count": 3,
+    "domain": "poi",
+    "intention": [
+        [
+            1.0000100135803223,
+            "shop_laundry"
+        ],
+        [
+            1.0000100135803223,
+            "bank"
+        ],
+        [
+            1.0000100135803223,
+            "health_pharmacy"
+        ]
+    ],
+    "text": "bank",
+    "tokenized": "bank \n"
+}
+

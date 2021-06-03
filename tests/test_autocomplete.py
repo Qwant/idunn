@@ -9,6 +9,7 @@ from .fixtures.autocomplete import (
     mock_NLU_with_poi,
     mock_NLU_with_brand,
     mock_NLU_with_cat,
+    mock_NLU_with_cat_bank,
     mock_NLU_with_cat_city_country,
     mock_NLU_with_brand_and_city,
 )
@@ -155,6 +156,23 @@ def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
                 "type": "category",
                 "filter": {"category": "pharmacy"},
                 "description": {"category": "pharmacy"},
+            }
+        ],
+        expected_intention_place=None,
+    )
+
+
+def test_autocomplete_with_nlu_regex_cat(mock_autocomplete_get, mock_NLU_with_cat_bank):
+    # "bank" is not identified by the classifier, we expect a fallback through the regex engine.
+    client = TestClient(app)
+    assert_intention(
+        client,
+        params={"q": "bank", "lang": "fr", "limit": 7, "nlu": True},
+        expected_intention=[
+            {
+                "type": "category",
+                "filter": {"category": "bank"},
+                "description": {"category": "bank"},
             }
         ],
         expected_intention_place=None,
