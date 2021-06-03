@@ -7,7 +7,7 @@ from .places_list import get_places_bbox, get_events_bbox, PlacesBboxResponse
 from .categories import AllCategoriesResponse, get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
-from .geocoder import get_autocomplete
+from .geocoder import get_autocomplete_response
 from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
@@ -78,10 +78,9 @@ def get_api_urls(settings):
         # Geocoding
         APIRoute(
             "/autocomplete",
-            get_autocomplete,
+            get_autocomplete_response,
             methods=["GET", "POST"],
             response_model=IdunnAutocomplete,
-            response_model_exclude_unset=True,
         ),
         APIRoute(
             "/search",
