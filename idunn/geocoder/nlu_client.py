@@ -56,7 +56,9 @@ class NLU_Helper:  # pylint: disable = invalid-name
     CLASSIF_MAX_WEIGHT_RATIO = float(settings["NLU_CLASSIFIER_MAX_WEIGHT_RATIO"])
 
     def __init__(self):
-        self.client = httpx.AsyncClient(timeout=0.3, verify=settings["VERIFY_HTTPS"])
+        self.client = httpx.AsyncClient(
+            timeout=float(settings["NLU_CLIENT_TIMEOUT"]), verify=settings["VERIFY_HTTPS"]
+        )
 
     async def post_nlu_classifier(self, text):
         classifier_url = settings["NLU_CLASSIFIER_URL"]
