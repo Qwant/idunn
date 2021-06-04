@@ -1,0 +1,14 @@
+{
+    "NLU": [
+        {
+            "phrase": "bank",
+            "tag": "cat",
+            "value": {}
+        }
+    ],
+    "count": 1,
+    "domain": "poi",
+    "lang": "fr",
+    "text": "bank",
+    "tokenized": "bank"
+}

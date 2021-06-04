@@ -11,7 +11,10 @@ CLASSIF_URL = "http://qwant.classif"
 ES_URL = "http://qwant.es"
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
-FIXTURE_CLASSIF_pharmacy = read_fixture("fixtures/autocomplete/classif_pharmacy.json")
+FIXTURE_CLASSIF = {
+    "pharmacie": read_fixture("fixtures/autocomplete/classif_pharmacy.json"),
+    "bank": read_fixture("fixtures/autocomplete/classif_bank.json"),
+}
 
 
 def mock_NLU_for(httpx_mock, dataset):
@@ -20,7 +23,12 @@ def mock_NLU_for(httpx_mock, dataset):
     ):
         nlu_json = read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
         httpx_mock.post(NLU_URL).respond(json=nlu_json)
-        httpx_mock.post(CLASSIF_URL).respond(json=FIXTURE_CLASSIF_pharmacy)
+
+        for q, data in FIXTURE_CLASSIF.items():
+            httpx_mock.post(
+                CLASSIF_URL, json={"text": q, "domain": "poi", "language": "fr", "count": 10}
+            ).respond(json=data)
+
         yield nlu_json
 
 
@@ -37,6 +45,11 @@ def mock_NLU_with_brand_and_city(httpx_mock):
 @pytest.fixture
 def mock_NLU_with_cat(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_cat")
+
+
+@pytest.fixture
+def mock_NLU_with_cat_bank(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_cat_bank")
 
 
 @pytest.fixture

@@ -145,7 +145,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
     async def classify_category(self, text, is_brand=False):
         if settings["NLU_CLASSIFIER_URL"] and not is_brand:
-            return await self.nlu_classifier(text)
+            return await self.nlu_classifier(text) or self.regex_classifier(text, is_brand=is_brand)
         return self.regex_classifier(text, is_brand=is_brand)
 
     @classmethod
