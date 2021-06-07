@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 
 from idunn import settings
-from idunn.api import places_list
+from idunn.api import places_list, instant_answer
 from idunn.datasources.recycling import recycling_client
 from idunn.places import utils as places_utils
 
@@ -26,12 +26,15 @@ def override_settings(overrides):
 def init_pj_source(source_type):
     old_source = places_list.pj_source
     new_source = source_type()
+
+    instant_answer.pj_source = new_source
     places_utils.pj_source = new_source
     places_list.pj_source = new_source
 
     try:
         yield
     finally:
+        instant_answer.pj_source = old_source
         places_utils.pj_source = old_source
         places_list.pj_source = old_source
 
