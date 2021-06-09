@@ -6,8 +6,9 @@ from pydantic import confloat
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
-from idunn.places import Street, Address
-from idunn.api.utils import fetch_closest, Verbosity
+from idunn.places import Street, Address, Place
+from idunn.api.utils import Verbosity
+from idunn.datasources.mimirsbrunn import fetch_closest
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ def closest_address(
     lon: confloat(ge=-180, le=180),
     lang=None,
     verbosity: Verbosity = Verbosity.default(),
-) -> Address:
+) -> Place:
     """Find the closest address to a point."""
 
     es = get_elasticsearch()

@@ -6,13 +6,12 @@ categories:
         pj_filters:
           - "salles de cinéma"
         raw_filters:
-          - "cinema,*"
+          - class: "cinema"
 
     # NOTE: This is a legacy alias of `health_hospital`.
     health:
         raw_filters:
-          - "clinic,*"
-          - "hospital,*"
+          - class: "hospital"
         pj_what: "hôpital"
         pj_filters:
           - "Hôpital"
@@ -24,7 +23,7 @@ categories:
         pj_filters:
           - "Pharmacie"
         raw_filters:
-          - "pharmacy,*"
+          - class: "pharmacy"
         regex: "pharmac"
 
     # NOTE: This is a legacy alias for shop_supermarket
@@ -33,8 +32,8 @@ categories:
         pj_filters:
           - "supermarchés, hypermarchés"
         raw_filters:
-          - "*,supermarket"
-          - "*,mall"
+          - subclass: "supermarket"
+          - subclass: "mall"
         regex: "superette|epicier|epicerie|marche|market"
 
     education:
@@ -51,7 +50,7 @@ categories:
           - "enseignement supérieur public"
           - "enseignement supérieur privé"
         raw_filters:
-          - "school,*"
+          - class: "school"
 
     # NOTE: This is a legacy alias for `post_office`
     service:
@@ -59,7 +58,7 @@ categories:
         pj_filters:
           - "envoi, distribution de courrier, de colis"
         raw_filters:
-          - "post_office,*"
+          - subclass: "post_office"
         regex: "(^| )post"
 
     # NOTE: This is a legacy alias for `sport_center`
@@ -70,96 +69,136 @@ categories:
           - "piscines (établissements)"
           - "clubs de sport"
         raw_filters:
-          - "sports_centre,*"
+          - class: "sports_centre"
         regex: "fitness|muscu|piscine"
 
     food_french:
         raw_filters:
-          - "restaurant,french"
+          - class: "restaurant"
+            cuisine: "french"
         pj_what: "restaurant français"
 
     food_pizza:
         raw_filters:
-          - "restaurant,pizza"
+          - class: "restaurant"
+            cuisine: "pizza"
+          - class: "fast_food"
+            cuisine: "pizza"
         pj_what: "pizzeria"
 
     food_burger:
         raw_filters:
-          - "restaurant,burger"
+          - class: "restaurant"
+            cuisine: "burger"
+          - class: "fast_food"
+            cuisine: "pizza"
         pj_what: "burger"
 
     food_italian:
         raw_filters:
-          - "restaurant,italian"
+          - class: "restaurant"
+            cuisine: "italian"
+          - class: "fast_food"
+            cuisine: "italian"
         pj_what: "restaurant italien"
 
     food_kebab:
         raw_filters:
-          - "restaurant,kebab"
+          - class: "restaurant"
+            cuisine: "kebab"
+          - class: "fast_food"
+            cuisine: "kebab"
         pj_what: "kebab"
 
     food_sandwich:
         raw_filters:
-          - "restaurant,sandwich"
+          - class: "restaurant"
+            cuisine: "sandwich"
+          - class: "fast_food"
+            cuisine: "sandwich"
         pj_what: "sandwicherie"
 
     food_asian:
         raw_filters:
-          - "restaurant,asian"
+          - class: "restaurant"
+            cuisine: "asian"
+          - class: "fast_food"
+            cuisine: "asian"
         pj_what: "restaurant asiatique"
 
     food_japanese:
         raw_filters:
-          - "restaurant,japanese"
+          - class: "restaurant"
+            cuisine: "japanese"
+          - class: "fast_food"
+            cuisine: "japanese"
         pj_what: "restaurant japonais"
 
     food_chinese:
         raw_filters:
-          - "restaurant,chinese"
+          - class: "restaurant"
+            cuisine: "chinese"
+          - class: "fast_food"
+            cuisine: "chinese"
         pj_what: "restaurant chinois"
 
     food_crepe:
         raw_filters:
-          - "restaurant,crepe"
+          - class: "restaurant"
+            cuisine: "crepe"
+          - class: "fast_food"
+            cuisine: "crepe"
         pj_what: "crêperie"
 
     food_indian:
         raw_filters:
-          - "restaurant,indian"
+          - class: "restaurant"
+            cuisine: "indian"
+          - class: "fast_food"
+            cuisine: "indian"
         pj_what: "restaurant indien"
 
     food_thai:
         raw_filters:
-          - "restaurant,thai"
+          - class: "restaurant"
+            cuisine: "thai"
+          - class: "fast_food"
+            cuisine: "thai"
         pj_what: "restaurant thaï"
 
     food_vietnamese:
         raw_filters:
-          - "restaurant,vietnamese"
+          - class: "restaurant"
+            cuisine: "vietnamese"
+          - class: "fast_food"
+            cuisine: "vietnamese"
         pj_what: "restaurant vietnamien"
 
     food_lebanese:
         raw_filters:
-          - "restaurant,lebanese"
+          - class: "restaurant"
+            cuisine: "lebanese"
+          - class: "fast_food"
+            cuisine: "lebanese"
         pj_what: "restaurant libanais"
 
     parking:
         regex: "parking"
         raw_filters:
-          - "parking,*"
+          - class: "parking"
 
     pitch:
       raw_filters:
-          - "pitch,*"
-          - "athletics,*"
-          - "running,*"
-          - "soccer,*"
+        - class: "pitch"
+        - class: "athletics"
+        - class: "running"
+        - class: "soccer"
 
     restaurant:
         regex: "^resto|^restau"
         raw_filters:
-          - "restaurant,*"
-          - "fast_food,*"
+          - class: "restaurant"
+          - class: "fast_food"
         pj_what: "restaurants"
         pj_filters:
           - "restaurants"
@@ -167,61 +206,65 @@ categories:
     place_of_worship:
         regex: "cathedral|church|eglise|mosque|synagogue|temple"
         raw_filters:
-          - "place_of_worship,*"
+          - class: "place_of_worship"
         match_brand: True
 
     recycling:
         regex: "recycl|tri selectif|dechett?err?ie"
         raw_filters:
-          - "recycling,*"
+          - class: "recycling"
         match_brand: True
 
     bicycle_parking:
         raw_filters:
-          - "bicycle_parking,*"
+          - class: "bicycle_parking"
 
     school:
         regex: "^ecole|^college"
         raw_filters:
-          - "school,*"
+          - class: "school"
         pj_what: "école collège lycée"
 
     park:
         raw_filters:
-          - "park,*"
-          - "garden,*"
-          - "dog_park,*"
+          - class: "park"
+          - class: "garden"
+          - class: "dog_park"
 
     shop_bakery:
         raw_filters:
-          - "shop,bakery"
-          - "shop,confectionery"
-          - "shop,chocolate"
+          - class: "shop"
+            subclass: "bakery"
+          - class: "shop"
+            subclass: "confectionery"
+          - class: "shop"
+            subclass: "chocolate"
         pj_what: "boulangerie"
 
     shop_clothes:
         raw_filters:
-          - "shop,clothes"
+          - class: "shop"
+            subclass: "clothes"
         pj_what: "boutique de vêtements"
 
     toilets:
         raw_filters:
-          - "toilets,*"
+          - class: "toilets"
 
     sports_centre:
         raw_filters:
-          - "sports_centre,*"
+          - class: "sports_centre"
         pj_what: "centre sportif"
 
     shop_hairdresser:
         raw_filters:
-          - "shop,hairdresser"
+          - subclass: "hairdresser"
         pj_what: "coiffeur"
 
     shop_supermarket:
         raw_filters:
-          - "supermarket,*"
-          - "mall,*"
+          - class: "supermarket"
+          - class: "mall"
         pj_what: "alimentation grande surface"
         pj_filters:
           - "supermarchés, hypermarchés"
@@ -229,23 +272,22 @@ categories:
     bank:
         regex: "^(bank|banque|credit|caisse|atm$)"
         raw_filters:
-          - "bank,*"
+          - class: "bank"
         pj_what: "banque"
         pj_filters:
           - "banques"
 
     fast_food:
         raw_filters:
-          - "fast_food,*"
+          - class: "fast_food"
         pj_what: "fast food"
 
     bar:
         regex: "^(cafes?|bars?|pubs?)( |$)"
         raw_filters:
-          - "bar,*"
-          - "cafe,*"
-          - "pub,*"
-          - "biergarten,*"
+          - class: "bar"
+          - class: "cafe"
+          - class: "beer"
         pj_what: "bar"
         pj_filters:
           - "cafés, bars"
@@ -253,292 +295,297 @@ categories:
     hotel:
         regex: "hotel"
         raw_filters:
-          - "lodging,*"
+          - class: "lodging"
         pj_what: "hôtels"
         pj_filters:
           - "hôtels"
 
     historic:
         raw_filters:
-          - "memorial,*"
-          - "monument,*"
-          - "statue,*"
-          - "castle,*"
-          - "citywalls,*"
-          - "fort,*"
-          - "battlefield,*"
-          - "castle_walls,*"
-          - "earthworks,*"
-          - "moat,*"
-          - "church,*"
-          - "tumulus,*"
-          - "stone_circle,*"
-          - "menhir,*"
-          - "standing_stone,*"
-          - "bridge,*"
-          - "milestone,*"
-          - "wall,*"
-          - "well,*"
-          - "folly,*"
-          - "ruins,*"
+          - class: "memorial"
+          - class: "monument"
+          - class: "statue"
+          - class: "castle"
+          - class: "citywalls"
+          - class: "fort"
+          - class: "battlefield"
+          - class: "castle_walls"
+          - class: "earthworks"
+          - class: "moat"
+          - class: "church"
+          - class: "tumulus"
+          - class: "stone_circle"
+          - class: "menhir"
+          - class: "standing_stone"
+          - class: "bridge"
+          - class: "milestone"
+          - class: "wall"
+          - class: "well"
+          - class: "folly"
 
     post_office:
         raw_filters:
-          - "post_office,*"
+          - subclass: "post_office"
         pj_what: "bureau de poste"
 
     fuel:
         raw_filters:
-          - "fuel,*"
+          - class: "fuel"
         pj_what: "station essence"
 
     community_centre:
         raw_filters:
-          - "*,community_centre"
+          - subclass: "community_centre"
 
     shop_convenience:
         raw_filters:
-          - "*,convenience"
-          - "*,deli"
+          - subclass: "convenience"
+          - subclass: "deli"
         pj_what: "épicerie"
 
     shop_car:
         raw_filters:
-          - "*,car_repair"
-          - "*,car"
+          - subclass: "car_repair"
+          - subclass: "car"
         pj_what: "concessionnaire"
 
     kindergarten:
         raw_filters:
-          - "*,kindergarten"
+          - subclass: "kindergarten"
         pj_what: "crèche"
 
     camp_site:
         raw_filters:
-          - "camp_site,*"
-          - "caravan_site,*"
+          - class: "campsite"
         pj_what: "camping"
 
     station:
         regex: "^gare( |$)"
         raw_filters:
-          - "railway,station"
-          - "railway,halt"
+          - class: "railway"
+            subclass: "station"
+          - class: "railway"
+            subclass: "halt"
 
     shop_butcher:
         raw_filters:
-          - "*,butcher"
+          - subclass: "butcher"
         pj_what: "boucher"
 
     attraction:
         raw_filters:
-          - "nightclub,*"
-          - "leisure,escape_game"
-          - "leisure,golf_course"
-          - "leisure,miniature_golf"
-          - "tourism,aquarium"
-          - "tourism,artwork"
-          - "tourism,attraction"
-          - "tourism,theme_park"
-          - "tourism,zoo"
-          - "water_park,*"
+          - subclass: "nightclub"
+          - subclass: "escape_game"
+          - subclass: "golf_course"
+          - subclass: "miniature_golf"
+          - class: "aquarium"
+            subclass: "aquarium"
+          - class: "art_gallery"
+          - subclass: "attraction"
+          - subclass: "theme_park"
+          - subclass: "zoo"
+          - subclass: "water_park"
 
     health_hospital:
         raw_filters:
-          - "clinic,*"
-          - "hospital,*"
+          - class: "hospital"
         pj_what: "hôpital"
         pj_filters:
           - "Hôpital"
 
     health_doctors:
         raw_filters:
-          - "doctors,*"
-          - "doctor,*"
+          - class: "doctors"
+          - class: "doctor"
         pj_what: "médecin généraliste"
 
     health_dentist:
         raw_filters:
-          - "dentist,*"
+          - class: "dentist"
         pj_what: "dentiste"
 
     health_physiotherapist:
         raw_filters:
-          - "physiotherapist,*"
+          - class: "physiotherapist"
         pj_what: "kinésithérapeute"
 
     health_pharmacy:
         raw_filters:
-          - "pharmacy,*"
+          - class: "pharmacy"
         pj_what: "pharmacie"
         pj_filters:
           - "Pharmacie"
 
     health_psychotherapist:
         raw_filters:
-          - "psychotherapist,*"
+          - class: "psychotherapist"
         pj_what: "psychologue"
 
-    health_other:
-        raw_filters:
-          - "optometrist,*"
-          - "alternative,*"
-          - "audiologist,*"
-          - "birthing_center,*"
-          - "blood_bank,*"
-          - "blood_donation,*"
-          - "centre,*"
-          - "counselling,*"
-          - "dialysis,*"
-          - "laboratory,*"
-          - "midwife,*"
-          - "nurse,*"
-          - "occupational_therapist,*"
-          - "podiatrist,*"
-          - "rehabilitation,*"
-          - "speech_therapist,*"
-        pj_what: "santé"
+#    health_other:
+#        raw_filters:
+#          - class: "optometrist"
+#          - class: "alternative"
+#          - class: "audiologist"
+#          - class: "birthing_center"
+#          - class: "blood_bank"
+#          - class: "blood_donation"
+#          - class: "centre"
+#          - class: "counselling"
+#          - class: "dialysis"
+#          - class: "laboratory"
+#          - class: "midwife"
+#          - class: "nurse"
+#          - class: "occupational_therapist"
+#          - class: "podiatrist"
+#          - class: "rehabilitation"
+#          - class: "speech_therapist"
+#        pj_what: "santé"
 
     library:
         raw_filters:
-          - "library,*"
+          - class: "library"
+            subclass: "library"
         pj_what: "bibliothèque"
 
     police:
         regex: "(^| )(police|gendar)"
         raw_filters:
-          - "police,*"
+          - class: "police"
         pj_what: "police"
         pj_filters:
           - "services de gendarmerie, de police"
 
     shop_optician:
         raw_filters:
-          - "*,optician"
+          - subclass: "optician"
         pj_what: "opticien"
 
     grave_yard:
         raw_filters:
-          - "cemetery,*"
+          - class: "cemetery"
         pj_what: "cimetière"
 
     shop_beauty:
         raw_filters:
-          - "shop,beauty"
+          - subclass: "beauty"
         pj_what: "salon de beauté"
 
     shop_florist:
         raw_filters:
-          - "shop,florist"
+          - subclass: "florist"
         pj_what: "fleuriste"
 
     fire_station:
         raw_filters:
-          - "fire_station,*"
+          - class: "fire_station"
         pj_what: "caserne de pompiers"
 
     shop_shoes:
         raw_filters:
-          - "*,shoes"
+          - subclass: "shoes"
         pj_what: "boutique de chaussures"
 
     shop_doityourself:
         raw_filters:
-          - "*,doityourself"
-          - "*,interior_decoration"
-          - "*,hardware"
+          - subclass: "doityourself"
+          - subclass: "interior_decoration"
+          - subclass: "hardware"
         pj_what: "magasin de bricolage"
 
     bicycle_rental:
         raw_filters:
-          - "bicycle_rental,*"
+          - subclass: "bicycle_rental"
         pj_what: "location de vélo"
 
     museum:
         regex: "^(museum|musee)"
         raw_filters:
-          - "museum,*"
+          - class: "museum"
         pj_what: "musée"
         pj_filters:
           - "musées"
 
     shop_jewelry:
         raw_filters:
-          - "*,jewelry"
+          - subclass: "jewelry"
         pj_what: "bijouterie"
 
     shop_newsagent:
         raw_filters:
-          - "*,newsagent"
-          - "*,kiosk"
+          - subclass: "newsagent"
+          - subclass: "kiosk"
         pj_what: "kiosque à journaux"
 
     swimming:
         raw_filters:
-          - "swimming,*"
+          - class: "swimming"
+          - class: "sports_center"
+            subclass: "swimming"
         pj_what: "piscine"
 
     shop_furniture:
         raw_filters:
-          - "*,furniture"
-          - "*,bed"
+          - subclass: "furniture"
+          - subclass: "bed"
         pj_what: "magasin de meubles"
 
     shop_books:
         raw_filters:
-          - "*,books"
+          - subclass: "books"
         pj_what: "librairie"
 
     shop_laundry:
         raw_filters:
-          - "*,laundry"
+          - class: "laundry"
         pj_what: "blanchisserie"
 
     shop_sports:
         raw_filters:
-          - "shop,sports"
-          - "shop,bicycle"
+          - class: "shop"
+            subclass: "sports"
+          - class: "shop"
+            subclass: "bicycle"
         pj_what: "magasin de sport"
 
     theatre:
         regex: "^theat"
         raw_filters:
-          - "theatre,*"
+          - class: "theatre"
         pj_what: "théâtre"
         pj_filters:
           - "salles de concerts, de spectacles"
 
     veterinary:
         raw_filters:
-          - "veterinary,*"
+          - class: "veterinary"
         pj_what: "vétérinaire"
 
     shop_greengrocer:
         raw_filters:
-          - "*,greengrocer"
+          - subclass: "greengrocer"
         pj_what: "marchant de fruits et légumes"
 
     shop_garden_centre:
         raw_filters:
-          - "*,garden_centre"
+          - subclass: "garden_centre"
         pj_what: "magasin de jardinage"
 
     arts_centre:
         raw_filters:
-          - "arts_centre,*"
-          - "gallery,*"
+          - subclass: "arts_centre"
+          - subclass: "gallery"
         pj_what: "galerie d'art"
 
     shop_electronics:
         raw_filters:
-          - "*,electronics"
-          - "*,computer"
+          - subclass: "electronics"
+          - subclass: "computer"
         pj_what: "magasin d'électronique"
 
     cinema:
         regex: "^cine"
         raw_filters:
-          - "cinema,*"
+          - class: "cinema"
         pj_what: "cinéma"
         pj_filters:
           - "salles de cinéma"
@@ -546,38 +593,39 @@ categories:
     university:
         regex: "^universit|educat"
         raw_filters:
-          - "college,*"
+          - class: "college"
         pj_what: "université"
 
     shop_travel_agency:
         raw_filters:
-          - "*,travel_agency"
+          - subclass: "travel_agency"
         pj_what: "agence de voyage"
 
     sport_other:
         raw_filters:
-          - "sport,*"
-          - "landuse,winter_sports"
+          - class: "sport"
+          - subclass: "winter_sports"
         pj_what: "sport"
 
     administrative:
         raw_filters:
-          - "townhall,*"
-          - "courthouse,*"
-          - "embassy,*"
+          - subclass: "townhall"
+          - subclass: "courthouse"
+          - subclass: "embassy"
+          - subclass: "diplomatic"
         pj_what: "administration"
 
     post_box:
         raw_filters:
-          - "*,post_box"
+          - subclass: "post_box"
 
     playground:
         raw_filters:
-          - "playground,*"
+          - class: "playground"
 
     marketplace:
         raw_filters:
-          - "*,marketplace"
+          - subclass: "marketplace"
 
 
 outing_types:

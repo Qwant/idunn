@@ -9,11 +9,12 @@ from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
 from idunn.places import POI, BragiPOI
-from idunn.api.utils import fetch_es_pois, Verbosity
+from idunn.api.utils import Verbosity
 from idunn.places.event import Event
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.kuzzle import kuzzle_client
+from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from .constants import PoiSource, ALL_POI_SOURCES
 from .utils import Category, OutingCategory
 
@@ -230,13 +231,13 @@ async def _fetch_places_list(params: PlacesQueryParam):
 
     # Default source (OSM) with category or class/subclass filters
     if params.raw_filter:
-        raw_filters = params.raw_filter
+        filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
     else:
-        raw_filters = [f for c in params.category for f in c.raw_filters()]
+        filters = [f for c in params.category for f in c.raw_filters()]
 
     bbox_places = await run_in_threadpool(
         fetch_es_pois,
-        raw_filters=raw_filters,
+        filters=filters,
         bbox=params.bbox,
         max_size=params.size,
     )
