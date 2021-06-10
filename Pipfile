@@ -24,7 +24,7 @@ respx = "*"
 pylint = "*"
 
 [packages]
-fastapi="==0.63.*"
+fastapi="==0.65.*"
 elasticsearch = ">=2.0.0,<3.0.0"
 requests = ">=2.20.0"
 tzwhere = "*"
