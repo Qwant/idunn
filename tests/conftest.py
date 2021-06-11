@@ -204,6 +204,7 @@ def load_all(mimir_client, init_indices):
     load_place("basket_ball.json", mimir_client)
     load_place("recycling.json", mimir_client)
     load_place("recycling_not_in_bretagne.json", mimir_client)
+    load_place("creperie.json", mimir_client)
     load_place("admin_goujounac.json", mimir_client, doc_type="admin")
     load_place("street_birnenweg.json", mimir_client, doc_type="street")
     load_place("address_du_moulin.json", mimir_client, doc_type="addr")
