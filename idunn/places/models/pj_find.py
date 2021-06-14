@@ -6,6 +6,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from .pj_info import TransactionalLink
+
 
 class BusinessDescription(BaseModel):
     """
@@ -129,7 +131,6 @@ class Listing(BaseModel):
       - business_website: Array of business website object
       - eco_label: Eco-responsibility label
       - legal_notice: Array of legal notices
-      - transactionals_links: Array of transactionals links
       - current_status: (Deprecated) Type current status
       - healthcare: Healthcare informations
       - services: Services
@@ -156,6 +157,9 @@ class Listing(BaseModel):
             "(see http://wiki.openstreetmap.org/wiki/Key:opening_hours/specification to calculate "
             "current status)"
         ),
+    )
+    transactionals_links: List[TransactionalLink] = Field(
+        [], description="Array of transactionals links"
     )
 
 

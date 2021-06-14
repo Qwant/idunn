@@ -246,6 +246,15 @@ class BasePlace(dict):
     def get_reviews_url(self):
         return ""
 
+    def get_booking_url(self):
+        return None
+
+    def get_appointment_url(self):
+        return None
+
+    def get_order_url(self):
+        return None
+
     def get_bbox(self):
         return None
 

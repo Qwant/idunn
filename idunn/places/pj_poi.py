@@ -5,6 +5,7 @@ from typing import Union
 
 from .base import BasePlace
 from .models import pj_info, pj_find
+from .models.pj_info import TransactionalLinkType
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
 
@@ -419,3 +420,48 @@ class PjApiPOI(BasePlace):
 
     def get_reviews_url(self):
         return self.get_source_url() + "#ancreBlocAvis"
+
+    def get_booking_url(self):
+        return next(
+            (
+                link.url
+                for link in self.data.transactionals_links or []
+                if link.type
+                in [
+                    TransactionalLinkType.RESERVER,
+                    TransactionalLinkType.RESERVER_INTERNE,
+                    # TransactionalLinkType.RESERVER_LA_FOURCHETTE, # this link seems broken
+                    TransactionalLinkType.RESERVER_LA_FOURCHETTE_SIMPLE,
+                    TransactionalLinkType.RESERVER_LA_FOURCHETTE_PROMO,
+                ]
+            ),
+            None,
+        )
+
+    def get_appointment_url(self):
+        return next(
+            (
+                link.url
+                for link in self.data.transactionals_links or []
+                if link.type
+                in [
+                    TransactionalLinkType.PRENDRE_RDV_EXTERNE,
+                    TransactionalLinkType.PRENDRE_RDV_INTERNE,
+                ]
+            ),
+            None,
+        )
+
+    def get_order_url(self):
+        return next(
+            (
+                link.url
+                for link in self.data.transactionals_links or []
+                if link.type
+                in [
+                    TransactionalLinkType.COMMANDER,
+                    TransactionalLinkType.COMMANDER_CHRONO,
+                ]
+            ),
+            None,
+        )

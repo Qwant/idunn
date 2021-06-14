@@ -147,5 +147,11 @@
             "url_type": "TWITTER",
             "website_url": "https://[TWITTER]"
         }
+    ],
+    "transactionals_links": [
+        {
+            "type": "PRENDRE_RDV_INTERNE",
+            "url": "https://[APPOINTMENT_URL]"
+        }
     ]
 }
