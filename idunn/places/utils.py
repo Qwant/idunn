@@ -1,6 +1,6 @@
 from idunn.datasources.pages_jaunes import pj_source
+from idunn.datasources.mimirsbrunn import fetch_es_place
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.api.utils import fetch_es_place
 from idunn.utils import prometheus
 
 

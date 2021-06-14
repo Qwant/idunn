@@ -35,7 +35,7 @@
   "poi_type": [
     {
       "id": "museum",
-      "name": "museum"
+      "name": "class_museum"
     }
   ],
   "zip_codes": null,

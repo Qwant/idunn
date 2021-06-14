@@ -1,10 +1,10 @@
 from idunn import settings
-from idunn.places import POI
+from idunn.places import POI, Place
 from idunn.utils.es_wrapper import get_elasticsearch
-from idunn.api.utils import fetch_es_poi
+from idunn.datasources.mimirsbrunn import fetch_es_poi
 
 
-def get_poi(id: str, lang: str = None) -> POI:
+def get_poi(id: str, lang: str = None) -> Place:
     """Handler that returns points-of-interest"""
     es = get_elasticsearch()
     if not lang:

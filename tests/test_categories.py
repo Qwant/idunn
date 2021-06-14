@@ -663,3 +663,15 @@ def test_pj_categories_filter_legacy(enable_pj_source):
     assert len(resp["places"]) == 1
     assert resp["places"][0]["id"] == "pj:05360257"
     assert resp["places"][0]["name"] == "Musée Picasso"
+
+
+def test_category_with_cuisine_filter():
+    client = TestClient(app)
+    response = client.get(
+        url=f"http://localhost/v1/places?bbox={BBOX_BREST}&category=food_crepe&source=osm"
+    )
+
+    assert response.status_code == 200
+    resp = response.json()
+    assert len(resp["places"]) == 1
+    assert resp["places"][0]["name"] == "La Crêpe Flambée"
