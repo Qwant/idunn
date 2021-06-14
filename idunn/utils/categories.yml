@@ -91,7 +91,7 @@ categories:
           - class: "restaurant"
             cuisine: "burger"
           - class: "fast_food"
-            cuisine: "pizza"
+            cuisine: "burger"
         pj_what: "burger"
 
     food_italian:
