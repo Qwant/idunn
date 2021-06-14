@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class Type(str, Enum):
+    # pylint: disable=invalid-name
     # City = "city" # this field is available in Bragi but deprecated
     House = "house"
     Poi = "poi"
