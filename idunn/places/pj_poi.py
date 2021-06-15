@@ -424,7 +424,7 @@ class PjApiPOI(BasePlace):
     def get_booking_url(self):
         return next(
             (
-                link.url
+                resolve_url(link.url)
                 for link in self.data.transactionals_links or []
                 if link.type
                 in [
@@ -441,7 +441,7 @@ class PjApiPOI(BasePlace):
     def get_appointment_url(self):
         return next(
             (
-                link.url
+                resolve_url(link.url)
                 for link in self.data.transactionals_links or []
                 if link.type
                 in [
@@ -455,7 +455,7 @@ class PjApiPOI(BasePlace):
     def get_order_url(self):
         return next(
             (
-                link.url
+                resolve_url(link.url)
                 for link in self.data.transactionals_links or []
                 if link.type
                 in [

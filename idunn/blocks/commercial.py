@@ -16,9 +16,7 @@ class CommercialBlock(BaseBlock):
             "order_url": place.get_appointment_url(),
         }
 
-        args = {key: val for key, val in args.items() if val}
-
-        if not args:
+        if not any(args.values()):
             return None
 
         return cls(**args)
