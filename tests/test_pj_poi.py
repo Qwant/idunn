@@ -116,8 +116,10 @@ def test_pj_api_place(enable_pj_source):
     resp = response.json()
 
     blocks = resp["blocks"]
-    assert blocks[6]["type"] == "commercial"
-    assert blocks[6]["appointment_url"] == "https://[APPOINTMENT_URL]"
+    assert blocks[6]["type"] == "transactional"
+    assert blocks[6]["appointment_url"].startswith(
+        "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BAPPOINTMENT_URL%5D&hash=92710b"
+    )
 
 
 @pytest.mark.parametrize(

@@ -2,8 +2,8 @@ from .base import BaseBlock
 from typing import Literal, Optional
 
 
-class CommercialBlock(BaseBlock):
-    type: Literal["commercial"] = "commercial"
+class TransactionalBlock(BaseBlock):
+    type: Literal["transactional"] = "transactional"
     booking_url: Optional[str]
     appointment_url: Optional[str]
     order_url: Optional[str]
