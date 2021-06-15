@@ -255,6 +255,9 @@ class BasePlace(dict):
     def get_order_url(self):
         return None
 
+    def get_quotation_request_url(self):
+        return None
+
     def get_bbox(self):
         return None
 
