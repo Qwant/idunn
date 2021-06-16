@@ -20,7 +20,7 @@ ADD --chown=app_user idunn /app/idunn
 
 # set the multiprocess mode for gunicorn
 ENV IDUNN_PROMETHEUS_MULTIPROC=1
-ENV prometheus_multiproc_dir=/app/idunn/prometheus_multiproc
+ENV PROMETHEUS_MULTIPROC_DIR=/app/idunn/prometheus_multiproc
 RUN mkdir /app/idunn/prometheus_multiproc
 
 EXPOSE 5000

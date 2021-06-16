@@ -67,6 +67,7 @@ class WikipediaSession:
                 except RedisError:
                     prometheus.exception("RedisError")
                     logger.warning("Got redis ConnectionError in %s", f.__name__, exc_info=True)
+                return None
 
             return wrapped_f
 
