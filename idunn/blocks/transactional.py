@@ -6,7 +6,6 @@ class TransactionalBlock(BaseBlock):
     type: Literal["transactional"] = "transactional"
     booking_url: Optional[str]
     appointment_url: Optional[str]
-    order_url: Optional[str]
     quotation_request_url: Optional[str]
 
     @classmethod
@@ -14,7 +13,6 @@ class TransactionalBlock(BaseBlock):
         args = {
             "booking_url": place.get_booking_url(),
             "appointment_url": place.get_appointment_url(),
-            "order_url": place.get_appointment_url(),
             "quotation_request_url": place.get_quotation_request_url(),
         }
 
