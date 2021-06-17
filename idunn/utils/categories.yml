@@ -1,12 +1,22 @@
 categories:
-    # NOTE: This is a legacy alias of `cinema`.
-    #       It may be removed once erdapfel don't rely on it anymore.
+    # NOTE: This currently contains the union of POIs from cinema, theatre and
+    #       attraction (minus artworks and subclass:attraction).
     leisure:
-        pj_what: "cinéma"
-        pj_filters:
-          - "salles de cinéma"
         raw_filters:
           - class: "cinema"
+          - class: "theatre"
+          - subclass: "nightclub"
+          - subclass: "escape_game"
+          - subclass: "golf_course"
+          - subclass: "miniature_golf"
+          - class: "aquarium"
+            subclass: "aquarium"
+          - subclass: "art_gallery"
+          - subclass: "art_center"
+          - subclass: "gallery"
+          - subclass: "theme_park"
+          - subclass: "zoo"
+          - subclass: "water_park"
 
     # NOTE: This is a legacy alias of `health_hospital`.
     health:
@@ -613,7 +623,7 @@ categories:
           - subclass: "courthouse"
           - subclass: "embassy"
           - subclass: "diplomatic"
-        pj_what: "administration"
+        pj_what: "service public"
 
     post_box:
         raw_filters:
