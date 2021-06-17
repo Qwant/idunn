@@ -445,6 +445,7 @@ class PjApiPOI(BasePlace):
     def get_appointment_url(self):
         return self.get_transactional_url(
             [
+                TransactionalLinkType.PRENDRE_RDV_CLIC_RDV,
                 TransactionalLinkType.PRENDRE_RDV_EXTERNE,
                 TransactionalLinkType.PRENDRE_RDV_INTERNE,
             ]
