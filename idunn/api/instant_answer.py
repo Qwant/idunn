@@ -260,21 +260,24 @@ async def get_instant_answer(
             intentions[0].description._place_in_query,
         )
 
-    bragi_response, pj_response = await asyncio.gather(
-        bragi_client.autocomplete(query), fetch_pj_response()
-    )
-
-    pj_response = result_filter.filter_places(normalized_query, pj_response)
+    # Query PJ API asynchronously as a task which may be cancelled if bragi
+    # finds results.
+    fetch_pj = asyncio.create_task(fetch_pj_response())
+    bragi_response = await bragi_client.autocomplete(query)
     bragi_features = result_filter.filter_bragi_features(
         normalized_query, bragi_response["features"]
     )
 
     if bragi_features:
+        fetch_pj.cancel()
         place_id = bragi_features[0]["properties"]["geocoding"]["id"]
-        res = await run_in_threadpool(
+        return await run_in_threadpool(
             get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
         )
-    elif pj_response:
+
+    pj_response = result_filter.filter_places(normalized_query, await fetch_pj)
+
+    if pj_response:
         place_id = pj_response[0].get_id()
         result = InstantAnswerResult(
             places=[pj_response[0].load_place(lang)],
@@ -282,8 +285,6 @@ async def get_instant_answer(
             maps_url=maps_urls.get_place_url(place_id),
             maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
         )
-        res = build_response(result, query=q, lang=lang)
-    else:
-        return no_instant_answer(query=q, lang=lang, region=user_country)
+        return build_response(result, query=q, lang=lang)
 
-    return res
+    return no_instant_answer(query=q, lang=lang, region=user_country)
