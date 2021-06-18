@@ -108,6 +108,20 @@ def test_pj_place(enable_pj_source):
     assert blocks[5]["url"] == "https://www.pagesjaunes.fr/pros/05360257#ancreBlocAvis"
 
 
+@pytest.mark.parametrize("enable_pj_source", [("api", "api_musee_picasso")], indirect=True)
+def test_pj_api_place(enable_pj_source):
+    client = TestClient(app)
+    response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
+    assert response.status_code == 200
+    resp = response.json()
+
+    blocks = resp["blocks"]
+    assert blocks[6]["type"] == "transactional"
+    assert blocks[6]["appointment_url"].startswith(
+        "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BAPPOINTMENT_URL%5D&hash=92710b"
+    )
+
+
 @pytest.mark.parametrize(
     "enable_pj_source",
     [("legacy", "musee_picasso_short"), ("api", "api_musee_picasso_short")],
