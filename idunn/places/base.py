@@ -143,7 +143,7 @@ class BasePlace(dict):
     def build_admin(self, _lang=None):
         return None
 
-    def build_admins(self, lang=None):
+    def build_admins(self, lang=None) -> list:
         raw_admins = self.get_raw_admins()
         admins = []
         if not raw_admins is None:

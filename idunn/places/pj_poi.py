@@ -183,7 +183,7 @@ class PjPOI(BasePlace):
             "country_code": self.get_country_code(),
         }
 
-    def build_admins(self, lang=None):
+    def build_admins(self, lang=None) -> list:
         city = self.get_city()
         postcode = self.get_postcode()
 
@@ -354,11 +354,11 @@ class PjApiPOI(BasePlace):
             "country_code": self.get_country_code(),
         }
 
-    def build_admins(self, lang=None):
+    def build_admins(self, lang=None) -> list:
         inscription = self.get_inscription_with_address()
 
         if not inscription:
-            return None
+            return []
 
         city = inscription.address_city
         postcode = inscription.address_zipcode
