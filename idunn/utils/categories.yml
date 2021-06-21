@@ -61,7 +61,7 @@ categories:
           - subclass: "post_office"
         regex: "(^| )post"
 
-    # NOTE: This is a legacy alias for `sport_center`
+    # NOTE: This is a legacy alias for `sports_centre`
     fitness:
         pj_what: "sport"
         pj_filters:
@@ -254,7 +254,7 @@ categories:
     sports_centre:
         raw_filters:
           - class: "sports_centre"
-        pj_what: "centre sportif"
+        pj_what: "clubs de sport"
 
     shop_hairdresser:
         raw_filters:
