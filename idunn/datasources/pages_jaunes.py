@@ -141,11 +141,14 @@ class ApiPjSource(PjSource):
         res.raise_for_status()
         return res.json()
 
-    def get_places_from_url(self, url, params=None, size=10):
+    def get_places_from_url(self, url, params=None, size=10, ignore_status=()):
         try:
             res = pj_find.Response(**self.get_from_params(url, params))
         except requests.RequestException as exc:
-            logger.error("Failed to query pagejaunes: %s", exc)
+            if exc.response is not None and exc.response.status_code in ignore_status:
+                logger.debug("Ignored pagesjaunes error: %s", exc)
+            else:
+                logger.error("Failed to query pagesjaunes: %s", exc)
             return []
 
         pois = [PjApiPOI(listing) for listing in res.search_results.listings[:size] or []]
@@ -165,7 +168,9 @@ class ApiPjSource(PjSource):
 
     def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
         query_params = {"q": query if place_in_query else f"{query} france"}
-        return self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
+        return self.get_places_from_url(
+            self.PJ_FIND_API_URL, query_params, size, ignore_status=(400,)
+        )
 
     def get_places_bbox(
         self, categories: List[CategoryEnum], bbox, size=10, query=""
