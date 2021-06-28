@@ -1,5 +1,6 @@
-from .base import BaseBlock
 from typing import Literal, Optional
+from idunn import settings
+from .base import BaseBlock
 
 
 class TransactionalBlock(BaseBlock):
@@ -7,6 +8,10 @@ class TransactionalBlock(BaseBlock):
     booking_url: Optional[str]
     appointment_url: Optional[str]
     quotation_request_url: Optional[str]
+
+    @classmethod
+    def is_enabled(cls):
+        return settings["BLOCK_TRANSACTIONAL_ENABLED"]
 
     @classmethod
     def from_es(cls, place, lang):
