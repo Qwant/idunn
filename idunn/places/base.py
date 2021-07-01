@@ -1,4 +1,5 @@
 import logging
+import re
 from geopy import Point
 from pytz import timezone, UTC
 
@@ -184,12 +185,41 @@ class BasePlace(dict):
         return phone.split(";")[0]
 
     def get_website(self):
-        return self.find_property_value(
-            ["contact:website", "website", "facebook", "contact:facebook"]
-        )
+        return self.find_property_value(["contact:website", "website"])
 
     def get_website_label(self):
         return None
+
+    @staticmethod
+    def build_social_if_not_url(template, field):
+        if field is None or re.match("^https?://", field):
+            return field
+
+        return template.format(field.lstrip("@"))
+
+    def get_facebook(self):
+        return self.build_social_if_not_url(
+            "https://www.facebook.com/{}",
+            self.find_property_value(["facebook", "contact:facebook"]),
+        )
+
+    def get_twitter(self):
+        return self.build_social_if_not_url(
+            "https://twitter.com/{}",
+            self.find_property_value(["twitter", "contact:twitter"]),
+        )
+
+    def get_instagram(self):
+        return self.build_social_if_not_url(
+            "https://www.instagram.com/{}",
+            self.find_property_value(["instagram", "contact:instagram"]),
+        )
+
+    def get_youtube(self):
+        return self.build_social_if_not_url(
+            "https://www.youtube.com/{}",
+            self.find_property_value(["contact:youtube"]),
+        )
 
     def get_coord(self):
         return self.get("coord")

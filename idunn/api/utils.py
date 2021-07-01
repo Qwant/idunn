@@ -24,6 +24,7 @@ from idunn.blocks import (
     WebSiteBlock,
     WikiUndefinedException,
     TransactionalBlock,
+    SocialBlock,
 )
 from idunn.utils import prometheus
 from idunn.utils.settings import _load_yaml_file
@@ -141,6 +142,7 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
         TransactionalBlock,
+        SocialBlock,
     ],
     Verbosity.LIST: [
         OpeningDayEvent,
@@ -153,6 +155,7 @@ BLOCKS_BY_VERBOSITY = {
         GradesBlock,
         RecyclingBlock,
         TransactionalBlock,
+        SocialBlock,
     ],
     Verbosity.SHORT: [OpeningHourBlock, Covid19Block],
 }

@@ -102,6 +102,7 @@ def test_pj_place(enable_pj_source):
 
     assert blocks[4]["type"] == "images"
     assert len(blocks[4]["images"]) == 3
+
     assert blocks[5]["type"] == "grades"
     assert blocks[5]["total_grades_count"] == 8
     assert blocks[5]["global_grade"] == 4.0
@@ -114,11 +115,27 @@ def test_pj_api_place(enable_pj_source):
     response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
     assert response.status_code == 200
     resp = response.json()
-
     blocks = resp["blocks"]
+
+    assert blocks[3]["type"] == "website"
+    assert blocks[3]["url"].startswith(
+        "http://localhost:5000/v1/redirect?url=http%3A%2F%2Fwww.museepicassoparis.fr&hash=b6fc09"
+    )
+    assert blocks[3]["label"] == "www.museepicassoparis.fr"
+
     assert blocks[6]["type"] == "transactional"
     assert blocks[6]["appointment_url"].startswith(
         "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BAPPOINTMENT_URL%5D&hash=92710b"
+    )
+
+    assert blocks[7]["type"] == "social"
+    assert blocks[7]["links"][0]["site"] == "facebook"
+    assert blocks[7]["links"][0]["url"].startswith(
+        "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BFACEBOOK%5D&hash=20eedf5"
+    )
+    assert blocks[7]["links"][1]["site"] == "twitter"
+    assert blocks[7]["links"][1]["url"].startswith(
+        "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BTWITTER%5D&hash=c34074b"
     )
 
 

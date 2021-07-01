@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 
 from .base import BasePlace
 from .models import pj_info, pj_find
-from .models.pj_info import TransactionalLinkType
+from .models.pj_info import TransactionalLinkType, UrlType
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
 
@@ -273,27 +273,53 @@ class PjApiPOI(BasePlace):
             None,
         )
 
-    def get_website(self):
-        if not self.data.website_urls:
-            return None
+    def get_website_url_for_type(self, social_network: UrlType) -> Optional[str]:
+        return next(
+            (
+                resolve_url(website.website_url)
+                for website in self.data.website_urls or []
+                if website.url_type == social_network
+            ),
+            None,
+        )
 
-        return resolve_url(self.data.website_urls[0].website_url)
+    def get_website(self):
+        return self.get_website_url_for_type(UrlType.EXTERNAL_WEBSITE)
 
     def get_website_label(self):
-        if not self.data.website_urls:
-            return None
-
         if isinstance(self.data, pj_find.Listing):
             # FIXME: Ideally the Listing would include a "suggested_label" too
             return self.get_local_name()
 
-        suggested_label = self.data.website_urls[0].suggested_label
         prefix = "Voir le site "
+        suggested_label = next(
+            (
+                website.suggested_label
+                for website in self.data.website_urls or []
+                if website.url_type == UrlType.EXTERNAL_WEBSITE
+            ),
+            None,
+        )
+
+        if not suggested_label:
+            return None
 
         if suggested_label.startswith(prefix):
             return suggested_label[len(prefix) :]
 
         return suggested_label
+
+    def get_facebook(self):
+        return self.get_website_url_for_type(UrlType.FACEBOOK)
+
+    def get_twitter(self):
+        return self.get_website_url_for_type(UrlType.TWITTER)
+
+    def get_instagram(self):
+        return self.get_website_url_for_type(UrlType.INSTAGRAM)
+
+    def get_youtube(self):
+        return None
 
     def get_class_name(self):
         class_name, _ = get_class_subclass(

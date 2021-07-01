@@ -278,6 +278,22 @@
       "value": "+33140494814"
     },
     {
+        "key": "contact:facebook",
+        "value": "MuseeOrsay"
+    },
+    {
+        "key": "contact:twitter",
+        "value": "@MuseeOrsay"
+    },
+    {
+        "key": "contact:instagram",
+        "value": "https://www.instagram.com/MuseeOrsay"
+    },
+    {
+        "key": "contact:youtube",
+        "value": "https://www.youtube.com/MuseeOrsayOfficiel"
+    },
+    {
       "key": "name:it",
       "value": "Museo d'Orsay"
     },

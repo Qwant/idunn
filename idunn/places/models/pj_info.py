@@ -124,14 +124,25 @@ class Urls(BaseModel):
     )
 
 
-class WebsiteUrl(BaseModel):
-    """
-    Omitted fields:
-      - url_type: URL type of merchant website
-    """
+class UrlType(Enum):
+    EXTERNAL_WEBSITE = "SITE_EXTERNE"
+    FACEBOOK = "FACEBOOK"
+    TWITTER = "TWITTER"
+    INSTAGRAM = "INSTAGRAM"
 
+
+class WebsiteUrl(BaseModel):
+    url_type: Optional[UrlType] = Field(None, description="URL type of merchant website")
     website_url: Optional[str] = Field(None, description="URL of merchant website")
     suggested_label: Optional[str] = Field(None, description="Suggested label of merchant website")
+
+    @validator("url_type", pre=True)
+    def validate_url_type(cls, field: str):
+        try:
+            return UrlType(field)
+        except ValueError:
+            logger.warning("Got unknown url type from pagesjaunes: %s", field)
+            return None
 
 
 class Inscription(BaseModel):
