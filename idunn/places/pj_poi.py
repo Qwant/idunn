@@ -291,8 +291,15 @@ class PjApiPOI(BasePlace):
             # FIXME: Ideally the Listing would include a "suggested_label" too
             return self.get_local_name()
 
-        suggested_label = self.get_website_url_for_type(UrlType.EXTERNAL_WEBSITE)
         prefix = "Voir le site "
+        suggested_label = next(
+            (
+                website.suggested_label
+                for website in self.data.website_urls or []
+                if website.url_type == UrlType.EXTERNAL_WEBSITE
+            ),
+            None,
+        )
 
         if not suggested_label:
             return None

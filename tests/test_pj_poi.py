@@ -117,6 +117,12 @@ def test_pj_api_place(enable_pj_source):
     resp = response.json()
     blocks = resp["blocks"]
 
+    assert blocks[3]["type"] == "website"
+    assert blocks[3]["url"].startswith(
+        "http://localhost:5000/v1/redirect?url=http%3A%2F%2Fwww.museepicassoparis.fr&hash=b6fc09"
+    )
+    assert blocks[3]["label"] == "www.museepicassoparis.fr"
+
     assert blocks[6]["type"] == "transactional"
     assert blocks[6]["appointment_url"].startswith(
         "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BAPPOINTMENT_URL%5D&hash=92710b"
