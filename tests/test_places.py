@@ -359,6 +359,27 @@ def test_full_query_poi():
             ],
         },
         {"type": "website", "url": "http://www.musee-orsay.fr", "label": "www.musee-orsay.fr"},
+        {
+            "type": "social",
+            "links": [
+                {
+                    "site": "facebook",
+                    "url": "https://www.facebook.com/MuseeOrsay",
+                },
+                {
+                    "site": "twitter",
+                    "url": "https://twitter.com/MuseeOrsay",
+                },
+                {
+                    "site": "instagram",
+                    "url": "https://www.instagram.com/MuseeOrsay",
+                },
+                {
+                    "site": "youtube",
+                    "url": "https://www.youtube.com/MuseeOrsayOfficiel",
+                },
+            ],
+        },
     ]
 
 

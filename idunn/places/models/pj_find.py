@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from .pj_info import TransactionalLink
+from .pj_info import TransactionalLink, WebsiteUrl
 
 
 class BusinessDescription(BaseModel):
@@ -83,10 +83,6 @@ class Urls(BaseModel):
     )
 
 
-class WebsiteUrls(BaseModel):
-    website_url: Optional[str] = Field(None, description="URL of merchant website")
-
-
 class Context(BaseModel):
     """
     Omitted fields:
@@ -142,7 +138,7 @@ class Listing(BaseModel):
     )
     merchant_name: Optional[str] = Field(None, description="Name of the merchant")
     thumbnail_url: Optional[str] = Field(None, description="URL for the merchant main thumbnail")
-    website_urls: List[WebsiteUrls] = Field([], description="Array of merchant websites URLs")
+    website_urls: List[WebsiteUrl] = Field([], description="Array of merchant websites URLs")
     business_descriptions: List[BusinessDescription] = Field(
         [], description="Array of business description object"
     )

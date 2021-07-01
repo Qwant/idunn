@@ -124,14 +124,23 @@ class Urls(BaseModel):
     )
 
 
-class WebsiteUrl(BaseModel):
-    """
-    Omitted fields:
-      - url_type: URL type of merchant website
-    """
+class UrlType(Enum):
+    NON_SOCIAL = "NON_SOCIAL"
+    FACEBOOK = "FACEBOOK"
+    TWITTER = "TWITTER"
 
+
+class WebsiteUrl(BaseModel):
+    url_type: UrlType = Field(UrlType.NON_SOCIAL, description="URL type of merchant website")
     website_url: Optional[str] = Field(None, description="URL of merchant website")
     suggested_label: Optional[str] = Field(None, description="Suggested label of merchant website")
+
+    @validator("url_type", pre=True)
+    def validate_url_type(cls, field: str):
+        try:
+            return UrlType(field)
+        except ValueError:
+            return UrlType.NON_SOCIAL
 
 
 class Inscription(BaseModel):
