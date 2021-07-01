@@ -125,14 +125,14 @@ class Urls(BaseModel):
 
 
 class UrlType(Enum):
-    NON_SOCIAL = "NON_SOCIAL"
+    EXTERNAL_WEBSITE = "SITE_EXTERNE"
     FACEBOOK = "FACEBOOK"
     TWITTER = "TWITTER"
     INSTAGRAM = "INSTAGRAM"
 
 
 class WebsiteUrl(BaseModel):
-    url_type: UrlType = Field(UrlType.NON_SOCIAL, description="URL type of merchant website")
+    url_type: Optional[UrlType] = Field(None, description="URL type of merchant website")
     website_url: Optional[str] = Field(None, description="URL of merchant website")
     suggested_label: Optional[str] = Field(None, description="Suggested label of merchant website")
 
@@ -141,7 +141,8 @@ class WebsiteUrl(BaseModel):
         try:
             return UrlType(field)
         except ValueError:
-            return UrlType.NON_SOCIAL
+            logger.warning("Got unknown url type from pagesjaunes: %s", field)
+            return None
 
 
 class Inscription(BaseModel):

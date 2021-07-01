@@ -284,14 +284,14 @@ class PjApiPOI(BasePlace):
         )
 
     def get_website(self):
-        return self.get_website_url_for_type(UrlType.NON_SOCIAL)
+        return self.get_website_url_for_type(UrlType.EXTERNAL_WEBSITE)
 
     def get_website_label(self):
         if isinstance(self.data, pj_find.Listing):
             # FIXME: Ideally the Listing would include a "suggested_label" too
             return self.get_local_name()
 
-        suggested_label = self.get_website_url_for_type(UrlType.NON_SOCIAL)
+        suggested_label = self.get_website_url_for_type(UrlType.EXTERNAL_WEBSITE)
         prefix = "Voir le site "
 
         if not suggested_label:
