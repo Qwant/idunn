@@ -273,34 +273,29 @@ class PjApiPOI(BasePlace):
             None,
         )
 
-    def get_website(self):
+    def get_website_url_for_type(self, social_network: UrlType) -> Optional[str]:
         return next(
             (
                 resolve_url(website.website_url)
                 for website in self.data.website_urls or []
-                if website.url_type == UrlType.NON_SOCIAL
+                if website.url_type == social_network
             ),
             None,
         )
 
-    def get_website_label(self):
-        if not self.data.website_urls:
-            return None
+    def get_website(self):
+        return self.get_website_url_for_type(UrlType.NON_SOCIAL)
 
+    def get_website_label(self):
         if isinstance(self.data, pj_find.Listing):
             # FIXME: Ideally the Listing would include a "suggested_label" too
             return self.get_local_name()
 
-        suggested_label = next(
-            (
-                website.suggested_label
-                for website in self.data.website_urls or []
-                if website.url_type == UrlType.NON_SOCIAL
-            ),
-            None,
-        )
-
+        suggested_label = self.get_website_url_for_type(UrlType.NON_SOCIAL)
         prefix = "Voir le site "
+
+        if not suggested_label:
+            return None
 
         if suggested_label.startswith(prefix):
             return suggested_label[len(prefix) :]
@@ -308,27 +303,13 @@ class PjApiPOI(BasePlace):
         return suggested_label
 
     def get_facebook(self):
-        return next(
-            (
-                resolve_url(website.website_url)
-                for website in self.data.website_urls or []
-                if website.url_type == UrlType.FACEBOOK
-            ),
-            None,
-        )
+        return self.get_website_url_for_type(UrlType.FACEBOOK)
 
     def get_twitter(self):
-        return next(
-            (
-                resolve_url(website.website_url)
-                for website in self.data.website_urls or []
-                if website.url_type == UrlType.TWITTER
-            ),
-            None,
-        )
+        return self.get_website_url_for_type(UrlType.TWITTER)
 
     def get_instagram(self):
-        return None
+        return self.get_website_url_for_type(UrlType.INSTAGRAM)
 
     def get_youtube(self):
         return None

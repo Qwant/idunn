@@ -128,6 +128,7 @@ class UrlType(Enum):
     NON_SOCIAL = "NON_SOCIAL"
     FACEBOOK = "FACEBOOK"
     TWITTER = "TWITTER"
+    INSTAGRAM = "INSTAGRAM"
 
 
 class WebsiteUrl(BaseModel):
