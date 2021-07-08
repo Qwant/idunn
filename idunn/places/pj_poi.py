@@ -31,7 +31,6 @@ DOCTORS = (
     "Ophtalmologue",
     "Médecin généraliste",
     "Infirmier",
-    "kinésithérapeute",
     "Psychologue",
     "Ergothérapeute",
 )
@@ -45,7 +44,7 @@ def get_class_subclass(raw_categories):
         {"raw": "salles de cinéma", "class": "cinema"},
         {"raw": "salles de concerts, de spectacles", "class": "theatre"},
         {"raw": "Pharmacie", "class": "pharmacy"},
-        {"raw": "supermarchés, hypermarchés", "class": "grocery"},
+        {"raw": "supermarchés, hypermarchés", "class": "supermarket"},
         {"raw": "banques", "class": "bank"},
         {"raw": "cafés, bars", "class": "bar"},
         {"raw": "Chirurgien-dentiste", "class": "dentist"},
@@ -60,6 +59,16 @@ def get_class_subclass(raw_categories):
         {"raw": "piscines (établissements)", "class": "sports_centre"},
         {"raw": "clubs de sport", "class": "sports_centre"},
         {"raw": "vétérinaires", "class": "veterinary"},
+        {"raw": "Masseur kinésithérapeute", "class": "health_physiotherapist"},
+        {"raw": "restauration rapide", "class": "fast_food"},
+        {"raw": "boulangeries-pâtisseries (artisans)", "class": "bakery"},
+        {"raw": "coiffeurs", "class": "hairdresser"},
+        {
+            "class": "clothes",
+            "func": lambda raw_categories: any(
+                k in c for c in raw_categories for k in ("vêtements", "lingerie")
+            ),
+        },
         {
             "class": "school",
             "func": lambda raw_categories: any(
