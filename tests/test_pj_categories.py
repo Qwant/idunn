@@ -27,8 +27,8 @@ def test_categories_pj():
     assert poi.get_subclass_name() == "pharmacy"
 
     poi = PjPOI({"Category": ["supermarchés, hypermarchés"]})
-    assert poi.get_class_name() == "grocery"
-    assert poi.get_subclass_name() == "grocery"
+    assert poi.get_class_name() == "supermarket"
+    assert poi.get_subclass_name() == "supermarket"
 
     poi = PjPOI({"Category": ["banques"]})
     assert poi.get_class_name() == "bank"
