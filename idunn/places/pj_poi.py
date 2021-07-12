@@ -282,18 +282,28 @@ class PjApiPOI(BasePlace):
             None,
         )
 
-    def get_website_url_for_type(self, social_network: UrlType) -> Optional[str]:
+    def get_website_url_for_type(self, site_types: Union[UrlType, List[UrlType]]) -> Optional[str]:
+        if isinstance(site_types, UrlType):
+            site_types = [site_types]
+
         return next(
             (
                 resolve_url(website.website_url)
                 for website in self.data.website_urls or []
-                if website.url_type == social_network
+                if website.url_type in site_types
             ),
             None,
         )
 
+    WEBSITE_TYPES = [
+        UrlType.SITE_EXTERNE,
+        UrlType.WEBSITE,
+        UrlType.MINISITE,
+        UrlType.SITE_PRIVILEGE,
+    ]
+
     def get_website(self):
-        return self.get_website_url_for_type(UrlType.EXTERNAL_WEBSITE)
+        return self.get_website_url_for_type(self.WEBSITE_TYPES)
 
     def get_website_label(self):
         if isinstance(self.data, pj_find.Listing):
@@ -305,7 +315,7 @@ class PjApiPOI(BasePlace):
             (
                 website.suggested_label
                 for website in self.data.website_urls or []
-                if website.url_type == UrlType.EXTERNAL_WEBSITE
+                if website.url_type in self.WEBSITE_TYPES
             ),
             None,
         )
@@ -328,7 +338,7 @@ class PjApiPOI(BasePlace):
         return self.get_website_url_for_type(UrlType.INSTAGRAM)
 
     def get_youtube(self):
-        return None
+        return self.get_website_url_for_type(UrlType.YOUTUBE)
 
     def get_class_name(self):
         class_name, _ = get_class_subclass(
