@@ -3,9 +3,11 @@ import json
 from contextlib import contextmanager
 from copy import deepcopy
 
+import idunn
 from idunn import settings
 from idunn.api import places_list, instant_answer
 from idunn.datasources.recycling import recycling_client
+from idunn.datasources.wikidata import WikidataEs
 from idunn.places import utils as places_utils
 
 
@@ -20,6 +22,19 @@ def override_settings(overrides):
         yield
     finally:
         settings._settings = old_settings
+
+
+@contextmanager
+def init_wikidata_es():
+    old_es = idunn.blocks.wikipedia.wikidata_es
+    idunn.blocks.wikipedia.wikidata_es = WikidataEs()
+    idunn.places.base.wikidata_es = WikidataEs()
+
+    try:
+        yield
+    finally:
+        idunn.blocks.wikipedia.wikidata_es = old_es
+        idunn.places.base.wikidata_es = old_es
 
 
 @contextmanager

@@ -6,11 +6,7 @@ from .phone import PhoneBlock
 from .information import InformationBlock
 from .website import WebSiteBlock
 from .contact import ContactBlock
-from .wikipedia import (
-    WikipediaBlock,
-    WikiUndefinedException,
-    GET_WIKI_INFO,
-)
+from .wikipedia import WikipediaBlock, GET_WIKI_INFO
 from .images import ImagesBlock
 from .services_and_information import (
     ServicesAndInformationBlock,
@@ -20,16 +16,8 @@ from .services_and_information import (
     CuisineBlock,
 )
 from .grades import GradesBlock
-from .events import (
-    OpeningDayEvent,
-    DescriptionEvent,
-)
-
-from .environment import (
-    AirQuality,
-    Weather,
-)
-
+from .events import OpeningDayEvent, DescriptionEvent
+from .environment import AirQuality, Weather
 from .recycling import RecyclingBlock
 from .transactional import TransactionalBlock
 from .social import SocialBlock

@@ -76,10 +76,10 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             #
             # So we change the method used by the WikidataConnector by a fake
             # method to be sure the real method is not called.
-            from idunn.api.utils import WikidataConnector
+            from idunn.datasources.wikidata import wikidata_es
 
-            @wraps(WikidataConnector.get_wiki_info)
-            def fake_get_wiki_info():
+            @wraps(wikidata_es.get_info)
+            def fake_get_info():
                 """
                 Fake method for test
 
@@ -87,7 +87,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
                 """
                 raise Exception
 
-            m.setattr(WikidataConnector, "get_wiki_info", fake_get_wiki_info)
+            m.setattr(wikidata_es, "get_info", fake_get_info)
 
             # We make 10 requests to the basket_ball POI and we should still
             # have the wikipedia block in the answer but without call to

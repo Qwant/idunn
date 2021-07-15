@@ -4,7 +4,7 @@ import pytest
 import respx
 from elasticsearch import Elasticsearch
 
-from .utils import override_settings
+from .utils import init_wikidata_es, override_settings
 
 
 @pytest.fixture(scope="session")
@@ -31,7 +31,7 @@ def wiki_es(docker_services):
     port = docker_services.wait_for_service("wiki_es", 9200)
     url = f"http://{docker_services.docker_ip}:{port}"
 
-    with override_settings({"WIKI_ES": url, "ES_WIKI_LANG": "fr"}):
+    with override_settings({"WIKI_ES": url, "ES_WIKI_LANG": "fr"}), init_wikidata_es():
         yield url
 
 
@@ -45,8 +45,14 @@ def wiki_es_ko(docker_services):
     docker_services.wait_for_service("wiki_es", 9200)
     url = "something.invalid:1234"
 
-    with override_settings({"WIKI_ES": url, "ES_WIKI_LANG": "fr"}):
+    with override_settings({"WIKI_ES": url, "ES_WIKI_LANG": "fr"}), init_wikidata_es():
         yield url
+
+
+@pytest.fixture(scope="function")
+def wiki_es_undefined():
+    with override_settings({"WIKI_ES": None}), init_wikidata_es():
+        yield
 
 
 @pytest.fixture(scope="function")

@@ -6,7 +6,10 @@ import re
 import json
 import responses
 
+
 from app import app, settings
+from .utils import init_wikidata_es, override_settings
+from .conftest import wiki_es_undefined
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -103,19 +106,8 @@ def test_WIKI_ES_KO(wiki_client_ko):
         assert all(b["type"] != "wikipedia" for b in resp["blocks"][2].get("blocks"))
 
 
-@pytest.fixture(scope="function")
-def undefine_wiki_es():
-    from idunn.api.utils import WikidataConnector
-
-    WikidataConnector._wiki_es = None
-    wiki_es_ip = settings["WIKI_ES"]
-    settings._settings["WIKI_ES"] = None
-    yield
-    settings._settings["WIKI_ES"] = wiki_es_ip  # put back the correct ip for next tests
-
-
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_undefined_WIKI_ES(undefine_wiki_es):
+def test_undefined_WIKI_ES(wiki_es_undefined):
     """
     Check that when the WIKI_ES variable is not set
     a Wikipedia call is observed
