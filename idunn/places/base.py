@@ -33,25 +33,18 @@ class BasePlace(dict):
         self._wiki_resp = {}
         self.properties = {}
 
-    def get_wiki_info(self, wikidata_id, lang):
-        return wiki_es.get_info(wikidata_id, lang)
-
-    def get_wiki_index(self, lang):
-        return wiki_es.get_index(lang)
+    @property
+    def wikidata_id(self):
+        return self.properties.get("wikidata")
 
     def get_wiki_resp(self, lang):
         if lang not in self._wiki_resp:
             self._wiki_resp[lang] = None
-            wikidata_id = self.wikidata_id
 
-            if wikidata_id is not None:
-                self._wiki_resp[lang] = wiki_es.get_info(wikidata_id, lang)
+            if self.wikidata_id is not None:
+                self._wiki_resp[lang] = wiki_es.get_info(self.wikidata_id, lang)
 
         return self._wiki_resp.get(lang)
-
-    @property
-    def wikidata_id(self):
-        return self.properties.get("wikidata")
 
     def get_name(self, _lang):
         return self.get_local_name()
