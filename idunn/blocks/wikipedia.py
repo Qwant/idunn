@@ -6,7 +6,7 @@ from redis import RedisError
 from typing import ClassVar, Literal
 
 from idunn import settings
-from idunn.datasources.wikidata import wikidata_es
+from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import prometheus
 from idunn.utils.redis import RedisWrapper
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
@@ -160,12 +160,8 @@ class WikipediaBlock(BaseBlock):
         """
         wikidata_id = place.wikidata_id
 
-        if (
-            wikidata_id is not None
-            and wikidata_es.enabled()
-            and wikidata_es.is_lang_available(lang)
-        ):
-            wiki_poi_info = wikidata_es.get_info(wikidata_id, lang)
+        if wikidata_id is not None and wiki_es.enabled() and wiki_es.is_lang_available(lang):
+            wiki_poi_info = wiki_es.get_info(wikidata_id, lang)
 
             if wiki_poi_info is None:
                 return None

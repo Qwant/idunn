@@ -13,7 +13,14 @@ from idunn.utils.redis import RedisWrapper
 logger = logging.getLogger(__name__)
 
 
-class WikidataEs:
+class WikiEs:
+    """
+    Handle on an internal ElasticSearch populated with Wikipedia data.
+
+    Note that the indexes are named f"wikidata_{lang}", but they still contain
+    data from Wikipedia.
+    """
+
     REDIS_INFO_KEY_PREFIX = "get_wiki_info"
 
     def __init__(self):
@@ -95,4 +102,4 @@ class WikidataEs:
         return fetch_data_cached()
 
 
-wikidata_es = WikidataEs()
+wiki_es = WikiEs()

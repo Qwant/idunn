@@ -4,7 +4,7 @@ from geopy import Point
 from pytz import timezone, UTC
 
 from idunn.api.utils import Verbosity, build_blocks
-from idunn.datasources.wikidata import wikidata_es
+from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import maps_urls, tz
 from .place import Place, PlaceMeta
 
@@ -34,10 +34,10 @@ class BasePlace(dict):
         self.properties = {}
 
     def get_wiki_info(self, wikidata_id, lang):
-        return wikidata_es.get_info(wikidata_id, lang)
+        return wiki_es.get_info(wikidata_id, lang)
 
     def get_wiki_index(self, lang):
-        return wikidata_es.get_index(lang)
+        return wiki_es.get_index(lang)
 
     def get_wiki_resp(self, lang):
         if lang not in self._wiki_resp:
@@ -45,7 +45,7 @@ class BasePlace(dict):
             wikidata_id = self.wikidata_id
 
             if wikidata_id is not None:
-                self._wiki_resp[lang] = wikidata_es.get_info(wikidata_id, lang)
+                self._wiki_resp[lang] = wiki_es.get_info(wikidata_id, lang)
 
         return self._wiki_resp.get(lang)
 

@@ -8,7 +8,7 @@ import responses
 
 
 from app import app, settings
-from .utils import init_wikidata_es, override_settings
+from .utils import init_wiki_es, override_settings
 from .conftest import wiki_es_undefined
 
 
