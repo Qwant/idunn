@@ -52,12 +52,7 @@ class WikiEs:
         return None
 
     def get_info(self, wikidata_id, lang):
-        if not self.enabled():
-            logger.warning("Wiki ES is disabled %s", lang)
-            return None
-
-        if not self.is_lang_available(lang):
-            logger.warning("Wiki ES does not support lang %s", lang)
+        if not self.enabled() or not self.is_lang_available(lang):
             return None
 
         es_index = self.get_index(lang)

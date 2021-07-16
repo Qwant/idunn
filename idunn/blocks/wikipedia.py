@@ -153,15 +153,10 @@ class WikipediaBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
-        """
-        If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
-        then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
-        else then we fetch the wikipedia API.
-        """
-        wikidata_id = place.wikidata_id
-
-        if wikidata_id is not None and wiki_es.enabled() and wiki_es.is_lang_available(lang):
-            wiki_poi_info = wiki_es.get_info(wikidata_id, lang)
+        # If `wikidata_id` is present and `lang` is available in `wiki_es`, try
+        # to fetch from ES, otherwise we fetch the wikipedia API.
+        if place.wikidata_id is not None and wiki_es.enabled() and wiki_es.is_lang_available(lang):
+            wiki_poi_info = wiki_es.get_info(place.wikidata_id, lang)
 
             if wiki_poi_info is None:
                 return None
