@@ -3,9 +3,8 @@ import re
 from geopy import Point
 from pytz import timezone, UTC
 
-from idunn.api.utils import Verbosity, WikidataConnector, build_blocks
-from idunn.blocks import WikiUndefinedException, GET_WIKI_INFO
-from idunn.utils.redis import RedisWrapper
+from idunn.api.utils import Verbosity, build_blocks
+from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import maps_urls, tz
 from .place import Place, PlaceMeta
 
@@ -34,34 +33,18 @@ class BasePlace(dict):
         self._wiki_resp = {}
         self.properties = {}
 
-    def get_wiki_info(self, wikidata_id, wiki_index):
-        return WikidataConnector.get_wiki_info(wikidata_id, wiki_index)
-
-    def get_wiki_index(self, lang):
-        return WikidataConnector.get_wiki_index(lang)
+    @property
+    def wikidata_id(self):
+        return self.properties.get("wikidata")
 
     def get_wiki_resp(self, lang):
         if lang not in self._wiki_resp:
             self._wiki_resp[lang] = None
-            wikidata_id = self.wikidata_id
-            if wikidata_id is not None:
-                wiki_index = self.get_wiki_index(lang)
-                if wiki_index is not None:
-                    key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    try:
-                        self._wiki_resp[lang] = RedisWrapper.cache_it(
-                            key, WikidataConnector.get_wiki_info
-                        )(wikidata_id, wiki_index)
-                    except WikiUndefinedException:
-                        logger.info(
-                            "WIKI_ES variable has not been set: cannot fetch wikidata images"
-                        )
-                        return None
-        return self._wiki_resp.get(lang)
 
-    @property
-    def wikidata_id(self):
-        return self.properties.get("wikidata")
+            if self.wikidata_id is not None:
+                self._wiki_resp[lang] = wiki_es.get_info(self.wikidata_id, lang)
+
+        return self._wiki_resp.get(lang)
 
     def get_name(self, _lang):
         return self.get_local_name()

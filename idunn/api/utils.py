@@ -1,13 +1,6 @@
 from enum import Enum
-from elasticsearch import (
-    Elasticsearch,
-    ConnectionError,
-    NotFoundError,
-    ElasticsearchException,
-)
 import os
 import logging
-from idunn import settings
 from idunn.blocks import (
     Weather,
     AirQuality,
@@ -22,11 +15,9 @@ from idunn.blocks import (
     PhoneBlock,
     RecyclingBlock,
     WebSiteBlock,
-    WikiUndefinedException,
     TransactionalBlock,
     SocialBlock,
 )
-from idunn.utils import prometheus
 from idunn.utils.settings import _load_yaml_file
 from idunn.datasources.mimirsbrunn import MimirPoiFilter
 
@@ -159,66 +150,6 @@ BLOCKS_BY_VERBOSITY = {
     ],
     Verbosity.SHORT: [OpeningHourBlock, Covid19Block],
 }
-
-
-class WikidataConnector:
-    _wiki_es = None
-
-    @classmethod
-    def get_wiki_index(cls, lang):
-        if lang in settings["ES_WIKI_LANG"].split(","):
-            return "wikidata_{}".format(lang)
-        return None
-
-    @classmethod
-    def init_wiki_es(cls):
-        if cls._wiki_es is None:
-            wiki_es = settings.get("WIKI_ES")
-            wiki_es_max_retries = settings.get("WIKI_ES_MAX_RETRIES")
-            wiki_es_timeout = settings.get("WIKI_ES_TIMEOUT")
-
-            if wiki_es is None:
-                raise WikiUndefinedException
-
-            cls._wiki_es = Elasticsearch(
-                wiki_es, max_retries=wiki_es_max_retries, timeout=wiki_es_timeout
-            )
-
-    @classmethod
-    def get_wiki_info(cls, wikidata_id, wiki_index):
-        cls.init_wiki_es()
-        try:
-            with prometheus.wiki_request_duration("wiki_es", "get_wiki_info"):
-                resp = (
-                    cls._wiki_es.search(
-                        index=wiki_index,
-                        body={
-                            "query": {"bool": {"filter": {"term": {"wikibase_item": wikidata_id}}}}
-                        },
-                    )
-                    .get("hits", {})
-                    .get("hits", [])
-                )
-        except ConnectionError:
-            logger.warning("Wiki ES not available: connection exception raised", exc_info=True)
-            return None
-        except NotFoundError:
-            logger.warning(
-                "Wiki ES didn't find wikidata_id '%s' in wiki_index '%s'",
-                wikidata_id,
-                wiki_index,
-                exc_info=True,
-            )
-            return None
-        except ElasticsearchException:
-            logger.warning("Wiki ES failure: unknown elastic error", exc_info=True)
-            return None
-
-        if len(resp) == 0:
-            return None
-
-        wiki = resp[0]["_source"]
-        return wiki
 
 
 def build_blocks(es_poi, lang, verbosity):

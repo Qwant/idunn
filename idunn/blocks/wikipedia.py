@@ -6,6 +6,7 @@ from redis import RedisError
 from typing import ClassVar, Literal
 
 from idunn import settings
+from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import prometheus
 from idunn.utils.redis import RedisWrapper
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
@@ -18,10 +19,6 @@ GET_TITLE_IN_LANGUAGE = "get_title_in_language"
 GET_SUMMARY = "get_summary"
 
 logger = logging.getLogger(__name__)
-
-
-class WikiUndefinedException(Exception):
-    pass
 
 
 class WikipediaSession:
@@ -156,29 +153,19 @@ class WikipediaBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
-        """
-        If "wikidata_id" is present and "lang" is in "ES_WIKI_LANG",
-        then we try to fetch our "WIKI_ES" (if WIKI_ES has been defined),
-        else then we fetch the wikipedia API.
-        """
-        wikidata_id = place.wikidata_id
-        if wikidata_id is not None:
-            wiki_index = place.get_wiki_index(lang)
-            if wiki_index is not None:
-                try:
-                    key = GET_WIKI_INFO + "_" + wikidata_id + "_" + lang + "_" + wiki_index
-                    wiki_poi_info = RedisWrapper.cache_it(key, place.get_wiki_info)(
-                        wikidata_id, wiki_index
-                    )
-                    if wiki_poi_info is not None:
-                        return cls(
-                            url=wiki_poi_info.get("url"),
-                            title=wiki_poi_info.get("title")[0],
-                            description=SizeLimiter.limit_size(wiki_poi_info.get("content", "")),
-                        )
-                    return None
-                except WikiUndefinedException:
-                    logger.info("WIKI_ES variable has not been set: call to Wikipedia")
+        # If `wikidata_id` is present and `lang` is available in `wiki_es`, try
+        # to fetch from ES, otherwise we fetch the wikipedia API.
+        if place.wikidata_id is not None and wiki_es.enabled() and wiki_es.is_lang_available(lang):
+            wiki_poi_info = wiki_es.get_info(place.wikidata_id, lang)
+
+            if wiki_poi_info is None:
+                return None
+
+            return cls(
+                url=wiki_poi_info.get("url"),
+                title=wiki_poi_info.get("title")[0],
+                description=SizeLimiter.limit_size(wiki_poi_info.get("content", "")),
+            )
 
         wikipedia_value = place.properties.get("wikipedia")
         wiki_title = None
