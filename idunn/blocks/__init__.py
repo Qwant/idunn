@@ -6,7 +6,7 @@ from .phone import PhoneBlock
 from .information import InformationBlock
 from .website import WebSiteBlock
 from .contact import ContactBlock
-from .wikipedia import WikipediaBlock, GET_WIKI_INFO
+from .wikipedia import WikipediaBlock
 from .images import ImagesBlock
 from .services_and_information import (
     ServicesAndInformationBlock,

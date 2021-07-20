@@ -116,6 +116,11 @@ class RedisWrapper:
     def disable(cls):
         cls._connection = DISABLED_STATE
 
+    @classmethod
+    def enable(cls):
+        cls._connection = None
+        cls.init_cache()
+
 
 class RedisWrapperWeather(RedisWrapper):
     _redis = RedisWrapper
