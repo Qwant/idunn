@@ -4,7 +4,7 @@ import re
 from freezegun import freeze_time
 from app import app, settings
 from fastapi.testclient import TestClient
-from idunn.blocks.wikipedia import WikipediaSession
+from idunn.datasources.wikipedia import WikipediaSession
 from idunn.utils.redis import RedisWrapper
 from .utils import override_settings
 from .test_api_with_wiki import mock_wikipedia_response
@@ -15,30 +15,35 @@ from functools import wraps
 
 
 @pytest.fixture(scope="function")
-def disable_wikipedia_cache():
-    RedisWrapper.disable()
-    yield
-    RedisWrapper._connection = None
+def disable_redis():
+    try:
+        RedisWrapper.disable()
+        yield
+    finally:
+        RedisWrapper.enable()
 
 
 @pytest.fixture(scope="function")
-def limiter_test_normal(redis, disable_wikipedia_cache):
+def limiter_test_normal(redis, disable_redis):
     """
     We define here settings specific to tests.
     We define low max calls limits to avoid
     too large number of requests made
     """
+
     with override_settings(
         {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 6, "REDIS_URL": redis}
     ):
         # To force settings overriding we need to set to None the limiter
-        WikipediaSession._rate_limiter = None
+        WikipediaSession.Helpers._rate_limiter = None
         yield
-    WikipediaSession._rate_limiter = None
+
+    # We reset the rate limiter to remove the context of previous test
+    WikipediaSession.Helpers._rate_limiter = None
 
 
 @pytest.fixture(scope="function")
-def limiter_test_interruption(redis, disable_wikipedia_cache):
+def limiter_test_interruption(redis, disable_redis):
     """
     In the 'Redis interruption' test below
     we made more requests than the limits
@@ -48,9 +53,9 @@ def limiter_test_interruption(redis, disable_wikipedia_cache):
     with override_settings(
         {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 100, "REDIS_URL": redis}
     ):
-        WikipediaSession._rate_limiter = None
+        WikipediaSession.Helpers._rate_limiter = None
         yield
-    WikipediaSession._rate_limiter = None
+    WikipediaSession.Helpers._rate_limiter = None
 
 
 def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
@@ -77,7 +82,7 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
     assert len(mock_wikipedia_response.calls) == 6
 
 
-def test_rate_limiter_without_redis():
+def test_rate_limiter_without_redis(disable_redis):
     """
     Test that Idunn doesn't stop external requests when
     no redis has been set: 10 requests to Idunn should
@@ -108,7 +113,7 @@ def restart_wiki_redis(docker_services):
     port = docker_services.port_for("wiki_redis", 6379)
     url = f"{docker_services.docker_ip}:{port}"
     settings._settings["REDIS_URL"] = url
-    WikipediaSession._rate_limiter = None
+    WikipediaSession.Helpers._rate_limiter = None
 
 
 def test_rate_limiter_with_redisError(

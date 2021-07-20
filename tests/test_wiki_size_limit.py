@@ -48,4 +48,4 @@ def test_wiki_size_limit(wiki_max_size):
 
     # Test that the wiki block description string is not longer than
     # WIKI_DESC_MAX_SIZE (here only 10 chars).
-    assert resp["blocks"][2].get("blocks")[0].get("description") == "El Museo d..."
+    assert resp["blocks"][2].get("blocks")[0].get("description") == "El Museo d…"

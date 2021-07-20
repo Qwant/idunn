@@ -41,7 +41,11 @@ class BasePlace(dict):
         if lang not in self._wiki_resp:
             self._wiki_resp[lang] = None
 
-            if self.wikidata_id is not None:
+            if (
+                self.wikidata_id is not None
+                and wiki_es.enabled()
+                and wiki_es.is_lang_available(lang)
+            ):
                 self._wiki_resp[lang] = wiki_es.get_info(self.wikidata_id, lang)
 
         return self._wiki_resp.get(lang)

@@ -52,7 +52,7 @@ def test_basket_ball():
                 "senior féminine a accédé jusqu'au championnat professionnel de Ligue 2 (2e "
                 "division nationale), performance remarquée pour un village de 3000 habitants. Le "
                 "club est basé dans la ville de Pleyber-Christ. Il accueille aussi de jeunes "
-                "joueuses de..."
+                "joueuses de…"
             ),
         }
 

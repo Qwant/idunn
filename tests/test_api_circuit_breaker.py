@@ -4,7 +4,8 @@ import responses
 from app import app
 from time import sleep
 from fastapi.testclient import TestClient
-from idunn.blocks.wikipedia import WikipediaSession
+from idunn.datasources.wikipedia import WikipediaSession
+from .test_rate_limiter import disable_redis
 
 
 @pytest.fixture()
@@ -22,7 +23,7 @@ def breaker_test():
     return wiki_breaker
 
 
-def test_circuit_breaker_500(breaker_test):
+def test_circuit_breaker_500(breaker_test, disable_redis):
     """
     Test when the external service returns a
     HTTPError 500.
@@ -55,7 +56,7 @@ def test_circuit_breaker_500(breaker_test):
         assert len(rsps.calls) == 4
 
 
-def test_circuit_breaker_404(breaker_test):
+def test_circuit_breaker_404(breaker_test, disable_redis):
     """
     Same test as 'test_circuit_breaker_500' except
     that the external service returns this time an
