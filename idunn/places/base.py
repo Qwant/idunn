@@ -275,6 +275,9 @@ class BasePlace(dict):
     def get_description(self, lang):
         return self.properties.get(f"description:{lang}")
 
+    def get_description_url(self, _lang):
+        return None
+
     def get_bbox(self):
         return None
 

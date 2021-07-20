@@ -512,3 +512,9 @@ class PjApiPOI(BasePlace):
             return None
 
         return self.data.description
+
+    def get_description_url(self, lang):
+        if lang != "fr":
+            return None
+
+        return self.get_source_url()

@@ -43,6 +43,6 @@ class DescriptionBlock(BaseBlock):
             else:
                 source = DescriptionSources.OSM
 
-            return cls(description=description, source=source)
+            return cls(description=description, source=source, url=place.get_description_url(lang))
 
         return None
