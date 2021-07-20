@@ -177,7 +177,6 @@ class Response(BaseModel):
     """
     Omitted fields:
       - listing_id: Id of the bloc of the professional
-      - description: The professional ’s description
       - business_website: Business website object
       - videos: Array of videos
       - legal_notices: Array of legal notices
@@ -194,6 +193,7 @@ class Response(BaseModel):
 
     merchant_id: Optional[str] = Field(None, description="Id of the professional")
     merchant_name: Optional[str] = Field(None, description="Name of the professional")
+    description: Optional[str] = Field(None, description="The professional ’s description")
     thumbnail_url: Optional[str] = Field(None, description="URL of the professional ’s thumbnail")
     website_urls: List[WebsiteUrl] = Field([], description="Array of merchant websites URLs")
     business_descriptions: List[BusinessDescription] = Field(

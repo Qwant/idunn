@@ -508,7 +508,7 @@ class PjApiPOI(BasePlace):
         return self.get_transactional_url([TransactionalLinkType.QUOTATION_REQUEST])
 
     def get_description(self, lang):
-        if lang != "fr":
+        if lang != "fr" or isinstance(self.data, pj_find.Listing):
             return None
 
-        return None  # TODO
+        return self.data.description
