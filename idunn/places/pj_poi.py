@@ -506,3 +506,9 @@ class PjApiPOI(BasePlace):
 
     def get_quotation_request_url(self):
         return self.get_transactional_url([TransactionalLinkType.QUOTATION_REQUEST])
+
+    def get_description(self, lang):
+        if lang != "fr":
+            return None
+
+        return None  # TODO

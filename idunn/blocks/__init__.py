@@ -21,6 +21,7 @@ from .environment import AirQuality, Weather
 from .recycling import RecyclingBlock
 from .transactional import TransactionalBlock
 from .social import SocialBlock
+from .description import DescriptionBlock
 
 AnyBlock = Union[
     OpeningHourBlock,
@@ -44,4 +45,5 @@ AnyBlock = Union[
     RecyclingBlock,
     TransactionalBlock,
     SocialBlock,
+    DescriptionBlock,
 ]

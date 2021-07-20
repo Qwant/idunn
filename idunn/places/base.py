@@ -272,6 +272,9 @@ class BasePlace(dict):
     def get_quotation_request_url(self):
         return None
 
+    def get_description(self, lang):
+        return self.properties.get(f"description:{lang}")
+
     def get_bbox(self):
         return None
 

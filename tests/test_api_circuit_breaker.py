@@ -75,7 +75,7 @@ def test_circuit_breaker_404(breaker_test, disable_redis):
             response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=es")
 
         assert breaker_test.current_state == "closed"
-        assert len(rsps.calls) == 4
+        assert len(rsps.calls) == 8
 
         resp = response.json()
         assert all(b["type"] != "wikipedia" for b in resp["blocks"])

@@ -17,6 +17,7 @@ from idunn.blocks import (
     WebSiteBlock,
     TransactionalBlock,
     SocialBlock,
+    DescriptionBlock,
 )
 from idunn.utils.settings import _load_yaml_file
 from idunn.datasources.mimirsbrunn import MimirPoiFilter
@@ -134,6 +135,7 @@ BLOCKS_BY_VERBOSITY = {
         RecyclingBlock,
         TransactionalBlock,
         SocialBlock,
+        DescriptionBlock,
     ],
     Verbosity.LIST: [
         OpeningDayEvent,

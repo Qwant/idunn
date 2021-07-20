@@ -380,6 +380,12 @@ def test_full_query_poi():
                 },
             ],
         },
+        {
+            "description": "Collections : Art français et européen de 1848 à 1914",
+            "source": "osm",
+            "type": "description",
+            "url": None,
+        },
     ]
 
 
