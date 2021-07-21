@@ -3,11 +3,11 @@ from idunn.places import POI
 
 
 def test_contact_block():
-    web_block = ContactBlock.from_es(
+    contact_block = ContactBlock.from_es(
         POI({"properties": {"contact:email": "info@pershinghall.com"}}), lang="en"
     )
 
-    assert web_block == ContactBlock(
+    assert contact_block == ContactBlock(
         url="mailto:info@pershinghall.com",
         email="info@pershinghall.com",
     )

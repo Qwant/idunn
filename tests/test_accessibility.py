@@ -5,15 +5,15 @@ from idunn.places import POI
 
 
 def test_accessibility_block():
-    web_block = AccessibilityBlock.from_es(
+    accessibility_block = AccessibilityBlock.from_es(
         POI({"properties": {"wheelchair": "limited", "toilets:wheelchair": "no"}}), lang="en"
     )
 
-    assert web_block == AccessibilityBlock(wheelchair="partial", toilets_wheelchair="no")
+    assert accessibility_block == AccessibilityBlock(wheelchair="partial", toilets_wheelchair="no")
 
 
 def test_accessibility_unknown():
-    web_block = AccessibilityBlock.from_es(
+    accessibility_block = AccessibilityBlock.from_es(
         POI(
             {
                 "properties": {
@@ -23,7 +23,7 @@ def test_accessibility_unknown():
         ),
         lang="en",
     )
-    assert web_block is None
+    assert accessibility_block is None
 
 
 def test_undefined_wheelchairs():
