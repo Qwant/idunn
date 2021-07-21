@@ -9,15 +9,11 @@ from .models.pj_info import TransactionalLinkType, UrlType
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
 
-WHEELCHAIN_ACCESSIBLE = re.compile(
-    "|".join(
-        [
-            "accès handicapés?",
-            "accès aux personnes à mobilité réduite",
-            "accès pour personne à mobilité réduite",
-        ]
-    )
-)
+
+CLICK_AND_COLLECT = re.compile(r"retrait .*")
+DELIVERY = re.compile(r"commande en ligne|livraison.*")
+TAKEAWAY = re.compile(r".* à emporter")
+WHEELCHAIN_ACCESSIBLE = re.compile("accès (handicapés?|(aux|pour) personnes? à mobilité réduite)")
 
 DOCTORS = (
     "Chiropracteur",
@@ -518,3 +514,24 @@ class PjApiPOI(BasePlace):
             return None
 
         return self.get_source_url()
+
+    def has_click_and_collect(self):
+        return any(
+            CLICK_AND_COLLECT.match(label.lower())
+            for desc in self.data.business_descriptions
+            for label in desc.values
+        )
+
+    def has_delivery(self):
+        return any(
+            DELIVERY.match(label.lower())
+            for desc in self.data.business_descriptions
+            for label in desc.values
+        )
+
+    def has_takeaway(self):
+        return any(
+            TAKEAWAY.match(label.lower())
+            for desc in self.data.business_descriptions
+            for label in desc.values
+        )

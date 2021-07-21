@@ -18,6 +18,7 @@ from idunn.blocks import (
     TransactionalBlock,
     SocialBlock,
     DescriptionBlock,
+    DeliveryBlock,
 )
 from idunn.utils.settings import _load_yaml_file
 from idunn.datasources.mimirsbrunn import MimirPoiFilter
@@ -136,6 +137,7 @@ BLOCKS_BY_VERBOSITY = {
         TransactionalBlock,
         SocialBlock,
         DescriptionBlock,
+        DeliveryBlock,
     ],
     Verbosity.LIST: [
         OpeningDayEvent,
@@ -149,6 +151,7 @@ BLOCKS_BY_VERBOSITY = {
         RecyclingBlock,
         TransactionalBlock,
         SocialBlock,
+        DeliveryBlock,
     ],
     Verbosity.SHORT: [OpeningHourBlock, Covid19Block],
 }

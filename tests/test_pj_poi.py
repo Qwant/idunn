@@ -140,10 +140,13 @@ def test_pj_api_place(enable_pj_source):
 
     assert blocks[8]["type"] == "description"
     assert blocks[8]["source"] == "pagesjaunes"
-    assert (
-        blocks[8]["description"]
-        == "Le musée Picasso est le musée national français consacré à la vie et à l'œuvre de Pablo Picasso ainsi qu'aux artistes qui lui furent liés. "
+    assert blocks[8]["description"] == (
+        "Le musée Picasso est le musée national français consacré à la vie et à l'œuvre de Pablo "
+        "Picasso ainsi qu'aux artistes qui lui furent liés. "
     )
+
+    assert blocks[9]["type"] == "delivery"
+    assert blocks[9]["available"] == ["click_and_collect", "delivery"]
 
 
 @pytest.mark.parametrize(
