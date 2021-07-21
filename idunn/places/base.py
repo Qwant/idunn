@@ -282,10 +282,10 @@ class BasePlace(dict):
         return False
 
     def has_delivery(self):
-        return False
+        return self.properties.get("delivery") == "yes"
 
     def has_takeaway(self):
-        return False
+        return self.properties.get("takeaway") == "yes"
 
     def get_bbox(self):
         return None
