@@ -285,7 +285,7 @@ class BasePlace(dict):
         return self.properties.get("delivery") == "yes"
 
     def has_takeaway(self):
-        return self.properties.get("takeaway") == "yes"
+        return self.properties.get("takeaway") in ("yes", "only")
 
     def get_bbox(self):
         return None

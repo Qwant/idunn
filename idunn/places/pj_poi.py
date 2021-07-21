@@ -13,7 +13,7 @@ from ..api.urlsolver import resolve_url
 CLICK_AND_COLLECT = re.compile(r"retrait .*")
 DELIVERY = re.compile(r"commande en ligne|livraison.*")
 TAKEAWAY = re.compile(r".* à emporter")
-WHEELCHAIN_ACCESSIBLE = re.compile("accès (handicapés?|(aux|pour) personnes? à mobilité réduite)")
+WHEELCHAIR_ACCESSIBLE = re.compile("accès (handicapés?|(aux|pour) personnes? à mobilité réduite)")
 
 DOCTORS = (
     "Chiropracteur",
@@ -358,7 +358,7 @@ class PjApiPOI(BasePlace):
     def get_raw_wheelchair(self):
         return (
             any(
-                WHEELCHAIN_ACCESSIBLE.match(label)
+                WHEELCHAIR_ACCESSIBLE.match(label)
                 for desc in self.data.business_descriptions
                 for label in desc.values
             )

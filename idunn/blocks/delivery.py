@@ -1,32 +1,33 @@
 from enum import Enum
-from typing import List, Literal
+from typing import Literal
 
 from .base import BaseBlock
 
 
-class DeliveryType(Enum):
-    CLICK_AND_COLLECT = "click_and_collect"
-    DELIVERY = "delivery"
-    TAKEAWAY = "takeaway"
+class DeliveryState(Enum):
+    YES = "yes"
+    UNKNOWN = "unknown"
+
+    @classmethod
+    def from_bool(cls, is_yes: bool):
+        return cls.YES if is_yes else cls.UNKNOWN
 
 
 class DeliveryBlock(BaseBlock):
     type: Literal["delivery"] = "delivery"
-    available: List[DeliveryType]
+    click_and_collect: DeliveryState
+    delivery: DeliveryState
+    takeaway: DeliveryState
 
     @classmethod
     def from_es(cls, place, lang):
-        available = [
-            delivery_type
-            for delivery_type, is_available in [
-                (DeliveryType.CLICK_AND_COLLECT, place.has_click_and_collect()),
-                (DeliveryType.DELIVERY, place.has_delivery()),
-                (DeliveryType.TAKEAWAY, place.has_takeaway()),
-            ]
-            if is_available
-        ]
+        states = {
+            "click_and_collect": DeliveryState.from_bool(place.has_click_and_collect()),
+            "delivery": DeliveryState.from_bool(place.has_delivery()),
+            "takeaway": DeliveryState.from_bool(place.has_takeaway()),
+        }
 
-        if not available:
+        if all(state == DeliveryState.UNKNOWN for state in states.values()):
             return None
 
-        return cls(available=available)
+        return cls(**states)

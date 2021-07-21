@@ -146,7 +146,9 @@ def test_pj_api_place(enable_pj_source):
     )
 
     assert blocks[9]["type"] == "delivery"
-    assert blocks[9]["available"] == ["click_and_collect", "delivery"]
+    assert blocks[9]["click_and_collect"] == "yes"
+    assert blocks[9]["delivery"] == "yes"
+    assert blocks[9]["takeaway"] == "unknown"
 
 
 @pytest.mark.parametrize(
