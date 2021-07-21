@@ -22,6 +22,41 @@ ZONE_TYPE_ORDER_KEY = {
     "country": 7,
 }
 
+# List of official languages for given country codes.
+COUNTRY_LANGUAGES = {
+    # European coutries (source: https://en.wikipedia.org/wiki/Member_state_of_the_European_Union)
+    "at": ["de"],
+    "be": ["nl", "fr", "de"],
+    "bg": ["bg"],
+    "hr": ["hr"],
+    "cy": ["el", "tr"],
+    "cz": ["cs"],
+    "dk": ["da"],
+    "ee": ["et"],
+    "fi": ["fi", "sv"],
+    "fr": ["fr"],
+    "de": ["de"],
+    "gr": ["el"],
+    "hu": ["hu"],
+    "ie": ["en", "ga"],
+    "it": ["it"],
+    "lv": ["lv"],
+    "lt": ["lt"],
+    "lu": ["fr", "de", "lu"],
+    "mt": ["mt", "en"],
+    "nl": ["nl"],
+    "pl": ["pl"],
+    "pt": ["pt"],
+    "ro": ["ro"],
+    "sk": ["sk"],
+    "si": ["sl"],
+    "es": ["es", "gl", "ca", "oc", "eu"],
+    "se": ["sv"],
+    # Other countries
+    "gb": ["en"],
+    "us": ["en"],
+}
+
 
 class BasePlace(dict):
     PLACE_TYPE = ""
@@ -273,7 +308,17 @@ class BasePlace(dict):
         return None
 
     def get_description(self, lang):
-        return self.properties.get(f"description:{lang}")
+        if f"description:{lang}" in self.properties:
+            return self.properties.get(f"description:{lang}")
+
+        country_code = self.get_country_code()
+
+        # Check that there is little to no ambiguity on local language and that
+        # it matches `lang`.
+        if not country_code or COUNTRY_LANGUAGES.get(country_code.lower()) != [lang.lower()]:
+            return None
+
+        return self.properties.get("description")
 
     def get_description_url(self, _lang):
         return None
