@@ -63,9 +63,12 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
     Test that Idunn stops external requests when
     we are above the max rate
 
-    We mock 5*2 calls to wikipedia while the max number
-    of calls is 3*2, so we test that after 3 calls
-    no more calls are done
+    Each call to Idunn (with cache disabled) outputs two blocks with Wikipedia
+    data, each block requires two request (to translate the title and then to
+    fetch actual content). Which makes 4 calls per POI request to Idunn.
+
+    As `WIKI_API_RL_MAX_CALLS` is set to 12, the blocks won't be displayed
+    after the 3rd request.
     """
     client = TestClient(app)
 

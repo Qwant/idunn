@@ -32,7 +32,7 @@ class DescriptionBlock(BaseBlock):
     def from_es(cls, place, lang):
         if wiki_block := WikipediaBlock.from_es(place, lang):
             return cls(
-                description=wiki_block.description,
+                description=limit_size(wiki_block.description),
                 source=DescriptionSources.WIKIPEDIA,
                 url=wiki_block.url,
             )
@@ -43,6 +43,10 @@ class DescriptionBlock(BaseBlock):
             else:
                 source = DescriptionSources.OSM
 
-            return cls(description=description, source=source, url=place.get_description_url(lang))
+            return cls(
+                description=limit_size(description),
+                source=source,
+                url=place.get_description_url(lang),
+            )
 
         return None
