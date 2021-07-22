@@ -32,7 +32,7 @@ def limiter_test_normal(redis, disable_redis):
     """
 
     with override_settings(
-        {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 6, "REDIS_URL": redis}
+        {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 12, "REDIS_URL": redis}
     ):
         # To force settings overriding we need to set to None the limiter
         WikipediaSession.Helpers._rate_limiter = None
@@ -63,9 +63,12 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
     Test that Idunn stops external requests when
     we are above the max rate
 
-    We mock 5 calls to wikipedia while the max number
-    of calls is 3*2, so we test that after 3 calls
-    no more calls are done
+    Each call to Idunn (with cache disabled) outputs two blocks with Wikipedia
+    data, each block requires two request (to translate the title and then to
+    fetch actual content). Which makes 4 calls per POI request to Idunn.
+
+    As `WIKI_API_RL_MAX_CALLS` is set to 12, the blocks won't be displayed
+    after the 3rd request.
     """
     client = TestClient(app)
 
@@ -79,14 +82,14 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
         resp = response.json()
         assert all(b["type"] != "wikipedia" for b in resp["blocks"][2].get("blocks"))
 
-    assert len(mock_wikipedia_response.calls) == 6
+    assert len(mock_wikipedia_response.calls) == 12
 
 
 def test_rate_limiter_without_redis(disable_redis):
     """
     Test that Idunn doesn't stop external requests when
     no redis has been set: 10 requests to Idunn should
-    generate 10 requests to Wikipedia API
+    generate 20 requests to Wikipedia API
     """
     client = TestClient(app)
 
@@ -97,7 +100,7 @@ def test_rate_limiter_without_redis(disable_redis):
         for _ in range(10):
             client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
 
-        assert len(rsps.calls) == 10
+        assert len(rsps.calls) == 20
 
 
 def restart_wiki_redis(docker_services):

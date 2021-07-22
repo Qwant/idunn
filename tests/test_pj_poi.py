@@ -138,6 +138,13 @@ def test_pj_api_place(enable_pj_source):
         "http://localhost:5000/v1/redirect?url=https%3A%2F%2F%5BTWITTER%5D&hash=c34074b"
     )
 
+    assert blocks[8]["type"] == "description"
+    assert blocks[8]["source"] == "pagesjaunes"
+    assert (
+        blocks[8]["description"]
+        == "Le musée Picasso est le musée national français consacré à la vie et à l'œuvre de Pablo Picasso ainsi qu'aux artistes qui lui furent liés. "
+    )
+
 
 @pytest.mark.parametrize(
     "enable_pj_source",

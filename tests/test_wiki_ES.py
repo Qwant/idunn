@@ -121,7 +121,7 @@ def test_undefined_WIKI_ES(wiki_es_undefined):
         for _ in range(10):
             client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
-        assert len(rsps.calls) == 10
+        assert len(rsps.calls) == 20
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
@@ -177,4 +177,4 @@ def test_no_lang_WIKI_ES():
 
         # We make a request in russian language ("ru")
         client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=ru")
-        assert len(rsps.calls) == 1
+        assert len(rsps.calls) == 2

@@ -50,6 +50,7 @@ PLACE_POI_INDEX: "munin_poi,munin_poi_nosearch"
 PLACE_DEFAULT_INDEX: "munin,munin_poi_nosearch"
 
 WIKI_DESC_MAX_SIZE: 325 # max size allowed to the description of the wiki block
+DESC_MAX_SIZE: 325 # max size allowed in the description block
 
 ## Places list
 LIST_PLACES_MAX_SIZE: 50
