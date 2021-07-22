@@ -26,14 +26,14 @@ def override_settings(overrides):
 
 @contextmanager
 def init_wiki_es():
-    old_es = idunn.blocks.wikipedia.wiki_es
-    idunn.blocks.wikipedia.wiki_es = WikiEs()
+    old_es = idunn.blocks.description.wiki_es
+    idunn.blocks.description.wiki_es = WikiEs()
     idunn.places.base.wiki_es = WikiEs()
 
     try:
         yield
     finally:
-        idunn.blocks.wikipedia.wiki_es = old_es
+        idunn.blocks.description.wiki_es = old_es
         idunn.places.base.wiki_es = old_es
 
 

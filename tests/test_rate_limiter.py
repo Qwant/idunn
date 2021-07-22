@@ -8,6 +8,7 @@ from idunn.datasources.wikipedia import WikipediaSession
 from idunn.utils.redis import RedisWrapper
 from .utils import override_settings
 from .test_api_with_wiki import mock_wikipedia_response
+from .test_cache import has_wiki_desc
 
 from redis import RedisError
 from redis_rate_limit import RateLimiter
@@ -32,7 +33,7 @@ def limiter_test_normal(redis, disable_redis):
     """
 
     with override_settings(
-        {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 12, "REDIS_URL": redis}
+        {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 6, "REDIS_URL": redis}
     ):
         # To force settings overriding we need to set to None the limiter
         WikipediaSession.Helpers._rate_limiter = None
@@ -63,11 +64,11 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
     Test that Idunn stops external requests when
     we are above the max rate
 
-    Each call to Idunn (with cache disabled) outputs two blocks with Wikipedia
-    data, each block requires two request (to translate the title and then to
-    fetch actual content). Which makes 4 calls per POI request to Idunn.
+    Each call to Idunn (with cache disabled) outputs a block with Wikipedia
+    data, which requires 2 requests to build (to translate the title and then to
+    fetch actual content).
 
-    As `WIKI_API_RL_MAX_CALLS` is set to 12, the blocks won't be displayed
+    As `WIKI_API_RL_MAX_CALLS` is set to 6, the blocks won't be displayed
     after the 3rd request.
     """
     client = TestClient(app)
@@ -75,14 +76,14 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
     for _ in range(3):
         response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
         resp = response.json()
-        assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
+        assert has_wiki_desc(resp)
 
     for _ in range(2):
         response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
         resp = response.json()
-        assert all(b["type"] != "wikipedia" for b in resp["blocks"][2].get("blocks"))
+        assert not has_wiki_desc(resp)
 
-    assert len(mock_wikipedia_response.calls) == 12
+    assert len(mock_wikipedia_response.calls) == 6
 
 
 def test_rate_limiter_without_redis(disable_redis):
@@ -100,7 +101,7 @@ def test_rate_limiter_without_redis(disable_redis):
         for _ in range(10):
             client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
 
-        assert len(rsps.calls) == 20
+        assert len(rsps.calls) == 10
 
 
 def restart_wiki_redis(docker_services):
@@ -139,7 +140,7 @@ def test_rate_limiter_with_redisError(
     assert response.status_code == 200
     resp = response.json()
     # Here the redis is on so the answer should contain the wikipedia block.
-    assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
+    assert has_wiki_desc(resp)
 
     with monkeypatch.context() as m:
 
@@ -160,7 +161,7 @@ def test_rate_limiter_with_redisError(
         assert response.status_code == 200
         resp = response.json()
         # No wikipedia block should be in the answer.
-        assert any(b["type"] != "wikipedia" for b in resp["blocks"][2].get("blocks"))
+        assert not has_wiki_desc(resp)
 
     # Now that the redis "came back", we are expecting a correct answer from
     # Idunn.
@@ -169,7 +170,7 @@ def test_rate_limiter_with_redisError(
     assert response.status_code == 200
     resp = response.json()
     # Here the redis is on so the answer should contain the wikipedia block
-    assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
+    assert has_wiki_desc(resp)
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
@@ -198,11 +199,11 @@ def test_rate_limiter_with_redis_interruption(
     assert resp["local_name"] == "Musée du Louvre"
     assert resp["class_name"] == "museum"
     assert resp["subclass_name"] == "museum"
-    assert resp["blocks"][2].get("blocks")[0] == {
-        "type": "wikipedia",
-        "url": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
-        "title": "Museo del Louvre",
+    assert resp["blocks"][4] == {
+        "type": "description",
         "description": "El Museo del Louvre es el museo nacional de Francia ...",
+        "source": "wikipedia",
+        "url": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
     }
 
     # B - We interrupt the Redis service and we make a new Idunn request
@@ -217,7 +218,7 @@ def test_rate_limiter_with_redis_interruption(
     assert resp["local_name"] == "Musée du Louvre"
     assert resp["class_name"] == "museum"
     assert resp["subclass_name"] == "museum"
-    assert all(b["type"] != "wikipedia" for b in resp["blocks"][2].get("blocks"))
+    assert not has_wiki_desc(resp)
 
     # C - When Redis service restarts the wikipedia block should be returned again.
     restart_wiki_redis(docker_services)
@@ -230,9 +231,9 @@ def test_rate_limiter_with_redis_interruption(
     assert resp["local_name"] == "Musée du Louvre"
     assert resp["class_name"] == "museum"
     assert resp["subclass_name"] == "museum"
-    assert resp["blocks"][2].get("blocks")[0] == {
-        "type": "wikipedia",
-        "url": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
-        "title": "Museo del Louvre",
+    assert resp["blocks"][4] == {
+        "type": "description",
         "description": "El Museo del Louvre es el museo nacional de Francia ...",
+        "source": "wikipedia",
+        "url": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
     }
