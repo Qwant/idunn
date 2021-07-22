@@ -278,6 +278,15 @@ class BasePlace(dict):
     def get_description_url(self, _lang):
         return None
 
+    def has_click_and_collect(self):
+        return False
+
+    def has_delivery(self):
+        return self.properties.get("delivery") == "yes"
+
+    def has_takeaway(self):
+        return self.properties.get("takeaway") in ("yes", "only")
+
     def get_bbox(self):
         return None
 

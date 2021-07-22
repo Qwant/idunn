@@ -35,6 +35,16 @@
                 "boutique",
                 "accès aux personnes à mobilité réduite"
             ]
+        },
+        {
+            "label": "Prestations",
+            "values": [
+                "RETRAIT 1H",
+                "ÉCO-COLLECTE",
+                "LIVRAISON 2H CHRONO",
+                "LIVRAISON EN 1 JOUR",
+                "LIVRAISON"
+            ]
         }
     ],
     "categories": [
