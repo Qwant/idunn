@@ -383,9 +383,9 @@ class PjApiPOI(BasePlace):
         if not inscription:
             city, postcode, street_and_number = [""] * 3
         else:
-            city = inscription.address_city
-            postcode = inscription.address_zipcode
-            street_and_number = inscription.address_street
+            city = inscription.address_city or ""
+            postcode = inscription.address_zipcode or ""
+            street_and_number = inscription.address_street or ""
 
         return {
             "id": None,
@@ -405,13 +405,27 @@ class PjApiPOI(BasePlace):
         }
 
     def build_admins(self, lang=None) -> list:
+        """
+        >>> poi = PjApiPOI(pj_info.Response(**{
+        ...    "inscriptions": [
+        ...        {
+        ...         "address_city": None,
+        ...         "address_district": "03",
+        ...         "address_street": "5 r Thorigny",
+        ...         "address_zipcode": "75003",
+        ...         "latitude": 48.859702,
+        ...         "longitude": 2.362634,
+        ...     }
+        ... ]}))
+        >>> assert poi.build_admins() == [], f"Got {poi.build_admins()}"
+        """
         inscription = self.get_inscription_with_address()
 
-        if not inscription:
+        if not inscription or not inscription.address_city:
             return []
 
         city = inscription.address_city
-        postcode = inscription.address_zipcode
+        postcode = inscription.address_zipcode or ""
 
         if postcode:
             label = f"{city} ({postcode})"
