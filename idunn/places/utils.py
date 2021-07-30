@@ -57,7 +57,9 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         "addr": Address,
         "poi": POI,
     }
-    loader = places.get(es_place.get("_type"))
+
+    place_type = es_place.get("_index").split("_")[1]
+    loader = places.get(place_type)
 
     if loader is None:
         prometheus.exception("FoundPlaceWithWrongType")

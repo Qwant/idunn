@@ -6,6 +6,7 @@ MAPS_BASE_URL: https://www.qwant.com/maps/
 SECRET: "CHANGE_ME"
 
 MIMIR_ES: http://localhost:9200/
+MIMIR_ES_VERSION: "2" # 2 or 7
 
 VERIFY_HTTPS: True # Whether to verify HTTPS certificates for requests to Mimir ES and internal APIs
 

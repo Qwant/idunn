@@ -107,7 +107,12 @@ class BasePlace(dict):
         return raw_address.get("street") or {}
 
     def get_raw_admins(self):
-        return self.get("administrative_regions") or []
+        admins = self.get("administrative_regions") or []
+        # ES2 compatibility
+        for a in admins:
+            if isinstance(a.get("codes"), list):
+                a["codes"] = {c["name"]: c["value"] for c in a["codes"]}
+        return admins
 
     def get_country_codes(self):
         """
