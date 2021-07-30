@@ -5,13 +5,12 @@ name = "pypi"
 
 [scripts]
 lint = "bash -c 'pipenv run lint-src && pipenv run lint-tests'"
-lint-src = "pipenv run pylint idunn --disable='unspecified-encoding'"
+lint-src = "pipenv run pylint idunn"
 lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
                                                    import-outside-toplevel, \
                                                    line-too-long, \
                                                    protected-access, \
                                                    redefined-outer-name, \
-                                                   unspecified-encoding, \
                                                    unused-argument, \
                                                    unused-import'"""
 
@@ -28,6 +27,7 @@ pylint = "*"
 [packages]
 fastapi="==0.65.*"
 elasticsearch = ">=2.0.0,<3.0.0"
+elasticsearch7 = "*"
 requests = ">=2.20.0"
 tzwhere = "*"
 babel = "*"

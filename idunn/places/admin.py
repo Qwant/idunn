@@ -1,10 +1,15 @@
-from functools import cached_property
 from idunn.api.constants import WIKIDATA_TO_BBOX_OVERRIDE
 from .base import BasePlace
 
 
 class Admin(BasePlace):
     PLACE_TYPE = "admin"
+
+    def __init__(self, d):
+        super().__init__(d)
+        if not isinstance(self.get("codes"), dict):
+            self["codes"] = {p.get("name"): p.get("value") for p in self.get("codes", [])}
+        self.codes = self["codes"]
 
     def build_admin(self, lang=None):
         labels = self.get("labels", {})
@@ -27,12 +32,6 @@ class Admin(BasePlace):
     def get_subclass_name(self):
         return self.get("zone_type")
 
-    @cached_property
+    @property
     def wikidata_id(self):  # pylint: disable=invalid-overridden-method
-        codes = self.get("codes")
-        if codes is None:
-            return None
-        for entry in codes:
-            if entry["name"] == "wikidata":
-                return entry["value"]
-        return None
+        return self.codes.get("wikidata") or None

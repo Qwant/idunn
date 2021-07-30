@@ -17,10 +17,7 @@ MAX_DISTANCE_AROUND_POI = settings["RECYCLING_MAX_DISTANCE_AROUND_POI"]
 
 def is_poi_in_finistere(poi):
     admins = poi.get_raw_admins()
-    return any(
-        any(c.get("name") == "ISO3166-2" and c.get("value") == "FR-29" for c in a.get("codes", []))
-        for a in admins
-    )
+    return any(a["codes"].get("ISO3166-2") == "FR-29" for a in admins)
 
 
 class ContainerType(str, Enum):

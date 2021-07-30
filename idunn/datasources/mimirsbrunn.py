@@ -13,6 +13,8 @@ PLACE_POI_INDEX = settings["PLACE_POI_INDEX"]
 PLACE_ADDRESS_INDEX = settings["PLACE_ADDRESS_INDEX"]
 PLACE_STREET_INDEX = settings["PLACE_STREET_INDEX"]
 
+is_es2 = settings["MIMIR_ES_VERSION"] == "2"
+
 
 class MimirPoiFilter:
     def __init__(self, poi_class=None, poi_subclass=None, extra=None):
@@ -96,12 +98,17 @@ def fetch_es_place(id, es, type) -> dict:
     else:
         index_name = INDICES.get(type)
 
+    if is_es2:
+        extra_search_params = {"_source_exclude": "boundary"}
+    else:
+        extra_search_params = {"_source_excludes": "boundary"}
+
     try:
         es_places = es.search(
             index=index_name,
             body={"query": {"bool": {"filter": {"term": {"_id": id}}}}},
             ignore_unavailable=True,
-            _source_exclude=["boundary"],
+            **extra_search_params,
         )
     except ElasticsearchException as error:
         logger.warning("error with database: %s", error)
