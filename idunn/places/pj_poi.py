@@ -535,3 +535,21 @@ class PjApiPOI(BasePlace):
             for desc in self.data.business_descriptions
             for label in desc.values
         )
+
+    HOTEL_STARS_REGEX = re.compile(r"hôtel (?P<rating>\d) étoiles")
+
+    def get_lodging_stars(self) -> Optional[Union[bool, float]]:
+        if isinstance(self.data, pj_find.Listing):
+            return None
+
+        for acc in self.data.accommodation_infos or []:
+            if match := self.HOTEL_STARS_REGEX.match(acc.category):
+                return float(match.group("rating"))
+
+        return None
+
+    def get_restaurant_stars(self) -> Optional[Union[bool, float]]:
+        if isinstance(self.data, pj_find.Listing) or not self.data.restaurant_info:
+            return None
+
+        return "restaurant étoilé" in (self.data.restaurant_info.atmospheres or [])

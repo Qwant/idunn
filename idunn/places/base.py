@@ -2,6 +2,7 @@ import logging
 import re
 from geopy import Point
 from pytz import timezone, UTC
+from typing import Optional, Union
 
 from idunn.api.utils import Verbosity, build_blocks
 from idunn.datasources.wiki_es import wiki_es
@@ -376,3 +377,33 @@ class BasePlace(dict):
                 if bbox is not None:
                     geom["bbox"] = bbox
         return geom
+
+    STARS_REGEX = re.compile(r"(?P<rating>\d+(\.\d+)?)S?")
+
+    def _get_stars_value(self):
+        raw_stars = self.properties.get("stars")
+
+        if not raw_stars:
+            return None
+
+        if raw_stars == "0":
+            return False
+
+        match_stars = self.STARS_REGEX.match(raw_stars)
+
+        if not match_stars:
+            return None
+
+        return float(match_stars.group("rating"))
+
+    def get_lodging_stars(self) -> Optional[Union[bool, float]]:
+        if self.get_class_name() != "lodging":
+            return None
+
+        return self._get_stars_value()
+
+    def get_restaurant_stars(self) -> Optional[Union[bool, float]]:
+        if self.get_class_name() == "lodging":
+            return None
+
+        return self._get_stars_value()

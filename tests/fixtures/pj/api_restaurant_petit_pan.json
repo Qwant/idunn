@@ -1,0 +1,204 @@
+{
+    "b2b": {
+        "business_details": {
+            "head_office": true,
+            "naf_code": "5610A",
+            "number_of_employees": "3 à 5 salariés",
+            "siret": "79016464400011"
+        },
+        "company_details": {
+            "associated_names": [
+                "Le Petit Pan"
+            ],
+            "creation_date": "2012-12-21",
+            "head_office_address": {
+                "address_city": "Paris",
+                "address_district": "15",
+                "address_street": "r Rosenwald",
+                "address_street_number": "18",
+                "address_zipcode": "75015"
+            },
+            "number_of_businesses": 0,
+            "numbers_of_employees": "3 à 5 salariés",
+            "siren": "790164644"
+        }
+    },
+    "business_descriptions": [
+        {
+            "label": "Services et Prestations",
+            "values": [
+                "bistrot",
+                "animaux acceptés",
+                "wifi",
+                "terrasse",
+                "organisation de réception",
+                "repas d'affaire",
+                "restaurant repas de groupe",
+                "plat à emporter",
+                "restaurant végétarien",
+                "cabaret",
+                "restaurant buffet à volonté",
+                "bar",
+                "climatisation",
+                "cybercafé"
+            ]
+        }
+    ],
+    "categories": [
+        {
+            "category_name": "cafés, bars"
+        },
+        {
+            "category_name": "restaurants"
+        }
+    ],
+    "click_and_collect": {
+        "eligible": false
+    },
+    "context": {
+        "search": {
+            "request_id": "1361629185101200666629185101200"
+        }
+    },
+    "inscriptions": [
+        {
+            "address_city": "Paris",
+            "address_district": "15",
+            "address_street": "18 r Rosenwald",
+            "address_zipcode": "75015",
+            "contact_infos": [
+                {
+                    "contact_type": "MAIL",
+                    "contact_value": "legrandpan@gmail.com"
+                },
+                {
+                    "contact_type": "TELEPHONE",
+                    "contact_value": "01 42 50 04 04",
+                    "no_direct_marketing": false
+                },
+                {
+                    "contact_type": "TELEPHONE",
+                    "contact_value": "01 42 50 91 55",
+                    "no_direct_marketing": false
+                }
+            ],
+            "latitude": "48.8330192565918",
+            "longitude": "2.305738925933838",
+            "reviews": {
+                "overall_review_rating": 0.0,
+                "total_reviews": 0
+            },
+            "urls": {
+                "itinerary_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zvPVifpQCp6F9QOc_iSsUA0w3l4DHB5fOgq_VFGmQJBw==&v=2.0&p1=1&p2=0&p3=&p4=ITI&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8=",
+                "map_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zvPVifpQCp6F9QOc_iSsUA-5JGd8ntfas=&v=2.0&p1=1&p2=0&p3=&p4=PLAN&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8=",
+                "merchant_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zg8J9RZ9Yi3bbkkmLigX-jXlQ7hFr1uwE=&v=2.0&p1=1&p2=0&p3=&p4=DENOMINATION-EXACTE&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8=",
+                "reviews_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zg8J9RZ9Yi3bbkkmLigX-jnfVzdzImYupUwFvqBDO1dg==&v=2.0&p1=1&p2=0&p3=&p4=BA-CONSULTER-AVIS&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+            }
+        }
+    ],
+    "listing_id": "FCP55452580CLIENTDA3000002C0001",
+    "merchant_id": "55452580",
+    "merchant_name": "Le Petit Pan",
+    "payment_types": [
+        {
+            "description": "CB",
+            "label": "CB"
+        },
+        {
+            "description": "Visa",
+            "label": "Visa"
+        },
+        {
+            "description": "Titres restaurants",
+            "label": "Titres restaurants"
+        }
+    ],
+    "photos": [
+        {
+            "url": "https://www.pagesjaunes.fr/media/fcp/55452580-2361d9adb979ad54ead8ccd62cbe385a.gif"
+        },
+        {
+            "url": "https://www.pagesjaunes.fr/media/ugc/le_petit_pan_07505600_185930189"
+        }
+    ],
+    "restaurant_info": {
+        "atmospheres": [
+            "ambiance familiale",
+            "restaurant étoilé"
+        ],
+        "cooking_types": [
+            "cuisine française",
+            "restaurant français",
+            "restaurant marocain",
+            "restaurant de tapas"
+        ]
+    },
+    "schedules": {
+        "opening_days": [
+            {
+                "morning_closing_time": "14:30",
+                "morning_opening_time": "12:00",
+                "weekday": "Mardi"
+            },
+            {
+                "morning_closing_time": "14:30",
+                "morning_opening_time": "12:00",
+                "weekday": "Mercredi"
+            },
+            {
+                "morning_closing_time": "14:30",
+                "morning_opening_time": "12:00",
+                "weekday": "Jeudi"
+            },
+            {
+                "morning_closing_time": "14:30",
+                "morning_opening_time": "12:00",
+                "weekday": "Vendredi"
+            },
+            {
+                "morning_closing_time": "14:30",
+                "morning_opening_time": "12:00",
+                "weekday": "Samedi"
+            }
+        ],
+        "opening_hours": "Tu-Sa 12:00-14:30 ; PH off",
+        "opening_hours_updated": "2021-03-26 00:00:00"
+    },
+    "thumbnail_url": "https://www.pagesjaunes.fr/media/fcp/55452580-940a36233b79b960f9860294bcf86b0e.gif",
+    "transactionals_links": [
+        {
+            "type": "RESERVER_LA_FOURCHETTE",
+            "url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqj8FNN72811m2Z8jnrAIp6vPnBa12yDCvl7xY3mckoYiRUNi7OgwX6nOkzqIzmqgRCpP4K1CfpcSt6P61JvUcik=&v=2.0&p1=1&p2=0&p3=&p4=LT-RESERVER-LAFOURCHETTE&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        },
+        {
+            "type": "RESERVER_LA_FOURCHETTE_PROMO",
+            "url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqj8FNN72811m2Z8jnrAIp6vPnBa12yDCvl7xY3mckoYiRUNi7OgwX6nOkzqIzmqgRCpP4K1CfpcSt6P61JvUcik=&v=2.0&p1=1&p2=0&p3=&p4=LT-RESERVER-LAFOURCHETTE-PROMO&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        },
+        {
+            "type": "RESERVER_LA_FOURCHETTE_SIMPLE",
+            "url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqj8FNN72811m2Z8jnrAIp6vPnBa12yDCvl7xY3mckoYiRUNi7OgwX6nOkzqIzmqgRCpP4K1CfpcSt6P61JvUcik=&v=2.0&p1=1&p2=0&p3=&p4=LT-RESERVER-LAFOURCHETTE-SIMPLE&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        }
+    ],
+    "website_urls": [
+        {
+            "suggested_label": "Voir le site ng.site-solocal.com",
+            "url_type": "MINISITE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHeBLCe1Vnl_SlBQvE7a_5nns-cwvI50mykYWsoBBMTnxg==&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-MINISITE&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.legrandpan.fr",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDOe_bNRd8CdFGSm9IntLZHbpT-u8xItSeA==&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-SITE-LVS-GRATUIT&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.thefork.fr/restaurant/le-petit-pan/391971",
+            "url_type": "LA_FOURCHETTE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqnywIKik1nmAM3xwjwArO63YgHGZ0jpv-yWgw36UchWDAIxk1EeQDSr28Wwkq6ZKCw==&v=2.0&p1=1&p2=0&p3=&p4=null&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.facebook.com/pages/Retaurant-Le-Grand-Pan/312804598791975",
+            "url_type": "FACEBOOK",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDLmmONTyNxd3qrfggR1tzGlY2hdLg44Z6kuCiB04F3lyaZoM0ElPgy7YANuGL9jwNjYfUNXRTIHX6QksZ4rghsg=&v=2.0&p1=1&p2=0&p3=&p4=FB-PAYANT&p5=FD&p6=1361629185101200666629185101200&p7=55452580&p8="
+        }
+    ]
+}

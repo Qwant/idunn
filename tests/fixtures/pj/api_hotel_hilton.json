@@ -1,0 +1,152 @@
+{
+    "accommodation_infos": [
+        {
+            "category": "hôtel 4 étoiles",
+            "rate_base": "Nuit à partir de 200,00 euros",
+            "type": "HOTEL"
+        }
+    ],
+    "b2b": {
+        "business_details": {
+            "head_office": true,
+            "naf_code": "5510Z",
+            "number_of_employees": "250 à 499 salariés",
+            "siret": "45131012200028"
+        },
+        "company_details": {
+            "associated_names": [
+                "Hilton Paris Opera"
+            ],
+            "creation_date": "2003-12-18",
+            "head_office_address": {
+                "address_city": "Paris",
+                "address_district": "08",
+                "address_street": "r St Lazare",
+                "address_street_number": "108",
+                "address_zipcode": "75008"
+            },
+            "number_of_businesses": 0,
+            "numbers_of_employees": "250 à 499 salariés",
+            "siren": "451310122"
+        }
+    },
+    "categories": [
+        {
+            "category_name": "hôtels"
+        },
+        {
+            "category_name": "restaurants"
+        }
+    ],
+    "click_and_collect": {
+        "eligible": false
+    },
+    "context": {
+        "search": {
+            "request_id": "1361629185402382828229185402382"
+        }
+    },
+    "description": "",
+    "inscriptions": [
+        {
+            "address_city": "Paris",
+            "address_district": "08",
+            "address_street": "108 r St Lazare",
+            "address_zipcode": "75008",
+            "contact_infos": [
+                {
+                    "contact_type": "MAIL",
+                    "contact_value": "parisopera.info@hilton.com"
+                },
+                {
+                    "contact_type": "TELEPHONE",
+                    "contact_value": "01 40 08 44 44",
+                    "no_direct_marketing": false
+                },
+                {
+                    "contact_type": "FAX",
+                    "contact_value": "01 42 93 01 20",
+                    "no_direct_marketing": false
+                }
+            ],
+            "latitude": "48.87542724609375",
+            "longitude": "2.3255369663238525",
+            "reviews": {
+                "overall_review_rating": 0.0,
+                "total_reviews": 2
+            },
+            "urls": {
+                "itinerary_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zvPVifpQCp6OcK4aHm9fdldz-9JHPOhZc_XSB980ZFCw==&v=2.0&p1=1&p2=0&p3=&p4=ITI&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8=",
+                "map_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zvPVifpQCp6OcK4aHm9fdlaymHQhWhcKk=&v=2.0&p1=1&p2=0&p3=&p4=PLAN&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8=",
+                "merchant_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zg8J9RZ9Yi3awFi5VQGrd8jMj9yk1xiOg=&v=2.0&p1=1&p2=0&p3=&p4=DENOMINATION-EXACTE&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8=",
+                "reviews_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqpdO_KwgCzOb44an2YH-T8zg8J9RZ9Yi3awFi5VQGrd899H94u-CnTqnDfDOA083IA==&v=2.0&p1=1&p2=0&p3=&p4=BA-CONSULTER-AVIS&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+            }
+        }
+    ],
+    "listing_id": "FCP00283042PROSPECT000001C0001",
+    "merchant_id": "00283042",
+    "merchant_name": "Hilton Paris Opera",
+    "payment_types": [
+        {
+            "description": "CB",
+            "label": "CB"
+        },
+        {
+            "description": "Visa",
+            "label": "Visa"
+        },
+        {
+            "description": "Mastercard",
+            "label": "Mastercard"
+        },
+        {
+            "description": "American Express",
+            "label": "American Express"
+        }
+    ],
+    "photos": [
+        {
+            "url": "https://www.pagesjaunes.fr/media/agc/72/c8/11/00/00/2b/38/90/ae/ce/5d3972c81100002b3890aece/5d3972c81100002b3890aecf.jpg"
+        },
+        {
+            "url": "https://www.pagesjaunes.fr/media/ugc/hilton_paris_opera_07505600_085722410"
+        }
+    ],
+    "website_urls": [
+        {
+            "suggested_label": "Voir le site www3.hilton.com/en/hotels/france/hilton-paris-opera-PAROPHI/index.html",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDLlT8yxFxL9a_mEol_vIMOVFsfUkChzmywK88_5d0FLXEyVbrtNHTa6lLkUrcBL3kQx_scV3nmM89v7BYUvn1ZS-_iPMROYXGQ==&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-SITE-LVS-GRATUIT&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.hiltonparisoperahotel.com/legrandsalon-fr.html",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDIVFURfXdhWtwlxGF0eJxn-cudlxJ2-GqRsym7i5c1IkqNKvCPikNauutCui1Ws9R4god5G03T2L&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-SITE-LVS-GRATUIT&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        },
+        {
+            "suggested_label": "Voir le site www3.hilton.com/en/hotels/france/hilton-paris-opera-PAROPHI/index.html?WT.mc_id=zELWAKN0EMEA1HI2DMH3LocalSearch4DGGenericx6PAROPHI",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDLlT8yxFxL9a_mEol_vIMOVFsfUkChzmywK88_5d0FLXEyVbrtNHTa6lLkUrcBL3kQx_scV3nmM89v7BYUvn1ZQz_UVeXKEs3TyP3DG3pMgfVwxC2WjM-uT7Iy3PoWzp198KnFdYNcs7IU91rXzh_JDWG23g_75zJSxM1TUsT4njrrpy6fad4pc=&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-SITE-LVS-GRATUIT&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.parisopera.hilton.com",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDPG15QTxqxwBD3xMIEfhLpmSjpEkYcuERgb842IwFiF2&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-SITE-LVS-GRATUIT&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.hiltonhotels.com/fr_FR/france/hiltonparisopera",
+            "url_type": "SITE_EXTERNE",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHdn5ghvmIHcDIVFURfXdhWtO904pqOP5dNbsEggq3Y-gIei0EMX4TAfxQloN0Wq6dX82xviUjDvH-hEkmWBVChg&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-SITE-LVS-GRATUIT&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        },
+        {
+            "suggested_label": "Voir le site www.facebook.com/hiltonparisopera",
+            "url_type": "FACEBOOK",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqnevlvYbpw3oSSgsoVZLbn-Gpi0GnxRpWe9PCmah-DPZEBN3zhkMUEQ=&v=2.0&p1=1&p2=0&p3=&p4=FB-PAYANT&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        },
+        {
+            "suggested_label": "Twitter",
+            "url_type": "TWITTER",
+            "website_url": "https://stat.pagesjaunes.fr/redirect?target=2t31b8blPHewlsDs9KMqqhhBJBHBb5Kygm5af6M6HoitE1OU0HMtrIKtaPVC_S_C&v=2.0&p1=1&p2=0&p3=&p4=RESEAUSOC-TWITTER&p5=FD&p6=1361629185402382828229185402382&p7=00283042&p8="
+        }
+    ]
+}

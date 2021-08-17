@@ -173,6 +173,26 @@ class Inscription(BaseModel):
     urls: Optional[Urls] = Field(None, description="Wraps the set of urls for this business")
 
 
+class RestaurantInfo(BaseModel):
+    """
+    Omitted fields:
+      - type: cooking type
+      - cooking_convictions: Cooking convictions
+    """
+
+    atmospheres: List[str] = Field([], description="Atmospheres")
+
+
+class AccommodationInfo(BaseModel):
+    """
+    Omitted fields:
+      - type: Type of accommodation information
+      - rate_base: Rate base of the accommodation information
+    """
+
+    category: Optional[str] = Field(None, description="Categorie of the accommodation information")
+
+
 class Response(BaseModel):
     """
     Omitted fields:
@@ -180,8 +200,6 @@ class Response(BaseModel):
       - business_website: Business website object
       - videos: Array of videos
       - legal_notices: Array of legal notices
-      - restaurant_info: Restaurant information
-      - accommodation_infos: Array of accommodation information
       - payment_types: Array of payment types
       - current_status: Current status
       - nearby_stations: Array of nearby stations
@@ -201,6 +219,10 @@ class Response(BaseModel):
     )
     photos: List[Photo] = Field([], description="Array of photos")
     categories: List[Category] = Field([], description="Array of categories")
+    restaurant_info: Optional[RestaurantInfo] = Field(None, description="Restaurant information")
+    accommodation_infos: List[AccommodationInfo] = Field(
+        [], description="Array of accommodation information"
+    )
     schedules: Optional[Schedules] = Field(
         None,
         description=(
