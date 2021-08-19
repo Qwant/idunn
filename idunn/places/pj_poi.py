@@ -35,8 +35,8 @@ DOCTORS = (
 @lru_cache(maxsize=200)
 def get_class_subclass(raw_categories):
     categories = [
-        {"raw": "restaurants", "class": "restaurant"},
         {"raw": "hôtels", "class": "lodging"},
+        {"raw": "restaurants", "class": "restaurant"},
         {"raw": "salles de cinéma", "class": "cinema"},
         {"raw": "salles de concerts, de spectacles", "class": "theatre"},
         {"raw": "Pharmacie", "class": "pharmacy"},
