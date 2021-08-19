@@ -20,6 +20,13 @@ class StarsKind(Enum):
     LODGING = "lodging"
     RESTAURANT = "restaurant"
 
+    def check_class(self, class_name: Optional[str]) -> bool:
+        return (self, class_name) in [
+            (self.LODGING, "lodging"),
+            (self.RESTAURANT, "restaurant"),
+            (self.RESTAURANT, "fast_food"),
+        ]
+
 
 class StarsDetails(BaseModel):
     has_stars: StarsAvailable
@@ -47,7 +54,7 @@ class StarsBlock(BaseBlock):
                 (StarsKind.LODGING, place.get_lodging_stars()),
                 (StarsKind.RESTAURANT, place.get_restaurant_stars()),
             ]
-            if stars is not None
+            if stars is not None and kind.check_class(place.get_class_name())
         ]
 
         if not ratings:

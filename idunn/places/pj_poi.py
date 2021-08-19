@@ -536,7 +536,7 @@ class PjApiPOI(BasePlace):
             for label in desc.values
         )
 
-    HOTEL_STARS_REGEX = re.compile(r"hôtel (?P<rating>\d) étoiles")
+    HOTEL_STARS_REGEX = re.compile(r"hôtel (?P<rating>\d) étoiles?")
 
     def get_lodging_stars(self) -> Optional[Union[bool, float]]:
         if isinstance(self.data, pj_find.Listing):
