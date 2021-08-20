@@ -170,3 +170,35 @@ def test_pj_place_with_missing_data(enable_pj_source):
     assert resp["type"] == "poi"
     assert resp["meta"]["source"] == "pages_jaunes"
     assert resp["geometry"]["center"] == [2.362634, 48.859702]
+
+
+@pytest.mark.parametrize("enable_pj_source", [("api", "api_restaurant_petit_pan")], indirect=True)
+def test_pj_api_restaurant(enable_pj_source):
+    client = TestClient(app)
+    response = client.get(url="http://localhost/v1/places/pj:55452580?lang=fr")
+    assert response.status_code == 200
+    resp = response.json()
+    blocks = resp["blocks"]
+
+    assert blocks[7] == {
+        "type": "stars",
+        "ratings": [
+            {"has_stars": "yes", "nb_stars": None, "kind": "restaurant"},
+        ],
+    }
+
+
+@pytest.mark.parametrize("enable_pj_source", [("api", "api_hotel_hilton")], indirect=True)
+def test_pj_api_hotel(enable_pj_source):
+    client = TestClient(app)
+    response = client.get(url="http://localhost/v1/places/pj:55452580?lang=fr")
+    assert response.status_code == 200
+    resp = response.json()
+    blocks = resp["blocks"]
+
+    assert blocks[4] == {
+        "type": "stars",
+        "ratings": [
+            {"has_stars": "yes", "nb_stars": 4.0, "kind": "lodging"},
+        ],
+    }

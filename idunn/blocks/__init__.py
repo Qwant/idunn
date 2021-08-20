@@ -23,6 +23,7 @@ from .transactional import TransactionalBlock
 from .social import SocialBlock
 from .description import DescriptionBlock
 from .delivery import DeliveryBlock
+from .stars import StarsBlock
 
 AnyBlock = Union[
     OpeningHourBlock,
@@ -48,4 +49,5 @@ AnyBlock = Union[
     SocialBlock,
     DescriptionBlock,
     DeliveryBlock,
+    StarsBlock,
 ]
