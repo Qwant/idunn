@@ -78,7 +78,13 @@ def test_pj_place(enable_pj_source):
     assert resp["class_name"] == "museum"
     assert resp["subclass_name"] == "museum"
     assert resp["type"] == "poi"
-    assert resp["meta"]["source"] == "pages_jaunes"
+    assert resp["meta"] == {
+        "source": "pages_jaunes",
+        "source_url": "https://www.pagesjaunes.fr/pros/05360257",
+        "contribute_url": "https://www.pagesjaunes.fr/pros/05360257#CFMonEntreprise",
+        "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=pj%3A05360257",
+        "maps_place_url": "https://www.qwant.com/maps/place/pj:05360257",
+    }
     assert resp["geometry"]["center"] == [2.362634, 48.859702]
 
     assert resp["address"]["admins"]

@@ -232,6 +232,14 @@ class PjPOI(BasePlace):
             return None
         return f"https://www.pagesjaunes.fr/pros/{business_id}"
 
+    def get_contribute_url(self):
+        source_url = self.get_source_url()
+
+        if not source_url:
+            return None
+
+        return f"{source_url}#CFMonEntreprise"
+
     def get_raw_grades(self):
         return self.get("grades")
 
@@ -438,6 +446,14 @@ class PjApiPOI(BasePlace):
 
     def get_source_url(self):
         return f"https://www.pagesjaunes.fr/pros/{self.data.merchant_id}"
+
+    def get_contribute_url(self):
+        source_url = self.get_source_url()
+
+        if not source_url:
+            return None
+
+        return f"{source_url}#CFMonEntreprise"
 
     def get_raw_grades(self):
         grade_count = sum(
