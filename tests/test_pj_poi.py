@@ -81,7 +81,7 @@ def test_pj_place(enable_pj_source):
     assert resp["meta"] == {
         "source": "pages_jaunes",
         "source_url": "https://www.pagesjaunes.fr/pros/05360257",
-        "contribute_url": "https://www.pagesjaunes.fr/pros/05360257#CFMonEntreprise",
+        "contribute_url": "https://www.pagesjaunes.fr/pros/05360257#zone-informations-pratiques",
         "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=pj%3A05360257",
         "maps_place_url": "https://www.qwant.com/maps/place/pj:05360257",
     }

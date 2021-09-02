@@ -238,7 +238,7 @@ class PjPOI(BasePlace):
         if not source_url:
             return None
 
-        return f"{source_url}#CFMonEntreprise"
+        return f"{source_url}#zone-informations-pratiques"
 
     def get_raw_grades(self):
         return self.get("grades")
@@ -453,7 +453,7 @@ class PjApiPOI(BasePlace):
         if not source_url:
             return None
 
-        return f"{source_url}#CFMonEntreprise"
+        return f"{source_url}#zone-informations-pratiques"
 
     def get_raw_grades(self):
         grade_count = sum(
