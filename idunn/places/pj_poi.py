@@ -555,12 +555,29 @@ class PjApiPOI(BasePlace):
     HOTEL_STARS_REGEX = re.compile(r"hôtel (?P<rating>\d) étoiles?")
 
     def get_lodging_stars(self) -> Optional[Union[bool, float]]:
+        """
+        >>> poi = PjApiPOI(pj_info.Response(**{
+        ...     "accommodation_infos": [
+        ...         {"category": None}
+        ...     ]
+        ... }))
+        >>> assert poi.get_lodging_stars() is None
+
+        >>> poi = PjApiPOI(pj_info.Response(**{
+        ...     "accommodation_infos": [
+        ...         {"category": "hôtel 3 étoiles"}
+        ...     ]
+        ... }))
+        >>> poi.get_lodging_stars()
+        3.0
+        """
         if isinstance(self.data, pj_find.Listing):
             return None
 
         for acc in self.data.accommodation_infos or []:
-            if match := self.HOTEL_STARS_REGEX.match(acc.category):
-                return float(match.group("rating"))
+            if acc.category:
+                if match := self.HOTEL_STARS_REGEX.match(acc.category):
+                    return float(match.group("rating"))
 
         return None
 
