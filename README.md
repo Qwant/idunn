@@ -73,8 +73,25 @@ The configuration can be given from different ways:
     (the default settings is still loaded and overriden)
  3. specific variable can be overriden with env var. They need to be given like "IDUNN_{var_name}={value}"
     eg IDUNN_MIMIR_ES=...
+    You can create a `.env` file with commonly used env variables, it will be loaded by pipenv by default.
 
 Please note that you will need an API key from [openweathermap](https://openweathermap.org/) in order to use the `Weather` block. You can then set it into the `IDUNN_WEATHER_API_KEY` environment variable or directly into the `WEATHER_API_KEY` inside the `utils/default_settings.yaml` file.
+
+### Run tests
+
+To run tests, first make sure you have dev dependencies installed:
+
+```shell
+pipenv install --dev
+```
+
+Then, you can run the full testsuite using pytest:
+
+```shell
+pipenv run pytest -vv -x
+```
+
+If you are using a `.env` file, you need to make sure that pipenv won't load it, which can be done by setting the environment variable `PIPENV_DONT_LOAD_ENV=1`.
 
 ## How to contribute ?
 
