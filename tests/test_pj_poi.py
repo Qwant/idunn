@@ -63,7 +63,7 @@ def enable_pj_source(request):
 
 @pytest.mark.parametrize(
     "enable_pj_source",
-    [("legacy", "musee_picasso"), ("api", "api_musee_picasso")],
+    [("api", "api_musee_picasso")],
     indirect=True,
 )
 def test_pj_place(enable_pj_source):
@@ -74,7 +74,7 @@ def test_pj_place(enable_pj_source):
     resp = response.json()
     assert resp["id"] == "pj:05360257"
     assert resp["name"] == "Musée Picasso"
-    assert resp["address"]["label"] == "5 r Thorigny, 75003 Paris"
+    assert resp["address"]["label"] == "5 rue Thorigny, 75003 Paris"
     assert resp["class_name"] == "museum"
     assert resp["subclass_name"] == "museum"
     assert resp["type"] == "poi"

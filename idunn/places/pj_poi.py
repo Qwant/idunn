@@ -31,6 +31,30 @@ DOCTORS = (
     "Ergothérapeute",
 )
 
+SHORTCUT_ADDRESS = {"all": "allée",
+                    "av": "avenue",
+                    "ave": "avenue",
+                    "bld": "boulevard",
+                    "bd": "boulevard",
+                    "chauss": "chaussée",
+                    "chem": "chemin",
+                    "imp": "impasse",
+                    "pl": "place",
+                    "r": "rue",
+                    "rle": "ruelle",
+                    "rte": "route",
+                    "imm": "immeuble",
+                    "bât": "bâtiment",
+                    "fbg": "faubourg",
+                    "zac": "Z.A.C.",
+                    "cial": "commercial",
+                    "prom": "promenade",
+                    "St": "Saint",
+                    "Ste": "Sainte",
+                    "Gén": "Général",
+                    "Mar": "Maréchal",
+                    "Doct": "Docteur"}
+
 
 @lru_cache(maxsize=200)
 def get_class_subclass(raw_categories):
@@ -600,3 +624,21 @@ class PjApiPOI(BasePlace):
             return None
 
         return "restaurant étoilé" in (self.data.restaurant_info.atmospheres or [])
+
+
+def _normalized_address(address_street: str) -> str:
+    """
+    PagesJaunes provides uncompleted street address (e.g 'r' for 'rue'). The goal is to complete address names and
+    to normalize capitalization
+    >>> assert _normalized_address("5 r Thorigny") == "5 rue Thorigny"
+    >>> assert _normalized_address("171 bd Montparnasse") == "171 boulevard Montparnasse"
+    >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 boulevard Montparnasse"
+    >>> assert _normalized_address("5 pl Charles Béraudier") == "5 place Charles Béraudier"
+    """
+    if address_street is None:
+        return ""
+    address_street = address_street.title()
+    for street_shortcut_key in SHORTCUT_ADDRESS:
+        address_street = re.sub(r'\b({0})\b'.format(street_shortcut_key), SHORTCUT_ADDRESS[street_shortcut_key],
+                                address_street, flags=re.IGNORECASE)
+    return address_street
