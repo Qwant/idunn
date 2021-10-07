@@ -629,8 +629,8 @@ class PjApiPOI(BasePlace):
 
 def _normalized_address(address_street: str) -> str:
     """
-    PagesJaunes provides uncompleted street address (e.g 'r' for 'rue'). The goal is to complete address names and
-    to normalize capitalization
+    PagesJaunes provides uncompleted street address (e.g 'r' for 'rue').
+    The goal is to complete address names and to normalize capitalization
     >>> assert _normalized_address("5 r Thorigny") == "5 rue Thorigny"
     >>> assert _normalized_address("171 bd Montparnasse") == "171 boulevard Montparnasse"
     >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 boulevard Montparnasse"
