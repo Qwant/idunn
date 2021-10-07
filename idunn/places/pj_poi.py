@@ -9,7 +9,6 @@ from .models.pj_info import TransactionalLinkType, UrlType
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
 
-
 CLICK_AND_COLLECT = re.compile(r"retrait .*")
 DELIVERY = re.compile(r"commande en ligne|livraison.*")
 TAKEAWAY = re.compile(r".* à emporter")
@@ -31,29 +30,31 @@ DOCTORS = (
     "Ergothérapeute",
 )
 
-SHORTCUT_ADDRESS = {"all": "allée",
-                    "av": "avenue",
-                    "ave": "avenue",
-                    "bld": "boulevard",
-                    "bd": "boulevard",
-                    "chauss": "chaussée",
-                    "chem": "chemin",
-                    "imp": "impasse",
-                    "pl": "place",
-                    "r": "rue",
-                    "rle": "ruelle",
-                    "rte": "route",
-                    "imm": "immeuble",
-                    "bât": "bâtiment",
-                    "fbg": "faubourg",
-                    "zac": "Z.A.C.",
-                    "cial": "commercial",
-                    "prom": "promenade",
-                    "St": "Saint",
-                    "Ste": "Sainte",
-                    "Gén": "Général",
-                    "Mar": "Maréchal",
-                    "Doct": "Docteur"}
+SHORTCUT_ADDRESS = {
+    "all": "allée",
+    "av": "avenue",
+    "ave": "avenue",
+    "bld": "boulevard",
+    "bd": "boulevard",
+    "chauss": "chaussée",
+    "chem": "chemin",
+    "imp": "impasse",
+    "pl": "place",
+    "r": "rue",
+    "rle": "ruelle",
+    "rte": "route",
+    "imm": "immeuble",
+    "bât": "bâtiment",
+    "fbg": "faubourg",
+    "zac": "Z.A.C.",
+    "cial": "commercial",
+    "prom": "promenade",
+    "St": "Saint",
+    "Ste": "Sainte",
+    "Gén": "Général",
+    "Mar": "Maréchal",
+    "Doct": "Docteur",
+}
 
 
 @lru_cache(maxsize=200)
@@ -409,7 +410,7 @@ class PjApiPOI(BasePlace):
         else:
             city = inscription.address_city or ""
             postcode = inscription.address_zipcode or ""
-            street_and_number = inscription.address_street or ""
+            street_and_number = _normalized_address(inscription.address_street)
 
         return {
             "id": None,
@@ -634,11 +635,21 @@ def _normalized_address(address_street: str) -> str:
     >>> assert _normalized_address("171 bd Montparnasse") == "171 boulevard Montparnasse"
     >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 boulevard Montparnasse"
     >>> assert _normalized_address("5 pl Charles Béraudier") == "5 place Charles Béraudier"
+    >>> assert _normalized_address("5 av G De Gaule") == "5 avenue G De Gaule"
+    >>> assert _normalized_address("5 r avé") == "5 rue Avé"
+    >>> assert _normalized_address("Avenue A. R. Guibert") == "Avenue A. R. Guibert"
+    >>> assert _normalized_address("10 rue D.R.F") == "10 rue D.R.F"
+    >>> assert _normalized_address("10 rue R.A.F") == "10 rue R.A.F"
     """
     if address_street is None:
         return ""
     address_street = address_street.title()
     for street_shortcut_key in SHORTCUT_ADDRESS:
-        address_street = re.sub(r'\b({0})\b'.format(street_shortcut_key), SHORTCUT_ADDRESS[street_shortcut_key],
-                                address_street, flags=re.IGNORECASE)
+        address_street = re.sub(
+            r"\s\b({0})\b\s".format(street_shortcut_key),
+            r" {0} ".format(SHORTCUT_ADDRESS[street_shortcut_key]),
+            address_street,
+            flags=re.IGNORECASE,
+            count=1,
+        )
     return address_street
