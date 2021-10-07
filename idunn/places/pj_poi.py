@@ -31,24 +31,24 @@ DOCTORS = (
 )
 
 SHORTCUT_ADDRESS = {
-    "all": "allée",
-    "av": "avenue",
-    "ave": "avenue",
-    "bld": "boulevard",
-    "bd": "boulevard",
-    "chauss": "chaussée",
-    "chem": "chemin",
-    "imp": "impasse",
-    "pl": "place",
-    "r": "rue",
-    "rle": "ruelle",
-    "rte": "route",
-    "imm": "immeuble",
-    "bât": "bâtiment",
-    "fbg": "faubourg",
+    "all": "Allée",
+    "av": "Avenue",
+    "ave": "Avenue",
+    "bld": "Boulevard",
+    "bd": "Boulevard",
+    "chauss": "Chaussée",
+    "chem": "Chemin",
+    "imp": "Impasse",
+    "pl": "Place",
+    "r": "Rue",
+    "rle": "Ruelle",
+    "rte": "Route",
+    "imm": "Immeuble",
+    "bât": "Bâtiment",
+    "fbg": "Faubourg",
     "zac": "Z.A.C.",
-    "cial": "commercial",
-    "prom": "promenade",
+    "cial": "Commercial",
+    "prom": "Promenade",
     "St": "Saint",
     "Ste": "Sainte",
     "Gén": "Général",
@@ -631,15 +631,15 @@ def _normalized_address(address_street: str) -> str:
     """
     PagesJaunes provides uncompleted street address (e.g 'r' for 'rue').
     The goal is to complete address names and to normalize capitalization
-    >>> assert _normalized_address("5 r Thorigny") == "5 rue Thorigny"
-    >>> assert _normalized_address("171 bd Montparnasse") == "171 boulevard Montparnasse"
-    >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 boulevard Montparnasse"
-    >>> assert _normalized_address("5 pl Charles Béraudier") == "5 place Charles Béraudier"
-    >>> assert _normalized_address("5 av G De Gaule") == "5 avenue G De Gaule"
-    >>> assert _normalized_address("5 r avé") == "5 rue Avé"
+    >>> assert _normalized_address("5 r Thorigny") == "5 Rue Thorigny"
+    >>> assert _normalized_address("171 bd Montparnasse") == "171 Boulevard Montparnasse"
+    >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 Boulevard Montparnasse"
+    >>> assert _normalized_address("5 pl Charles Béraudier") == "5 Place Charles Béraudier"
+    >>> assert _normalized_address("5 av G De Gaule") == "5 Avenue G De Gaule"
+    >>> assert _normalized_address("5 r avé") == "5 Rue Avé"
     >>> assert _normalized_address("Avenue A. R. Guibert") == "Avenue A. R. Guibert"
-    >>> assert _normalized_address("10 rue D.R.F") == "10 rue D.R.F"
-    >>> assert _normalized_address("10 rue R.A.F") == "10 rue R.A.F"
+    >>> assert _normalized_address("10 rue D.R.F") == "10 Rue D.R.F"
+    >>> assert _normalized_address("10 rue R.A.F") == "10 Rue R.A.F"
     """
     if address_street is None:
         return ""
