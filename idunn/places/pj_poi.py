@@ -31,24 +31,24 @@ DOCTORS = (
 )
 
 SHORTCUT_ADDRESS = {
-    "all": "Allée",
-    "av": "Avenue",
-    "ave": "Avenue",
-    "bld": "Boulevard",
-    "bd": "Boulevard",
-    "chauss": "Chaussée",
-    "chem": "Chemin",
-    "imp": "Impasse",
-    "pl": "Place",
-    "r": "Rue",
-    "rle": "Ruelle",
-    "rte": "Route",
-    "imm": "Immeuble",
-    "bât": "Bâtiment",
-    "fbg": "Faubourg",
-    "zac": "Z.A.C.",
-    "cial": "Commercial",
-    "prom": "Promenade",
+    "All": "allée",
+    "Av": "avenue",
+    "Ave": "avenue",
+    "Bld": "boulevard",
+    "Bd": "boulevard",
+    "Chauss": "chaussée",
+    "Chem": "chemin",
+    "Imp": "impasse",
+    "Pl": "place",
+    "R": "rue",
+    "Rle": "ruelle",
+    "Rte": "route",
+    "Imm": "immeuble",
+    "Bât": "bâtiment",
+    "Fbg": "faubourg",
+    "Zac": "Z.A.C.",
+    "Cial": "commercial",
+    "Prom": "promenade",
     "St": "Saint",
     "Ste": "Sainte",
     "Gén": "Général",
@@ -631,25 +631,32 @@ def _normalized_address(address_street: str) -> str:
     """
     PagesJaunes provides uncompleted street address (e.g 'r' for 'rue').
     The goal is to complete address names and to normalize capitalization
-    >>> assert _normalized_address("5 r Thorigny") == "5 Rue Thorigny"
-    >>> assert _normalized_address("171 bd Montparnasse") == "171 Boulevard Montparnasse"
-    >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 Boulevard Montparnasse"
-    >>> assert _normalized_address("5 pl Charles Béraudier") == "5 Place Charles Béraudier"
-    >>> assert _normalized_address("5 av G De Gaule") == "5 Avenue G De Gaule"
-    >>> assert _normalized_address("5 r avé") == "5 Rue Avé"
+    >>> assert _normalized_address("5 r Thorigny") == "5 rue Thorigny"
+    >>> assert _normalized_address("171 bd Montparnasse") == "171 boulevard Montparnasse"
+    >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 boulevard Montparnasse"
+    >>> assert _normalized_address("5 pl Charles Béraudier") == "5 place Charles Béraudier"
+    >>> assert _normalized_address("5 av G De Gaule") == "5 avenue G De Gaule"
+    >>> assert _normalized_address("5 r avé") == "5 rue Avé"
     >>> assert _normalized_address("Avenue A. R. Guibert") == "Avenue A. R. Guibert"
-    >>> assert _normalized_address("10 rue D.R.F") == "10 Rue D.R.F"
-    >>> assert _normalized_address("10 rue R.A.F") == "10 Rue R.A.F"
+    >>> assert _normalized_address("10 rue D.R.F") == "10 rue D.R.F"
+    >>> assert _normalized_address("10 r de l'Ave Maria") == "10 rue De L'Ave Maria"
+    >>> assert _normalized_address("10 R DE L'AVE MARIA") == "10 rue De L'Ave Maria"
+    >>> assert _normalized_address("10 rue ste Catherine") == "10 Rue Sainte Catherine" # I can't handle all caps case
+    >>> assert _normalized_address("186 rue ZAC des Charmettes") != "186 Rue ZAC des Charmettes" # Wrong cases
+    >>> assert _normalized_address("10 BOULEVARD r garros") != "10 boulevard R Garros"
     """
     if address_street is None:
         return ""
-    address_street = address_street.title()
-    for street_shortcut_key in SHORTCUT_ADDRESS:
+
+    regex_pattern_shortcut_address = re.compile(
+        r"(.*?)\s\b(%s)\b\s(.*)" % "|".join(list(SHORTCUT_ADDRESS)), flags=re.IGNORECASE
+    )
+    regex_match = regex_pattern_shortcut_address.match(address_street)
+    if regex_match is not None:
         address_street = re.sub(
-            r"\s\b({0})\b\s".format(street_shortcut_key),
-            r" {0} ".format(SHORTCUT_ADDRESS[street_shortcut_key]),
-            address_street,
-            flags=re.IGNORECASE,
+            regex_pattern_shortcut_address,
+            rf"\1 {SHORTCUT_ADDRESS[regex_match.group(2).title()]} \3",
+            address_street.title(),
             count=1,
         )
     return address_street
