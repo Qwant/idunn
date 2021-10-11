@@ -60,8 +60,9 @@ SHORTCUT_TITLE = {
     "Doct": "Docteur",
 }
 
-REGEX_FIND_TITLES = \
-    re.compile(r"(.*?)\s(%s)\s(.*)" % "|".join(list(SHORTCUT_TITLE)), flags=re.IGNORECASE)
+REGEX_FIND_TITLES = re.compile(
+    r"(.*?)\s(%s)\s(.*)" % "|".join(list(SHORTCUT_TITLE)), flags=re.IGNORECASE
+)
 
 
 def normalized_pj_address(street_address: str) -> str:
