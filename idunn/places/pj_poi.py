@@ -451,7 +451,7 @@ class PjApiPOI(BasePlace):
             "name": street_and_number,
             "housenumber": None,
             "postcode": postcode,
-            "label": f"{street_and_number}, {postcode} {city}".strip().strip(","),
+            "label": f"{street_and_number}, {postcode} {city.title()}".strip().strip(","),
             "admin": None,
             "admins": self.build_admins(lang),
             "street": {
@@ -483,7 +483,7 @@ class PjApiPOI(BasePlace):
         if not inscription or not inscription.address_city:
             return []
 
-        city = inscription.address_city
+        city = inscription.address_city.title()
         postcode = inscription.address_zipcode or ""
 
         if postcode:
