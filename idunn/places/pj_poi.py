@@ -8,71 +8,12 @@ from .models import pj_info, pj_find
 from .models.pj_info import TransactionalLinkType, UrlType
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
+from ..utils.pj_address_normalization import normalized_pj_address
 
 CLICK_AND_COLLECT = re.compile(r"retrait .*")
 DELIVERY = re.compile(r"commande en ligne|livraison.*")
 TAKEAWAY = re.compile(r".* à emporter")
 WHEELCHAIR_ACCESSIBLE = re.compile("accès (handicapés?|(aux|pour) personnes? à mobilité réduite)")
-
-# https://www.sirene.fr/sirene/public/variable/typvoie
-SHORTCUT_STREET_SUFFIX = {
-    "All": "allée",
-    "Av": "avenue",
-    "Ave": "avenue",
-    "Bât": "bâtiment",
-    "Bat": "batiment",
-    "Bld": "boulevard",
-    "Bd": "boulevard",
-    "Car": "carrefour",
-    "Chs": "chaussée",
-    "Chem": "chemin",
-    "Cite": "cité",
-    "Cial": "commercial",
-    "Ccal": "centre commercial",
-    "Cor": "corniche",
-    "Crs": "cours",
-    "Dom": "domaine",
-    "Dsc": "descente",
-    "Eca": "ecart",
-    "Esp": "esplanade",
-    "Fbg": "faubourg",
-    "Ham": "hameau",
-    "Hle": "halle",
-    "Imm": "immeuble",
-    "Imp": "impasse",
-    "Ld": "lieu-dit",
-    "Lot": "lotissement",
-    "Mar": "marché",
-    "Mte": "montée",
-    "Pas": "passage",
-    "Pl": "place",
-    "Pln": "plaine",
-    "Plt": "plateau",
-    "Prom": "promenade",
-    "Prv": "parvis",
-    "Qua": "quartier",
-    "Quai": "quai",
-    "R": "rue",
-    "Rpt": "rond-point",
-    "Rle": "ruelle",
-    "Roc": "rocade",
-    "Rte": "route",
-    "Sen": "sentier",
-    "Sq": "square",
-    "Tpl": "terre-plein",
-    "Tra": "traverse",
-    "Vla": "villa",
-    "Vlge": "village",
-    "Zac": "Z.A.C.",
-}
-
-SHORTCUT_TITLE = {
-    "St": "Saint",
-    "Ste": "Sainte",
-    "Gén": "Général",
-    "Mar": "Maréchal",
-    "Doct": "Docteur",
-}
 
 DOCTORS = (
     "Chiropracteur",
@@ -444,7 +385,7 @@ class PjApiPOI(BasePlace):
         else:
             city = inscription.address_city or ""
             postcode = inscription.address_zipcode or ""
-            street_and_number = _normalized_address(inscription.address_street)
+            street_and_number = normalized_pj_address(inscription.address_street)
 
         return {
             "id": None,
@@ -659,63 +600,3 @@ class PjApiPOI(BasePlace):
             return None
 
         return "restaurant étoilé" in (self.data.restaurant_info.atmospheres or [])
-
-
-def _normalized_address(street_address: str) -> str:
-    """
-    PagesJaunes provides uncompleted street suffixes (e.g 'r' for 'rue') and titles (e.g 'St' for 'Saint')
-    The goal is to complete address names and to normalize capitalization
-    >>> assert _normalized_address("5 r Thorigny") == "5 rue Thorigny"
-    >>> assert _normalized_address("171 bd Montparnasse") == "171 boulevard Montparnasse"
-    >>> assert _normalized_address("171 BD MONTPARNASSE") == "171 boulevard Montparnasse"
-    >>> assert _normalized_address("5 pl Charles Béraudier") == "5 place Charles Béraudier"
-    >>> assert _normalized_address("5 av G De Gaule") == "5 avenue G De Gaule"
-    >>> assert _normalized_address("5 r avé") == "5 rue Avé"
-    >>> assert _normalized_address("Avenue A. R. Guibert") == "avenue A. R. Guibert"
-    >>> assert _normalized_address("10 rue D.R.F") == "10 rue D.R.F"
-    >>> assert _normalized_address("10 r de l'Ave Maria") == "10 rue De L'Ave Maria"
-    >>> assert _normalized_address("10 R DE L'AVE MARIA") == "10 rue De L'Ave Maria"
-    >>> assert _normalized_address("10 rue ste Catherine") == "10 rue Sainte Catherine"
-    >>> assert _normalized_address("186 crs ZAC des Charmettes") == "186 cours Zac Des Charmettes"
-    >>> assert _normalized_address("10 BOULEVARD r garros") == "10 boulevard R Garros"
-    >>> assert _normalized_address("60 RUE ST PIERRE") == "60 rue Saint Pierre"
-    >>> assert _normalized_address("6 quai Mar Joffre") == "6 quai Maréchal Joffre"
-    >>> assert _normalized_address("13 qua Mar Joffre") == "13 quartier Maréchal Joffre"
-    >>> assert _normalized_address("6 Allée du Cor de Chasse") == "6 allée Du Cor De Chasse"
-    >>> assert _normalized_address("13 r du Cor de Chasse") == "13 rue Du Cor De Chasse"
-    >>> assert _normalized_address("ZI 10 chem Petit") == "Zi 10 chemin Petit"
-    """
-    if street_address is None:
-        return ""
-
-    street_address = _check_titles_shortcut(street_address)
-    street_address = _check_street_suffix_shortcut(street_address)
-
-    return street_address
-
-
-def _check_street_suffix_shortcut(street_address: str) -> str:
-    temp_split = street_address.title().split()
-    for idx in range(len(temp_split)):
-        if temp_split[idx] in SHORTCUT_STREET_SUFFIX.keys():
-            temp_split[idx] = SHORTCUT_STREET_SUFFIX[temp_split[idx]]
-            break
-        if temp_split[idx].lower() in (name.lower() for name in SHORTCUT_STREET_SUFFIX.values()):
-            temp_split[idx] = temp_split[idx].lower()
-            break
-    return " ".join(temp_split)
-
-
-def _check_titles_shortcut(street_address: str) -> str:
-    regex_find_titles = re.compile(
-        r"(.*?)\s\b(%s)\b\s(.*)" % "|".join(list(SHORTCUT_TITLE)), flags=re.IGNORECASE
-    )
-    regex_match = regex_find_titles.match(street_address)
-    if regex_match is not None:
-        street_address = re.sub(
-            regex_find_titles,
-            rf"\1 {SHORTCUT_TITLE[regex_match.group(2).title()]} \3",
-            street_address.title(),
-            count=1,
-        )
-    return street_address
