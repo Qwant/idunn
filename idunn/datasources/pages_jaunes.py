@@ -16,37 +16,6 @@ from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 logger = logging.getLogger(__name__)
 
 
-class PjSource:
-    PLACE_ID_NAMESPACE = "pj"
-
-    def __init__(self):
-        self.enabled = True
-
-    def bbox_is_covered(self, bbox):
-        if not self.enabled:
-            return False
-        return bbox_inside_polygon(*bbox, poly=france_polygon)
-
-    def point_is_covered(self, point):
-        if not self.enabled:
-            return False
-        return france_polygon.contains(point)
-
-    def internal_id(self, poi_id):
-        return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
-
-    # pylint: disable = unused-argument
-    def search_places(self, query: str, place_in_query: bool, size=10) -> List[PjApiPOI]:
-        logger.warning("calling unimplemented `search_places` with deprecated LegacyPjSource")
-        return []
-
-    def get_places_bbox(self, categories: List[CategoryEnum], bbox, size=10, query=""):
-        raise NotImplementedError
-
-    def get_place(self, poi_id):
-        raise NotImplementedError
-
-
 class PjAuthSession(AuthSession):
     def get_authorization_url(self):
         return "https://api.pagesjaunes.fr/oauth/client_credential/accesstoken"
@@ -59,7 +28,8 @@ class PjAuthSession(AuthSession):
         }
 
 
-class ApiPjSource(PjSource):
+class ApiPjSource:
+    PLACE_ID_NAMESPACE = "pj"
     PJ_RESULT_MAX_SIZE = 30
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
     PJ_FIND_API_URL = "https://api.pagesjaunes.fr/v1/pros/search"
@@ -83,6 +53,19 @@ class ApiPjSource(PjSource):
         """
         left, bot, right, top = bbox
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
+
+    def bbox_is_covered(self, bbox):
+        if not self.enabled:
+            return False
+        return bbox_inside_polygon(*bbox, poly=france_polygon)
+
+    def point_is_covered(self, point):
+        if not self.enabled:
+            return False
+        return france_polygon.contains(point)
+
+    def internal_id(self, poi_id):
+        return poi_id.replace(f"{self.PLACE_ID_NAMESPACE}:", "", 1)
 
     def get_from_params(self, url, params=None) -> PjApiPOI:
         res = self.session.get(url, params=params, timeout=self.PJ_API_TIMEOUT)
