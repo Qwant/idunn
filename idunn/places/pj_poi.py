@@ -8,7 +8,7 @@ from .models import pj_info, pj_find
 from .models.pj_info import TransactionalLinkType, UrlType
 from ..api.constants import PoiSource
 from ..api.urlsolver import resolve_url
-
+from ..utils.pj_address_normalization import normalized_pj_address
 
 CLICK_AND_COLLECT = re.compile(r"retrait .*")
 DELIVERY = re.compile(r"commande en ligne|livraison.*")
@@ -385,14 +385,14 @@ class PjApiPOI(BasePlace):
         else:
             city = inscription.address_city or ""
             postcode = inscription.address_zipcode or ""
-            street_and_number = inscription.address_street or ""
+            street_and_number = normalized_pj_address(inscription.address_street)
 
         return {
             "id": None,
             "name": street_and_number,
             "housenumber": None,
             "postcode": postcode,
-            "label": f"{street_and_number}, {postcode} {city}".strip().strip(","),
+            "label": f"{street_and_number}, {postcode} {city.title()}".strip().strip(","),
             "admin": None,
             "admins": self.build_admins(lang),
             "street": {
@@ -424,7 +424,7 @@ class PjApiPOI(BasePlace):
         if not inscription or not inscription.address_city:
             return []
 
-        city = inscription.address_city
+        city = inscription.address_city.title()
         postcode = inscription.address_zipcode or ""
 
         if postcode:
