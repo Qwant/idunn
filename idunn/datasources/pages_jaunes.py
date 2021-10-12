@@ -1,19 +1,17 @@
+import logging
 from os import path
 from typing import List
 
-import logging
 import requests
-from elasticsearch import Elasticsearch
-from fastapi import HTTPException
 from requests import HTTPError as RequestsHTTPError
 
 from idunn import settings
-from idunn.places.pj_poi import PjApiPOI, PjPOI
-from idunn.places.models import pj_info, pj_find
+from idunn.api.utils import CategoryEnum
 from idunn.places.exceptions import PlaceNotFound
+from idunn.places.models import pj_info, pj_find
+from idunn.places.pj_poi import PjApiPOI
 from idunn.utils.auth_session import AuthSession
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
-from idunn.api.utils import CategoryEnum
 
 logger = logging.getLogger(__name__)
 
@@ -49,61 +47,6 @@ class PjSource:
         raise NotImplementedError
 
 
-class LegacyPjSource(PjSource):
-    es_index = settings.get("PJ_ES_INDEX")
-    es_query_template = settings.get("PJ_ES_QUERY_TEMPLATE")
-
-    def __init__(self):
-        super().__init__()
-        pj_es_url = settings.get("PJ_ES")
-
-        if pj_es_url:
-            self.es = Elasticsearch(pj_es_url, timeout=3.0)
-            self.enabled = True
-        else:
-            self.enabled = False
-
-    def get_places_bbox(self, categories: List[CategoryEnum], bbox, size=10, query=""):
-        raw_categories = [pj_category for c in categories for pj_category in c.pj_filters()]
-        left, bot, right, top = bbox
-
-        body = {
-            "id": self.es_query_template,
-            "params": {
-                "query": query,
-                "top_left_lat": top,
-                "top_left_lon": left,
-                "bottom_right_lat": bot,
-                "bottom_right_lon": right,
-            },
-        }
-
-        if query:
-            body["params"]["match_amenities"] = True
-        if raw_categories:
-            body["params"]["filter_category"] = True
-            body["params"]["category"] = raw_categories
-
-        result = self.es.search_template(index=self.es_index, body=body, params={"size": size})
-        raw_places = result.get("hits", {}).get("hits", [])
-        return [PjPOI(p["_source"]) for p in raw_places]
-
-    def get_place(self, poi_id):
-        # pylint: disable = unexpected-keyword-arg
-        es_places = self.es.search(
-            index=self.es_index,
-            body={"query": {"bool": {"filter": {"term": {"_id": self.internal_id(poi_id)}}}}},
-            ignore_unavailable=True,
-        )
-
-        es_place = es_places.get("hits", {}).get("hits", [])
-        if len(es_place) == 0:
-            raise HTTPException(status_code=404, detail=f"place {poi_id} not found")
-        if len(es_place) > 1:
-            logger.warning("Got multiple places with id %s", poi_id)
-        return PjPOI(es_place[0]["_source"])
-
-
 class PjAuthSession(AuthSession):
     def get_authorization_url(self):
         return "https://api.pagesjaunes.fr/oauth/client_credential/accesstoken"
@@ -124,7 +67,12 @@ class ApiPjSource(PjSource):
 
     def __init__(self):
         super().__init__()
-        self.session = PjAuthSession(refresh_timeout=self.PJ_API_TIMEOUT)
+        pj_api_url = settings.get("PJ_API_ID")
+        if pj_api_url:
+            self.session = PjAuthSession(refresh_timeout=self.PJ_API_TIMEOUT)
+            self.enabled = True
+        else:
+            self.enabled = False
 
     @staticmethod
     def format_where(bbox):
@@ -218,4 +166,4 @@ class ApiPjSource(PjSource):
             raise
 
 
-pj_source = ApiPjSource() if settings.get("PJ_API_ID") else LegacyPjSource()
+pj_source = ApiPjSource()

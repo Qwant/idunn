@@ -82,12 +82,6 @@ BLOCK_TRANSACTIONAL_ENABLED: True
 #########################
 ## Data sources
 
-# Pages jaunes access through legacy ES data
-# PJ_API_ID / PJ_API_SECRET will be prefered
-PJ_ES:
-PJ_ES_INDEX: "pagesjaunes"
-PJ_ES_QUERY_TEMPLATE: "pagesjaunes_query"
-
 # Pages jaunes
 PJ_API_ID:
 PJ_API_SECRET:

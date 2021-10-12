@@ -5,7 +5,7 @@ import json
 import os
 
 from app import app
-from idunn.datasources.pages_jaunes import LegacyPjSource, ApiPjSource
+from idunn.datasources.pages_jaunes import ApiPjSource
 from idunn.places import utils as places_utils
 from .utils import override_settings, init_pj_source
 
@@ -19,29 +19,11 @@ def read_fixture(filename):
 def enable_pj_source(request):
     method, file = request.param
     api_result = read_fixture(f"{file}.json")
-
-    if method == "legacy":
-        updated_settings = {"PJ_ES": "http://pj_es.test"}
-        source_type = LegacyPjSource
-    else:
-        updated_settings = {}
-        source_type = ApiPjSource
+    updated_settings = {}
+    source_type = ApiPjSource
 
     with override_settings(updated_settings), init_pj_source(source_type):
-        if method == "legacy":
-            mock_search = mock.patch.object(
-                places_utils.pj_source.es,
-                "search",
-                new=lambda *x, **y: {"hits": {"hits": [api_result]}},
-            )
-            mock_search_template = mock.patch.object(
-                places_utils.pj_source.es,
-                "search_template",
-                new=lambda *x, **y: {"hits": {"hits": [api_result]}},
-            )
-            with mock_search, mock_search_template:
-                yield
-        elif method == "api":
+        if method == "api":
             api_mock = mock.patch.object(
                 places_utils.pj_source,
                 "get_from_params",
@@ -159,7 +141,7 @@ def test_pj_api_place(enable_pj_source):
 
 @pytest.mark.parametrize(
     "enable_pj_source",
-    [("legacy", "musee_picasso_short"), ("api", "api_musee_picasso_short")],
+    [("api", "api_musee_picasso_short")],
     indirect=True,
 )
 def test_pj_place_with_missing_data(enable_pj_source):
