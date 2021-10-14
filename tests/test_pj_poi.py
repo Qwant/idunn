@@ -1,54 +1,17 @@
 from fastapi.testclient import TestClient
-from unittest import mock
 import pytest
-import json
-import os
 
 from app import app
-from idunn.datasources.pages_jaunes import ApiPjSource
-from idunn.places import utils as places_utils
-from .utils import override_settings, init_pj_source
 
-
-def read_fixture(filename):
-    filepath = os.path.join(os.path.dirname(__file__), "fixtures", "pj", filename)
-    return json.load(open(filepath))
-
-
-@pytest.fixture
-def enable_pj_source(request):
-    method, file = request.param
-    api_result = read_fixture(f"{file}.json")
-    updated_settings = {}
-    source_type = ApiPjSource
-
-    with override_settings(updated_settings), init_pj_source(source_type):
-        if method == "api":
-            api_mock = mock.patch.object(
-                places_utils.pj_source,
-                "get_from_params",
-                new=lambda *x, **y: api_result,
-            )
-            with api_mock:
-                yield
-        elif method == "api_find":
-            api_mock = mock.patch.object(
-                places_utils.pj_source,
-                "get_from_params",
-                new=lambda *x, **y: {"search_results": {"listings": [api_result]}},
-            )
-            with api_mock:
-                yield
-        else:
-            raise Exception(f"invalid PJ method `{method}`")
-
-
-@pytest.mark.parametrize(
-    "enable_pj_source",
-    [("api", "api_musee_picasso")],
-    indirect=True,
+from .fixtures.pj import (
+    mock_pj_api_with_musee_picasso,
+    mock_pj_api_with_restaurant_petit_pan,
+    mock_pj_api_with_hotel_hilton,
+    mock_pj_api_with_musee_picasso_short,
 )
-def test_pj_place(enable_pj_source):
+
+
+def test_pj_place(mock_pj_api_with_musee_picasso):
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
 
@@ -97,8 +60,7 @@ def test_pj_place(enable_pj_source):
     assert blocks[5]["url"] == "https://www.pagesjaunes.fr/pros/05360257#ancreBlocAvis"
 
 
-@pytest.mark.parametrize("enable_pj_source", [("api", "api_musee_picasso")], indirect=True)
-def test_pj_api_place(enable_pj_source):
+def test_pj_api_place(mock_pj_api_with_musee_picasso):
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
     assert response.status_code == 200
@@ -139,12 +101,7 @@ def test_pj_api_place(enable_pj_source):
     assert blocks[9]["takeaway"] == "unknown"
 
 
-@pytest.mark.parametrize(
-    "enable_pj_source",
-    [("api", "api_musee_picasso_short")],
-    indirect=True,
-)
-def test_pj_place_with_missing_data(enable_pj_source):
+def test_pj_place_with_missing_data(mock_pj_api_with_musee_picasso_short):
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/pj:05360257?lang=fr")
 
@@ -160,8 +117,7 @@ def test_pj_place_with_missing_data(enable_pj_source):
     assert resp["geometry"]["center"] == [2.362634, 48.859702]
 
 
-@pytest.mark.parametrize("enable_pj_source", [("api", "api_restaurant_petit_pan")], indirect=True)
-def test_pj_api_restaurant(enable_pj_source):
+def test_pj_api_restaurant(mock_pj_api_with_restaurant_petit_pan):
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/pj:55452580?lang=fr")
     assert response.status_code == 200
@@ -176,8 +132,7 @@ def test_pj_api_restaurant(enable_pj_source):
     }
 
 
-@pytest.mark.parametrize("enable_pj_source", [("api", "api_hotel_hilton")], indirect=True)
-def test_pj_api_hotel(enable_pj_source):
+def test_pj_api_hotel(mock_pj_api_with_hotel_hilton):
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/pj:55452580?lang=fr")
     assert response.status_code == 200
