@@ -4,7 +4,7 @@ from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
-from .test_pj_poi import enable_pj_source
+from .fixtures.pj import mock_pj_api_with_musee_picasso_short
 from .test_full import OH_BLOCK
 
 
@@ -621,12 +621,7 @@ def test_valid_category():
     }
 
 
-@pytest.mark.parametrize(
-    "enable_pj_source",
-    [("legacy", "musee_picasso_short"), ("api", "api_musee_picasso_short")],
-    indirect=True,
-)
-def test_places_with_explicit_source_osm(enable_pj_source):
+def test_places_with_explicit_source_osm(mock_pj_api_with_musee_picasso_short):
     """
     If source=osm is passed to the query, pj_source should be ignored
     """
@@ -690,21 +685,6 @@ def test_endpoint_categories():
 
     resp = response.json()
     assert len(resp["categories"]) > 1
-
-
-@pytest.mark.parametrize(
-    "enable_pj_source",
-    [("legacy", "musee_picasso_short")],
-    indirect=True,
-)
-def test_pj_categories_filter_legacy(enable_pj_source):
-    client = TestClient(app)
-    response = client.get(url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=museum")
-    assert response.status_code == 200
-    resp = response.json()
-    assert len(resp["places"]) == 1
-    assert resp["places"][0]["id"] == "pj:05360257"
-    assert resp["places"][0]["name"] == "Musée Picasso"
 
 
 def test_category_with_cuisine_filter():

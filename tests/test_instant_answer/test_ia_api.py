@@ -4,7 +4,6 @@ import pytest
 from fastapi.testclient import TestClient
 from app import app
 
-from ..test_pj_poi import enable_pj_source
 from ..fixtures.autocomplete import (
     mock_autocomplete_get,
     mock_NLU_with_city,
@@ -12,6 +11,8 @@ from ..fixtures.autocomplete import (
     mock_NLU_with_picasso,
     mock_bragi_carrefour_in_bbox,
 )
+
+from ..fixtures.pj import mock_pj_api_find_with_musee_picasso
 
 
 def test_ia_paris(mock_autocomplete_get, mock_NLU_with_city):
@@ -117,8 +118,9 @@ def test_ia_addresses_ranking(mock_autocomplete_get):
     assert places[0]["name"] == "43 Rue de Paris"
 
 
-@pytest.mark.parametrize("enable_pj_source", [("api_find", "api_musee_picasso")], indirect=True)
-def test_ia_pj_fallback(enable_pj_source, mock_autocomplete_get, mock_NLU_with_picasso):
+def test_ia_pj_fallback(
+    mock_pj_api_find_with_musee_picasso, mock_autocomplete_get, mock_NLU_with_picasso
+):
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "musée picasso", "user_country": "fr"})
     assert response.status_code == 200
