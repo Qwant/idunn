@@ -43,10 +43,8 @@ def test_basket_ball():
 
         resp = response.json()
 
-        assert resp["blocks"][2].get("blocks")[0] == {
-            "type": "wikipedia",
-            "url": "https://fr.wikipedia.org/wiki/Pleyber-Christ_Basket_Club",
-            "title": "Pleyber-Christ Basket Club",
+        assert resp["blocks"][5] == {
+            "type": "description",
             "description": (
                 "Le Pleyber-Christ Basket Club est un club français de basket-ball dont la section "
                 "senior féminine a accédé jusqu'au championnat professionnel de Ligue 2 (2e "
@@ -54,6 +52,8 @@ def test_basket_ball():
                 "club est basé dans la ville de Pleyber-Christ. Il accueille aussi de jeunes "
                 "joueuses de…"
             ),
+            "source": "wikipedia",
+            "url": "https://fr.wikipedia.org/wiki/Pleyber-Christ_Basket_Club",
         }
 
         # Even after 10 requests for a POI in the WIKI_ES we should not observe
@@ -121,7 +121,7 @@ def test_undefined_WIKI_ES(wiki_es_undefined):
         for _ in range(10):
             client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
 
-        assert len(rsps.calls) == 20
+        assert len(rsps.calls) == 10
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
@@ -177,4 +177,4 @@ def test_no_lang_WIKI_ES():
 
         # We make a request in russian language ("ru")
         client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=ru")
-        assert len(rsps.calls) == 2
+        assert len(rsps.calls) == 1

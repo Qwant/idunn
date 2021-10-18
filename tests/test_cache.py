@@ -26,6 +26,13 @@ def cache_test_normal(redis):
     RedisWrapper._connection = None
 
 
+def has_wiki_desc(resp: dict) -> bool:
+    """
+    Check if a POI response contains a Wikipedia description.
+    """
+    return any(b["type"] == "description" and b["source"] == "wikipedia" for b in resp["blocks"])
+
+
 def test_wikipedia_cache(cache_test_normal, mock_wikipedia_response):
     """
     Test that Idunn stops external requests when
@@ -39,7 +46,7 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia_response):
 
     # One request requires 2 wikipedia API calls
     assert len(mock_wikipedia_response.calls) == 2
-    assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
+    assert has_wiki_desc(resp)
 
     # We make another request to the same POI which should now be in the cache.
     # As a result no more Wikipedia call should be made.
@@ -47,9 +54,7 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia_response):
     resp = response.json()
 
     assert len(mock_wikipedia_response.calls) == 2  # the same number of requests as before
-    assert any(
-        b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks")
-    )  # we still have a wikipedia block
+    assert has_wiki_desc(resp)  # we still have a wikipedia block
 
 
 def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
@@ -68,7 +73,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
         assert response.status_code == 200
         resp = response.json()
         # We should have a "wikipedia" block in the answer.
-        assert any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
+        assert has_wiki_desc(resp)
 
         with monkeypatch.context() as m:
             # Now that the "basket ball" request should be in the cache, we test
@@ -98,9 +103,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             for _ in range(10):
                 response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
                 resp = response.json()
-                assert any(
-                    b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks")
-                )  # we still have the wikipedia block
+                assert has_wiki_desc(resp)  # we still have a wikipedia block
 
             assert len(rsps.calls) == 0  # Wikipedia API has never been called
 
@@ -122,4 +125,4 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia_response):
         assert response.status_code == 200
         resp = response.json()
         assert len(mock_wikipedia_response.calls) == 0
-        assert not any(b["type"] == "wikipedia" for b in resp["blocks"][2].get("blocks"))
+        assert not has_wiki_desc(resp)

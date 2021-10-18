@@ -78,9 +78,9 @@ def test_wikipedia_another_language(mock_wikipedia_response):
     assert resp["local_name"] == "Musée du Louvre"
     assert resp["class_name"] == "museum"
     assert resp["subclass_name"] == "museum"
-    assert resp["blocks"][2].get("blocks")[0] == {
-        "type": "wikipedia",
-        "url": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
-        "title": "Museo del Louvre",
+    assert resp["blocks"][4] == {
+        "type": "description",
         "description": "El Museo del Louvre es el museo nacional de Francia ...",
+        "source": "wikipedia",
+        "url": "https://es.wikipedia.org/wiki/Museo_del_Louvre",
     }

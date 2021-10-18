@@ -6,7 +6,6 @@ from .phone import PhoneBlock
 from .information import InformationBlock
 from .website import WebSiteBlock
 from .contact import ContactBlock
-from .wikipedia import WikipediaBlock
 from .images import ImagesBlock
 from .services_and_information import (
     ServicesAndInformationBlock,
@@ -30,7 +29,6 @@ AnyBlock = Union[
     Covid19Block,
     PhoneBlock,
     InformationBlock,
-    WikipediaBlock,
     WebSiteBlock,
     ContactBlock,
     ServicesAndInformationBlock,
