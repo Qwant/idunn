@@ -10,7 +10,7 @@ from unittest.mock import ANY
 from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from elasticsearch import Elasticsearch, ElasticsearchException
+from elasticsearch7 import Elasticsearch, ElasticsearchException
 from unittest.mock import patch
 
 from .test_full import OH_BLOCK
