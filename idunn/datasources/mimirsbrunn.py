@@ -1,6 +1,6 @@
 import logging
 from fastapi import HTTPException
-from elasticsearch import ElasticsearchException
+from elasticsearch7 import ElasticsearchException
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.index_names import INDICES
@@ -59,23 +59,21 @@ def fetch_es_pois(filters: [MimirPoiFilter], bbox, max_size) -> list:
     # pylint: disable = unexpected-keyword-arg
     bbox_places = es.search(
         index=INDICES["poi"],
-        body={
-            "query": {
-                "bool": {
-                    "should": should_terms,
-                    "minimum_should_match": 1,
-                    "filter": {
-                        "geo_bounding_box": {
-                            "coord": {
-                                "top_left": {"lat": top, "lon": left},
-                                "bottom_right": {"lat": bot, "lon": right},
-                            }
+        query={
+            "bool": {
+                "should": should_terms,
+                "minimum_should_match": 1,
+                "filter": {
+                    "geo_bounding_box": {
+                        "coord": {
+                            "top_left": {"lat": top, "lon": left},
+                            "bottom_right": {"lat": bot, "lon": right},
                         }
-                    },
-                }
-            },
-            "sort": {"weight": "desc"},
+                    }
+                },
+            }
         },
+        sort={"weight": "desc"},
         size=max_size,
         timeout="3s",
         ignore_unavailable=True,
@@ -106,7 +104,7 @@ def fetch_es_place(id, es, type) -> dict:
     try:
         es_places = es.search(
             index=index_name,
-            body={"query": {"bool": {"filter": {"term": {"_id": id}}}}},
+            query={"bool": {"filter": {"term": {"_id": id}}}},
             ignore_unavailable=True,
             **extra_search_params,
         )
@@ -130,35 +128,33 @@ def fetch_es_place(id, es, type) -> dict:
 def fetch_closest(lat, lon, max_distance, es):
     es_addrs = es.search(
         index=",".join([PLACE_ADDRESS_INDEX, PLACE_STREET_INDEX]),
-        body={
-            "query": {
-                "function_score": {
-                    "query": {
-                        "bool": {
-                            "filter": {
-                                "geo_distance": {
-                                    "distance": f"{max_distance}m",
-                                    "coord": {"lat": lat, "lon": lon},
-                                    "distance_type": "plane",
-                                }
+        from_=0,
+        size=1,
+        query={
+            "function_score": {
+                "query": {
+                    "bool": {
+                        "filter": {
+                            "geo_distance": {
+                                "distance": "{}m".format(max_distance),
+                                "coord": {"lat": lat, "lon": lon},
+                                "distance_type": "plane",
                             }
                         }
-                    },
-                    "boost_mode": "replace",
-                    "functions": [
-                        {
-                            "gauss": {
-                                "coord": {
-                                    "origin": {"lat": lat, "lon": lon},
-                                    "scale": f"{max_distance}m",
-                                }
+                    }
+                },
+                "boost_mode": "replace",
+                "functions": [
+                    {
+                        "gauss": {
+                            "coord": {
+                                "origin": {"lat": lat, "lon": lon},
+                                "scale": "{}m".format(max_distance),
                             }
                         }
-                    ],
-                }
-            },
-            "from": 0,
-            "size": 1,
+                    }
+                ],
+            }
         },
     )
     es_addrs = es_addrs.get("hits", {}).get("hits", [])

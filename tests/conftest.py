@@ -2,7 +2,8 @@ import os
 import json
 import pytest
 import respx
-from elasticsearch import Elasticsearch
+from elasticsearch7 import Elasticsearch as Elasticsearch7
+from elasticsearch import Elasticsearch as Elasticsearch2
 
 from .utils import init_wiki_es, override_settings
 
@@ -10,8 +11,8 @@ from .utils import init_wiki_es, override_settings
 @pytest.fixture(scope="session")
 def mimir_es(docker_services):
     """Ensure that ES is up and responsive."""
-    docker_services.start("mimir_es")
-    port = docker_services.wait_for_service("mimir_es", 9200)
+    docker_services.start("mimir_es7")
+    port = docker_services.wait_for_service("mimir_es7", 9200)
     url = f"http://{docker_services.docker_ip}:{port}"
 
     # we override the settings to set the MIMIR_ES
@@ -21,7 +22,7 @@ def mimir_es(docker_services):
 
 @pytest.fixture(scope="session")
 def mimir_client(mimir_es):
-    return Elasticsearch([mimir_es])
+    return Elasticsearch7([mimir_es])
 
 
 @pytest.fixture(scope="session")
@@ -37,7 +38,7 @@ def wiki_es(docker_services):
 
 @pytest.fixture(scope="session")
 def wiki_client(wiki_es):
-    return Elasticsearch([wiki_es])
+    return Elasticsearch2([wiki_es])
 
 
 @pytest.fixture(scope="function")
@@ -57,7 +58,7 @@ def wiki_es_undefined():
 
 @pytest.fixture(scope="function")
 def wiki_client_ko(wiki_es_ko):
-    return Elasticsearch([wiki_es_ko])
+    return Elasticsearch2([wiki_es_ko])
 
 
 @pytest.fixture(scope="session")
@@ -68,58 +69,32 @@ def init_indices(mimir_client, wiki_client):
     """
     mimir_client.indices.create(
         index="munin_poi",
-        body={
-            "mappings": {
-                "poi": {
-                    "properties": {
-                        "coord": {
-                            "type": "geo_point",
-                            "lat_lon": True,
-                            "geohash": True,
-                            "geohash_prefix": True,
-                            "geohash_precision": 11,
-                        },
-                        "weight": {"type": "double"},
-                    }
-                },
-                "poi_type": {
-                    "properties": {
-                        "name": {"type": "string", "index_options": "docs", "analyzer": "word"}
-                    }
-                },
-            },
-            "settings": {
-                "index": {
-                    "analysis": {
-                        "analyzer": {
-                            "word": {
-                                "filter": ["lowercase", "asciifolding"],
-                                "type": "custom",
-                                "tokenizer": "standard",
-                            }
-                        }
+        mappings={
+            "properties": {
+                "coord": {"type": "geo_point"},
+                "weight": {"type": "float"},
+                "poi_type.name": {"type": "text", "index_options": "docs", "analyzer": "word"},
+            }
+        },
+        settings={
+            "analysis": {
+                "analyzer": {
+                    "word": {
+                        "filter": ["lowercase", "asciifolding"],
+                        "type": "custom",
+                        "tokenizer": "standard",
                     }
                 }
-            },
+            }
         },
     )
     mimir_client.indices.put_alias(name="munin", index="munin_poi")
 
     mimir_client.indices.create(
         index="munin_addr",
-        body={
-            "mappings": {
-                "addr": {
-                    "properties": {
-                        "coord": {
-                            "type": "geo_point",
-                            "lat_lon": True,
-                            "geohash": True,
-                            "geohash_prefix": True,
-                            "geohash_precision": 11,
-                        },
-                    }
-                }
+        mappings={
+            "properties": {
+                "coord": {"type": "geo_point"},
             }
         },
     )
@@ -127,19 +102,9 @@ def init_indices(mimir_client, wiki_client):
 
     mimir_client.indices.create(
         index="munin_street",
-        body={
-            "mappings": {
-                "street": {
-                    "properties": {
-                        "coord": {
-                            "type": "geo_point",
-                            "lat_lon": True,
-                            "geohash": True,
-                            "geohash_prefix": True,
-                            "geohash_precision": 11,
-                        },
-                    }
-                }
+        mappings={
+            "properties": {
+                "coord": {"type": "geo_point"},
             }
         },
     )
@@ -192,8 +157,7 @@ def load_place(file_name, mimir_client, doc_type="poi"):
         place_id = place["id"]
         mimir_client.index(
             index=index_name,
-            body=place,
-            doc_type=doc_type,  # 'admin', 'street', 'addr' or 'poi'
+            document=place,
             id=place_id,
             refresh=True,
         )

@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  mimir_es:
+  mimir_es2:
     image: elasticsearch:2-alpine
     ports:
     - "9200"
@@ -15,3 +15,13 @@ services:
     image: redis:4-alpine
     ports:
     - "6379"
+
+  mimir_es7:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
