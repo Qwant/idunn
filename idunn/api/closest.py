@@ -25,16 +25,17 @@ def get_closest_place(lat: float, lon: float, es=None):
         "addr": Address,
         "street": Street,
     }
+    places_type = es_addr.get("_index").split("_")[1] # the index name format is munin_{addr/street}
     loader = places.get(
-        es_addr.get("_index").split("_")[1]
-    )  # the index name format is munin_{addr/street}
+        places_type
+    )
 
     if loader is None:
         logger.warning("Found a place with the wrong type")
         prometheus.exception("FoundPlaceWithWrongType")
         raise HTTPException(
             status_code=404,
-            detail=f"Closest address to '{lat}:{lon}' has a wrong type: '{es_addr.get('_type')}'",
+            detail=f"Closest address to '{lat}:{lon}' has a wrong type: '{places_type}'",
         )
 
     return loader(es_addr["_source"])

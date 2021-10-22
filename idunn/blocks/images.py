@@ -102,10 +102,8 @@ class ImagesBlock(BaseBlock):
         )
         if match:
             commons_file_name = match.group(1)
-            return (
-                f"https://commons.wikimedia.org/wiki/File:{commons_file_name}"
-                f"#/media/File:{commons_file_name}"
-            )
+            return f"https://commons.wikimedia.org/wiki/File:{commons_file_name}" \
+                   f"#/media/File:{commons_file_name}"
         return raw_url
 
     @classmethod

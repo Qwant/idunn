@@ -6,7 +6,7 @@ from typing import Tuple
 DIR = os.path.dirname(__file__)
 REGIONS_FILE = os.path.join(DIR, "data/regions.json")
 
-with open(REGIONS_FILE) as f:
+with open(REGIONS_FILE, encoding="utf-8") as f:
     REGIONS = json.load(f)
 
 
