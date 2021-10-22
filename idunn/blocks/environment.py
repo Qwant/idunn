@@ -109,5 +109,5 @@ def get_local_weather(coord):
 
     if not weather_client.enabled:
         return None
-    key = "weather_{}_{}".format(coord["lat"], coord["lon"])
+    key = f"weather_{coord['lat']}_{coord['lon']}"
     return RedisWrapperWeather.cache_it(key, inner)(coord)

@@ -87,10 +87,7 @@ class WikipediaSession:
         @self.Helpers.handle_requests_error
         @self.circuit_breaker
         def fetch_data():
-            url = "{base_url}/page/summary/{title}".format(
-                base_url=self.API_V1_BASE_PATTERN.format(lang=lang),
-                title=title,
-            )
+            url = f"{self.API_V1_BASE_PATTERN.format(lang=lang)}/page/summary/{title}"
 
             with prometheus.wiki_request_duration("wiki_api", "get_summary"):
                 resp = self.session.get(url=url, params={"redirect": True}, timeout=self.TIMEOUT)

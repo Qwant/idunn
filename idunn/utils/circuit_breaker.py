@@ -17,9 +17,7 @@ def is_http_client_error(exc):
 
 class LogListener(pybreaker.CircuitBreakerListener):
     def state_change(self, cb, old_state, new_state):
-        msg = "State Change: CB: {0}, From: {1} to New State: {2}".format(
-            cb.name, old_state, new_state
-        )
+        msg = f"State Change: CB: {cb.name}, From: {old_state} to New State: {new_state}"
         logger.warning(msg)
 
 

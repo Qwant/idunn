@@ -46,5 +46,5 @@ class PhoneBlock(BaseBlock):
         if e164 is None or national is None or international is None:
             return None
         return cls(
-            url="tel:{}".format(e164), international_format=international, local_format=national
+            url=f"tel:{e164}", international_format=international, local_format=national
         )

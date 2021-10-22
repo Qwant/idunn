@@ -7,7 +7,7 @@ from idunn.utils.logging import init_logging
 
 
 def _load_yaml_file(file):
-    with open(file, "r") as default:
+    with open(file, "r", encoding="utf-8") as default:
         return yaml.safe_load(default)
 
 
