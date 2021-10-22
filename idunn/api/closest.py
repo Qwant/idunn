@@ -25,10 +25,10 @@ def get_closest_place(lat: float, lon: float, es=None):
         "addr": Address,
         "street": Street,
     }
-    places_type = es_addr.get("_index").split("_")[1] # the index name format is munin_{addr/street}
-    loader = places.get(
-        places_type
-    )
+    places_type = es_addr.get("_index").split("_")[
+        1
+    ]  # the index name format is munin_{addr/street}
+    loader = places.get(places_type)
 
     if loader is None:
         logger.warning("Found a place with the wrong type")

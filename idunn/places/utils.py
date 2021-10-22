@@ -63,7 +63,5 @@ def place_from_id(id: str, type=None, follow_redirect=False):
 
     if loader is None:
         prometheus.exception("FoundPlaceWithWrongType")
-        raise Exception(
-            f"Place with id '{id}' has a wrong type: '{es_place[0].get('_type')}'"
-        )
+        raise Exception(f"Place with id '{id}' has a wrong type: '{es_place[0].get('_type')}'")
     return loader(es_place["_source"])
