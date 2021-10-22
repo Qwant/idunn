@@ -29,7 +29,7 @@ def mock_directions_car():
                 "GET",
                 re.compile(r"^http://api.qwant/directions/"),
                 status=200,
-                json=json.load(open(fixture_path)),
+                json=json.load(open(fixture_path, encoding="utf-8")),
             )
             yield rsps
 
@@ -56,7 +56,7 @@ def mock_directions_public_transport():
                 "POST",
                 re.compile(r"^http://api.test/journey"),
                 status=200,
-                json=json.load(open(fixture_path)),
+                json=json.load(open(fixture_path, encoding="utf-8")),
             )
             yield rsps
 

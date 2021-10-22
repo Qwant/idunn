@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from unittest.mock import patch
-from elasticsearch7.client.cluster import ClusterClient
-from elasticsearch7.exceptions import ConnectionError
+from elasticsearch.client.cluster import ClusterClient
+from elasticsearch.exceptions import ConnectionError
 
 from app import app
 

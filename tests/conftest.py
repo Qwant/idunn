@@ -152,7 +152,7 @@ def load_place(file_name, mimir_client, doc_type="poi"):
     index_name = INDICES.get(doc_type)
 
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", file_name)
-    with open(filepath, "r") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         place = json.load(f)
         place_id = place["id"]
         mimir_client.index(
