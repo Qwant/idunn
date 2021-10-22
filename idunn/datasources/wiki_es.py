@@ -1,4 +1,4 @@
-from elasticsearch import (
+from elasticsearch2 import (
     Elasticsearch,
     ConnectionError,
     NotFoundError,
