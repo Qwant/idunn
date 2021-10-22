@@ -1,6 +1,6 @@
 import logging
 from fastapi import HTTPException
-from elasticsearch7 import ElasticsearchException
+from elasticsearch import ElasticsearchException
 from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.index_names import INDICES
@@ -12,8 +12,6 @@ PLACE_DEFAULT_INDEX = settings["PLACE_DEFAULT_INDEX"]
 PLACE_POI_INDEX = settings["PLACE_POI_INDEX"]
 PLACE_ADDRESS_INDEX = settings["PLACE_ADDRESS_INDEX"]
 PLACE_STREET_INDEX = settings["PLACE_STREET_INDEX"]
-
-is_es2 = settings["MIMIR_ES_VERSION"] == "2"
 
 
 class MimirPoiFilter:
@@ -96,10 +94,7 @@ def fetch_es_place(id, es, type) -> dict:
     else:
         index_name = INDICES.get(type)
 
-    if is_es2:
-        extra_search_params = {"_source_exclude": "boundary"}
-    else:
-        extra_search_params = {"_source_excludes": "boundary"}
+    extra_search_params = {"_source_excludes": "boundary"}
 
     try:
         es_places = es.search(

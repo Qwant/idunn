@@ -26,8 +26,8 @@ pylint = "*"
 
 [packages]
 fastapi="==0.65.*"
-elasticsearch = ">=2.0.0,<3.0.0"
-elasticsearch7 = "*"
+elasticsearch2 = ">=2.0.0,<3.0.0"
+elasticsearch = "*"
 requests = ">=2.20.0"
 tzwhere = "*"
 babel = "*"

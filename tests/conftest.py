@@ -2,8 +2,8 @@ import os
 import json
 import pytest
 import respx
-from elasticsearch7 import Elasticsearch as Elasticsearch7
-from elasticsearch import Elasticsearch as Elasticsearch2
+from elasticsearch import Elasticsearch as Elasticsearch7
+from elasticsearch2 import Elasticsearch as Elasticsearch2
 
 from .utils import init_wiki_es, override_settings
 

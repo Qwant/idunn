@@ -1,5 +1,5 @@
 import logging
-from elasticsearch7 import ConnectionError
+from elasticsearch import ConnectionError
 
 from idunn.utils.es_wrapper import get_elasticsearch
 
