@@ -65,11 +65,11 @@ def parse_poly(lines):
 
 
 # Load shape for France
-with open(france_poly_filename, encoding="utf-8") as france_file:
+with open(france_poly_filename) as france_file:
     france_polygon = parse_poly(france_file.readlines())
 
 # Load shape for some cities surrounding
-with open(cities_surrounds_file, "r", encoding="utf-8") as f:
+with open(cities_surrounds_file, "r") as f:
     city_surrounds_polygons = {
         city_name: shape(geojson) for city_name, geojson in json.load(f).items()
     }

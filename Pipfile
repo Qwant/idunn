@@ -11,6 +11,7 @@ lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
                                                    line-too-long, \
                                                    protected-access, \
                                                    redefined-outer-name, \
+                                                   unspecified-encoding, \
                                                    unused-argument, \
                                                    unused-import'"""
 

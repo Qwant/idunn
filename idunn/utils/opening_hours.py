@@ -13,10 +13,10 @@ class OpeningHoursEngine:
         self.js_ctx = None
 
     def init_js_ctx(self):
-        with open(OPENING_HOURS_JS, "r", encoding="utf-8") as f:
+        with open(OPENING_HOURS_JS, "r") as f:
             js_sources = f.read()
 
-        with open(OPENING_HOURS_JS_WRAPPER, "r", encoding="utf-8") as f:
+        with open(OPENING_HOURS_JS_WRAPPER, "r") as f:
             js_wrapper = f.read()
 
         self.js_ctx = MiniRacer()

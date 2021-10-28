@@ -16,7 +16,7 @@ def test_recycling():
     Check the result of events contained in bbox
     """
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", "recycling_response.json")
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, "r") as f:
         recycling_response = json.load(f)
 
     client = TestClient(app)

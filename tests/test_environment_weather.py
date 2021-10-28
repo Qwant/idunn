@@ -137,7 +137,7 @@ def test_weather_city():
     """
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", "api_weather_response.json")
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, "r") as f:
         json_aq = json.load(f)
 
     with responses.RequestsMock() as rsps:

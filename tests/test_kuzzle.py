@@ -14,7 +14,7 @@ def test_kuzzle_event_ok():
     Check the result of events contained in bbox
     """
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", "kuzzle_event_response.json")
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, "r") as f:
         json_event = json.load(f)
 
     client = TestClient(app)
@@ -71,7 +71,7 @@ def test_kuzzle_event_nok():
     Check that an error  501 is raised when kuzzle port and address not set
     """
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", "kuzzle_event_response.json")
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, "r") as f:
         json_event = json.load(f)
 
     client = TestClient(app)

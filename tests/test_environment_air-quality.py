@@ -23,7 +23,7 @@ def test_pollution_city():
         os.path.dirname(__file__), "fixtures", "kuzzle_air-quality_response.json"
     )
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, "r") as f:
         json_aq = json.load(f)
 
     with responses.RequestsMock() as rsps:
