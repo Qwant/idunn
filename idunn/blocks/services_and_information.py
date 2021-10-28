@@ -12,10 +12,10 @@ class AccessibilityBlock(BaseBlock):
 
     type: Literal["accessibility"] = "accessibility"
     wheelchair: constr(
-        regex="({})".format("|".join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
+        regex=f"({'|'.join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN])})"
     )
     toilets_wheelchair: constr(
-        regex="({})".format("|".join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN]))
+        regex=f"({'|'.join([STATUS_OK, STATUS_KO, STATUS_LIMITED, STATUS_UNKNOWN])})"
     )
 
     @classmethod
@@ -88,7 +88,7 @@ class BreweryBlock(BaseBlock):
 
 
 def get_diet_status(diet_kind, data):
-    info = data.get("properties", {}).get("diet:{}".format(diet_kind))
+    info = data.get("properties", {}).get(f"diet:{diet_kind}")
     return {
         CuisineBlock.STATUS_YES: CuisineBlock.STATUS_YES,
         CuisineBlock.STATUS_NO: CuisineBlock.STATUS_NO,

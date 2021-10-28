@@ -48,7 +48,7 @@ class WikiEs:
     @classmethod
     def get_index(cls, lang):
         if cls.is_lang_available(lang):
-            return "wikidata_{}".format(lang)
+            return f"wikidata_{lang}"
         return None
 
     def get_info(self, wikidata_id, lang):

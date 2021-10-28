@@ -5,11 +5,13 @@ name = "pypi"
 
 [scripts]
 lint = "bash -c 'pipenv run lint-src && pipenv run lint-tests'"
-lint-src = "pipenv run pylint idunn"
-lint-tests = """pipenv run pylint tests --disable='import-outside-toplevel, \
+lint-src = "pipenv run pylint idunn --disable='unspecified-encoding'"
+lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
+                                                   import-outside-toplevel, \
                                                    line-too-long, \
                                                    protected-access, \
                                                    redefined-outer-name, \
+                                                   unspecified-encoding, \
                                                    unused-argument, \
                                                    unused-import'"""
 

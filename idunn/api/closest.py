@@ -32,9 +32,7 @@ def get_closest_place(lat: float, lon: float, es=None):
         prometheus.exception("FoundPlaceWithWrongType")
         raise HTTPException(
             status_code=404,
-            detail="Closest address to '{}:{}' has a wrong type: '{}'".format(
-                lat, lon, es_addr.get("_type")
-            ),
+            detail=f"Closest address to '{lat}:{lon}' has a wrong type: '{es_addr.get('_type')}'",
         )
 
     return loader(es_addr["_source"])
