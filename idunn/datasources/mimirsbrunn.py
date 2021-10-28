@@ -120,6 +120,14 @@ def fetch_es_place(id, es, type) -> dict:
     return es_place[0]
 
 
+def get_es_place_type(es_place) -> str:
+    """
+    Returns the type place from the ES index name
+    The index name format is munin_{addr/street}
+    """
+    return es_place.get("_index").split("_")[1]
+
+
 def fetch_closest(lat, lon, max_distance, es):
     es_addrs = es.search(
         index=",".join([PLACE_ADDRESS_INDEX, PLACE_STREET_INDEX]),

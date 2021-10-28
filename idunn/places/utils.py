@@ -1,5 +1,5 @@
 from idunn.datasources.pages_jaunes import pj_source
-from idunn.datasources.mimirsbrunn import fetch_es_place
+from idunn.datasources.mimirsbrunn import fetch_es_place, get_es_place_type
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
 
@@ -58,7 +58,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         "poi": POI,
     }
 
-    place_type = es_place.get("_index").split("_")[1]
+    place_type = get_es_place_type(es_place)
     loader = places.get(place_type)
 
     if loader is None:

@@ -8,7 +8,7 @@ from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
 from idunn.places import Street, Address, Place
 from idunn.api.utils import Verbosity
-from idunn.datasources.mimirsbrunn import fetch_closest
+from idunn.datasources.mimirsbrunn import fetch_closest, get_es_place_type
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,7 @@ def get_closest_place(lat: float, lon: float, es=None):
         "addr": Address,
         "street": Street,
     }
-    places_type = es_addr.get("_index").split("_")[
-        1
-    ]  # the index name format is munin_{addr/street}
+    places_type = get_es_place_type(es_addr)
     loader = places.get(places_type)
 
     if loader is None:
