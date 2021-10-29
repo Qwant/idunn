@@ -91,4 +91,4 @@ def inaccessible_recycling():
 
 
 def read_fixture(fixture_path):
-    return json.load(open(os.path.join(os.path.dirname(__file__), fixture_path)))
+    return json.load(open(os.path.join(os.path.dirname(__file__), fixture_path), encoding="utf-8"))

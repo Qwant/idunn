@@ -16,7 +16,7 @@ def orsay_wiki_es(wiki_client, init_indices):
     We load the wiki_es fixture for the orsay museum
     """
     filepath = os.path.join(os.path.dirname(__file__), "fixtures", "orsay_wiki_es.json")
-    with open(filepath, "r") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         poi = json.load(f)
         poi_id = poi["id"]
         wiki_client.index(

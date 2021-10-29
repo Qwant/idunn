@@ -8,7 +8,7 @@ from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
 from idunn.places import Street, Address, Place
 from idunn.api.utils import Verbosity
-from idunn.datasources.mimirsbrunn import fetch_closest
+from idunn.datasources.mimirsbrunn import fetch_closest, get_es_place_type
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +25,15 @@ def get_closest_place(lat: float, lon: float, es=None):
         "addr": Address,
         "street": Street,
     }
-    loader = places.get(es_addr.get("_type"))
+    places_type = get_es_place_type(es_addr)
+    loader = places.get(places_type)
 
     if loader is None:
         logger.warning("Found a place with the wrong type")
         prometheus.exception("FoundPlaceWithWrongType")
         raise HTTPException(
             status_code=404,
-            detail=f"Closest address to '{lat}:{lon}' has a wrong type: '{es_addr.get('_type')}'",
+            detail=f"Closest address to '{lat}:{lon}' has a wrong type: '{places_type}'",
         )
 
     return loader(es_addr["_source"])
