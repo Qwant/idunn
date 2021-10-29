@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from elasticsearch import Elasticsearch, RequestsHttpConnection
+
 from idunn import settings
 
 
