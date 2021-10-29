@@ -61,7 +61,7 @@ SHORTCUT_TITLE = {
 }
 
 REGEX_FIND_TITLES = re.compile(
-    r"(.*?)\s(%s)\s(.*)" % "|".join(list(SHORTCUT_TITLE)), flags=re.IGNORECASE
+    rf"(.*?)\s({'|'.join(list(SHORTCUT_TITLE))})\s(.*)", flags=re.IGNORECASE
 )
 
 
@@ -83,7 +83,7 @@ def normalized_pj_address(street_address: str) -> str:
 def _check_street_suffix_shortcut(street_address: str) -> str:
     temp_split = street_address.title().split()
     for idx, element in enumerate(temp_split):
-        if element in SHORTCUT_STREET_SUFFIX.keys():
+        if element in SHORTCUT_STREET_SUFFIX:
             temp_split[idx] = SHORTCUT_STREET_SUFFIX[element]
             break
         if element.lower() in SHORTCUT_STREET_SUFFIX.values():

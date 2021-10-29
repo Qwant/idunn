@@ -5,7 +5,8 @@ from typing import Tuple
 
 DIR = os.path.dirname(__file__)
 REGIONS_FILE = os.path.join(DIR, "data/regions.json")
-REGIONS = json.load(open(REGIONS_FILE))
+with open(REGIONS_FILE) as f:
+    REGIONS = json.load(f)
 
 
 def get_region_lonlat(region: str) -> Tuple[float, float]:

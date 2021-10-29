@@ -130,7 +130,7 @@ def fetch_closest(lat, lon, max_distance, es):
                         "bool": {
                             "filter": {
                                 "geo_distance": {
-                                    "distance": "{}m".format(max_distance),
+                                    "distance": f"{max_distance}m",
                                     "coord": {"lat": lat, "lon": lon},
                                     "distance_type": "plane",
                                 }
@@ -143,7 +143,7 @@ def fetch_closest(lat, lon, max_distance, es):
                             "gauss": {
                                 "coord": {
                                     "origin": {"lat": lat, "lon": lon},
-                                    "scale": "{}m".format(max_distance),
+                                    "scale": f"{max_distance}m",
                                 }
                             }
                         }

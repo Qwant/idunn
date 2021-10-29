@@ -21,7 +21,7 @@ def directions_request(request: Request, response: Response):
     Responsible for rate limit and cache headers for directions requests
     """
     rate_limiter.check_limit_per_client(request)
-    response.headers["cache-control"] = "max-age={}".format(settings["DIRECTIONS_CLIENT_CACHE"])
+    response.headers["cache-control"] = f"max-age={settings['DIRECTIONS_CLIENT_CACHE']}"
     return request
 
 
