@@ -6,7 +6,7 @@ from idunn import settings
 from idunn.api.geocoder import get_autocomplete
 from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
-from ..geocoder.models import ExtraParams, QueryParams, IdunnAutocomplete
+from ..geocoder.models import ExtraParams, QueryParams
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter(match_word_prefix=True, min_matching_words=3)
