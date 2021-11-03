@@ -87,6 +87,9 @@ def get_api_urls(settings):
             search,
             methods=["GET", "POST"],
             response_model=IdunnAutocomplete,
+            responses={
+                204: {"description": "Empty search provided"},
+            },
             response_model_exclude_unset=True,
         ),
         # Solve URLs

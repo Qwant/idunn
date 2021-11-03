@@ -1,5 +1,6 @@
 import logging
 from fastapi import Body, Depends
+from starlette.responses import Response
 
 from idunn import settings
 from idunn.api.geocoder import get_autocomplete
@@ -15,7 +16,7 @@ nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 
 async def search(
     query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
-) -> IdunnAutocomplete:
+):
     """
     Perform a query which is intended to display a relevant result directly (as
     opposed to `autocomplete` which gives a list of plausible results).
@@ -24,6 +25,8 @@ async def search(
     """
     # Fetch autocomplete results which will be filtered
     query.q = normalize(query.q)
+    if query.q == "":
+        return Response(status_code=204)
     response = await get_autocomplete(query, extra)
 
     # When an intention is detected, it takes over on geocoding features
