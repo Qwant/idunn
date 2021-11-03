@@ -15,7 +15,7 @@ def test_empty_search(mock_autocomplete_get, mock_NLU_with_city):
     assert response.status_code == 204
 
 
-def test_serch_qwant_maps(mock_autocomplete_get, mock_NLU_with_city):
+def test_search_qwant_maps(mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get("/v1/search", params={"q": "qwant maps", "lang": "fr", "nlu": True})
     assert response.status_code == 204
