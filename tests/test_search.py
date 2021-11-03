@@ -12,12 +12,22 @@ from .fixtures.autocomplete import (
 def test_empty_search(mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get("/v1/search", params={"q": "", "lang": "fr", "nlu": True})
-    assert response.status_code == 204
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json["geocoding"]["query"] == ""
 
 
 def test_search_qwant_maps(mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get("/v1/search", params={"q": "qwant maps", "lang": "fr", "nlu": True})
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json["geocoding"]["query"] == ""
+
+
+def test_search_bloublou_without_answer(mock_autocomplete_get, mock_NLU_with_city):
+    client = TestClient(app)
+    response = client.get("/v1/search", params={"q": "bloublou", "lang": "fr", "nlu": True})
     assert response.status_code == 204
 
 

@@ -25,9 +25,11 @@ async def search(
     """
     # Fetch autocomplete results which will be filtered
     query.q = normalize(query.q)
-    if query.q == "":
-        return Response(status_code=204)
     response = await get_autocomplete(query, extra)
+
+    # When no result was found for an acceptable query
+    if len(response.dict()["features"]) == 0 and query.q != "":
+        return Response(status_code=204)
 
     # When an intention is detected, it takes over on geocoding features
     if response.intentions:
