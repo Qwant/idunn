@@ -51,5 +51,7 @@ async def search(
 
 
 def build_empty_query_content_response():
-    return '{"type":"FeatureCollection","geocoding":{"version":"0.1.0","query":""}' \
-           ',"intentions":[],"features":[]}'
+    return (
+        '{"type":"FeatureCollection","geocoding":{"version":"0.1.0","query":""}'
+        ',"intentions":[],"features":[]}'
+    )
