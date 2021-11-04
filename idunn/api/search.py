@@ -6,7 +6,7 @@ from idunn import settings
 from idunn.api.geocoder import get_autocomplete
 from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
-from ..geocoder.models import ExtraParams, QueryParams, IdunnAutocomplete
+from ..geocoder.models import ExtraParams, QueryParams
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter(match_word_prefix=True, min_matching_words=3)
@@ -15,7 +15,7 @@ nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 
 
 async def search(
-        query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
+    query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
 ):
     """
     Perform a query which is intended to display a relevant result directly (as
@@ -26,8 +26,7 @@ async def search(
     # Fetch autocomplete results which will be filtered
     query.q = normalize(query.q)
     if query.q == "":
-        return Response(status_code=200,
-                        content=build_empty_query_content_response())
+        return Response(status_code=200, content=build_empty_query_content_response())
     response = await get_autocomplete(query, extra)
 
     # When no result was found for an acceptable query
@@ -52,4 +51,5 @@ async def search(
 
 
 def build_empty_query_content_response():
-    return '{"type":"FeatureCollection","geocoding":{"version":"0.1.0","query":""},"intentions":[],"features":[]}'
+    return '{"type":"FeatureCollection","geocoding":{"version":"0.1.0","query":""}' \
+           ',"intentions":[],"features":[]}'
