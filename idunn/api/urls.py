@@ -1,5 +1,6 @@
 from fastapi import Depends
 
+from .hotel_pricing import get_hotel_pricing
 from .pois import get_poi
 from .places import get_place, get_place_latlon
 from .status import get_status
@@ -60,6 +61,10 @@ def get_api_urls(settings):
         APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
         APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
+        # Kuzzle events
+        APIRoute("/events", get_events_bbox),
+        # TripAdvisor hotel
+        APIRoute("/hotel_pricing", get_hotel_pricing),
         # Directions
         APIRoute(
             "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
