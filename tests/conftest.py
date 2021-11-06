@@ -69,22 +69,20 @@ def init_indices(mimir_client, wiki_client):
     """
     mimir_client.indices.create(
         index="munin_poi",
-        body={
-            "mappings": {
-                "properties": {
-                    "coord": {"type": "geo_point"},
-                    "weight": {"type": "float"},
-                    "poi_type.name": {"type": "text", "index_options": "docs", "analyzer": "word"},
-                }
-            },
-            "settings": {
-                "analysis": {
-                    "analyzer": {
-                        "word": {
-                            "filter": ["lowercase", "asciifolding"],
-                            "type": "custom",
-                            "tokenizer": "standard",
-                        }
+        mappings={
+            "properties": {
+                "coord": {"type": "geo_point"},
+                "weight": {"type": "float"},
+                "poi_type.name": {"type": "text", "index_options": "docs", "analyzer": "word"},
+            }
+        },
+        settings={
+            "analysis": {
+                "analyzer": {
+                    "word": {
+                        "filter": ["lowercase", "asciifolding"],
+                        "type": "custom",
+                        "tokenizer": "standard",
                     }
                 }
             },
@@ -94,11 +92,9 @@ def init_indices(mimir_client, wiki_client):
 
     mimir_client.indices.create(
         index="munin_addr",
-        body={
-            "mappings": {
-                "properties": {
-                    "coord": {"type": "geo_point"},
-                }
+        mappings={
+            "properties": {
+                "coord": {"type": "geo_point"},
             }
         },
     )
@@ -106,11 +102,9 @@ def init_indices(mimir_client, wiki_client):
 
     mimir_client.indices.create(
         index="munin_street",
-        body={
-            "mappings": {
-                "properties": {
-                    "coord": {"type": "geo_point"},
-                }
+        mappings={
+            "properties": {
+                "coord": {"type": "geo_point"},
             }
         },
     )
@@ -163,7 +157,7 @@ def load_place(file_name, mimir_client, doc_type="poi"):
         place_id = place["id"]
         mimir_client.index(
             index=index_name,
-            body=place,
+            document=place,
             id=place_id,
             refresh=True,
         )
