@@ -29,8 +29,8 @@ async def search(
         return Response(status_code=200, content=build_empty_query_content_response())
     response = await get_autocomplete(query, extra)
 
-    # When no result was found for an acceptable query
-    if not response.features and query.q != "":
+    # When no result was found for an acceptable query (not empty)
+    if not response.features:
         return Response(status_code=204)
 
     # When an intention is detected, it takes over on geocoding features
