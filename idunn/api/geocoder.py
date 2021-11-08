@@ -91,6 +91,7 @@ async def get_autocomplete(
                 )
             )
         autocomplete_response["intentions"] = intentions
+    autocomplete_response["geocoding"]["query"] = query.q
     return IdunnAutocomplete(**autocomplete_response)
 
 
