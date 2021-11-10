@@ -22,15 +22,11 @@ categories:
         raw_filters:
           - class: "hospital"
         pj_what: "hôpital"
-        pj_filters:
-          - "Hôpital"
         regex: "health|sante|hopital|hospital|clinic|clinique"
 
     # NOTE: This is a legacy alias for `health_pharmacy`
     pharmacy:
         pj_what: "pharmacie"
-        pj_filters:
-          - "Pharmacie"
         raw_filters:
           - class: "pharmacy"
         regex: "pharmac"
@@ -38,8 +34,6 @@ categories:
     # NOTE: This is a legacy alias for shop_supermarket
     supermarket:
         pj_what: "alimentation grande surface"
-        pj_filters:
-          - "supermarchés, hypermarchés"
         raw_filters:
           - subclass: "supermarket"
           - subclass: "mall"
@@ -47,25 +41,12 @@ categories:
 
     education:
         pj_what: "école collège lycée"
-        pj_filters:
-          - "écoles maternelles publiques"
-          - "écoles primaires publiques"
-          - "collèges publics"
-          - "lycées d'enseignement général et technologique publics"
-          - "écoles maternelles privées"
-          - "écoles primaires privées"
-          - "collèges privés"
-          - "lycées d'enseignement général et technologique privés"
-          - "enseignement supérieur public"
-          - "enseignement supérieur privé"
         raw_filters:
           - class: "school"
 
     # NOTE: This is a legacy alias for `post_office`
     service:
         pj_what: "poste"
-        pj_filters:
-          - "envoi, distribution de courrier, de colis"
         raw_filters:
           - subclass: "post_office"
         regex: "(^| )post"
@@ -73,10 +54,6 @@ categories:
     # NOTE: This is a legacy alias for `sports_centre`
     fitness:
         pj_what: "sport"
-        pj_filters:
-          - "infrastructures de sports et loisirs"
-          - "piscines (établissements)"
-          - "clubs de sport"
         raw_filters:
           - class: "sports_centre"
         regex: "fitness|muscu|piscine"
@@ -209,8 +186,6 @@ categories:
           - class: "restaurant"
           - class: "fast_food"
         pj_what: "restaurants"
-        pj_filters:
-          - "restaurants"
 
     place_of_worship:
         regex: "cathedral|church|eglise|mosque|synagogue|temple"
@@ -275,16 +250,12 @@ categories:
           - class: "supermarket"
           - class: "mall"
         pj_what: "alimentation grande surface"
-        pj_filters:
-          - "supermarchés, hypermarchés"
 
     bank:
         regex: "^(bank|banque|credit|caisse|atm$)"
         raw_filters:
           - class: "bank"
         pj_what: "banque"
-        pj_filters:
-          - "banques"
 
     fast_food:
         raw_filters:
@@ -298,16 +269,12 @@ categories:
           - class: "cafe"
           - class: "beer"
         pj_what: "bar"
-        pj_filters:
-          - "cafés, bars"
 
     hotel:
         regex: "hotel"
         raw_filters:
           - class: "lodging"
         pj_what: "hôtels"
-        pj_filters:
-          - "hôtels"
 
     historic:
         raw_filters:
@@ -399,8 +366,6 @@ categories:
         raw_filters:
           - class: "hospital"
         pj_what: "hôpital"
-        pj_filters:
-          - "Hôpital"
 
     health_doctors:
         raw_filters:
@@ -422,8 +387,6 @@ categories:
         raw_filters:
           - class: "pharmacy"
         pj_what: "pharmacie"
-        pj_filters:
-          - "Pharmacie"
 
     health_psychotherapist:
         raw_filters:
@@ -461,8 +424,6 @@ categories:
         raw_filters:
           - class: "police"
         pj_what: "police"
-        pj_filters:
-          - "services de gendarmerie, de police"
 
     shop_optician:
         raw_filters:
@@ -511,8 +472,6 @@ categories:
         raw_filters:
           - class: "museum"
         pj_what: "musée"
-        pj_filters:
-          - "musées"
 
     shop_jewelry:
         raw_filters:
@@ -561,8 +520,6 @@ categories:
         raw_filters:
           - class: "theatre"
         pj_what: "théâtre"
-        pj_filters:
-          - "salles de concerts, de spectacles"
 
     veterinary:
         raw_filters:
@@ -596,8 +553,6 @@ categories:
         raw_filters:
           - class: "cinema"
         pj_what: "cinéma"
-        pj_filters:
-          - "salles de cinéma"
 
     university:
         regex: "^universit|educat"

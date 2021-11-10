@@ -63,9 +63,6 @@ class CategoryEnum(str):
     def match_brand(self):
         return ALL_CATEGORIES[self].get("match_brand", False)
 
-    def pj_filters(self):
-        return ALL_CATEGORIES[self].get("pj_filters")
-
     def pj_what(self):
         return ALL_CATEGORIES[self].get("pj_what")
 
