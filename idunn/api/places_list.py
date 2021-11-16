@@ -1,26 +1,22 @@
 import logging
-
-from geopy.point import Point
-from geopy.distance import distance
-from shapely.geometry import MultiPoint, box
-from shapely.affinity import scale
-from fastapi import HTTPException, Query
-from fastapi.concurrency import run_in_threadpool
-
-from idunn import settings
-from idunn.places import POI, BragiPOI
-from idunn.api.utils import Verbosity
-from idunn.places.event import Event
-from idunn.geocoder.bragi_client import bragi_client
-from idunn.datasources.pages_jaunes import pj_source
-from idunn.datasources.kuzzle import kuzzle_client
-from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
-from .constants import PoiSource, ALL_POI_SOURCES
-from .utils import Category, OutingCategory
-
-from pydantic import BaseModel, ValidationError, validator, root_validator, Field
 from typing import List, Optional, Any, Tuple
 
+from fastapi import HTTPException, Query
+from fastapi.concurrency import run_in_threadpool
+from geopy.distance import distance
+from geopy.point import Point
+from pydantic import BaseModel, ValidationError, validator, root_validator, Field
+from shapely.affinity import scale
+from shapely.geometry import MultiPoint, box
+
+from idunn import settings
+from idunn.api.utils import Verbosity
+from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
+from idunn.datasources.pages_jaunes import pj_source
+from idunn.geocoder.bragi_client import bragi_client
+from idunn.places import POI, BragiPOI
+from .constants import PoiSource, ALL_POI_SOURCES
+from .utils import Category
 
 logger = logging.getLogger(__name__)
 
@@ -110,10 +106,6 @@ class PlacesQueryParam(CommonQueryParam):
                 detail="One of 'category', 'raw_filter' or 'q' parameter is required",
             )
         return values
-
-
-class EventQueryParam(CommonQueryParam):
-    category: Optional[OutingCategory]
 
 
 class PlacesBboxResponse(BaseModel):
@@ -242,47 +234,3 @@ async def _fetch_places_list(params: PlacesQueryParam):
         max_size=params.size,
     )
     return [POI(p["_source"]) for p in bbox_places]
-
-
-def get_events_bbox(
-    bbox: str = Query(
-        ...,
-        title="Bounding box",
-        description="Format: left_lon,bottom_lat,right_lon,top_lat",
-        example="-4.56,48.35,-4.42,48.46",
-    ),
-    category: Optional[OutingCategory] = Query(None, description="Kind of event to look for."),
-    size: int = Query(None),
-    lang: Optional[str] = Query(None),
-    verbosity: Verbosity = Verbosity.default_list(),
-):
-    """Get all ongoing events in a bounding box."""
-    if not kuzzle_client.enabled:
-        raise HTTPException(status_code=501, detail="Kuzzle client is not available")
-
-    try:
-        params = EventQueryParam(
-            **{
-                "category": category,
-                "bbox": bbox,
-                "size": size,
-                "lang": lang,
-                "verbosity": verbosity,
-            }
-        )
-    except ValidationError as e:
-        logger.info("Validation Error: %s", e.json())
-        raise HTTPException(status_code=400, detail=e.errors()) from e
-
-    current_outing_lang = None
-
-    if params.category:
-        current_outing_lang = params.category.languages().get("fr")
-
-    bbox_places = kuzzle_client.fetch_event_places(
-        bbox=params.bbox, collection="events", category=current_outing_lang, size=params.size
-    )
-
-    events_list = [Event(p["_source"]) for p in bbox_places]
-
-    return {"events": [p.load_place(params.lang, params.verbosity) for p in events_list]}

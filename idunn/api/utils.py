@@ -44,15 +44,7 @@ def get_categories():
     return _load_yaml_file(categories_path)["categories"]
 
 
-def get_outing_types():
-    outing_types_path = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "../utils/categories.yml"
-    )
-    return _load_yaml_file(outing_types_path)["outing_types"]
-
-
 ALL_CATEGORIES = get_categories()
-ALL_OUTING_CATEGORIES = get_outing_types()
 
 
 class CategoryEnum(str):
@@ -82,21 +74,6 @@ class CategoryEnum(str):
 
 # Load the list of categories as an enum for validation purpose
 Category = Enum("Category", {cat: cat for cat in ALL_CATEGORIES}, type=CategoryEnum)
-
-
-class OutingCategoryEnum(str):
-    """
-    Methods defining the behavior of the enum `OutingCategory` defined bellow.
-    """
-
-    def languages(self):
-        return ALL_OUTING_CATEGORIES[self]
-
-
-# Load the list of outing categories as an enum for validation purpose
-OutingCategory = Enum(
-    "OutingCategory", {cat: cat for cat in ALL_OUTING_CATEGORIES}, type=OutingCategoryEnum
-)
 
 
 class Verbosity(str, Enum):

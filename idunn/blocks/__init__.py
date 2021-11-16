@@ -40,7 +40,6 @@ AnyBlock = Union[
     OpeningDayEvent,
     DescriptionEvent,
     CuisineBlock,
-    AirQuality,
     Weather,
     RecyclingBlock,
     TransactionalBlock,

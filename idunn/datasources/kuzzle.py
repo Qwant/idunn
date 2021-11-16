@@ -1,10 +1,8 @@
-import requests
 import logging
-from fastapi import HTTPException
-from deepmerge import always_merger
+
+import requests
 
 from idunn import settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -76,84 +74,6 @@ class KuzzleClient:
     @property
     def enabled(self):
         return bool(self.kuzzle_url)
-
-    def fetch_event_places(self, bbox, category, collection, size) -> list:
-        if not self.enabled:
-            raise Exception("Kuzzle is not enabled")
-
-        left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
-
-        url_kuzzle = f"{self.kuzzle_url}/opendatasoft/{collection}/_search"
-        query_simple = {
-            "query": {
-                "bool": {
-                    "filter": {
-                        "geo_bounding_box": {
-                            "geo_loc": {
-                                "top_left": {"lat": top, "lon": left},
-                                "bottom_right": {"lat": bot, "lon": right},
-                            }
-                        }
-                    },
-                    "must": [
-                        {"range": {"date_end": {"gte": "now/d", "lte": "now+31d/d"}}},
-                        {"range": {"date_start": {"lte": "now+7d/d"}}},
-                    ],
-                }
-            },
-            "size": size,
-        }
-        if category is None:
-            query_outing = {}
-        else:
-            query_outing = {
-                "query": {
-                    "bool": {
-                        "must": [
-                            {
-                                "multi_match": {
-                                    "query": category,
-                                    "type": "best_fields",
-                                    "fields": ["tag^5", "free_text^4", "title^4", "description^3"],
-                                    "tie_breaker": 0.7,
-                                },
-                            }
-                        ],
-                        "should": [
-                            {
-                                "multi_match": {
-                                    "query": category,
-                                    "type": "phrase",
-                                    "fields": [
-                                        "tags^5",
-                                        "category^5",
-                                        "free_text^4",
-                                        "title^4",
-                                        "description^3",
-                                    ],
-                                }
-                            }
-                        ],
-                    }
-                }
-            }
-
-        query = always_merger.merge(query_simple, query_outing)
-        bbox_places = self.session.post(url_kuzzle, json=query, timeout=self.request_timeout)
-        bbox_places.raise_for_status()
-        try:
-            bbox_places = bbox_places.json()
-        except Exception as exc:
-            logger.error(
-                "Error with kuzzle JSON with request to %s got %s",
-                url_kuzzle,
-                bbox_places.content,
-                exc_info=True,
-            )
-            raise HTTPException(detail="kuzzle error", status_code=503) from exc
-
-        bbox_places = bbox_places.get("result", {}).get("hits", [])
-        return bbox_places
 
     def fetch_air_quality(self, geobbox) -> dict:
         """
