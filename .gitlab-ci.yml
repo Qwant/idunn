@@ -3,17 +3,97 @@ stages:
   - configure
   - development
   - prelive
+  - validation
   - production
 
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
+.idunn:
+  variables:
+    COMPONENT_NAME: idunn
 
-before_script:
-  - source ci/bootstrap.sh
-  - docker login
-    --username "$CI_REGISTRY_USER"
-    --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
+.argocd:
+  image:
+    name: registry.qwant.ninja/docker/kubectl:1.19.1
+  before_script:
+    - source ci/bootstrap-k8s.sh
+  variables:
+    ARGOAPP_REPO_BRANCH: "QMAPS-2419"
+    ARGOAPP_REPO_PATH: "c2/${KUBE_NAMESPACE}/charts/idunn"
+    ARGOCD_APP_ENVIRONMENT: "$CI_ENVIRONMENT_NAME"
+    ARGOCD_OPTS: --insecure
+    ARGOCD_PROJECT: maps
+    ARGOCD_SERVER: $ARGOCD_SERVER_DEV
+    ARGOCD_SUBCHART_NAME: webapp
+    ARGOCD_TIMEOUT: 600
+    ARGOCD_BASE_DOMAIN: c2.par1.kube.qwant.ninja
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_STRATEGY: clone
+    MATTERMOST_URL: "https://slack.qwant.ninja"
+    ARGOCD_AUTH_TOKEN: $ARGOCD_AUTH_TOKEN_DEVELOPMENT
+    ARGOAPP_REPO_URL_SSH: "git@git.qwant.ninja:teams/search-apps/argo_apps.git"
+    ARGOCD_KUBE_REPO_URL_HTTPS: https://git.qwant.ninja/teams/search-apps/argo_apps.git
+  interruptible: false
+  script:
+    - deploy_argo
+  tags:
+    - k8s
 
+.argocd:review:
+  stage: development
+  variables:
+    KUBE_NAMESPACE: "dev-maps"
+    ARGOCD_APP_NAME: "review-${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
+    FULLNAME_OVERRIDE: "${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
+    HELM_VALUES: "values.yaml"
+    PRODUCTION: "false"
+
+.argocd:prelive:
+  stage: prelive
+  variables:
+    KUBE_NAMESPACE: "int-maps"
+    ARGOCD_APP_NAME: "integration-${COMPONENT_NAME}"
+    FULLNAME_OVERRIDE: "${COMPONENT_NAME}"
+    HELM_VALUES: "values.yaml"
+    PRODUCTION: "true"
+  when: manual
+
+.argocd:production:
+  stage: production
+  variables:
+    ARGOCD_AUTH_TOKEN: $ARGOCD_AUTH_TOKEN_PRODUCTION
+    ARGOCD_SERVER: $ARGOCD_SERVER_PROD
+    ARGOAPP_REPO_PATH: "c4/${KUBE_NAMESPACE}/charts/foundation-recipes"
+    ARGOCD_BASE_DOMAIN: c4.par1.kube.qwant.ninja
+    KUBE_NAMESPACE: "prod-maps"
+    ARGOCD_APP_NAME: "production-$COMPONENT_NAME"
+    HELM_VALUES: "values.yaml"
+    PRODUCTION: "true"
+  when: manual
+
+.argocd:destroy:
+  script:
+    - echo Destroying review app $ARGOCD_APP_NAME ...
+    - argocd app delete $ARGOCD_APP_NAME
+      --auth-token $ARGOCD_AUTH_TOKEN
+      --server $ARGOCD_SERVER
+      --grpc-web
+  except:
+    refs:
+      - master
+
+.promote:integration:
+  extends: .build
+  stage: validation
+  variables:
+    DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
+    GIT_SUBMODULE_STRATEGY: recursive
+    TARGET_IMAGE: "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:master"
+    SOURCE_IMAGE: "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${CI_COMMIT_REF_SLUG}"
+  script:
+    - docker pull "$SOURCE_IMAGE"
+    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
+    - docker push "$TARGET_IMAGE"
+    - subst -i ci/templates/docker-idunn-digest.env
+  when: manual
 
 push docker-service-network image:
   stage: build
@@ -28,9 +108,27 @@ push docker-service-network image:
     DEST_IMAGE: "${CI_REGISTRY_IMAGE}/ci/docker-service-network:latest"
   when: manual
 
+.build:
+  stage: build
+  before_script:
+    - source ci/bootstrap.sh
+    - docker login
+      --username "$CI_REGISTRY_USER"
+      --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
+  variables:
+    COMPOSE_DOCKER_CLI_BUILD: "1"
+    COMPOSE_FILE: "docker-compose.build.yml"
+    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
+    DOCKER_BUILDKIT: "1"
+    DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
+    GIT_SUBMODULE_STRATEGY: recursive
+  tags:
+    - edge
+    - shell
 
 build:
-  stage: build
+  extends:
+    - .build
   tags:
     - light
   script:
@@ -39,8 +137,6 @@ build:
     - docker-compose push
     - subst < ci/templates/docker-content-digest.env | tee docker-content-digest.env
   variables:
-    COMPOSE_FILE: "docker-compose.build.yml"
-    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     IDUNN_IMAGE_TAG: "latest"
   artifacts:
     paths:
@@ -54,18 +150,33 @@ build:
       - docker-compose.yml
 
 build classifier:
-  stage: build
+  extends:
+    - .build
   variables:
-    DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
     TARGET_IMAGE: &target-nlu-image "$CI_REGISTRY_IMAGE/classifier/maps:1.1"
-    SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:qmaps-2160"
+    SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:latest"
   script:
     - docker pull "$SOURCE_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
     - docker push "$TARGET_IMAGE"
-  tags:
-    - edge
-    - shell
+
+build idunn:
+  extends:
+    - .build
+  variables:
+    TARGET_IMAGE: "$CI_REGISTRY_IMAGE/idunn:dev-latest"
+    TARGET_IMAGE_BRANCH: "$CI_REGISTRY_IMAGE/idunn:${CI_COMMIT_REF_SLUG}"
+    SOURCE_IMAGE: "qwantresearch/idunn:latest-es7"
+  script:
+    - docker pull "$SOURCE_IMAGE"
+    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
+    - docker push "$TARGET_IMAGE"
+    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE_BRANCH"
+    - docker push "$TARGET_IMAGE_BRANCH"
+    - subst -i ci/templates/docker-idunn-dev-digest.env
+  artifacts:
+    paths:
+      - "ci"
 
 configure:
   stage: configure
@@ -85,6 +196,56 @@ configure:
     - build
   tags:
     - light
+
+deploy idunn review:
+  extends:
+    - .idunn
+    - .argocd
+    - .argocd:review
+  needs:
+    - build idunn
+  when: on_success
+  script:
+    - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
+    - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
+    - deploy_argo
+
+stop idunn review:
+  extends:
+    - .idunn
+    - .argocd
+    - .argocd:review
+    - .argocd:destroy
+  image: registry.qwant.ninja/docker/kubectl:1.19.1
+  environment:
+    name: "argocd/$KUBE_NAMESPACE"
+    action: stop
+  when: manual
+
+argo deploy idunn prelive:
+  extends:
+    - .idunn
+    - .argocd
+    - .argocd:prelive
+  needs:
+    - build idunn
+  script:
+    - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
+    - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
+      --image-version-object-path-app ".webapp.image.name"
+    - deploy_argo
+  when: manual
+  variables:
+    IMAGE_VERSION_FILE: "$HELM_VALUES"
+    ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+
+idunn promote integration to prod:
+  extends:
+    - .promote:integration
+    - .idunn
+  stage: validation
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.09
@@ -190,3 +351,21 @@ deploy classifier production:
     name: "production/classifier"
   variables:
     KUBE_ENV: production
+
+deploy idunn production:
+  extends:
+    - .idunn
+    - .argocd
+    - .argocd:production
+  needs:
+    - idunn promote integration to prod
+  script:
+    - export $(xargs <ci/templates/docker-idunn-digest.env)
+    - export IMAGE_DIGEST="$IDUNN_IMAGE_DIGEST"
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
+      --image-version-object-path-app ".webapp.image.name"
+    - deploy_argo
+  variables:
+    IMAGE_VERSION_FILE: "$HELM_VALUES"
+    ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
