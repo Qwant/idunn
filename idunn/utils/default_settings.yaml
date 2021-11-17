@@ -94,10 +94,6 @@ OSM_CONTRIBUTION_HASHTAGS: "QwantMaps" # separated by ",". Used in osm.org/edit 
 
 BLOCK_AIR_QUALITY_ENABLED: True
 
-# kuzzle Cluster
-KUZZLE_CLUSTER_URL:
-KUZZLE_REQUEST_TIMEOUT: "0.5" # seconds
-
 # weather API
 WEATHER_API_URL: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&APPID={appid}"
 WEATHER_API_KEY:
