@@ -28,9 +28,9 @@ EXTENDED_BBOX_MAX_SIZE = float(
 
 
 class CommonQueryParam(BaseModel):
-    bbox: Tuple[float, float, float, float] = None
-    size: int = None
-    lang: str = None
+    bbox: Tuple[float, float, float, float] = Tuple[0, 0, 0, 0]
+    size: int = 0
+    lang: str = ""
     verbosity: Verbosity = Field(...)
 
     @validator("lang", pre=True, always=True)
@@ -152,11 +152,33 @@ async def get_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params)
+    return await get_places_bbox_impl(params, "poi")
+
+# TODO: Just created to test tripadvisor api. To remove after tests
+async def get_tripadvisor_places_bbox(
+    bbox: str = Query(
+        ...,
+        title="Bounding box",
+        description="Format: left_lon,bottom_lat,right_lon,top_lat",
+        example="-4.56,48.35,-4.42,48.46",
+    ),
+    category: List[Category] = Query([]),
+    raw_filter: Optional[List[str]] = Query(None),
+    source: Optional[str] = Query(None),
+    q: Optional[str] = Query(None, title="Query", description="Full text query"),
+    size: Optional[int] = Query(None),
+    lang: Optional[str] = Query(None),
+    verbosity: Verbosity = Verbosity.default_list(),
+    extend_bbox: bool = Query(False),
+) -> PlacesBboxResponse:
+    """Get all places in a bounding box."""
+    params = PlacesQueryParam(**locals())
+    return await get_places_bbox_impl(params, "poi_tripadvisor")
 
 
 async def get_places_bbox_impl(
     params: PlacesQueryParam,
+    poi_es_index_name: str,
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     source = params.source
@@ -168,7 +190,7 @@ async def get_places_bbox_impl(
         else:
             params.source = PoiSource.OSM
 
-    places_list = await _fetch_places_list(params)
+    places_list = await _fetch_places_list(params, poi_es_index_name)
     bbox_extended = False
 
     if params.extend_bbox and len(places_list) == 0:
@@ -182,7 +204,7 @@ async def get_places_bbox_impl(
             new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
             params.bbox = new_box.bounds
             bbox_extended = True
-            places_list = await _fetch_places_list(params)
+            places_list = await _fetch_places_list(params, poi_es_index_name)
 
     if len(places_list) == 0:
         results_bbox = None
@@ -205,7 +227,7 @@ async def get_places_bbox_impl(
     )
 
 
-async def _fetch_places_list(params: PlacesQueryParam):
+async def _fetch_places_list(params: PlacesQueryParam, poi_es_index_name: str):
     if params.source == PoiSource.PAGESJAUNES:
         return await run_in_threadpool(
             pj_source.get_places_bbox,
@@ -229,6 +251,7 @@ async def _fetch_places_list(params: PlacesQueryParam):
 
     bbox_places = await run_in_threadpool(
         fetch_es_pois,
+        poi_es_index_name,
         filters=filters,
         bbox=params.bbox,
         max_size=params.size,

@@ -3,7 +3,7 @@ from fastapi import Depends
 from .pois import get_poi
 from .places import get_place, get_place_latlon
 from .status import get_status
-from .places_list import get_places_bbox, PlacesBboxResponse
+from .places_list import get_places_bbox, get_tripadvisor_places_bbox, PlacesBboxResponse
 from .categories import AllCategoriesResponse, get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
@@ -47,6 +47,19 @@ def get_api_urls(settings):
             dependencies=[
                 rate_limiter_dependency(
                     resource="idunn.get_places_bbox",
+                    max_requests=int(settings["LIST_PLACES_RL_MAX_REQUESTS"]),
+                    expire=int(settings["LIST_PLACES_RL_EXPIRE"]),
+                )
+            ],
+            response_model=PlacesBboxResponse,
+            responses={400: {"description": "Client Error in query params"}},
+        ),
+        APIRoute(
+            "/tripadvisor_places",
+            get_tripadvisor_places_bbox,
+            dependencies=[
+                rate_limiter_dependency(
+                    resource="idunn.get_tripadvisor_places_bbox",
                     max_requests=int(settings["LIST_PLACES_RL_MAX_REQUESTS"]),
                     expire=int(settings["LIST_PLACES_RL_EXPIRE"]),
                 )
