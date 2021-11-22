@@ -40,7 +40,7 @@ class MimirPoiFilter:
         return cls(poi_class, poi_subclass)
 
 
-def fetch_es_pois(filters: [MimirPoiFilter], bbox, max_size) -> list:
+def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) -> list:
     es = get_elasticsearch()
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
@@ -56,7 +56,7 @@ def fetch_es_pois(filters: [MimirPoiFilter], bbox, max_size) -> list:
 
     # pylint: disable = unexpected-keyword-arg
     bbox_places = es.search(
-        index=INDICES["poi"],
+        index=INDICES[index_name],
         query={
             "bool": {
                 "should": should_terms,

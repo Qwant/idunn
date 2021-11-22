@@ -72,6 +72,14 @@ categories:
             cuisine: "pizza"
         pj_what: "pizzeria"
 
+    food_western:
+        raw_filters:
+          - class: "restaurant"
+            cuisine: "western"
+          - class: "fast_food"
+            cuisine: "western"
+        pj_what: "Restaurant occidental"
+
     food_burger:
         raw_filters:
           - class: "restaurant"
@@ -167,6 +175,118 @@ categories:
           - class: "fast_food"
             cuisine: "lebanese"
         pj_what: "restaurant libanais"
+
+    food_barbecue:
+        raw_filters:
+          - class: "restaurant"
+            cuisine: "barbecue"
+          - class: "fast_food"
+            cuisine: "barbecue"
+        pj_what: "grill"
+
+    food_german:
+        raw_filters:
+          - class: "restaurant"
+            cuisine: "german"
+          - class: "fast_food"
+            cuisine: "german"
+        pj_what: "restaurant allemand"
+
+    food_african:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "african"
+        - class: "fast_food"
+          cuisine: "african"
+      pj_what: "restaurant africain"
+
+    food_latin_american:
+        raw_filters:
+          - class: "restaurant"
+            cuisine: "latin_american"
+          - class: "fast_food"
+            cuisine: "latin_american"
+        pj_what: "restaurant latin"
+
+    food_mediterranean:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "mediterranean"
+        - class: "fast_food"
+          cuisine: "mediterranean"
+      pj_what: "restaurant méditéranéen"
+
+    food_american:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "american"
+        - class: "fast_food"
+          cuisine: "american"
+      pj_what: "restaurant americain"
+
+    food_caribbean:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "caribbean"
+        - class: "fast_food"
+          cuisine: "caribbean"
+      pj_what: "restaurant Caraïbes"
+
+    food_greek:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "greek"
+        - class: "fast_food"
+          cuisine: "greek"
+      pj_what: "restaurant grecque"
+
+    food_mexican:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "mexican"
+        - class: "fast_food"
+          cuisine: "mexican"
+      pj_what: "restaurant mexicain"
+
+    food_pakistani:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "pakistani"
+        - class: "fast_food"
+          cuisine: "pakistani"
+      pj_what: "restaurant pakistanais"
+
+    food_seafood:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "seafood"
+        - class: "fast_food"
+          cuisine: "seafood"
+      pj_what: "restaurant fruit de mer"
+
+    food_sushi:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "sushi"
+        - class: "fast_food"
+          cuisine: "sushi"
+      pj_what: "restaurant sushi"
+
+    food_spanish:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "spanish"
+        - class: "fast_food"
+          cuisine: "spanish"
+      pj_what: "restaurant espagnol"
+
+    food_steak_house:
+      raw_filters:
+        - class: "restaurant"
+          cuisine: "steak_house"
+        - class: "fast_food"
+          cuisine: "steak_house"
+      pj_what: "restaurant steakhouse"
 
     parking:
         regex: "parking"

@@ -163,6 +163,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
             verbosity=Verbosity.default_list(),
         ),
         sort_by_distance=intention_around_point,
+        poi_es_index_name="poi",
     )
 
     places = places_bbox_response.places
