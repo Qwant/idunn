@@ -85,7 +85,7 @@ def init_indices(mimir_client, wiki_client):
                         "tokenizer": "standard",
                     }
                 }
-            }
+            },
         },
     )
     mimir_client.indices.put_alias(name="munin", index="munin_poi")

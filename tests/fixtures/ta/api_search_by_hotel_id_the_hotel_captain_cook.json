@@ -1,0 +1,27 @@
+{
+    "success": {
+        "requestId": "fe012a4b-8a4e-484a-a824-559a63121238",
+        "results": [
+            {
+                "hotelId": "72177",
+                "strikeThroughDisplayPrice": "$235",
+                "availability": "available",
+                "offers": [
+                    {
+                        "availability": "available",
+                        "displayName": "Tripadvisor",
+                        "displayPrice": "$235",
+                        "price": 235,
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d72177-Reviews-The_Hotel_Captain_Cook-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2021&m=66497&outDay=3&outMonth=12&outYear=2021&rooms=1&staydates=2021_12_01_2021_12_03"
+                    }
+                ]
+            }
+        ],
+        "isComplete": true,
+        "pricingType": "base"
+    },
+    "errors": [],
+    "warnings": [],
+    "completedAt": "2021-11-05T13:09:42.909Z"
+}

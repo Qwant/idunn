@@ -81,6 +81,10 @@ BLOCK_TRANSACTIONAL_ENABLED: True
 #########################
 ## Data sources
 
+# Trip Advisor
+TA_API_KEY:
+TA_API_TIMEOUT: 4 # seconds
+
 # Pages jaunes
 PJ_API_ID:
 PJ_API_SECRET:
