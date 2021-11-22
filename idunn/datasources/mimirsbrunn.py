@@ -80,6 +80,7 @@ def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) ->
     bbox_places = bbox_places.get("hits", {}).get("hits", [])
     return bbox_places
 
+
 def fetch_es_place(id, es, type) -> dict:
     """Returns the raw Place data
 

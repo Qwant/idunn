@@ -1,3 +1,4 @@
+import enum
 import logging
 from typing import List, Optional, Any, Tuple
 
@@ -17,7 +18,6 @@ from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.bragi_client import bragi_client
 from .constants import PoiSource, ALL_POI_SOURCES
 from .utils import Category
-
 logger = logging.getLogger(__name__)
 
 MAX_WIDTH = 1.0  # max bbox longitude in degrees
@@ -25,6 +25,11 @@ MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 EXTENDED_BBOX_MAX_SIZE = float(
     settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
 )  # max bbox width and height after second extended query
+
+
+class PoiType(enum.Enum):
+    POI = ("poi",)
+    POITRIPADVISOR = "poi_tripadvisor"
 
 
 class CommonQueryParam(BaseModel):
@@ -152,7 +157,8 @@ async def get_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, "poi")
+    return await get_places_bbox_impl(params, PoiType.POI)
+
 
 # TODO: Just created to test tripadvisor api. To remove after tests
 async def get_tripadvisor_places_bbox(
@@ -173,12 +179,12 @@ async def get_tripadvisor_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, "poi_tripadvisor")
+    return await get_places_bbox_impl(params, PoiType.POITRIPADVISOR)
 
 
 async def get_places_bbox_impl(
     params: PlacesQueryParam,
-    poi_es_index_name: str,
+    poi_es_index_name: PoiType,
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     source = params.source
