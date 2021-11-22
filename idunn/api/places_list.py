@@ -17,6 +17,7 @@ from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.bragi_client import bragi_client
 from .constants import PoiSource, ALL_POI_SOURCES
 from .utils import Category
+
 logger = logging.getLogger(__name__)
 
 MAX_WIDTH = 1.0  # max bbox longitude in degrees
