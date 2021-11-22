@@ -61,8 +61,7 @@ def get_api_urls(settings):
         APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
         APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
-        # Kuzzle events
-        APIRoute("/events", get_events_bbox),
+        # TODO remove hotel_pricing endpoint on merge with master
         # TripAdvisor hotel
         APIRoute("/hotel_pricing", get_hotel_pricing),
         # Directions

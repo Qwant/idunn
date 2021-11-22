@@ -17,8 +17,3 @@ def mock_ta_search_by_hotel_id_api_with_the_hotel_captain_cook(httpx_mock):
     yield from mock_tripadvisor_api(
         httpx_mock, "api_search_by_hotel_id_the_hotel_captain_cook.json"
     )
-
-
-# @pytest.fixture
-# def mock_ta_search_by_location_id_api_with_the_hotel_captain_cook():
-#     yield from mock_tripadvisor_api("api_search_by_location_id_the_hotel_captain_cook.json.json")
