@@ -90,15 +90,5 @@ def inaccessible_recycling():
         yield
 
 
-@contextmanager
-def enable_kuzzle():
-    """
-    We define here settings specific to tests.
-    We define kuzzle address and port
-    """
-    with override_settings({"KUZZLE_CLUSTER_URL": "http://localhost:7512"}):
-        yield
-
-
 def read_fixture(fixture_path):
     return json.load(open(os.path.join(os.path.dirname(__file__), fixture_path)))

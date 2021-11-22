@@ -3,7 +3,6 @@ import os
 import logging
 from idunn.blocks import (
     Weather,
-    AirQuality,
     ContactBlock,
     DescriptionEvent,
     GradesBlock,
@@ -96,7 +95,6 @@ class Verbosity(str, Enum):
 
 BLOCKS_BY_VERBOSITY = {
     Verbosity.LONG: [
-        AirQuality,
         Weather,
         OpeningDayEvent,
         DescriptionEvent,
