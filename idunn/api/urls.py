@@ -3,7 +3,7 @@ from fastapi import Depends
 from .pois import get_poi
 from .places import get_place, get_place_latlon
 from .status import get_status
-from .places_list import get_places_bbox, get_events_bbox, PlacesBboxResponse
+from .places_list import get_places_bbox, PlacesBboxResponse
 from .categories import AllCategoriesResponse, get_all_categories
 from .closest import closest_address
 from ..directions.models import DirectionsResponse
@@ -60,8 +60,6 @@ def get_api_urls(settings):
         APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
         APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
-        # Kuzzle events
-        APIRoute("/events", get_events_bbox),
         # Directions
         APIRoute(
             "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",

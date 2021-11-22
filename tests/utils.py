@@ -55,16 +55,6 @@ def init_pj_source(source_type):
 
 
 @contextmanager
-def enable_kuzzle():
-    """
-    We define here settings specific to tests.
-    We define kuzzle address and port
-    """
-    with override_settings({"KUZZLE_CLUSTER_URL": "http://localhost:7512"}):
-        yield
-
-
-@contextmanager
 def enable_weather_api():
     """
     We define here settings specific to tests.
