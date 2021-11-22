@@ -1,4 +1,3 @@
-import enum
 import logging
 from typing import List, Optional, Any, Tuple
 
@@ -27,15 +26,10 @@ EXTENDED_BBOX_MAX_SIZE = float(
 )  # max bbox width and height after second extended query
 
 
-class PoiType(enum.Enum):
-    POI = ("poi",)
-    POITRIPADVISOR = "poi_tripadvisor"
-
-
 class CommonQueryParam(BaseModel):
-    bbox: Tuple[float, float, float, float] = Tuple[0, 0, 0, 0]
-    size: int = 0
-    lang: str = ""
+    bbox: Tuple[float, float, float, float] = None
+    size: int = None
+    lang: str = None
     verbosity: Verbosity = Field(...)
 
     @validator("lang", pre=True, always=True)
@@ -157,7 +151,7 @@ async def get_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, PoiType.POI)
+    return await get_places_bbox_impl(params, "poi")
 
 
 # TODO: Just created to test tripadvisor api. To remove after tests
@@ -179,12 +173,12 @@ async def get_tripadvisor_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, PoiType.POITRIPADVISOR)
+    return await get_places_bbox_impl(params, "poi_tripadvisor")
 
 
 async def get_places_bbox_impl(
     params: PlacesQueryParam,
-    poi_es_index_name: PoiType,
+    poi_es_index_name: str,
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     source = params.source
