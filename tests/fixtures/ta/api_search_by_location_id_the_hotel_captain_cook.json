@@ -1,0 +1,248 @@
+{
+    "success": {
+        "requestId": "ba9a0a32-2b38-41e6-a8d3-46a850538a9e",
+        "results": [
+            {
+                "hotelId": "248001",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d248001-Reviews-Arctic_Fox_Inn_Bed_and_Breakfast-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "1097991",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d1097991-Reviews-Embassy_Suites_by_Hilton_Anchorage-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "72177",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d72177-Reviews-The_Hotel_Captain_Cook-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "1027668",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d1027668-Reviews-Alaska_House_of_Jade_Bed_and_Breakfast-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "8750004",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d8750004-Reviews-Home2_Suites_by_Hilton_Anchorage_Midtown-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "1479634",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d1479634-Reviews-SpringHill_Suites_by_Marriott_Anchorage_University_Lake-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "11356098",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d11356098-Reviews-Hyatt_House_Anchorage-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "113013",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d113013-Reviews-Historic_Anchorage_Hotel-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "73726",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d73726-Reviews-Residence_Inn_by_Marriott_Anchorage_Midtown-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "657401",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g31000-d657401-Reviews-Carriage_House_Accommodations_Inn_Cottages-Girdwood_Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "17384956",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d17384956-Reviews-Hyatt_Place_Anchorage_Midtown-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "72222",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d72222-Reviews-Susitna_Place-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "113016",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d113016-Reviews-Copper_Whale_Inn-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "1007839",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d1007839-Reviews-Bent_Prop_Inn_Hostel_of_Alaska-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "643789",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g31000-d643789-Reviews-Hidden_Creek_Bed_and_Breakfast-Girdwood_Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "2080425",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d2080425-Reviews-Judy_s_Touch_of_Class_B_B-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "247997",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d247997-Reviews-Alaskan_Frontier_Gardens_Bed_and_Breakfast-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "625972",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d625972-Reviews-Wildflower_Inn-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            },
+            {
+                "hotelId": "1167356",
+                "availability": "unavailable",
+                "offers": [
+                    null
+                ]
+            },
+            {
+                "hotelId": "3385601",
+                "availability": "pending",
+                "offers": [
+                    {
+                        "availability": "pending",
+                        "displayName": "Tripadvisor",
+                        "logo": "https://static.tacdn.com/img2/brand_refresh/Tripadvisor_logoset_solid_green.svg",
+                        "clickUrl": "https://www.tripadvisor.com/Hotel_Review-s1-g60880-d3385601-Reviews-11th_Avenue_Bed_and_Breakfast-Anchorage_Alaska.html?adults=1&inDay=1&inMonth=12&inYear=2022&m=66497&outDay=3&outMonth=12&outYear=2022&rooms=1&staydates=2022_12_01_2022_12_03"
+                    }
+                ]
+            }
+        ],
+        "isComplete": false,
+        "pollingLink": "https://api.tripadvisor.com/api/partner/3.0/synmeta-pricing?check_out=2022-12-03&requestId=ba9a0a32-2b38-41e6-a8d3-46a850538a9e&check_in=2022-12-01&ip_address=infer&locale=en_US&pn=2&key=24C6721815A4474AABD827385F7EF8BD&location_id=60880&user_agent=infer",
+        "pricingType": "base"
+    },
+    "errors": [],
+    "warnings": [],
+    "completedAt": "2021-11-04T15:37:37.171Z"
+}
