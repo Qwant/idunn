@@ -1,11 +1,4 @@
-on:
-  pull_request:
-  push:
-    branches:
-      - 'master'
-      - 'es7'
-    tags:
-      - 'v*'
+on: [push, pull_request]
 
 env:
   DOCKER_IMAGE_BASENAME: qwantresearch/idunn
@@ -16,8 +9,31 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Extract branch name
+        if: github.event_name != 'pull_request'
+        run: |
+          REF=${GITHUB_REF#refs/*/}
+          if [ "$REF" == "master" ]; then
+            IMAGE_TAG=latest
+          else
+            # Replace '/' with '__'
+            IMAGE_TAG=${REF//\//__}
+          fi
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      - name: Extract branch name
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "IMAGE_TAG=$GITHUB_HEAD_REF" >> $GITHUB_ENV
+
+      # extract branch name on pull request
+      - name: Print branch name
+        run: echo "${IMAGE_TAG}"
+
+      - name: Set env variables
+        run: |
+          echo "DOCKER_IMAGE=${DOCKER_IMAGE_BASENAME}:$IMAGE_TAG" >> $GITHUB_ENV
+
       - name: Login to DockerHub
-        if: github.event_name == 'push'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -39,5 +55,7 @@ jobs:
 
       - run: docker build --label "org.label-schema.vcs-ref=$GITHUB_SHA" -t $DOCKER_IMAGE .
 
-      - if:  github.event_name == 'push'
-        run: docker push $DOCKER_IMAGE
+      - name: Docker push
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        run: |
+          docker push $DOCKER_IMAGE
