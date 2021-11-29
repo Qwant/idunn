@@ -10,11 +10,11 @@ from shapely.affinity import scale
 from shapely.geometry import MultiPoint, box
 
 from idunn import settings
-from idunn.places import POI, BragiPOI
 from idunn.api.utils import Verbosity
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.bragi_client import bragi_client
+from idunn.places import POI, BragiPOI
 from .constants import PoiSource, ALL_POI_SOURCES
 from .utils import Category
 
@@ -63,7 +63,7 @@ class PlacesQueryParam(CommonQueryParam):
     category: List[Category] = []
     raw_filter: Optional[List[str]]
     source: Optional[str]
-    q: Optional[str]
+    q: Optional[str]  = Query(None, title="Query", description="Full text query"),
     extend_bbox: bool = False
 
     def __init__(self, **data: Any):
@@ -152,34 +152,11 @@ async def get_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, "poi")
-
-
-# TODO: Just created to test tripadvisor api. To remove after tests
-async def get_tripadvisor_places_bbox(
-    bbox: str = Query(
-        ...,
-        title="Bounding box",
-        description="Format: left_lon,bottom_lat,right_lon,top_lat",
-        example="-4.56,48.35,-4.42,48.46",
-    ),
-    category: List[Category] = Query([]),
-    raw_filter: Optional[List[str]] = Query(None),
-    source: Optional[str] = Query(None),
-    q: Optional[str] = Query(None, title="Query", description="Full text query"),
-    size: Optional[int] = Query(None),
-    lang: Optional[str] = Query(None),
-    verbosity: Verbosity = Verbosity.default_list(),
-    extend_bbox: bool = Query(False),
-) -> PlacesBboxResponse:
-    """Get all places in a bounding box."""
-    params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, "poi_tripadvisor")
+    return await get_places_bbox_impl(params)
 
 
 async def get_places_bbox_impl(
     params: PlacesQueryParam,
-    poi_es_index_name: str,
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     source = params.source
@@ -188,10 +165,13 @@ async def get_places_bbox_impl(
             params.q or (params.category and all(c.pj_what() for c in params.category))
         ) and pj_source.bbox_is_covered(params.bbox):
             params.source = PoiSource.PAGESJAUNES
+        elif params.category == 'hotel' or params.category == 'leisure' \
+                or params.category == 'attraction' or params.category == 'restaurant':
+            params.source = PoiSource.TRIPADVISOR
         else:
             params.source = PoiSource.OSM
 
-    places_list = await _fetch_places_list(params, poi_es_index_name)
+    places_list = await _fetch_places_list(params)
     bbox_extended = False
 
     if params.extend_bbox and len(places_list) == 0:
@@ -205,7 +185,7 @@ async def get_places_bbox_impl(
             new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
             params.bbox = new_box.bounds
             bbox_extended = True
-            places_list = await _fetch_places_list(params, poi_es_index_name)
+            places_list = await _fetch_places_list(params)
 
     if len(places_list) == 0:
         results_bbox = None
@@ -228,7 +208,7 @@ async def get_places_bbox_impl(
     )
 
 
-async def _fetch_places_list(params: PlacesQueryParam, poi_es_index_name: str):
+async def _fetch_places_list(params: PlacesQueryParam):
     if params.source == PoiSource.PAGESJAUNES:
         return await run_in_threadpool(
             pj_source.get_places_bbox,
@@ -249,12 +229,20 @@ async def _fetch_places_list(params: PlacesQueryParam, poi_es_index_name: str):
         filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
     else:
         filters = [f for c in params.category for f in c.raw_filters()]
-
-    bbox_places = await run_in_threadpool(
-        fetch_es_pois,
-        poi_es_index_name,
-        filters=filters,
-        bbox=params.bbox,
-        max_size=params.size,
-    )
+    if params.source == "tripadvisor":
+        bbox_places = await run_in_threadpool(
+            fetch_es_pois,
+            "poi_tripadvisor",
+            filters=filters,
+            bbox=params.bbox,
+            max_size=params.size,
+        )
+    else:
+        bbox_places = await run_in_threadpool(
+            fetch_es_pois,
+            "poi",
+            filters=filters,
+            bbox=params.bbox,
+            max_size=params.size,
+        )
     return [POI(p["_source"]) for p in bbox_places]

@@ -394,7 +394,6 @@ categories:
         regex: "hotel"
         raw_filters:
           - class: "lodging"
-        pj_what: "hôtels"
 
     historic:
         raw_filters:
