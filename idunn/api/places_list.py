@@ -10,11 +10,11 @@ from shapely.affinity import scale
 from shapely.geometry import MultiPoint, box
 
 from idunn import settings
+from idunn.places import POI, BragiPOI
 from idunn.api.utils import Verbosity
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.places import POI, BragiPOI
 from .constants import PoiSource, ALL_POI_SOURCES
 from .utils import Category
 
@@ -63,7 +63,7 @@ class PlacesQueryParam(CommonQueryParam):
     category: List[Category] = []
     raw_filter: Optional[List[str]]
     source: Optional[str]
-    q: Optional[str]  = Query(None, title="Query", description="Full text query"),
+    q: Optional[str]
     extend_bbox: bool = False
 
     def __init__(self, **data: Any):
@@ -165,8 +165,7 @@ async def get_places_bbox_impl(
             params.q or (params.category and all(c.pj_what() for c in params.category))
         ) and pj_source.bbox_is_covered(params.bbox):
             params.source = PoiSource.PAGESJAUNES
-        elif params.category == 'hotel' or params.category == 'leisure' \
-                or params.category == 'attraction' or params.category == 'restaurant':
+        elif any(s in params.category for s in ("hotel", "leisure", "attraction", "restaurant")):
             params.source = PoiSource.TRIPADVISOR
         else:
             params.source = PoiSource.OSM
