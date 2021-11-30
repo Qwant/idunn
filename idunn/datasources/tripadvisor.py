@@ -4,20 +4,41 @@ from json import JSONDecodeError
 import httpx
 import pydantic
 from fastapi import HTTPException
+from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
+from idunn.datasources import Datasource
+from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
+from idunn.places import POI
 
 logger = logging.getLogger(__name__)
 
 TA_API_BASE_URL = "https://api.tripadvisor.com/api/partner/3.0/synmeta-pricing"
 
 
-class TripAdvisor:
+class TripAdvisor(Datasource):
     TA_API_TIMEOUT = float(settings.get("TA_API_TIMEOUT"))
 
     def __init__(self):
         super().__init__()
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
+
+    async def get_places_bbox(self, params) -> list:
+        """Get places within a given Bbox"""
+        # Default source (OSM) with category or class/subclass filters
+        if params.raw_filter:
+            filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
+        else:
+            filters = [f for c in params.category for f in c.raw_filters()]
+        bbox_places = await run_in_threadpool(
+            fetch_es_pois,
+            "poi_tripadvisor",
+            filters=filters,
+            bbox=params.bbox,
+            max_size=params.size,
+        )
+
+        return [POI(p["_source"]) for p in bbox_places]
 
     async def get_hotel_pricing_by_hotel_id(self, params=None):
         try:

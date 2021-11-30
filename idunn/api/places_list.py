@@ -12,11 +12,12 @@ from shapely.geometry import MultiPoint, box
 from idunn import settings
 from idunn.places import POI, BragiPOI
 from idunn.api.utils import Verbosity
-from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
-from idunn.datasources.pages_jaunes import pj_source
-from idunn.geocoder.bragi_client import bragi_client
+from idunn.datasources.pages_jaunes import pj_source, ApiPjSource
 from .constants import PoiSource, ALL_POI_SOURCES
 from .utils import Category
+from ..datasources import Datasource
+from ..datasources.osm import Osm
+from ..datasources.tripadvisor import TripAdvisor
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 EXTENDED_BBOX_MAX_SIZE = float(
     settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
 )  # max bbox width and height after second extended query
+TRIPADVISOR_CATEGORIES_COVERED = ["hotel", "leisure", "attraction", "restaurant"]
 
 
 class CommonQueryParam(BaseModel):
@@ -159,13 +161,12 @@ async def get_places_bbox_impl(
     params: PlacesQueryParam,
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
-    source = params.source
-    if source is None:
+    if params.source is None:
         if (
             params.q or (params.category and all(c.pj_what() for c in params.category))
         ) and pj_source.bbox_is_covered(params.bbox):
             params.source = PoiSource.PAGESJAUNES
-        elif any(s in params.category for s in ("hotel", "leisure", "attraction", "restaurant")):
+        elif any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED):
             params.source = PoiSource.TRIPADVISOR
         else:
             params.source = PoiSource.OSM
@@ -208,40 +209,16 @@ async def get_places_bbox_impl(
 
 
 async def _fetch_places_list(params: PlacesQueryParam):
-    if params.source == PoiSource.PAGESJAUNES:
-        return await run_in_threadpool(
-            pj_source.get_places_bbox,
-            params.category,
-            params.bbox,
-            size=params.size,
-            query=params.q,
-        )
-    if params.q:
-        # Default source (OSM) with query
-        bragi_response = await bragi_client.pois_query_in_bbox(
-            query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
-        )
-        return [BragiPOI(f) for f in bragi_response.get("features", [])]
+    datasource = datasource_factory(params.source)
+    return await datasource.get_places_bbox(params)
 
-    # Default source (OSM) with category or class/subclass filters
-    if params.raw_filter:
-        filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
-    else:
-        filters = [f for c in params.category for f in c.raw_filters()]
-    if params.source == "tripadvisor":
-        bbox_places = await run_in_threadpool(
-            fetch_es_pois,
-            "poi_tripadvisor",
-            filters=filters,
-            bbox=params.bbox,
-            max_size=params.size,
-        )
-    else:
-        bbox_places = await run_in_threadpool(
-            fetch_es_pois,
-            "poi",
-            filters=filters,
-            bbox=params.bbox,
-            max_size=params.size,
-        )
-    return [POI(p["_source"]) for p in bbox_places]
+
+def datasource_factory(source_type: PoiSource) -> Datasource:
+    """Get the matching datasource to fetch POIs"""
+    if source_type == PoiSource.TRIPADVISOR:
+        return TripAdvisor()
+    elif source_type == PoiSource.PAGESJAUNES:
+        return ApiPjSource()
+    elif source_type == PoiSource.OSM:
+        return Osm()
+    logger.error(f"{source_type} is not a valid source type")
