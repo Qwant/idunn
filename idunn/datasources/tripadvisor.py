@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 TA_API_BASE_URL = "https://api.tripadvisor.com/api/partner/3.0/synmeta-pricing"
 
 
-class TripAdvisor(Datasource):
+class Tripadvisor(Datasource):
     TA_API_TIMEOUT = float(settings.get("TA_API_TIMEOUT"))
 
     def __init__(self):
@@ -83,4 +83,4 @@ def cleanup_empty_params(d):
     return d  # For convenience
 
 
-tripadvisor_api = TripAdvisor()
+tripadvisor_api = Tripadvisor()

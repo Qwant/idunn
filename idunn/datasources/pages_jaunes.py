@@ -30,7 +30,7 @@ class PjAuthSession(AuthSession):
         }
 
 
-class ApiPjSource(Datasource):
+class PagesJaunes(Datasource):
     PLACE_ID_NAMESPACE = "pj"
     PJ_RESULT_MAX_SIZE = 30
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
@@ -49,7 +49,7 @@ class ApiPjSource(Datasource):
     @staticmethod
     def format_where(bbox):
         """
-        >>> ApiPjSource.format_where([2e-5,-0.5,2,0.5])
+        >>> PagesJaunes.format_where([2e-5,-0.5,2,0.5])
         'gZ0.000020,-0.500000,2.000000,0.500000'
 
         """
@@ -160,4 +160,4 @@ class ApiPjSource(Datasource):
             raise
 
 
-pj_source = ApiPjSource()
+pj_source = PagesJaunes()
