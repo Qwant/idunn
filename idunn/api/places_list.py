@@ -10,8 +10,11 @@ from shapely.affinity import scale
 from shapely.geometry import MultiPoint, box
 
 from idunn import settings
-from idunn.datasources.pages_jaunes import pj_source
+from idunn.datasources.pages_jaunes import pj_source, PagesJaunes
 from .constants import PoiSource, ALL_POI_SOURCES
+from ..datasources import Datasource
+from ..datasources.osm import Osm
+from ..datasources.tripadvisor import Tripadvisor
 from ..utils.category import Category
 from ..utils.verbosity import Verbosity
 
@@ -210,6 +213,13 @@ async def _fetch_places_list(params: PlacesQueryParam):
 
 
 class DatasourceFactory:
-    def get_datasource(self, source_type: PoiSource):
-        target_datasource = source_type.replace("_", " ").title().replace(" ", "")
-        return globals()[target_datasource]()
+    def get_datasource(self, source_type: PoiSource) -> Datasource:
+        """Get the matching datasource to fetch POIs"""
+        if source_type == PoiSource.TRIPADVISOR:
+            return Tripadvisor()
+        if source_type == PoiSource.PAGESJAUNES:
+            return PagesJaunes()
+        if source_type == PoiSource.OSM:
+            return Osm()
+        logger.error("%s is not a valid source type, OSM source is used as fallback", source_type)
+        return Osm()
