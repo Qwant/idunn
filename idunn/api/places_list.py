@@ -161,30 +161,12 @@ async def get_places_bbox_impl(
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     if params.source is None:
-        if (
-            params.q or (params.category and all(c.pj_what() for c in params.category))
-        ) and pj_source.bbox_is_covered(params.bbox):
-            params.source = PoiSource.PAGESJAUNES
-        elif any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED):
-            params.source = PoiSource.TRIPADVISOR
-        else:
-            params.source = PoiSource.OSM
+        await select_datasource(params)
 
     places_list = await _fetch_places_list(params)
     bbox_extended = False
-
     if params.extend_bbox and len(places_list) == 0:
-        original_bbox = params.bbox
-        original_bbox_width = original_bbox[2] - original_bbox[0]
-        original_bbox_height = original_bbox[3] - original_bbox[1]
-        original_bbox_size = max(original_bbox_height, original_bbox_width)
-        if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
-            # Compute extended bbox and fetch results a second time
-            scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
-            new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
-            params.bbox = new_box.bounds
-            bbox_extended = True
-            places_list = await _fetch_places_list(params)
+        bbox_extended, places_list = await _fetch_extended_bbox(bbox_extended, params, places_list)
 
     if len(places_list) == 0:
         results_bbox = None
@@ -205,6 +187,36 @@ async def get_places_bbox_impl(
         bbox=results_bbox,
         bbox_extended=bbox_extended,
     )
+
+
+async def select_datasource(params):
+    if await is_brand_detected_or_pj_category_cover(params) and pj_source.bbox_is_covered(
+        params.bbox
+    ):
+        params.source = PoiSource.PAGESJAUNES
+    elif any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED):
+        params.source = PoiSource.TRIPADVISOR
+    else:
+        params.source = PoiSource.OSM
+
+
+async def is_brand_detected_or_pj_category_cover(params):
+    return params.q or (params.category and all(c.pj_what() for c in params.category))
+
+
+async def _fetch_extended_bbox(bbox_extended, params, places_list):
+    original_bbox = params.bbox
+    original_bbox_width = original_bbox[2] - original_bbox[0]
+    original_bbox_height = original_bbox[3] - original_bbox[1]
+    original_bbox_size = max(original_bbox_height, original_bbox_width)
+    if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
+        # Compute extended bbox and fetch results a second time
+        scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
+        new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
+        params.bbox = new_box.bounds
+        bbox_extended = True
+        places_list = await _fetch_places_list(params)
+    return bbox_extended, places_list
 
 
 async def _fetch_places_list(params: PlacesQueryParam):
