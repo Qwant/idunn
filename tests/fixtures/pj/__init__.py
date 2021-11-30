@@ -5,7 +5,7 @@ from unittest import mock
 import pytest
 
 from idunn.datasources.pages_jaunes import ApiPjSource
-from idunn.places import utils as places_utils
+from idunn.utils import place as places_utils
 from tests.utils import init_pj_source, override_settings
 
 

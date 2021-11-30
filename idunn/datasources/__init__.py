@@ -11,4 +11,3 @@ class Datasource(ABC):
     @abstractmethod
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
-        pass

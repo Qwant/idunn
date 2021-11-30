@@ -11,9 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class Osm(Datasource):
-    def __init__(self):
-        super().__init__()
-
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
         if params.q:

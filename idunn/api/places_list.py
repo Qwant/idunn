@@ -10,14 +10,13 @@ from shapely.affinity import scale
 from shapely.geometry import MultiPoint, box
 
 from idunn import settings
-from idunn.places import POI, BragiPOI
-from idunn.api.utils import Verbosity
 from idunn.datasources.pages_jaunes import pj_source, ApiPjSource
 from .constants import PoiSource, ALL_POI_SOURCES
-from .utils import Category
 from ..datasources import Datasource
 from ..datasources.osm import Osm
 from ..datasources.tripadvisor import TripAdvisor
+from ..utils.category import Category
+from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
 
@@ -217,8 +216,9 @@ def datasource_factory(source_type: PoiSource) -> Datasource:
     """Get the matching datasource to fetch POIs"""
     if source_type == PoiSource.TRIPADVISOR:
         return TripAdvisor()
-    elif source_type == PoiSource.PAGESJAUNES:
+    if source_type == PoiSource.PAGESJAUNES:
         return ApiPjSource()
-    elif source_type == PoiSource.OSM:
+    if source_type == PoiSource.OSM:
         return Osm()
-    logger.error(f"{source_type} is not a valid source type")
+    logger.error("%s is not a valid source type, OSM source is used as fallback", source_type)
+    return Osm()

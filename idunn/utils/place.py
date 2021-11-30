@@ -1,15 +1,9 @@
-from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.mimirsbrunn import fetch_es_place, get_es_place_type
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
-
-
-from .admin import Admin
-from .street import Street
-from .address import Address
-from .poi import POI
-from .latlon import Latlon
-from .exceptions import InvalidPlaceId, RedirectToPlaceId, PlaceNotFound
+from ..datasources.pages_jaunes import pj_source
+from ..places import Latlon, Admin, Address, POI, Street
+from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
 
 
 def place_from_id(id: str, type=None, follow_redirect=False):

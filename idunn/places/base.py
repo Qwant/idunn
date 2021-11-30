@@ -3,12 +3,10 @@ import re
 from geopy import Point
 from pytz import timezone, UTC
 from typing import Optional, Union
-
-from idunn.api.utils import Verbosity, build_blocks
 from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import maps_urls, tz
 from .place import Place, PlaceMeta
-
+from ..utils.verbosity import build_blocks, Verbosity
 
 logger = logging.getLogger(__name__)
 

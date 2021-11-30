@@ -3,8 +3,8 @@ from urllib.parse import urlencode
 
 from .base import BasePlace
 from idunn import settings
-from idunn.api.utils import get_name
 from idunn.api.constants import PoiSource
+from ..utils.verbosity import get_name
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
 

@@ -7,8 +7,8 @@ from idunn import settings
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
 from idunn.places import Street, Address, Place
-from idunn.api.utils import Verbosity
 from idunn.datasources.mimirsbrunn import fetch_closest, get_es_place_type
+from idunn.utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
 

@@ -3,6 +3,8 @@ Bragi parameters as defined here:
   https://github.com/CanalTP/mimirsbrunn/blob/master/libs/bragi/src/routes/autocomplete.rs#L59
 """
 import json
+from enum import Enum
+
 from geojson_pydantic.features import Feature
 from typing import List, Optional
 from fastapi import Query
@@ -10,13 +12,22 @@ from pydantic import BaseModel, Field, confloat, conint
 from pydantic.dataclasses import dataclass
 
 from idunn import settings
-from idunn.api.utils import Type
 from idunn.utils.math import with_precision
 from .cosmogony import ZoneType
 
 FOCUS_ZOOM_TO_RADIUS = json.loads(settings["FOCUS_ZOOM_TO_RADIUS"])
 FOCUS_MIN_ZOOM = min(zoom for zoom, _, _ in FOCUS_ZOOM_TO_RADIUS)
 FOCUS_DECAY = float(settings["FOCUS_DECAY"])
+
+
+class Type(str, Enum):
+    # pylint: disable=invalid-name
+    # City = "city" # this field is available in Bragi but deprecated
+    House = "house"
+    Poi = "poi"
+    StopArea = "public_transport:stop_area"
+    Street = "street"
+    Zone = "zone"
 
 
 @dataclass
