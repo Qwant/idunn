@@ -25,7 +25,8 @@ MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 EXTENDED_BBOX_MAX_SIZE = float(
     settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
 )  # max bbox width and height after second extended query
-TRIPADVISOR_CATEGORIES_COVERED = ["hotel", "leisure", "attraction", "restaurant"]
+TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE = ["hotel", "leisure", "attraction", "restaurant"]
+TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE = ["hotel", "leisure", "attraction"]
 
 
 class CommonQueryParam(BaseModel):
@@ -190,11 +191,23 @@ async def get_places_bbox_impl(
 
 
 async def select_datasource(params):
-    if await is_brand_detected_or_pj_category_cover(params) and pj_source.bbox_is_covered(
-        params.bbox
-    ):
+    if pj_source.bbox_is_covered(params.bbox):
+        await select_datasource_for_france(params)
+    else:
+        await select_datasource_outside_france(params)
+
+
+async def select_datasource_for_france(params):
+    if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE):
+        params.source = PoiSource.TRIPADVISOR
+    elif await is_brand_detected_or_pj_category_cover(params):
         params.source = PoiSource.PAGESJAUNES
-    elif any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED):
+    else:
+        params.source = PoiSource.OSM
+
+
+async def select_datasource_outside_france(params):
+    if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE):
         params.source = PoiSource.TRIPADVISOR
     else:
         params.source = PoiSource.OSM
