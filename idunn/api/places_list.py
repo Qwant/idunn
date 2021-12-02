@@ -162,7 +162,7 @@ async def get_places_bbox_impl(
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     if params.source is None:
-        await select_datasource(params)
+        select_datasource(params)
 
     places_list = await _fetch_places_list(params)
     bbox_extended = False
@@ -190,30 +190,30 @@ async def get_places_bbox_impl(
     )
 
 
-async def select_datasource(params):
+def select_datasource(params):
     if pj_source.bbox_is_covered(params.bbox):
-        await select_datasource_for_france(params)
+        select_datasource_for_france(params)
     else:
-        await select_datasource_outside_france(params)
+        select_datasource_outside_france(params)
 
 
-async def select_datasource_for_france(params):
+def select_datasource_for_france(params):
     if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE):
         params.source = PoiSource.TRIPADVISOR
-    elif await is_brand_detected_or_pj_category_cover(params):
+    elif is_brand_detected_or_pj_category_cover(params):
         params.source = PoiSource.PAGESJAUNES
     else:
         params.source = PoiSource.OSM
 
 
-async def select_datasource_outside_france(params):
+def select_datasource_outside_france(params):
     if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE):
         params.source = PoiSource.TRIPADVISOR
     else:
         params.source = PoiSource.OSM
 
 
-async def is_brand_detected_or_pj_category_cover(params):
+def is_brand_detected_or_pj_category_cover(params):
     return params.q or (params.category and all(c.pj_what() for c in params.category))
 
 
@@ -246,5 +246,4 @@ class DatasourceFactory:
             return PagesJaunes()
         if source_type == PoiSource.OSM:
             return Osm()
-        logger.error("%s is not a valid source type, OSM source is used as fallback", source_type)
-        return Osm()
+        raise ValueError("%s is not a valid source type", source_type)
