@@ -246,4 +246,4 @@ class DatasourceFactory:
             return PagesJaunes()
         if source_type == PoiSource.OSM:
             return Osm()
-        raise ValueError("%s is not a valid source type", source_type)
+        raise ValueError(f"{source_type} is not a valid source type")
