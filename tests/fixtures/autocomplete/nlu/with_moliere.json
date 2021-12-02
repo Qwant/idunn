@@ -1,0 +1,13 @@
+{
+    "NLU": [
+        {
+            "phrase": "hotel molière",
+            "tag": "POI",
+            "value": {}
+        }
+    ],
+    "domain": "MAPS",
+    "lang": "fr",
+    "text": "hotel molière",
+    "tokenized": "hotel molière"
+}

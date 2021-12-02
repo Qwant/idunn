@@ -6,7 +6,9 @@ from app import app
 
 from ..fixtures.autocomplete import (
     mock_autocomplete_get,
+    mock_NLU_with_cat,
     mock_NLU_with_city,
+    mock_NLU_with_category_and_city,
     mock_NLU_with_brand_and_city,
     mock_NLU_with_picasso,
     mock_bragi_carrefour_in_bbox,
@@ -60,7 +62,22 @@ def test_ia_paris_request_international(mock_autocomplete_get, mock_NLU_with_cit
     assert place["name"] == "Paris"
 
 
-def test_ia_intention_full_text(
+def test_ia_category_intention_tripadvisor_source(
+    mock_NLU_with_category_and_city, mock_autocomplete_get
+):
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "hotel à paris", "lang": "fr"})
+    assert response.status_code == 200
+    response_json = response.json()
+    places = response_json["data"]["result"]["places"]
+    assert len(places) == 1
+    place = places[0]
+    assert place["name"] == "Bergrestaurant Suecka"
+    source = response_json["data"]["result"]["source"]
+    assert source == "tripadvisor"
+
+
+def test_ia_brand_intention_full_text(
     mock_NLU_with_brand_and_city, mock_autocomplete_get, mock_bragi_carrefour_in_bbox
 ):
     client = TestClient(app)
@@ -73,7 +90,7 @@ def test_ia_intention_full_text(
     assert place["name"] == "Carrefour Market"
 
 
-def test_ia_intention_full_text_with_region(
+def test_ia_brand_intention_full_text_with_region(
     mock_NLU_with_brand_and_city, mock_autocomplete_get, mock_bragi_carrefour_in_bbox
 ):
     client = TestClient(app)
@@ -90,7 +107,7 @@ def test_ia_intention_full_text_with_region(
 
 
 @pytest.mark.parametrize("mock_bragi_carrefour_in_bbox", [{"limit": 1}], indirect=True)
-def test_ia_intention_single_result(
+def test_ia_brand_intention_single_result(
     mock_NLU_with_brand_and_city, mock_autocomplete_get, mock_bragi_carrefour_in_bbox
 ):
     client = TestClient(app)
@@ -116,6 +133,20 @@ def test_ia_addresses_ranking(mock_autocomplete_get):
     places = response.json()["data"]["result"]["places"]
     assert len(places) == 1
     assert places[0]["name"] == "43 Rue de Paris"
+
+
+def test_ia_without_intention_detected_and_tripadvisor_hotel_poi_found(
+    mock_pj_api_find_with_musee_picasso, mock_autocomplete_get, mock_NLU_with_moliere
+):
+    """
+    Should return Tripadvisor hotel poi when no brand/category intention detected and
+    a tripadvisor hotel poi is fetched
+    """
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "hotel molière", "user_country": "fr"})
+    assert response.status_code == 200
+    assert response.json()["data"]["result"]["source"] == "pages_jaunes"
+    assert response.json()["data"]["result"]["places"][0]["name"] == "Musée Picasso"
 
 
 def test_ia_pj_fallback(

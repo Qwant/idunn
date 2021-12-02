@@ -1,6 +1,5 @@
 import re
 import pytest
-from httpx import Response
 
 from tests.utils import override_settings, read_fixture
 
@@ -58,6 +57,11 @@ def mock_NLU_with_cat_city_country(httpx_mock):
 
 
 @pytest.fixture
+def mock_NLU_with_category_and_city(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_category_and_city")
+
+
+@pytest.fixture
 def mock_NLU_with_poi(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_poi")
 
@@ -65,6 +69,11 @@ def mock_NLU_with_poi(httpx_mock):
 @pytest.fixture
 def mock_NLU_with_picasso(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_picasso")
+
+
+@pytest.fixture
+def mock_NLU_with_moliere(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_moliere")
 
 
 @pytest.fixture()
