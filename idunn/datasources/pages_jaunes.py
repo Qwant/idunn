@@ -4,13 +4,15 @@ from typing import List
 
 import requests
 from requests import HTTPError as RequestsHTTPError
+from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
-from idunn.api.utils import CategoryEnum
+from idunn.datasources import Datasource
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.models import pj_info, pj_find
 from idunn.places.pj_poi import PjApiPOI
 from idunn.utils.auth_session import AuthSession
+from idunn.utils.category import CategoryEnum
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)
@@ -28,7 +30,7 @@ class PjAuthSession(AuthSession):
         }
 
 
-class ApiPjSource:
+class PagesJaunes(Datasource):
     PLACE_ID_NAMESPACE = "pj"
     PJ_RESULT_MAX_SIZE = 30
     PJ_INFO_API_URL = "https://api.pagesjaunes.fr/v1/pros"
@@ -47,7 +49,7 @@ class ApiPjSource:
     @staticmethod
     def format_where(bbox):
         """
-        >>> ApiPjSource.format_where([2e-5,-0.5,2,0.5])
+        >>> PagesJaunes.format_where([2e-5,-0.5,2,0.5])
         'gZ0.000020,-0.500000,2.000000,0.500000'
 
         """
@@ -103,7 +105,16 @@ class ApiPjSource:
             self.PJ_FIND_API_URL, query_params, size, ignore_status=(400,)
         )
 
-    def get_places_bbox(
+    async def get_places_bbox(self, params) -> List[PjApiPOI]:
+        return await run_in_threadpool(
+            self.fetch_places_bbox,
+            params.category,
+            params.bbox,
+            size=params.size,
+            query=params.q,
+        )
+
+    def fetch_places_bbox(
         self, categories: List[CategoryEnum], bbox, size=10, query=""
     ) -> List[PjApiPOI]:
         query_params = {
@@ -149,4 +160,4 @@ class ApiPjSource:
             raise
 
 
-pj_source = ApiPjSource()
+pj_source = PagesJaunes()

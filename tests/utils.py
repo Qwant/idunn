@@ -8,7 +8,7 @@ from idunn import settings
 from idunn.api import places_list, instant_answer
 from idunn.datasources.recycling import recycling_client
 from idunn.datasources.wiki_es import WikiEs
-from idunn.places import utils as places_utils
+from idunn.utils import place as places_utils
 
 
 @contextmanager

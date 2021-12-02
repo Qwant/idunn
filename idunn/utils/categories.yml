@@ -390,11 +390,12 @@ categories:
           - class: "beer"
         pj_what: "bar"
 
+#  we don't want hotel from PagesJaunes because of Tripadvisor
     hotel:
         regex: "hotel"
         raw_filters:
           - class: "lodging"
-        pj_what: "hôtels"
+          - class: "hotel"
 
     historic:
         raw_filters:

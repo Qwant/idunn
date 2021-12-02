@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import ANY
 from app import app
 from fastapi.testclient import TestClient
@@ -7,7 +6,6 @@ from freezegun import freeze_time
 from .fixtures.pj import mock_pj_api_with_musee_picasso_short
 from .test_full import OH_BLOCK
 
-
 BBOX_PARIS = "2.252876,48.819862,2.395707,48.891132"
 BBOX_BREST = "-4.807542,48.090743,-4.097541,48.800743"
 INVALID_BBOX_PARIS_LEFT_PERM_RIGHT = "2.395707,48.819862,2.252876,48.891132"
@@ -15,7 +13,7 @@ INVALID_BBOX_PARIS_MISSING = "48.819862,2.252876,48.891132"
 
 
 @freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_bbox():
+def test_bbox_should_trigger_osm_sources_when_raw_filter_specified():
     """
     Test the bbox query.
 
@@ -274,6 +272,37 @@ def test_bbox():
                 "meta": ANY,
             },
         ],
+    }
+
+
+@freeze_time("2021-11-29 8:30:00", tz_offset=2)
+def test_bbox_should_trigger_tripadvisor_sources_anywhere_on_hotel_category():
+    client = TestClient(app)
+
+    response = client.get(url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=hotel")
+
+    assert response.status_code == 200
+
+    resp = response.json()
+
+    assert resp == {
+        "bbox": [2.326583, 48.859918, 2.326583, 48.859918],
+        "bbox_extended": False,
+        "places": [
+            {
+                "address": ANY,
+                "blocks": [],
+                "class_name": "hotel",
+                "geometry": ANY,
+                "id": "osm:way:63178753",
+                "local_name": "Bergrestaurant Suecka",
+                "meta": ANY,
+                "name": "Bergrestaurant Suecka",
+                "subclass_name": "hotel",
+                "type": "poi",
+            }
+        ],
+        "source": "tripadvisor",
     }
 
 
@@ -582,9 +611,9 @@ def test_category_or_raw_filter():
     assert resp == {"detail": "One of 'category', 'raw_filter' or 'q' parameter is required"}
 
 
-def test_valid_category():
+def test_valid_category_that_trigger_tripadvisor_over_osm():
     """
-    Test a valid category filter which should fetch only one cinema in a bbox around Brest city.
+    Test a valid category filter which should fetch only one cinema in a bbox around Brest city with tripadvisor
     """
     client = TestClient(app)
 
@@ -595,7 +624,7 @@ def test_valid_category():
     resp = response.json()
 
     assert resp == {
-        "source": "osm",
+        "source": "tripadvisor",
         "places": [
             {
                 "type": "poi",

@@ -10,13 +10,13 @@ from shapely.affinity import scale
 from shapely.geometry import MultiPoint, box
 
 from idunn import settings
-from idunn.places import POI, BragiPOI
-from idunn.api.utils import Verbosity
-from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
-from idunn.datasources.pages_jaunes import pj_source
-from idunn.geocoder.bragi_client import bragi_client
+from idunn.datasources.pages_jaunes import pj_source, PagesJaunes
 from .constants import PoiSource, ALL_POI_SOURCES
-from .utils import Category
+from ..datasources import Datasource
+from ..datasources.osm import Osm
+from ..datasources.tripadvisor import Tripadvisor
+from ..utils.category import Category
+from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,8 @@ MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 EXTENDED_BBOX_MAX_SIZE = float(
     settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
 )  # max bbox width and height after second extended query
+TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE = ["hotel", "leisure", "attraction", "restaurant"]
+TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE = ["hotel", "leisure", "attraction"]
 
 
 class CommonQueryParam(BaseModel):
@@ -152,60 +154,20 @@ async def get_places_bbox(
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, "poi")
-
-
-# TODO: Just created to test tripadvisor api. To remove after tests
-async def get_tripadvisor_places_bbox(
-    bbox: str = Query(
-        ...,
-        title="Bounding box",
-        description="Format: left_lon,bottom_lat,right_lon,top_lat",
-        example="-4.56,48.35,-4.42,48.46",
-    ),
-    category: List[Category] = Query([]),
-    raw_filter: Optional[List[str]] = Query(None),
-    source: Optional[str] = Query(None),
-    q: Optional[str] = Query(None, title="Query", description="Full text query"),
-    size: Optional[int] = Query(None),
-    lang: Optional[str] = Query(None),
-    verbosity: Verbosity = Verbosity.default_list(),
-    extend_bbox: bool = Query(False),
-) -> PlacesBboxResponse:
-    """Get all places in a bounding box."""
-    params = PlacesQueryParam(**locals())
-    return await get_places_bbox_impl(params, "poi_tripadvisor")
+    return await get_places_bbox_impl(params)
 
 
 async def get_places_bbox_impl(
     params: PlacesQueryParam,
-    poi_es_index_name: str,
     sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
-    source = params.source
-    if source is None:
-        if (
-            params.q or (params.category and all(c.pj_what() for c in params.category))
-        ) and pj_source.bbox_is_covered(params.bbox):
-            params.source = PoiSource.PAGESJAUNES
-        else:
-            params.source = PoiSource.OSM
+    if params.source is None:
+        select_datasource(params)
 
-    places_list = await _fetch_places_list(params, poi_es_index_name)
+    places_list = await _fetch_places_list(params)
     bbox_extended = False
-
     if params.extend_bbox and len(places_list) == 0:
-        original_bbox = params.bbox
-        original_bbox_width = original_bbox[2] - original_bbox[0]
-        original_bbox_height = original_bbox[3] - original_bbox[1]
-        original_bbox_size = max(original_bbox_height, original_bbox_width)
-        if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
-            # Compute extended bbox and fetch results a second time
-            scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
-            new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
-            params.bbox = new_box.bounds
-            bbox_extended = True
-            places_list = await _fetch_places_list(params, poi_es_index_name)
+        bbox_extended, places_list = await _fetch_extended_bbox(bbox_extended, params, places_list)
 
     if len(places_list) == 0:
         results_bbox = None
@@ -228,33 +190,60 @@ async def get_places_bbox_impl(
     )
 
 
-async def _fetch_places_list(params: PlacesQueryParam, poi_es_index_name: str):
-    if params.source == PoiSource.PAGESJAUNES:
-        return await run_in_threadpool(
-            pj_source.get_places_bbox,
-            params.category,
-            params.bbox,
-            size=params.size,
-            query=params.q,
-        )
-    if params.q:
-        # Default source (OSM) with query
-        bragi_response = await bragi_client.pois_query_in_bbox(
-            query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
-        )
-        return [BragiPOI(f) for f in bragi_response.get("features", [])]
-
-    # Default source (OSM) with category or class/subclass filters
-    if params.raw_filter:
-        filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
+def select_datasource(params):
+    if pj_source.bbox_is_covered(params.bbox):
+        select_datasource_for_france(params)
     else:
-        filters = [f for c in params.category for f in c.raw_filters()]
+        select_datasource_outside_france(params)
 
-    bbox_places = await run_in_threadpool(
-        fetch_es_pois,
-        poi_es_index_name,
-        filters=filters,
-        bbox=params.bbox,
-        max_size=params.size,
-    )
-    return [POI(p["_source"]) for p in bbox_places]
+
+def select_datasource_for_france(params):
+    if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE):
+        params.source = PoiSource.TRIPADVISOR
+    elif is_brand_detected_or_pj_category_cover(params):
+        params.source = PoiSource.PAGESJAUNES
+    else:
+        params.source = PoiSource.OSM
+
+
+def select_datasource_outside_france(params):
+    if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE):
+        params.source = PoiSource.TRIPADVISOR
+    else:
+        params.source = PoiSource.OSM
+
+
+def is_brand_detected_or_pj_category_cover(params):
+    return params.q or (params.category and all(c.pj_what() for c in params.category))
+
+
+async def _fetch_extended_bbox(bbox_extended, params, places_list):
+    original_bbox = params.bbox
+    original_bbox_width = original_bbox[2] - original_bbox[0]
+    original_bbox_height = original_bbox[3] - original_bbox[1]
+    original_bbox_size = max(original_bbox_height, original_bbox_width)
+    if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
+        # Compute extended bbox and fetch results a second time
+        scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
+        new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
+        params.bbox = new_box.bounds
+        bbox_extended = True
+        places_list = await _fetch_places_list(params)
+    return bbox_extended, places_list
+
+
+async def _fetch_places_list(params: PlacesQueryParam):
+    datasource = DatasourceFactory().get_datasource(params.source)
+    return await datasource.get_places_bbox(params)
+
+
+class DatasourceFactory:
+    def get_datasource(self, source_type: PoiSource) -> Datasource:
+        """Get the matching datasource to fetch POIs"""
+        if source_type == PoiSource.TRIPADVISOR:
+            return Tripadvisor()
+        if source_type == PoiSource.PAGESJAUNES:
+            return PagesJaunes()
+        if source_type == PoiSource.OSM:
+            return Osm()
+        raise ValueError("%s is not a valid source type", source_type)

@@ -13,14 +13,15 @@ from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models import QueryParams
 from idunn.geocoder.models.geocodejson import IntentionType
-from idunn.places import place_from_id, Place
+from idunn.places import Place
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
 from idunn.utils import maps_urls
 from idunn.utils.regions import get_region_lonlat
 from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
 from .constants import PoiSource
-from .utils import Verbosity
+from ..utils.place import place_from_id
+from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter()
@@ -163,7 +164,6 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
             verbosity=Verbosity.default_list(),
         ),
         sort_by_distance=intention_around_point,
-        poi_es_index_name="poi",
     )
 
     places = places_bbox_response.places

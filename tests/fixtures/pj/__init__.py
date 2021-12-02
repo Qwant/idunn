@@ -4,15 +4,15 @@ from unittest import mock
 
 import pytest
 
-from idunn.datasources.pages_jaunes import ApiPjSource
-from idunn.places import utils as places_utils
+from idunn.datasources.pages_jaunes import PagesJaunes
+from idunn.utils import place as places_utils
 from tests.utils import init_pj_source, override_settings
 
 
 def mock_pj_api(type_api: str, filename: str):
     api_result = json.load(open(os.path.join(os.path.dirname(__file__), filename)))
     updated_settings = {}
-    source_type = ApiPjSource
+    source_type = PagesJaunes
 
     with override_settings(updated_settings), init_pj_source(source_type):
         if type_api == "api":

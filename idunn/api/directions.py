@@ -2,11 +2,11 @@ from fastapi import HTTPException, Query, Depends, Path, Request, Response
 from pydantic import confloat
 
 from idunn import settings
-from idunn.places import Latlon, place_from_id
+from idunn.places import Latlon
 from idunn.places.exceptions import IdunnPlaceError
 from idunn.utils.rate_limiter import IdunnRateLimiter
 from ..directions.client import directions_client
-
+from ..utils.place import place_from_id
 
 rate_limiter = IdunnRateLimiter(
     resource="idunn.api.directions",
