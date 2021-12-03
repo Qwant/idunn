@@ -8,6 +8,11 @@ from .utils import init_wiki_es, override_settings
 
 
 @pytest.fixture(scope="session")
+def docker_services_project_name(pytestconfig):
+    return "idunn_test"
+
+
+@pytest.fixture(scope="session")
 def mimir_es(docker_services):
     """Ensure that ES is up and responsive."""
     docker_services.start("mimir_es")
