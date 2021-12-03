@@ -51,9 +51,6 @@ class POI(BasePlace):
     def get_subclass_name(self):
         return self.properties.get("poi_subclass")
 
-    def get_source(self):
-        return PoiSource.OSM
-
     @cached_property
     def osm_id_tuple(self):
         poi_id = self.get_id()
@@ -80,6 +77,25 @@ class POI(BasePlace):
         except ValueError:
             return None
 
+    def get_source(self):
+        return PoiSource.OSM
+
+
+class OsmPOI(POI):
+    def __init__(self, d):
+        super().__init__(d)
+
+    def get_source(self):
+        return PoiSource.OSM
+
+
+class TripadvisorPOI(POI):
+    def __init__(self, d):
+        super().__init__(d)
+
+    def get_source(self):
+        return PoiSource.TRIPADVISOR
+
 
 class BragiPOI(POI):
     def __init__(self, bragi_feature):
@@ -103,6 +119,9 @@ class BragiPOI(POI):
 
     def get_country_codes(self):
         return [c.upper() for c in self.get_raw_address().get("country_codes") or []]
+
+    def get_source(self):
+        return PoiSource.OSM
 
 
 def get_name(properties, lang):

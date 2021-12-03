@@ -11,6 +11,7 @@ from ..fixtures.autocomplete import (
     mock_NLU_with_category_and_city,
     mock_NLU_with_brand_and_city,
     mock_NLU_with_picasso,
+    mock_NLU_with_moliere,
     mock_bragi_carrefour_in_bbox,
 )
 
@@ -136,7 +137,7 @@ def test_ia_addresses_ranking(mock_autocomplete_get):
 
 
 def test_ia_without_intention_detected_and_tripadvisor_hotel_poi_found(
-    mock_pj_api_find_with_musee_picasso, mock_autocomplete_get, mock_NLU_with_moliere
+    mock_autocomplete_get, mock_NLU_with_moliere
 ):
     """
     Should return Tripadvisor hotel poi when no brand/category intention detected and
@@ -145,8 +146,8 @@ def test_ia_without_intention_detected_and_tripadvisor_hotel_poi_found(
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "hotel molière", "user_country": "fr"})
     assert response.status_code == 200
-    assert response.json()["data"]["result"]["source"] == "pages_jaunes"
-    assert response.json()["data"]["result"]["places"][0]["name"] == "Musée Picasso"
+    assert response.json()["data"]["result"]["source"] == "tripadvisor"
+    assert response.json()["data"]["result"]["places"][0]["name"] == "Hôtel Molière"
 
 
 def test_ia_pj_fallback(

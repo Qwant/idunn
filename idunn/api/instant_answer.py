@@ -22,6 +22,7 @@ from idunn.instant_answer import normalize
 from .constants import PoiSource
 from ..utils.place import place_from_id
 from ..utils.verbosity import Verbosity
+from copy import deepcopy
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter()
@@ -116,9 +117,9 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
     )
 
 
-def get_instant_answer_single_place(place_id: str, query: str, lang: str) -> Response:
+def get_instant_answer_single_place(place_id: str, query: str, lang: str, type: str) -> Response:
     try:
-        place = place_from_id(place_id, follow_redirect=True)
+        place = place_from_id(place_id, type=type, follow_redirect=True)
     except Exception:
         logger.warning(
             "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
@@ -250,6 +251,8 @@ async def get_instant_answer(
 
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
+    query_tripadvisor = deepcopy(query)
+    query_tripadvisor.override_indices_name.append("poi-tripadvisor")
 
     async def fetch_pj_response():
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
@@ -264,16 +267,28 @@ async def get_instant_answer(
     # Query PJ API asynchronously as a task which may be cancelled if bragi
     # finds results.
     fetch_pj = asyncio.create_task(fetch_pj_response())
-    bragi_response = await bragi_client.autocomplete(query)
-    bragi_features = result_filter.filter_bragi_features(
-        normalized_query, bragi_response["features"]
+    bragi_osm_response = await bragi_client.autocomplete(query)
+    bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
+    bragi_osm_features = result_filter.filter_bragi_features(
+        normalized_query, bragi_osm_response["features"]
     )
 
-    if bragi_features:
+    # TODO hotel category is in sub sub sub property for now, need to be changed
+    #     bragi_tripadvisor_features = result_filter.filter_bragi_features(
+    #          normalized_query, bragi_tripadvisor_response["features"]
+    #      )
+    #     if bragi_tripadvisor_features:
+    #         fetch_pj.cancel()
+    #         place_id = bragi_tripadvisor_features[0]["properties"]["geocoding"]["id"]
+    #         return await run_in_threadpool(
+    #             get_instant_answer_single_place, query=q, place_id=place_id, lang=lang, type="poi-tripadvisor"
+    #         )
+
+    if bragi_osm_features:
         fetch_pj.cancel()
-        place_id = bragi_features[0]["properties"]["geocoding"]["id"]
+        place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
         return await run_in_threadpool(
-            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
+            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang, type="poi"
         )
 
     pj_response = result_filter.filter_places(normalized_query, await fetch_pj)

@@ -100,6 +100,10 @@ def mock_autocomplete_get(httpx_mock):
             re.compile(rf"^{BASE_URL}/autocomplete.*q=43\+rue\+de\+paris\+rennes.*")
         ).respond(json=read_fixture("fixtures/autocomplete/43_rue_de_paris_rennes.json"))
 
+        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete.*override_indices_name.*")).respond(
+            json=read_fixture("fixtures/autocomplete/tripadvisor/hotel_moliere.json")
+        )
+
         httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=FIXTURE_AUTOCOMPLETE)
 
         yield

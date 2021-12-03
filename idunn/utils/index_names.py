@@ -6,5 +6,5 @@ INDICES = {
     "street": settings["PLACE_STREET_INDEX"],
     "address": settings["PLACE_ADDRESS_INDEX"],
     "poi": settings["PLACE_POI_INDEX"],
-    "poi_tripadvisor": settings["PLACE_POI_TRIPADVISOR_INDEX"],
+    "poi-tripadvisor": settings["PLACE_POI_TRIPADVISOR_INDEX"],
 }

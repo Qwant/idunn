@@ -76,6 +76,10 @@ class QueryParams:
 
     poi_type: List[str] = Query([], description="Filter on type of POI.")
 
+    override_indices_name: List[str] = Query(
+        [], description="Give indices name to search on that are different from " "default ones"
+    )
+
     nlu: bool = Query(
         bool(settings["AUTOCOMPLETE_NLU_DEFAULT"]),
         description="Perform NLU analysis to extract location and intention from the request.",
@@ -109,6 +113,7 @@ class QueryParams:
             "type[]": self.type,
             "zone_type[]": self.zone_type,
             "poi_type[]": self.poi_type,
+            "override_indices_name[]": self.override_indices_name,
         }
 
         # Enables the focus mode

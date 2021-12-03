@@ -5,7 +5,8 @@ from starlette.concurrency import run_in_threadpool
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.places import BragiPOI, POI
+from idunn.places import POI
+from idunn.places.poi import BragiPOI
 
 logger = logging.getLogger(__name__)
 
