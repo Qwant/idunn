@@ -286,7 +286,8 @@ def test_bbox_should_trigger_tripadvisor_sources_anywhere_on_hotel_category():
     resp = response.json()
 
     assert resp == {
-        "bbox": [2.326583, 48.859918, 2.326583, 48.859918],
+        "bbox": [2.326583, 48.859918, 2.336234, 48.86538],
+        "source": "tripadvisor",
         "bbox_extended": False,
         "places": [
             {
@@ -300,9 +301,20 @@ def test_bbox_should_trigger_tripadvisor_sources_anywhere_on_hotel_category():
                 "name": "Bergrestaurant Suecka",
                 "subclass_name": "hotel",
                 "type": "poi",
-            }
+            },
+            {
+                "address": ANY,
+                "blocks": [],
+                "class_name": "lodging",
+                "geometry": ANY,
+                "id": "osm:node:5286293722",
+                "local_name": "Hôtel Molière",
+                "meta": ANY,
+                "name": "Hôtel Molière",
+                "subclass_name": "hotel",
+                "type": "poi",
+            },
         ],
-        "source": "tripadvisor",
     }
 
 

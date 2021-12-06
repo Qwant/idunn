@@ -82,17 +82,11 @@ class POI(BasePlace):
 
 
 class OsmPOI(POI):
-    def __init__(self, d):
-        super().__init__(d)
-
     def get_source(self):
         return PoiSource.OSM
 
 
 class TripadvisorPOI(POI):
-    def __init__(self, d):
-        super().__init__(d)
-
     def get_source(self):
         return PoiSource.TRIPADVISOR
 

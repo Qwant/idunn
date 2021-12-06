@@ -117,7 +117,9 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
     )
 
 
-def get_instant_answer_single_place(place_id: str, query: str, lang: str, type: str) -> Response:
+def get_instant_answer_single_place(
+    place_id: str, query: str, lang: str, type: str = None
+) -> Response:
     try:
         place = place_from_id(place_id, type=type, follow_redirect=True)
     except Exception:
@@ -288,7 +290,7 @@ async def get_instant_answer(
         fetch_pj.cancel()
         place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
         return await run_in_threadpool(
-            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang, type="poi"
+            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
         )
 
     pj_response = result_filter.filter_places(normalized_query, await fetch_pj)

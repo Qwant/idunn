@@ -71,7 +71,7 @@ def test_ia_category_intention_tripadvisor_source(
     assert response.status_code == 200
     response_json = response.json()
     places = response_json["data"]["result"]["places"]
-    assert len(places) == 1
+    assert len(places) == 2
     place = places[0]
     assert place["name"] == "Bergrestaurant Suecka"
     source = response_json["data"]["result"]["source"]
