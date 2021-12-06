@@ -110,7 +110,7 @@ def mock_autocomplete_get(httpx_mock):
         ).respond(json=read_fixture("fixtures/autocomplete/tripadvisor/hotel_moliere.json"))
 
         httpx_mock.get(
-            re.compile(f"^{BASE_URL}/autocomplete.*q=chez\+eric.*override_indices_name.*")
+            re.compile(f"^{BASE_URL}/autocomplete.*q=chez.*override_indices_name.*")
         ).respond(json=read_fixture("fixtures/autocomplete/tripadvisor/chez_eric.json"))
 
         httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=FIXTURE_AUTOCOMPLETE)
