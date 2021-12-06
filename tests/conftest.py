@@ -212,6 +212,7 @@ def load_all(mimir_client, init_indices):
     load_place("cinema_multiplexe.json", mimir_client, doc_type="poi-tripadvisor")
     load_place("tripadvisor_hotel_suecka.json", mimir_client, doc_type="poi-tripadvisor")
     load_place("tripadvisor_hotel_moliere.json", mimir_client, doc_type="poi-tripadvisor")
+    load_place("tripadvisor_chez_eric.json", mimir_client, doc_type="poi-tripadvisor")
 
 
 @pytest.fixture

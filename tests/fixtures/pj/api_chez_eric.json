@@ -1,0 +1,62 @@
+{
+  "approximative_result": false,
+  "business_descriptions": [
+    {
+      "label": "Budget",
+      "values": [
+        "31-45 euros"
+      ]
+    },
+    {
+      "label": "Type de cuisine",
+      "values": [
+        "cuisine française"
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "category_name": "restaurants"
+    }
+  ],
+  "click_and_collect": {
+    "eligible": false
+  },
+  "current_status": "OPEN",
+  "eco_label": false,
+  "inscriptions": [
+    {
+      "address_city": "MONTFURON",
+      "address_street": "le Village",
+      "address_zipcode": "04110",
+      "contact_info": [
+        {
+          "contact_type": "TELEPHONE",
+          "contact_value": "04 92 77 75 32",
+          "no_direct_marketing": true
+        }
+      ],
+      "inscription_id": 0,
+      "latitude": 43.836346,
+      "longitude": 5.693044,
+      "pro_id": "52371155",
+      "reviews": {
+        "overall_review_rating": 0.0,
+        "review_sample": "Un repas d'anniversaire au top ! Nous avons pri...",
+        "total_reviews": 7
+      },
+      "urls": {
+        "itinerary_url": "https://stat.pagesjaunes.fr/redirect?target=ej7PYonXqL7ESpe4h1-uCsdcEmoll2JaNbJt58nxWVM_Sy75SGiWJngKTY4YkXfzPMpt3OLGHEgOZY9VelEMOA==&v=2.0&p1=1&p2=1&p3=&p4=ITI&p5=LR&p6=1361638804456218101038804456218&p7=52371155&p8=",
+        "map_url": "https://stat.pagesjaunes.fr/redirect?target=ej7PYonXqL7ESpe4h1-uCsdcEmoll2JaNbJt58nxWVM_Sy75SGiWJngKTY4YkXfzb7mPfFfQDXs=&v=2.0&p1=1&p2=1&p3=&p4=PLAN&p5=LR&p6=1361638804456218101038804456218&p7=52371155&p8=",
+        "merchant_url": "https://stat.pagesjaunes.fr/redirect?target=ej7PYonXqL7ESpe4h1-uCsdcEmoll2JaNbJt58nxWVPcwXBRhGemsUpBNQ4ApSuHJpdQFNdUnWA=&v=2.0&p1=1&p2=1&p3=&p4=DENOMINATION-EXACTE&p5=LR&p6=1361638804456218101038804456218&p7=52371155&p8=",
+        "reviews_url": "https://stat.pagesjaunes.fr/redirect?target=ej7PYonXqL7ESpe4h1-uCsdcEmoll2JaNbJt58nxWVPcwXBRhGemsUpBNQ4ApSuHbhIKWVCMla8CBUh_o0JL5Q==&v=2.0&p1=1&p2=1&p3=&p4=BA-CONSULTER-AVIS&p5=LR&p6=1361638804456218101038804456218&p7=52371155&p8="
+      }
+    }
+  ],
+  "listing_id": "52371155",
+  "merchant_id": "52371155",
+  "merchant_name": "Chez Eric",
+  "opening_hours": "Mo-Sa 11:00-23:00 ; PH off",
+  "opening_hours_updated": "2017-09-01 14:00:23",
+  "position": 1
+}

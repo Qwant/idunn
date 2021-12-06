@@ -271,21 +271,29 @@ async def get_instant_answer(
     fetch_pj = asyncio.create_task(fetch_pj_response())
     bragi_osm_response = await bragi_client.autocomplete(query)
     bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
+    bragi_tripadvisor_features = result_filter.filter_bragi_features(
+        normalized_query, bragi_tripadvisor_response["features"]
+    )
+
+    for bragi_tripadvisor_feature in bragi_tripadvisor_features:
+        feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+        if (
+            "poi_type" in feature_properties
+            and feature_properties["poi_type"]["id"].split(":")[1] == "subclass_hotel"
+        ):
+            fetch_pj.cancel()
+            place_id = feature_properties["id"]
+            return await run_in_threadpool(
+                get_instant_answer_single_place,
+                query=q,
+                place_id=place_id,
+                lang=lang,
+                type="poi-tripadvisor",
+            )
+
     bragi_osm_features = result_filter.filter_bragi_features(
         normalized_query, bragi_osm_response["features"]
     )
-
-    # TODO hotel category is in sub sub sub property for now, need to be changed
-    #     bragi_tripadvisor_features = result_filter.filter_bragi_features(
-    #          normalized_query, bragi_tripadvisor_response["features"]
-    #      )
-    #     if bragi_tripadvisor_features:
-    #         fetch_pj.cancel()
-    #         place_id = bragi_tripadvisor_features[0]["properties"]["geocoding"]["id"]
-    #         return await run_in_threadpool(
-    #             get_instant_answer_single_place, query=q, place_id=place_id, lang=lang, type="poi-tripadvisor"
-    #         )
-
     if bragi_osm_features:
         fetch_pj.cancel()
         place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]

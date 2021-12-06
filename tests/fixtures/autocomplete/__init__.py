@@ -76,6 +76,11 @@ def mock_NLU_with_moliere(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_moliere")
 
 
+@pytest.fixture
+def mock_NLU_with_chez_eric(httpx_mock):
+    yield from mock_NLU_for(httpx_mock, "with_chez_eric")
+
+
 @pytest.fixture()
 def mock_NLU_with_city(httpx_mock):
     yield from mock_NLU_for(httpx_mock, "with_city")
@@ -100,9 +105,13 @@ def mock_autocomplete_get(httpx_mock):
             re.compile(rf"^{BASE_URL}/autocomplete.*q=43\+rue\+de\+paris\+rennes.*")
         ).respond(json=read_fixture("fixtures/autocomplete/43_rue_de_paris_rennes.json"))
 
-        httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete.*override_indices_name.*")).respond(
-            json=read_fixture("fixtures/autocomplete/tripadvisor/hotel_moliere.json")
-        )
+        httpx_mock.get(
+            re.compile(f"^{BASE_URL}/autocomplete.*q=hotel.*override_indices_name.*")
+        ).respond(json=read_fixture("fixtures/autocomplete/tripadvisor/hotel_moliere.json"))
+
+        httpx_mock.get(
+            re.compile(f"^{BASE_URL}/autocomplete.*q=chez\+eric.*override_indices_name.*")
+        ).respond(json=read_fixture("fixtures/autocomplete/tripadvisor/chez_eric.json"))
 
         httpx_mock.get(re.compile(f"^{BASE_URL}/autocomplete")).respond(json=FIXTURE_AUTOCOMPLETE)
 

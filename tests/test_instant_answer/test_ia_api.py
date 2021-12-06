@@ -12,10 +12,11 @@ from ..fixtures.autocomplete import (
     mock_NLU_with_brand_and_city,
     mock_NLU_with_picasso,
     mock_NLU_with_moliere,
+    mock_NLU_with_chez_eric,
     mock_bragi_carrefour_in_bbox,
 )
 
-from ..fixtures.pj import mock_pj_api_find_with_musee_picasso
+from ..fixtures.pj import mock_pj_api_find_with_musee_picasso, mock_pj_api_find_with_chez_eric
 
 
 def test_ia_paris(mock_autocomplete_get, mock_NLU_with_city):
@@ -148,6 +149,20 @@ def test_ia_without_intention_detected_and_tripadvisor_hotel_poi_found(
     assert response.status_code == 200
     assert response.json()["data"]["result"]["source"] == "tripadvisor"
     assert response.json()["data"]["result"]["places"][0]["name"] == "Hôtel Molière"
+
+
+def test_ia_without_intention_detected_and_only_tripadvisor_restaurant_poi_found(
+    mock_pj_api_find_with_chez_eric, mock_autocomplete_get, mock_NLU_with_chez_eric
+):
+    """
+    Should return Pagesjaunes hotel poi when no brand/category intention detected and
+    no tripadvisor hotels poi are fetched
+    """
+    client = TestClient(app)
+    response = client.get("/v1/instant_answer", params={"q": "chez eric", "user_country": "fr"})
+    assert response.status_code == 200
+    assert response.json()["data"]["result"]["source"] == "pages_jaunes"
+    assert response.json()["data"]["result"]["places"][0]["name"] == "Chez Eric"
 
 
 def test_ia_pj_fallback(

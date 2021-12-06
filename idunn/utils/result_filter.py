@@ -340,7 +340,8 @@ class ResultFilter:
         local_names = [
             prop["value"]
             for prop in bragi_response.get("properties", [])
-            if prop["key"].startswith("name:") or prop["key"].startswith("alt_name:")
+            if isinstance(prop, dict)
+            and (prop["key"].startswith("name:") or prop["key"].startswith("alt_name:"))
         ]
 
         return {
