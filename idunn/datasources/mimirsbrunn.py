@@ -160,16 +160,3 @@ def fetch_closest(lat, lon, max_distance, es):
             status_code=404, detail=f"nothing around {lat}:{lon} within {max_distance}m..."
         )
     return es_addrs[0]
-
-
-def fetch_es_poi(id, es) -> dict:
-    """Returns the raw POI data
-    @deprecated by fetch_es_place()
-
-    This function gets from Elasticsearch the
-    entry corresponding to the given id.
-    """
-    try:
-        return fetch_es_place(id, es, type="poi")["_source"]
-    except PlaceNotFound as e:
-        raise HTTPException(status_code=404, detail=e.message) from e

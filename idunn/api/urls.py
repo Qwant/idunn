@@ -1,6 +1,5 @@
 from fastapi import Depends
 
-from .pois import get_poi
 from .places import get_place, get_place_latlon
 from .status import get_status
 from .places_list import get_places_bbox, PlacesBboxResponse
@@ -38,8 +37,6 @@ def get_api_urls(settings):
     return [
         APIRoute("/metrics", metric_handler, include_in_schema=False),
         APIRoute("/status", get_status, include_in_schema=False),
-        # Deprecated POI route
-        APIRoute("/pois/{id}", get_poi, deprecated=True, include_in_schema=False),
         # Places
         APIRoute(
             "/places",

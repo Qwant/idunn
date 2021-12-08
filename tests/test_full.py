@@ -75,7 +75,7 @@ def test_full(mock_external_requests):
     Exhaustive test that checks all possible blocks
     """
     client = TestClient(app)
-    response = client.get(url="http://localhost/v1/pois/osm:way:7777778?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:way:7777778?lang=es")
 
     assert response.status_code == 200
 

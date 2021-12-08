@@ -32,7 +32,7 @@ def test_undefined_wheelchairs():
     defined there is no block 'accessibility'
     """
     client = TestClient(app)
-    response = client.get(url="http://localhost/v1/pois/osm:node:738042332?lang=fr")
+    response = client.get(url="http://localhost/v1/places/osm:node:738042332?lang=fr")
 
     assert response.status_code == 200
 
@@ -53,7 +53,7 @@ def test_wheelchair():
     are defined
     """
     client = TestClient(app)
-    response = client.get(url="http://localhost/v1/pois/osm:node:36153811?lang=fr")
+    response = client.get(url="http://localhost/v1/places/osm:node:36153811?lang=fr")
 
     assert response.status_code == 200
 
