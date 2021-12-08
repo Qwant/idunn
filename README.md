@@ -31,7 +31,6 @@ The main endpoints are:
     * `q`: full-text query (optional, experimental)
 * `/v1/places?bbox={bbox}&raw_filter=class,subclass&size={size}` to get a list of all points of interest matching the given bbox (=left,bot,right,top e.g. `bbox=2,48,3,49`) and the raw filters (e.g. `raw_filter=*,restaurant&raw_filter=shop,*&raw_filter=bakery,bakery`)
 * `/v1/categories` to get the list of all the categories you can filter on.
-* `/v1/places/{poi_id}?lang={lang}` is the **deprecated** route to get the details of a POI.
 * `/v1/directions` See [directions.md](./doc/directions.md) for details
 * `/v1/events?bbox={bbox}&category=<category_name>&size={size}` to get a list of all events matching the given bbox and outing_category
     * `bbox`: left,bot,right,top e.g. `bbox=2.0,48.0,3.0,49.0`
