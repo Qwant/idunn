@@ -96,7 +96,7 @@ def test_unknown_poi():
     response = client.get(url="http://localhost/v1/places/an_unknown_poi_id")
 
     assert response.status_code == 404
-    assert "'an_unknown_poi_id' not found" in response.json()["detail"]
+    assert "Invalid place id: 'an_unknown_poi_id'" in response.json()["detail"]
 
 
 def test_services_and_information():
