@@ -1,5 +1,5 @@
 from idunn.blocks.contact import ContactBlock
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 
 
 def test_contact_block():

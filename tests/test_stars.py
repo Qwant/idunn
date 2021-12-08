@@ -1,5 +1,5 @@
 from idunn.blocks.stars import StarsBlock, StarsDetails
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 
 
 def test_stars_block_invalid():

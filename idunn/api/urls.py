@@ -1,7 +1,6 @@
 from fastapi import Depends
 
 from .hotel_pricing import get_hotel_pricing
-from .pois import get_poi
 from .places import get_place, get_place_latlon
 from .status import get_status
 from .places_list import get_places_bbox, PlacesBboxResponse

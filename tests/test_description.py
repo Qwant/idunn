@@ -1,5 +1,5 @@
 from idunn.blocks.description import DescriptionBlock
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 from .utils import read_fixture
 
 

@@ -5,8 +5,8 @@ from starlette.concurrency import run_in_threadpool
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.places import POI
 from idunn.places.poi import BragiPOI
+from idunn.places import OsmPOI
 
 logger = logging.getLogger(__name__)
 
@@ -32,4 +32,4 @@ class Osm(Datasource):
             bbox=params.bbox,
             max_size=params.size,
         )
-        return [POI(p["_source"]) for p in bbox_places]
+        return [OsmPOI(p["_source"]) for p in bbox_places]

@@ -1,5 +1,5 @@
 from idunn.blocks.website import WebSiteBlock
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 
 
 def test_website_block():

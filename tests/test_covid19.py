@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from app import app
 from idunn.blocks import Covid19Block
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 from .utils import override_settings
 
 

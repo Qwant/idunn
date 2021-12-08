@@ -341,7 +341,7 @@ class BasePlace(dict):
 
     def get_tz(self):
         """
-        >>> from idunn.places import POI
+        >>> from idunn.places import OsmPOI as POI
 
         >>> poi1 = POI({"coord": {"lon": 2.3, "lat":48.9}})
         >>> poi1.get_tz().zone
@@ -359,7 +359,7 @@ class BasePlace(dict):
 
     def get_geometry(self):
         """Returns GeoJSON-like geometry. Requires "lon" and "lat" coordinates.
-        >>> from idunn.places import POI
+        >>> from idunn.places import OsmPOI as POI
         >>> assert POI({}).get_geometry() is None
 
         >>> assert POI({'coord':{"lon": None, "lat": 48.85}}).get_geometry() is None

@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app import app
 
 from idunn.blocks.images import ImagesBlock
-from idunn.places import POI, PjApiPOI
+from idunn.places import OsmPOI as POI, PjApiPOI
 from idunn.places.models.pj_find import Listing
 
 

@@ -649,7 +649,7 @@ def test_valid_category_that_trigger_tripadvisor_over_osm():
                 "address": ANY,
                 "blocks": [],
                 "meta": {
-                    "source": "osm",
+                    "source": "tripadvisor",
                     "source_url": ANY,
                     "contribute_url": ANY,
                     "maps_place_url": ANY,

@@ -6,9 +6,10 @@ from idunn import settings
 from idunn.api.constants import PoiSource
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
+from abc import ABC, abstractmethod
 
 
-class POI(BasePlace):
+class POI(BasePlace, ABC):
     PLACE_TYPE = "poi"
 
     def __init__(self, d):
@@ -77,8 +78,9 @@ class POI(BasePlace):
         except ValueError:
             return None
 
+    @abstractmethod
     def get_source(self):
-        return PoiSource.OSM
+        pass
 
 
 class OsmPOI(POI):

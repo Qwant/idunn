@@ -1,5 +1,5 @@
 from idunn.blocks.delivery import DeliveryBlock
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 
 
 def test_delivery_block():

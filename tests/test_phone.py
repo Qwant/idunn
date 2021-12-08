@@ -1,5 +1,5 @@
 from idunn.blocks.phone import PhoneBlock
-from idunn.places import POI
+from idunn.places import OsmPOI as POI
 
 
 def test_phone_block_invalid():
