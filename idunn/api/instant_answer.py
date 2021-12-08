@@ -118,7 +118,7 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
 
 
 def get_instant_answer_single_place(
-    place_id: str, query: str, lang: str, type: str = None
+    place_id: str, query: str, lang: str, type: Optional[str] = None
 ) -> Response:
     try:
         place = place_from_id(place_id, type=type, follow_redirect=True)
