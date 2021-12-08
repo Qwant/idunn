@@ -74,12 +74,12 @@ def test_rate_limiter_with_redis(limiter_test_normal, mock_wikipedia_response):
     client = TestClient(app)
 
     for _ in range(3):
-        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+        response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
         resp = response.json()
         assert has_wiki_desc(resp)
 
     for _ in range(2):
-        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+        response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
         resp = response.json()
         assert not has_wiki_desc(resp)
 
@@ -99,7 +99,7 @@ def test_rate_limiter_without_redis(disable_redis):
             "GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200, json={"test": "test"}
         )
         for _ in range(10):
-            client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+            client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
 
         assert len(rsps.calls) == 10
 
@@ -135,7 +135,7 @@ def test_rate_limiter_with_redisError(
     client = TestClient(app)
 
     # First we make a successful call before "stopping" redis.
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
 
     assert response.status_code == 200
     resp = response.json()
@@ -156,7 +156,7 @@ def test_rate_limiter_with_redisError(
         m.setattr(RateLimiter, "limit", fake_limit)
 
         client = TestClient(app)
-        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+        response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
 
         assert response.status_code == 200
         resp = response.json()
@@ -165,7 +165,7 @@ def test_rate_limiter_with_redisError(
 
     # Now that the redis "came back", we are expecting a correct answer from
     # Idunn.
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
 
     assert response.status_code == 200
     resp = response.json()
@@ -189,7 +189,7 @@ def test_rate_limiter_with_redis_interruption(
     """
     client = TestClient(app)
 
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
     assert response.status_code == 200
     resp = response.json()
 
@@ -208,7 +208,7 @@ def test_rate_limiter_with_redis_interruption(
 
     # B - We interrupt the Redis service and we make a new Idunn request
     docker_services._docker_compose.execute("stop", "wiki_redis")
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
     assert response.status_code == 200
     # The wikipedia block should not be returned: we check we have all the
     # information, except the wikipedia block.
@@ -222,7 +222,7 @@ def test_rate_limiter_with_redis_interruption(
 
     # C - When Redis service restarts the wikipedia block should be returned again.
     restart_wiki_redis(docker_services)
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
     assert response.status_code == 200
     resp = response.json()
 

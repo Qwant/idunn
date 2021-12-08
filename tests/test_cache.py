@@ -41,7 +41,7 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia_response):
     client = TestClient(app)
 
     # We make a first request for the louvre museum POI
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
     resp = response.json()
 
     # One request requires 2 wikipedia API calls
@@ -50,7 +50,7 @@ def test_wikipedia_cache(cache_test_normal, mock_wikipedia_response):
 
     # We make another request to the same POI which should now be in the cache.
     # As a result no more Wikipedia call should be made.
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
     resp = response.json()
 
     assert len(mock_wikipedia_response.calls) == 2  # the same number of requests as before
@@ -68,7 +68,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
         # be in the Wiki ES.
         rsps.add("GET", re.compile(r"^https://.*\.wikipedia.org/"), status=200)
 
-        response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
+        response = client.get(url="http://localhost/v1/places/osm:way:7777777?lang=fr")
 
         assert response.status_code == 200
         resp = response.json()
@@ -101,7 +101,7 @@ def test_wikidata_cache(cache_test_normal, basket_ball_wiki_es, monkeypatch):
             # Without the cache the request would fail in the "get_wiki_info()"
             # method.
             for _ in range(10):
-                response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=fr")
+                response = client.get(url="http://localhost/v1/places/osm:way:7777777?lang=fr")
                 resp = response.json()
                 assert has_wiki_desc(resp)  # we still have a wikipedia block
 
@@ -121,7 +121,7 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia_response):
 
     with mock.patch.object(Redis, "get", fake_get):
         client = TestClient(app)
-        response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+        response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
         assert response.status_code == 200
         resp = response.json()
         assert len(mock_wikipedia_response.calls) == 0

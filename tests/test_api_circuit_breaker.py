@@ -37,7 +37,7 @@ def test_circuit_breaker_500(breaker_test, disable_redis):
         # we test that after 3 calls the circuit is open (i.e there are no more
         # than 3 calls sent).
         for _ in range(10):
-            response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=es")
+            response = client.get(url="http://localhost/v1/places/osm:way:7777777?lang=es")
 
         assert response.status_code == 200
 
@@ -52,7 +52,7 @@ def test_circuit_breaker_500(breaker_test, disable_redis):
         sleep(1)
 
         for _ in range(10):
-            response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=es")
+            response = client.get(url="http://localhost/v1/places/osm:way:7777777?lang=es")
         assert len(rsps.calls) == 4
 
 
@@ -72,7 +72,7 @@ def test_circuit_breaker_404(breaker_test, disable_redis):
         # circuit breaker the circuit should remained closed since the 404 is an
         # exclude exception.
         for _ in range(4):
-            response = client.get(url="http://localhost/v1/pois/osm:way:7777777?lang=es")
+            response = client.get(url="http://localhost/v1/places/osm:way:7777777?lang=es")
 
         assert breaker_test.current_state == "closed"
         assert len(rsps.calls) == 4

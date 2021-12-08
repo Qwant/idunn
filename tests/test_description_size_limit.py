@@ -42,7 +42,7 @@ def mock_long_wikipedia_response():
 
 def test_description_size_limit(wiki_max_size):
     client = TestClient(app)
-    response = client.get(url="http://localhost/v1/pois/osm:relation:7515426?lang=es")
+    response = client.get(url="http://localhost/v1/places/osm:relation:7515426?lang=es")
     assert response.status_code == 200
     resp = response.json()
 
