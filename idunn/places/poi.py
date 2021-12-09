@@ -94,13 +94,14 @@ class TripadvisorPOI(POI):
 
 
 class BragiPOI(POI):
-    def __init__(self, bragi_feature):
+    def __init__(self, source: PoiSource, bragi_feature):
         coord = bragi_feature.get("geometry", {}).get("coordinates") or []
         if len(coord) == 2:
             lon, lat = coord
         else:
             lon, lat = None, None
         es_dict = dict(bragi_feature["properties"]["geocoding"], coord={"lon": lon, "lat": lat})
+        self.source = source
         super().__init__(es_dict)
 
     def get_raw_street(self):
@@ -117,7 +118,7 @@ class BragiPOI(POI):
         return [c.upper() for c in self.get_raw_address().get("country_codes") or []]
 
     def get_source(self):
-        return PoiSource.OSM
+        return self.source
 
 
 def get_name(properties, lang):

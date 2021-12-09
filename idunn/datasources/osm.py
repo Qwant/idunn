@@ -2,6 +2,7 @@ import logging
 
 from starlette.concurrency import run_in_threadpool
 
+from idunn.api.constants import PoiSource
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.geocoder.bragi_client import bragi_client
@@ -19,7 +20,7 @@ class Osm(Datasource):
             bragi_response = await bragi_client.pois_query_in_bbox(
                 query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
             )
-            return [BragiPOI(f) for f in bragi_response.get("features", [])]
+            return [BragiPOI(PoiSource.OSM, f) for f in bragi_response.get("features", [])]
 
         if params.raw_filter:
             filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
