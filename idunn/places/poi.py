@@ -1,12 +1,12 @@
 from functools import cached_property
 from urllib.parse import urlencode
 
-from .base import BasePlace
 from idunn import settings
 from idunn.api.constants import PoiSource
+from .base import BasePlace
+from abc import ABC, abstractmethod
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
-from abc import ABC, abstractmethod
 
 
 class POI(BasePlace, ABC):
