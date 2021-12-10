@@ -7,7 +7,7 @@ from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.places.poi import BragiPOI
-from idunn.places import OsmPOI
+from idunn.places import POI
 
 logger = logging.getLogger(__name__)
 
@@ -33,4 +33,4 @@ class Osm(Datasource):
             bbox=params.bbox,
             max_size=params.size,
         )
-        return [OsmPOI(p["_source"]) for p in bbox_places]
+        return [POI(p["_source"]) for p in bbox_places]

@@ -209,7 +209,7 @@ def load_all(mimir_client, init_indices):
     load_place("address_43_rue_de_paris.json", mimir_client, doc_type="addr")
     load_place("admin_dunkerque.json", mimir_client, doc_type="admin")
     load_place("admin_paris.json", mimir_client, doc_type="admin")
-    load_place("cinema_multiplexe.json", mimir_client, doc_type="poi-tripadvisor")
+    load_place("tripadvisor_cinema_multiplexe.json", mimir_client, doc_type="poi-tripadvisor")
     load_place("tripadvisor_hotel_suecka.json", mimir_client, doc_type="poi-tripadvisor")
     load_place("tripadvisor_hotel_moliere.json", mimir_client, doc_type="poi-tripadvisor")
     load_place("tripadvisor_chez_eric.json", mimir_client, doc_type="poi-tripadvisor")

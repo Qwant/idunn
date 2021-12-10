@@ -4,7 +4,7 @@ from idunn.utils import prometheus
 from ..datasources.pages_jaunes import pj_source
 from ..places import Latlon, Admin, Address, Street
 from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
-from ..places.poi import TripadvisorPOI, OsmPOI
+from ..places.poi import POI
 
 
 def place_from_id(id: str, type=None, follow_redirect=False):
@@ -50,8 +50,8 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         "admin": Admin,
         "street": Street,
         "addr": Address,
-        "poi": OsmPOI,
-        "poi-tripadvisor": TripadvisorPOI,
+        "poi": POI,
+        "poi-tripadvisor": POI,
     }
 
     place_type = get_es_place_type(es_place)

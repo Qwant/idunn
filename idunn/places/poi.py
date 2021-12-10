@@ -4,16 +4,19 @@ from urllib.parse import urlencode
 from idunn import settings
 from idunn.api.constants import PoiSource
 from .base import BasePlace
-from abc import ABC, abstractmethod
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
 
 
-class POI(BasePlace, ABC):
+class POI(BasePlace):
     PLACE_TYPE = "poi"
 
     def __init__(self, d):
         super().__init__(d)
+        if self["id"].startswith("ta"):
+            self.source = PoiSource.TRIPADVISOR
+        else:
+            self.source = PoiSource.OSM
         if not isinstance(self.get("properties"), dict):
             self["properties"] = {p.get("key"): p.get("value") for p in self.get("properties", [])}
         self.properties = self["properties"]
@@ -78,19 +81,8 @@ class POI(BasePlace, ABC):
         except ValueError:
             return None
 
-    @abstractmethod
     def get_source(self):
-        pass
-
-
-class OsmPOI(POI):
-    def get_source(self):
-        return PoiSource.OSM
-
-
-class TripadvisorPOI(POI):
-    def get_source(self):
-        return PoiSource.TRIPADVISOR
+        return self.source
 
 
 class BragiPOI(POI):

@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app import app
 
 from idunn.blocks.images import ImagesBlock
-from idunn.places import OsmPOI as POI, PjApiPOI
+from idunn.places import POI, PjApiPOI
 from idunn.places.models.pj_find import Listing
 
 
@@ -48,10 +48,11 @@ def test_tag_image():
     block = ImagesBlock.from_es(
         POI(
             {
+                "id": "osm:way:154422021",
                 "properties": {
                     "name": "Musée du Louvre",
                     "image": "http://upload.wikimedia.org/wikipedia/commons/6/66/Louvre_Museum_Wikimedia_Commons.jpg",
-                }
+                },
             }
         ),
         lang="en",
@@ -73,9 +74,10 @@ def test_tag_image_unamed_poi():
     block = ImagesBlock.from_es(
         POI(
             {
+                "id": "osm:way:154422021",
                 "properties": {
                     "image": "http://upload.wikimedia.org/wikipedia/commons/6/66/Louvre_Museum_Wikimedia_Commons.jpg"
-                }
+                },
             }
         ),
         lang="en",
@@ -95,7 +97,8 @@ def test_tag_image_unamed_poi():
 
 def test_tag_mapillary():
     block = ImagesBlock.from_es(
-        POI({"properties": {"mapillary": "vwf6B4zuu8WPW5K2bqHMVg"}}), lang="en"
+        POI({"properties": {"mapillary": "vwf6B4zuu8WPW5K2bqHMVg"}, "id": "osm:way:154422021"}),
+        lang="en",
     )
     assert block.dict() == {
         "type": "images",
@@ -119,9 +122,10 @@ def test_image_tag_wikipedia():
     block = ImagesBlock.from_es(
         POI(
             {
+                "id": "osm:way:154422021",
                 "properties": {
                     "image": "https://fr.wikipedia.org/wiki/Fichier:Tour_Eiffel_Wikimedia_Commons.jpg"
-                }
+                },
             }
         ),
         lang="fr",
