@@ -2,8 +2,9 @@ from idunn.datasources.mimirsbrunn import fetch_es_place, get_es_place_type
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils import prometheus
 from ..datasources.pages_jaunes import pj_source
-from ..places import Latlon, Admin, Address, POI, Street
+from ..places import Latlon, Admin, Address, Street
 from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
+from ..places.poi import POI
 
 
 def place_from_id(id: str, type=None, follow_redirect=False):
@@ -50,6 +51,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         "street": Street,
         "addr": Address,
         "poi": POI,
+        "poi_tripadvisor": POI,
     }
 
     place_type = get_es_place_type(es_place)

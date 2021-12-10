@@ -56,3 +56,8 @@ def mock_pj_api_with_hotel_hilton():
 @pytest.fixture
 def mock_pj_api_find_with_musee_picasso():
     yield from mock_pj_api("api_find", "api_musee_picasso.json")
+
+
+@pytest.fixture
+def mock_pj_api_find_with_chez_eric():
+    yield from mock_pj_api("api_find", "api_chez_eric.json")

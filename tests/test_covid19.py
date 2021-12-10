@@ -40,6 +40,7 @@ def test_covid19_parse_hours():
         covid_block = Covid19Block.from_es(
             POI(
                 {
+                    "id": "osm:way:154422021",
                     "coord": {"lon": 2.3, "lat": 48.8},
                     "properties": {
                         "opening_hours": "Tu-Su 08:30-24:00",

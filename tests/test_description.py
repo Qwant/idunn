@@ -4,7 +4,7 @@ from .utils import read_fixture
 
 
 def orsay(lang=None):
-    place = {"properties": {}}
+    place = {"properties": {}, "id": "osm:way:154422021"}
 
     full = read_fixture("fixtures/orsay_museum.json")
     place["administrative_regions"] = full["administrative_regions"]

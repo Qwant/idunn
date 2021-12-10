@@ -17,6 +17,7 @@ def get_oh_block(opening_hours, lat=48.0, lon=2.0, country_code="FR"):
     return OpeningHourBlock.from_es(
         POI(
             {
+                "id": "osm:way:154422021",
                 "coord": {"lon": lon, "lat": lat},
                 "properties": {"opening_hours": opening_hours},
                 "administrative_regions": [{"country_codes": [country_code]}],

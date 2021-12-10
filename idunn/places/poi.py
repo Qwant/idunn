@@ -1,9 +1,9 @@
 from functools import cached_property
 from urllib.parse import urlencode
 
-from .base import BasePlace
 from idunn import settings
 from idunn.api.constants import PoiSource
+from .base import BasePlace
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
 
@@ -13,6 +13,10 @@ class POI(BasePlace):
 
     def __init__(self, d):
         super().__init__(d)
+        if self["id"].startswith("ta:"):
+            self.source = PoiSource.TRIPADVISOR
+        else:
+            self.source = PoiSource.OSM
         if not isinstance(self.get("properties"), dict):
             self["properties"] = {p.get("key"): p.get("value") for p in self.get("properties", [])}
         self.properties = self["properties"]
@@ -51,9 +55,6 @@ class POI(BasePlace):
     def get_subclass_name(self):
         return self.properties.get("poi_subclass")
 
-    def get_source(self):
-        return PoiSource.OSM
-
     @cached_property
     def osm_id_tuple(self):
         poi_id = self.get_id()
@@ -80,15 +81,19 @@ class POI(BasePlace):
         except ValueError:
             return None
 
+    def get_source(self):
+        return self.source
+
 
 class BragiPOI(POI):
-    def __init__(self, bragi_feature):
+    def __init__(self, source: PoiSource, bragi_feature):
         coord = bragi_feature.get("geometry", {}).get("coordinates") or []
         if len(coord) == 2:
             lon, lat = coord
         else:
             lon, lat = None, None
         es_dict = dict(bragi_feature["properties"]["geocoding"], coord={"lon": lon, "lat": lat})
+        self.source = source
         super().__init__(es_dict)
 
     def get_raw_street(self):
@@ -103,6 +108,9 @@ class BragiPOI(POI):
 
     def get_country_codes(self):
         return [c.upper() for c in self.get_raw_address().get("country_codes") or []]
+
+    def get_source(self):
+        return self.source
 
 
 def get_name(properties, lang):
