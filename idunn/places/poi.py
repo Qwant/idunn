@@ -13,7 +13,7 @@ class POI(BasePlace):
 
     def __init__(self, d):
         super().__init__(d)
-        if self["id"].startswith("ta"):
+        if self["id"].startswith("ta:"):
             self.source = PoiSource.TRIPADVISOR
         else:
             self.source = PoiSource.OSM
