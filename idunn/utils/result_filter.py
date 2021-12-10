@@ -337,6 +337,7 @@ class ResultFilter:
             )
 
         name = bragi_response["name"]
+
         local_names = [
             prop["value"]
             for prop in bragi_response.get("properties", [])

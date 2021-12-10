@@ -96,7 +96,7 @@ def init_indices(mimir_client, wiki_client):
     mimir_client.indices.put_alias(name="munin", index="munin_poi")
 
     mimir_client.indices.create(
-        index="munin_poi-tripadvisor",
+        index="munin_poi_tripadvisor",
         mappings={
             "properties": {
                 "coord": {"type": "geo_point"},
@@ -169,7 +169,7 @@ INDICES = {
     "street": "munin_street",
     "addr": "munin_addr",
     "poi": "munin_poi",
-    "poi-tripadvisor": "munin_poi-tripadvisor",
+    "poi_tripadvisor": "munin_poi_tripadvisor",
 }
 
 
@@ -209,10 +209,10 @@ def load_all(mimir_client, init_indices):
     load_place("address_43_rue_de_paris.json", mimir_client, doc_type="addr")
     load_place("admin_dunkerque.json", mimir_client, doc_type="admin")
     load_place("admin_paris.json", mimir_client, doc_type="admin")
-    load_place("tripadvisor_cinema_multiplexe.json", mimir_client, doc_type="poi-tripadvisor")
-    load_place("tripadvisor_hotel_suecka.json", mimir_client, doc_type="poi-tripadvisor")
-    load_place("tripadvisor_hotel_moliere.json", mimir_client, doc_type="poi-tripadvisor")
-    load_place("tripadvisor_chez_eric.json", mimir_client, doc_type="poi-tripadvisor")
+    load_place("tripadvisor_cinema_multiplexe.json", mimir_client, doc_type="poi_tripadvisor")
+    load_place("tripadvisor_hotel_suecka.json", mimir_client, doc_type="poi_tripadvisor")
+    load_place("tripadvisor_hotel_moliere.json", mimir_client, doc_type="poi_tripadvisor")
+    load_place("tripadvisor_chez_eric.json", mimir_client, doc_type="poi_tripadvisor")
 
 
 @pytest.fixture

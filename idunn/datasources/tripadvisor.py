@@ -32,7 +32,7 @@ class Tripadvisor(Datasource):
             filters = [f for c in params.category for f in c.raw_filters()]
         bbox_places = await run_in_threadpool(
             fetch_es_pois,
-            "poi-tripadvisor",
+            "poi_tripadvisor",
             filters=filters,
             bbox=params.bbox,
             max_size=params.size,

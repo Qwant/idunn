@@ -254,7 +254,7 @@ async def get_instant_answer(
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
     query_tripadvisor = deepcopy(query)
-    query_tripadvisor.override_indices_name.append("poi-tripadvisor")
+    query_tripadvisor.override_indices_name.append("poi_tripadvisor")
 
     async def fetch_pj_response():
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
@@ -289,7 +289,7 @@ async def get_instant_answer(
                 query=q,
                 place_id=place_id,
                 lang=lang,
-                type="poi-tripadvisor",
+                type="poi_tripadvisor",
             )
 
     bragi_osm_response = await fetch_bragi_osm

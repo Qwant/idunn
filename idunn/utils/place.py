@@ -51,7 +51,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         "street": Street,
         "addr": Address,
         "poi": POI,
-        "poi-tripadvisor": POI,
+        "poi_tripadvisor": POI,
     }
 
     place_type = get_es_place_type(es_place)

@@ -223,7 +223,7 @@ async def _fetch_extended_bbox(bbox_extended, params, places_list):
     original_bbox_height = original_bbox[3] - original_bbox[1]
     original_bbox_size = max(original_bbox_height, original_bbox_width)
     if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
-        # Compute extended bbox and fetch results a second time_fetch_extended_bbox
+        # Compute extended bbox and fetch results a second time
         scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
         new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
         params.bbox = new_box.bounds
