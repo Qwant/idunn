@@ -107,52 +107,19 @@
     "id": "cinema",
     "name": "class_cinema"
   },
-  "properties": [
-    {
-      "key": "screen",
-      "value": "15"
+  "properties": {
+      "screen": "15",
+      "acoustic": "voice_description",
+      "name": "Multiplexe Liberté",
+      "name:latin": "Multiplexe Liberté",
+      "wheelchair": "yes",
+      "cinema:3D": "yes",
+      "toilets:wheelchair": "yes",
+      "name_int": "Multiplexe Liberté",
+      "amenity": "cinema",
+      "poi_subclass": "cinema",
+    "poi_class": "cinema"
     },
-    {
-      "key": "acoustic",
-      "value": "voice_description"
-    },
-    {
-      "key": "name",
-      "value": "Multiplexe Liberté"
-    },
-    {
-      "key": "name:latin",
-      "value": "Multiplexe Liberté"
-    },
-    {
-      "key": "wheelchair",
-      "value": "yes"
-    },
-    {
-      "key": "cinema:3D",
-      "value": "yes"
-    },
-    {
-      "key": "toilets:wheelchair",
-      "value": "yes"
-    },
-    {
-      "key": "name_int",
-      "value": "Multiplexe Liberté"
-    },
-    {
-      "key": "amenity",
-      "value": "cinema"
-    },
-    {
-      "key": "poi_subclass",
-      "value": "cinema"
-    },
-    {
-      "key": "poi_class",
-      "value": "cinema"
-    }
-  ],
   "address": {
     "type": "addr",
     "id": "addr:-4.487341;48.390743",

@@ -13,10 +13,6 @@ class POI(BasePlace):
 
     def __init__(self, d):
         super().__init__(d)
-        if self["id"].startswith("ta:"):
-            self.source = PoiSource.TRIPADVISOR
-        else:
-            self.source = PoiSource.OSM
         if not isinstance(self.get("properties"), dict):
             self["properties"] = {p.get("key"): p.get("value") for p in self.get("properties", [])}
         self.properties = self["properties"]
@@ -82,7 +78,50 @@ class POI(BasePlace):
             return None
 
     def get_source(self):
-        return self.source
+        pass
+
+
+class OsmPOI(POI):
+
+    @cached_property
+    def osm_id_tuple(self):
+        poi_id = self.get_id()
+        try:
+            _prefix, osm_kind, osm_id = poi_id.rsplit(":", 2)
+            return (osm_kind, osm_id)
+        except ValueError:
+            return tuple()
+
+    def get_source_url(self):
+        try:
+            osm_kind, osm_id = self.osm_id_tuple
+            return f"https://www.openstreetmap.org/{osm_kind}/{osm_id}"
+        except ValueError:
+            return None
+
+    def get_contribute_url(self):
+        try:
+            osm_kind, osm_id = self.osm_id_tuple
+            edit_params = {osm_kind: osm_id}
+            if OSM_CONTRIBUTION_HASHTAGS:
+                edit_params["hashtags"] = OSM_CONTRIBUTION_HASHTAGS
+            return f"https://www.openstreetmap.org/edit?{urlencode(edit_params)}"
+        except ValueError:
+            return None
+
+    def get_source(self):
+        return PoiSource.OSM
+
+
+class TripadvisorPOI(POI):
+    def get_source_url(self):
+        return self.properties.get("ta:url")
+
+    def get_contribute_url(self):
+        return self.properties.get("ta:url")
+
+    def get_source(self):
+        return PoiSource.TRIPADVISOR
 
 
 class BragiPOI(POI):
@@ -137,3 +176,11 @@ def get_name(properties, lang):
     if name is None:
         name = properties.get("name")
     return name
+
+
+class PoiFactory:
+    def get_poi(self, d) -> POI:
+        """Get the matching POI type to fetch POIs"""
+        if d["id"].startswith("ta:"):
+            return TripadvisorPOI(d)
+        return OsmPOI(d)

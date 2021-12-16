@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app import app
 
 from idunn.blocks.images import ImagesBlock
-from idunn.places import POI, PjApiPOI
+from idunn.places import OsmPOI, PjApiPOI
 from idunn.places.models.pj_find import Listing
 
 
@@ -46,7 +46,7 @@ def test_wiki_image(orsay_wiki_es):
 
 def test_tag_image():
     block = ImagesBlock.from_es(
-        POI(
+        OsmPOI(
             {
                 "id": "osm:way:154422021",
                 "properties": {
@@ -72,7 +72,7 @@ def test_tag_image():
 
 def test_tag_image_unamed_poi():
     block = ImagesBlock.from_es(
-        POI(
+        OsmPOI(
             {
                 "id": "osm:way:154422021",
                 "properties": {
@@ -97,7 +97,7 @@ def test_tag_image_unamed_poi():
 
 def test_tag_mapillary():
     block = ImagesBlock.from_es(
-        POI({"properties": {"mapillary": "vwf6B4zuu8WPW5K2bqHMVg"}, "id": "osm:way:154422021"}),
+        OsmPOI({"properties": {"mapillary": "vwf6B4zuu8WPW5K2bqHMVg"}, "id": "osm:way:154422021"}),
         lang="en",
     )
     assert block.dict() == {
@@ -120,7 +120,7 @@ def test_pj_poi_no_image():
 
 def test_image_tag_wikipedia():
     block = ImagesBlock.from_es(
-        POI(
+        OsmPOI(
             {
                 "id": "osm:way:154422021",
                 "properties": {

@@ -1,10 +1,10 @@
 from idunn.blocks.stars import StarsBlock, StarsDetails
-from idunn.places import POI
+from idunn.places import OsmPOI
 
 
 def test_stars_block_invalid():
     stars_block = StarsBlock.from_es(
-        POI({"properties": {"stars": "four stars"}, "id": "osm:way:154422021"}),
+        OsmPOI({"properties": {"stars": "four stars"}, "id": "osm:way:154422021"}),
         lang="en",
     )
     assert stars_block is None
@@ -12,7 +12,9 @@ def test_stars_block_invalid():
 
 def test_stars_block_lodging():
     stars_block = StarsBlock.from_es(
-        POI({"properties": {"poi_class": "lodging", "stars": "4.5S"}, "id": "osm:way:154422021"}),
+        OsmPOI(
+            {"properties": {"poi_class": "lodging", "stars": "4.5S"}, "id": "osm:way:154422021"}
+        ),
         lang="en",
     )
 
@@ -25,7 +27,7 @@ def test_stars_block_lodging():
 
 def test_stars_block_restaurant():
     stars_block = StarsBlock.from_es(
-        POI({"properties": {"poi_class": "fast_food", "stars": "3"}, "id": "osm:way:154422021"}),
+        OsmPOI({"properties": {"poi_class": "fast_food", "stars": "3"}, "id": "osm:way:154422021"}),
         lang="en",
     )
 

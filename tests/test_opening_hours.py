@@ -10,12 +10,12 @@ Moscow city.
 from freezegun import freeze_time
 from unittest.mock import ANY
 from idunn.blocks.opening_hour import OpeningHourBlock
-from idunn.places import POI
+from idunn.places import OsmPOI
 
 
 def get_oh_block(opening_hours, lat=48.0, lon=2.0, country_code="FR"):
     return OpeningHourBlock.from_es(
-        POI(
+        OsmPOI(
             {
                 "id": "osm:way:154422021",
                 "coord": {"lon": lon, "lat": lat},

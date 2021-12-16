@@ -4,7 +4,7 @@ from idunn.utils import prometheus
 from ..datasources.pages_jaunes import pj_source
 from ..places import Latlon, Admin, Address, Street
 from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
-from ..places.poi import POI
+from ..places.poi import POI, PoiFactory
 
 
 def place_from_id(id: str, type=None, follow_redirect=False):
@@ -60,4 +60,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
     if loader is None:
         prometheus.exception("FoundPlaceWithWrongType")
         raise Exception(f"Place with id '{id}' has a wrong type: '{place_type}'")
+
+    if loader is POI:
+        return PoiFactory().get_poi(es_place["_source"])
     return loader(es_place["_source"])
