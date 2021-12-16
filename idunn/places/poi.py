@@ -82,7 +82,6 @@ class POI(BasePlace):
 
 
 class OsmPOI(POI):
-
     @cached_property
     def osm_id_tuple(self):
         poi_id = self.get_id()
