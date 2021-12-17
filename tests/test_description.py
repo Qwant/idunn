@@ -1,5 +1,5 @@
 from idunn.blocks.description import DescriptionBlock
-from idunn.places import POI
+from idunn.places import OsmPOI
 from .utils import read_fixture
 
 
@@ -12,7 +12,7 @@ def orsay(lang=None):
     key = f"description:{lang}" if lang else "description"
     place["properties"][key] = "Le musée d’Orsay est un musée national inauguré en 1986."
 
-    return POI(place)
+    return OsmPOI(place)
 
 
 def test_description_block_with_lang():

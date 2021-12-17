@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from idunn import settings
 from idunn.api.constants import PoiSource
 from .base import BasePlace
+from abc import abstractmethod
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
 
@@ -13,10 +14,6 @@ class POI(BasePlace):
 
     def __init__(self, d):
         super().__init__(d)
-        if self["id"].startswith("ta:"):
-            self.source = PoiSource.TRIPADVISOR
-        else:
-            self.source = PoiSource.OSM
         if not isinstance(self.get("properties"), dict):
             self["properties"] = {p.get("key"): p.get("value") for p in self.get("properties", [])}
         self.properties = self["properties"]
@@ -55,6 +52,20 @@ class POI(BasePlace):
     def get_subclass_name(self):
         return self.properties.get("poi_subclass")
 
+    @abstractmethod
+    def get_source_url(self):
+        pass
+
+    @abstractmethod
+    def get_contribute_url(self):
+        pass
+
+    @abstractmethod
+    def get_source(self):
+        pass
+
+
+class OsmPOI(POI):
     @cached_property
     def osm_id_tuple(self):
         poi_id = self.get_id()
@@ -82,10 +93,22 @@ class POI(BasePlace):
             return None
 
     def get_source(self):
-        return self.source
+        return PoiSource.OSM
 
 
-class BragiPOI(POI):
+class TripadvisorPOI(POI):
+    def get_source_url(self):
+        return self.properties.get("ta:url")
+
+    def get_contribute_url(self):
+        return self.properties.get("ta:url")
+
+    def get_source(self):
+        return PoiSource.TRIPADVISOR
+
+
+# Bragi POI is only used for OSM right now
+class BragiPOI(OsmPOI):
     def __init__(self, source: PoiSource, bragi_feature):
         coord = bragi_feature.get("geometry", {}).get("coordinates") or []
         if len(coord) == 2:
@@ -137,3 +160,11 @@ def get_name(properties, lang):
     if name is None:
         name = properties.get("name")
     return name
+
+
+class PoiFactory:
+    def get_poi(self, d) -> POI:
+        """Get the matching POI type to fetch POIs"""
+        if d["id"].startswith("ta:"):
+            return TripadvisorPOI(d)
+        return OsmPOI(d)

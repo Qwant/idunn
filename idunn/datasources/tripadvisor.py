@@ -9,7 +9,7 @@ from starlette.concurrency import run_in_threadpool
 from idunn import settings
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
-from idunn.places import POI
+from idunn.places.poi import TripadvisorPOI
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class Tripadvisor(Datasource):
             max_size=params.size,
         )
 
-        return [POI(p["_source"]) for p in bbox_places]
+        return [TripadvisorPOI(p["_source"]) for p in bbox_places]
 
     async def get_hotel_pricing_by_hotel_id(self, params=None):
         try:

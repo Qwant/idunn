@@ -1,12 +1,12 @@
 from app import app
 from fastapi.testclient import TestClient
 from idunn.blocks.services_and_information import AccessibilityBlock
-from idunn.places import POI
+from idunn.places import OsmPOI
 
 
 def test_accessibility_block():
     accessibility_block = AccessibilityBlock.from_es(
-        POI(
+        OsmPOI(
             {
                 "properties": {"wheelchair": "limited", "toilets:wheelchair": "no"},
                 "id": "osm:way:154422021",
@@ -20,7 +20,7 @@ def test_accessibility_block():
 
 def test_accessibility_unknown():
     accessibility_block = AccessibilityBlock.from_es(
-        POI(
+        OsmPOI(
             {
                 "properties": {
                     "wheelchair": "toto",
