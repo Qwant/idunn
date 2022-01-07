@@ -9,7 +9,7 @@ data:
   IDUNN_BRAGI_BASE_URL: http://bragi.int-maps.svc.cluster.local:4000/api/v1
   IDUNN_LOG_JSON: "1"
   IDUNN_MIMIR_ES: http://elasticsearch-master.int-maps.svc.cluster.local:9200
-  IDUNN_WIKI_API_REDIS_URL: redis://redis-idunn-redis-bitnami-master.int-maps.svc.cluster.local:6379
+  IDUNN_WIKI_API_REDIS_URL: redis://rfh-int-redis-idunn.int-maps.svc.cluster.local:6379
   IDUNN_WIKI_ES: http://10.100.31.26:9200
   IDUNN_WIKI_USER_AGENT: Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
   IDUNN_THUMBR_URLS: https://s1.qwant.plive/thumbr,https://s2.qwant.plive/thumbr
