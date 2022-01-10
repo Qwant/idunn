@@ -36,7 +36,7 @@ class PlaceDocType(str, Enum):
     Street = "street"
     Addr = "addr"
     Poi = "poi"
-    Stop = "stop"
+    # Stop = "stop" # this field is available in bragi but not used by Qwant Maps
 
 
 @dataclass
