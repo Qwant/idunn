@@ -53,12 +53,12 @@ class AssociatedAdmin(BaseModel):
     level: int
     label: str
     name: str
-    zip_codes: List[str]
+    zip_codes: List[str] = []
     coord: Coord
     bbox: Optional[Rect]
     zone_type: Optional[ZoneType]
     parent_id: Optional[str]
-    codes: List[Code]
+    codes: List[Code] = []
 
 
 class Line(BaseModel):
