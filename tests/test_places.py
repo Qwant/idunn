@@ -16,7 +16,7 @@ from unittest.mock import patch
 from .test_full import OH_BLOCK
 
 
-def test_full_query_admin():
+def test_get_osm_admin_place_detail():
     """Test the response format to an admin query"""
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/admin:osm:relation:123057?lang=fr")
@@ -58,6 +58,100 @@ def test_full_query_admin():
             "maps_place_url": "https://www.qwant.com/maps/place/admin:osm:relation:123057",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=admin%3Aosm%3Arelation%3A123057",
         },
+    }
+
+
+def test_get_tripadvisor_place_detail():
+    """Test the response format to an admin query"""
+    client = TestClient(app)
+    response = client.get(url="http://localhost/v1/places/ta:poi:3166925?lang=fr")
+    assert response.status_code == 200
+
+    resp = response.json()
+
+    assert resp == {
+        "address": {
+            "admin": None,
+            "admins": [
+                {
+                    "class_name": "city",
+                    "id": "admin:osm:relation:1240255",
+                    "label": "Montfuron (04110), Alpes-de-Haute-Provence, "
+                    "Provence-Alpes-Côte d'Azur, France",
+                    "name": "Montfuron",
+                    "postcodes": ["04110"],
+                },
+                {
+                    "class_name": "state_district",
+                    "id": "admin:osm:relation:7380",
+                    "label": "Alpes-de-Haute-Provence, " "Provence-Alpes-Côte d'Azur, France",
+                    "name": "Alpes-de-Haute-Provence",
+                    "postcodes": [],
+                },
+                {
+                    "class_name": "state",
+                    "id": "admin:osm:relation:8654",
+                    "label": "Provence-Alpes-Côte d'Azur, France",
+                    "name": "Provence-Alpes-Côte d'Azur",
+                    "postcodes": [],
+                },
+                {
+                    "class_name": "country",
+                    "id": "admin:osm:relation:2202162",
+                    "label": "France",
+                    "name": "France",
+                    "postcodes": [],
+                },
+            ],
+            "country_code": "FR",
+            "housenumber": None,
+            "id": "",
+            "label": "1 Place Daniel Viguier, 04110 Montfuron France",
+            "name": "",
+            "postcode": None,
+            "street": {
+                "id": "",
+                "label": "1 Place Daniel Viguier, 04110 Montfuron " "France",
+                "name": "",
+                "postcodes": [],
+            },
+        },
+        "blocks": [
+            {
+                "label": "www.facebook.com",
+                "type": "website",
+                "url": "http://www.facebook.com/profile.php?id=778236518876620",
+            },
+            {
+                "images": [
+                    {
+                        "alt": "",
+                        "credits": "",
+                        "source_url": "https://media-cdn.tripadvisor.com/media/photo-o/0f/e9/04/82/photo0jpg.jpg",
+                        "url": "https://s1.qwant.com/thumbr/0x0/2/9/7544620396926de281c446798aa58867a2be514c5bdc1f196280d2ea6556b0/photo0jpg.jpg?u=https%3A%2F%2Fmedia-cdn.tripadvisor.com%2Fmedia%2Fphoto-o%2F0f%2Fe9%2F04%2F82%2Fphoto0jpg.jpg&q=0&b=1&p=0&a=0",
+                    }
+                ],
+                "type": "images",
+            },
+        ],
+        "class_name": None,
+        "geometry": {
+            "center": [5.69365, 43.835431],
+            "coordinates": [5.69365, 43.835431],
+            "type": "Point",
+        },
+        "id": "ta:poi:3166925",
+        "local_name": "",
+        "meta": {
+            "contribute_url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
+            "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=ta%3Apoi%3A3166925",
+            "maps_place_url": "https://www.qwant.com/maps/place/ta:poi:3166925",
+            "source": "tripadvisor",
+            "source_url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
+        },
+        "name": None,
+        "subclass_name": None,
+        "type": "poi",
     }
 
 
