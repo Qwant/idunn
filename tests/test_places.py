@@ -16,7 +16,7 @@ from unittest.mock import patch
 from .test_full import OH_BLOCK
 
 
-def test_get_osm_admin_place_detail():
+def test_full_query_admin():
     """Test the response format to an admin query"""
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/admin:osm:relation:123057?lang=fr")
@@ -61,8 +61,8 @@ def test_get_osm_admin_place_detail():
     }
 
 
-def test_get_tripadvisor_place_detail():
-    """Test the response format to an admin query"""
+def test_full_query_tripadvisor():
+    """Test the response format to a tripadvisor query"""
     client = TestClient(app)
     response = client.get(url="http://localhost/v1/places/ta:poi:3166925?lang=fr")
     assert response.status_code == 200
