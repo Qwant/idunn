@@ -23,6 +23,10 @@ def place_from_id(id: str, type=None, follow_redirect=False):
     if namespace == pj_source.PLACE_ID_NAMESPACE:
         return pj_source.get_place(id)
 
+    # Handle place from tripadvisor
+    if namespace == "ta":
+        type = "poi_tripadvisor"
+
     # Simple latlon place id
     if namespace == Latlon.PLACE_ID_NAMESPACE:
         return Latlon.from_id(id)
