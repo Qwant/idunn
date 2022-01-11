@@ -61,7 +61,7 @@ stages:
   variables:
     ARGOCD_AUTH_TOKEN: $ARGOCD_AUTH_TOKEN_PRODUCTION
     ARGOCD_SERVER: $ARGOCD_SERVER_PROD
-    ARGOAPP_REPO_PATH: "c4/${KUBE_NAMESPACE}/charts/foundation-recipes"
+    ARGOAPP_REPO_PATH: "c4/${KUBE_NAMESPACE}/charts/idunn"
     ARGOCD_BASE_DOMAIN: c4.par1.kube.qwant.ninja
     KUBE_NAMESPACE: "prod-maps"
     ARGOCD_APP_NAME: "production-$COMPONENT_NAME"
@@ -246,6 +246,9 @@ idunn promote integration to prod:
     - .promote:integration
     - .idunn
   stage: validation
+  artifacts:
+    paths:
+      - ci/
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.09
@@ -352,7 +355,7 @@ deploy classifier production:
   variables:
     KUBE_ENV: production
 
-deploy idunn production:
+argo deploy idunn production:
   extends:
     - .idunn
     - .argocd
