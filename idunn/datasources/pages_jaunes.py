@@ -6,11 +6,11 @@ import requests
 from requests import HTTPError as RequestsHTTPError
 
 from idunn import settings
-from idunn.api.utils import CategoryEnum
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.models import pj_info, pj_find
 from idunn.places.pj_poi import PjApiPOI
 from idunn.utils.auth_session import AuthSession
+from idunn.utils.category import CategoryEnum
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
 
 logger = logging.getLogger(__name__)

@@ -11,12 +11,12 @@ from shapely.geometry import MultiPoint, box
 
 from idunn import settings
 from idunn.places import POI, BragiPOI
-from idunn.api.utils import Verbosity
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.bragi_client import bragi_client
 from .constants import PoiSource, ALL_POI_SOURCES
-from .utils import Category
+from ..utils.category import Category
+from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
 
