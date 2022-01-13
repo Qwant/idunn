@@ -156,7 +156,6 @@ def test_full_query_tripadvisor():
     }
 
 
-
 def test_full_query_street():
     """
     Test the response format to a street query
