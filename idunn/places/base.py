@@ -283,7 +283,7 @@ class BasePlace(dict):
     def get_bubble_star_url(self):
         if self.properties.get("ta:average_rating") is not None:
             return (
-                f"http://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
+                f"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
                 f"{self.properties.get('ta:average_rating')}-MCID-66562.svg"
             )
         return None
