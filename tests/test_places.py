@@ -133,6 +133,12 @@ def test_full_query_tripadvisor():
                 ],
                 "type": "images",
             },
+            {
+                "type": "grades",
+                "total_grades_count": 321,
+                "global_grade": 4.5,
+                "url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562#REVIEWS"
+            }
         ],
         "class_name": None,
         "geometry": {

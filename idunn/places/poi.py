@@ -106,6 +106,17 @@ class TripadvisorPOI(POI):
     def get_source(self):
         return PoiSource.TRIPADVISOR
 
+    def get_raw_grades(self):
+        if self.properties.get("ta:average_rating") is None:
+            return None
+        return {
+            "total_grades_count": self.properties.get("ta:review_count"),
+            "global_grade": self.properties.get("ta:average_rating"),
+        }
+
+    def get_reviews_url(self):
+        return f"{self.properties.get('ta:url')}#REVIEWS"
+
 
 # Bragi POI is only used for OSM right now
 class BragiPOI(OsmPOI):
