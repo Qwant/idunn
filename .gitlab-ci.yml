@@ -197,7 +197,7 @@ configure:
   tags:
     - light
 
-deploy idunn review:
+argo deploy idunn review:
   extends:
     - .idunn
     - .argocd
@@ -364,7 +364,7 @@ argo deploy idunn production:
     - idunn promote integration to prod
   script:
     - export $(xargs <ci/templates/docker-idunn-digest.env)
-    - export IMAGE_DIGEST="$IDUNN_IMAGE_DIGEST"
+    - export IMAGE_DIGEST="$IDUNN_PROD_IMAGE_DIGEST"
     - ci/bootstrap/bin/sync-version-argocd
       --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
       --image-version-object-path-app ".webapp.image.name"
