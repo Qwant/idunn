@@ -257,6 +257,8 @@ idunn promote integration to prod:
   artifacts:
     paths:
       - ci/
+  except:
+    - master
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.09
