@@ -9,7 +9,6 @@ from pydantic import confloat
 
 
 from idunn import settings
-from idunn.api.utils import Verbosity
 from idunn.utils.es_wrapper import get_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon, place_from_id
@@ -17,6 +16,7 @@ from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
+from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
 

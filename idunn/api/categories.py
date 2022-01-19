@@ -1,6 +1,7 @@
-from .utils import Category
 from pydantic import BaseModel, Field
 from typing import List
+
+from idunn.utils.category import Category
 
 
 class CategoryDescription(BaseModel):

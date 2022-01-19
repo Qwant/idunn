@@ -6,7 +6,6 @@ from typing import Optional
 from unidecode import unidecode
 
 from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
-from idunn.api.utils import Category
 from idunn.geocoder.models.params import QueryParams as GeocoderParams
 from idunn import settings
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
@@ -14,6 +13,7 @@ from idunn.utils.result_filter import ResultFilter
 
 from .models.geocodejson import Intention, IntentionType
 from .bragi_client import bragi_client
+from ..utils.category import Category
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter()

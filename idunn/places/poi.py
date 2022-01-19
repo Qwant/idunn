@@ -3,10 +3,35 @@ from urllib.parse import urlencode
 
 from .base import BasePlace
 from idunn import settings
-from idunn.api.utils import get_name
 from idunn.api.constants import PoiSource
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
+
+
+def get_name(properties, lang):
+    """
+    Return the Place name from the properties field of the elastic response. Here 'name'
+    corresponds to the POI name in the language of the user request (i.e. 'name:{lang}' field).
+
+    If lang is None or if name:lang is not in the properties then name receives the local name
+    value.
+
+    >>> get_name({}, 'fr') is None
+    True
+
+    >>> get_name({'name':'spontini', 'name:en':'spontinien', 'name:fr':'spontinifr'}, None)
+    'spontini'
+
+    >>> get_name({'name':'spontini', 'name:en':'spontinien', 'name:fr':'spontinifr'}, 'cz')
+    'spontini'
+
+    >>> get_name({'name':'spontini', 'name:en':'spontinien', 'name:fr':'spontinifr'}, 'fr')
+    'spontinifr'
+    """
+    name = properties.get(f"name:{lang}")
+    if name is None:
+        name = properties.get("name")
+    return name
 
 
 class POI(BasePlace):
