@@ -13,14 +13,12 @@ data:
   IDUNN_WIKI_ES: http://10.100.31.26:9200
   IDUNN_WIKI_USER_AGENT: Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
   IDUNN_THUMBR_URLS: https://s1.qwant.plive/thumbr,https://s2.qwant.plive/thumbr
-  IDUNN_PJ_ES: http://10.100.31.26:9200
-  IDUNN_PJ_ES_QUERY_TEMPLATE: pagesjaunes_query
   IDUNN_KUZZLE_CLUSTER_URL: http://1216_kuzzle:7512
   IDUNN_DOCS_ENABLED: "true"
-  IDUNN_NLU_CLASSIFIER_URL: http://nlu/classify
+  IDUNN_NLU_CLASSIFIER_URL: http://10.108.3.63/classify
   IDUNN_NLU_CLASSIFIER_DOMAIN: maps
-  IDUNN_NLU_TAGGER_URL: http://1701_nlu:9009/nlu
-  IDUNN_NLU_TAGGER_DOMAIN: MAPS
+  IDUNN_NLU_TAGGER_URL: http://10.100.30.23:9009/nlu
+  IDUNN_NLU_TAGGER_DOMAIN: POI_NEW
   IDUNN_BLOCK_COVID_ENABLED: "false"
   IDUNN_COVID19_BLOCK_COUNTRIES: FR,CH,ES,FI
   IDUNN_RECYCLING_SERVER_URL: https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
