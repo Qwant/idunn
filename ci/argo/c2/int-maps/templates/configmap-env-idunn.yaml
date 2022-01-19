@@ -8,7 +8,7 @@ metadata:
 data:
   IDUNN_BRAGI_BASE_URL: http://bragi.int-maps.svc.cluster.local:4000/api/v1
   IDUNN_LOG_JSON: "1"
-  AUTOCOMPLETE_NLU_DEFAULT: 1
+  IDUNN_AUTOCOMPLETE_NLU_DEFAULT: 1
   IDUNN_MIMIR_ES: http://elasticsearch-master.int-maps.svc.cluster.local:9200
   IDUNN_REDIS_URL: redis://rfh-int-redis-idunn.int-maps.svc.cluster.local:6379
   IDUNN_WIKI_ES: http://10.100.31.26:9200
