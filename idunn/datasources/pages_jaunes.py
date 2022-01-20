@@ -57,7 +57,9 @@ class PagesJaunes(Datasource):
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     def bbox_is_covered(self, bbox):
+        logger.info("test in bbox_is_covered")
         if not self.enabled:
+            logger.info("False")
             return False
         return bbox_inside_polygon(*bbox, poly=france_polygon)
 
