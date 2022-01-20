@@ -192,6 +192,7 @@ async def get_places_bbox_impl(
 
 def select_datasource(params):
     if pj_source.bbox_is_covered(params.bbox):
+        logger.info("test in france")
         select_datasource_for_france(params)
     else:
         select_datasource_outside_france(params)
