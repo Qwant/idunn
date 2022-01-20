@@ -29,3 +29,5 @@ data:
   IDUNN_MAPS_BASE_URL: https://maps.dev.qwant.ninja/maps/
   IDUNN_IA_SUCCESS_ON_GENERIC_QUERIES: "true"
   IDUNN_VERIFY_HTTPS: "false"
+  IDUNN_PJ_API_ID="xlPrQmutsyFU3fbAraMtG0LkYZwQgYZS"
+  IDUNN_PJ_API_SECRET="7LYPcYJAI31LTNZB"
