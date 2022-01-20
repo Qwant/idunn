@@ -68,17 +68,21 @@ async def get_autocomplete(
 
     async def get_intentions():
         if query.lang not in nlu_allowed_languages:
+            logger.info("test1")
             return None
 
         if not query.nlu and not autocomplete_nlu_shadow_enabled:
+            logger.info("test2")
             return None
 
         try:
+            logger.info("test3")
             return await nlu_client.get_intentions(text=query.q, lang=query.lang)
         except NluClientException as exp:
             logger.info("Ignored NLU for '%s': %s", query.q, exp.reason(), extra=exp.extra)
             return []
 
+    logger.info("test0")
     autocomplete_response, intentions = await asyncio.gather(
         bragi_client.autocomplete(query, extra), get_intentions()
     )
