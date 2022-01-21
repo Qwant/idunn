@@ -277,7 +277,16 @@ class BasePlace(dict):
             contribute_url=self.get_contribute_url(),
             maps_place_url=maps_urls.get_place_url(place_id),
             maps_directions_url=maps_urls.get_directions_url(place_id),
+            rating_url=self.get_bubble_star_url(),
         )
+
+    def get_bubble_star_url(self):
+        if self.properties.get("ta:average_rating") is not None:
+            return (
+                f"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
+                f"{self.properties.get('ta:average_rating')}-MCID-66562.svg"
+            )
+        return None
 
     def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
         return Place(

@@ -57,6 +57,7 @@ def test_full_query_admin():
             "contribute_url": None,
             "maps_place_url": "https://www.qwant.com/maps/place/admin:osm:relation:123057",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=admin%3Aosm%3Arelation%3A123057",
+            "rating_url": None,
         },
     }
 
@@ -68,7 +69,6 @@ def test_full_query_tripadvisor():
     assert response.status_code == 200
 
     resp = response.json()
-
     assert resp == {
         "address": {
             "admin": None,
@@ -133,6 +133,12 @@ def test_full_query_tripadvisor():
                 ],
                 "type": "images",
             },
+            {
+                "type": "grades",
+                "total_grades_count": 321,
+                "global_grade": 4.5,
+                "url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562#REVIEWS",
+            },
         ],
         "class_name": None,
         "geometry": {
@@ -146,6 +152,7 @@ def test_full_query_tripadvisor():
             "contribute_url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=ta%3Apoi%3A3166925",
             "maps_place_url": "https://www.qwant.com/maps/place/ta:poi:3166925",
+            "rating_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/4.5-MCID-66562.svg",
             "source": "tripadvisor",
             "source_url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
         },
@@ -230,6 +237,7 @@ def test_full_query_street():
             "contribute_url": None,
             "maps_place_url": "https://www.qwant.com/maps/place/street:35460343",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=street%3A35460343",
+            "rating_url": None,
         },
     }
 
@@ -311,6 +319,7 @@ def test_full_query_address():
             "contribute_url": None,
             "maps_place_url": "https://www.qwant.com/maps/place/addr:5.108632;48.810273",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=addr%3A5.108632%3B48.810273",
+            "rating_url": None,
         },
     }
 

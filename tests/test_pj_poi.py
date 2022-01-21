@@ -29,6 +29,7 @@ def test_pj_place(mock_pj_api_with_musee_picasso):
         "contribute_url": "https://www.pagesjaunes.fr/pros/05360257#zone-informations-pratiques",
         "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=pj%3A05360257",
         "maps_place_url": "https://www.qwant.com/maps/place/pj:05360257",
+        "rating_url": None,
     }
     assert resp["geometry"]["center"] == [2.362634, 48.859702]
 

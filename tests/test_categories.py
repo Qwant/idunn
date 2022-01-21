@@ -118,6 +118,7 @@ def test_bbox_should_trigger_osm_sources_when_raw_filter_specified():
                     "contribute_url": "https://www.openstreetmap.org/edit?way=63178753&hashtags=QwantMaps",
                     "maps_place_url": "https://www.qwant.com/maps/place/osm:way:63178753",
                     "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=osm%3Away%3A63178753",
+                    "rating_url": None,
                 },
             },
             {
@@ -654,6 +655,7 @@ def test_valid_category_that_trigger_tripadvisor_over_osm():
                     "contribute_url": ANY,
                     "maps_place_url": ANY,
                     "maps_directions_url": ANY,
+                    "rating_url": None,
                 },
             }
         ],
@@ -693,6 +695,7 @@ def test_places_with_explicit_source_osm(mock_pj_api_with_musee_picasso_short):
                     "contribute_url": ANY,
                     "maps_place_url": ANY,
                     "maps_directions_url": ANY,
+                    "rating_url": None,
                 },
             }
         ],
