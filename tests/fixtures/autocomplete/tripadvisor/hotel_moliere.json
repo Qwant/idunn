@@ -1398,12 +1398,10 @@
           "zip_codes": [
             "75001"
           ],
-          "poi_types": [
-            {
+          "poi_type": {
             "id": "class_lodging:subclass_hotel",
             "name": "class_lodging subclass_hotel"
-            }
-          ],
+          },
           "properties": [
             {
               "key": "addr:city",
