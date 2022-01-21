@@ -9,7 +9,7 @@ from pydantic import confloat
 
 
 from idunn import settings
-from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon
 from idunn.places.base import BasePlace
@@ -117,7 +117,7 @@ def get_place_latlon(
 ) -> Place:
     """Find the closest place to a point."""
 
-    es = get_elasticsearch()
+    es = get_mimir_elasticsearch()
     lang = validate_lang(lang)
     try:
         closest_place = get_closest_place(lat, lon, es)
