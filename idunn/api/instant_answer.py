@@ -278,8 +278,8 @@ async def get_instant_answer(
     for bragi_tripadvisor_feature in bragi_tripadvisor_features:
         feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
         if (
-            "poi_type" in feature_properties
-            and feature_properties["poi_type"]["id"].split(":")[1] == "subclass_hotel"
+            "poi_types" in feature_properties
+            and feature_properties["poi_types"][0]["id"].split(":")[1] == "subclass_hotel"
         ):
             fetch_pj.cancel()
             fetch_bragi_osm.cancel()
