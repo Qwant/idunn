@@ -202,13 +202,17 @@ deploy idunn review:
     - .idunn
     - .argocd
     - .argocd:review
+  environment:
+    name: "review/$CI_COMMIT_REF_NAME/$COMPONENT_NAME"
+    auto_stop_in: 5 days
+    on_stop: stop idunn review
   needs:
     - build idunn
-  when: on_success
   script:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
     - deploy_argo
+  when: on_success
 
 stop idunn review:
   extends:
@@ -218,7 +222,7 @@ stop idunn review:
     - .argocd:destroy
   image: registry.qwant.ninja/docker/kubectl:1.19.1
   environment:
-    name: "argocd/$KUBE_NAMESPACE"
+    name: "review/$CI_COMMIT_REF_NAME/$COMPONENT_NAME"
     action: stop
   when: manual
 
