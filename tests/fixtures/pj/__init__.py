@@ -6,7 +6,22 @@ import pytest
 
 from idunn.datasources.pages_jaunes import PagesJaunes
 from idunn.utils import place as places_utils
+from idunn.api import status
 from tests.utils import init_pj_source, override_settings
+
+
+def mock_pj_status(filename: str):
+    api_result = json.load(open(os.path.join(os.path.dirname(__file__), filename)))
+    updated_settings = {}
+    source_type = PagesJaunes
+    with override_settings(updated_settings), init_pj_source(source_type):
+        api_mock = mock.patch.object(
+            status.pj_source,
+            "get_from_params",
+            new=lambda *x, **y: api_result,
+        )
+        with api_mock:
+            yield
 
 
 def mock_pj_api(type_api: str, filename: str):
@@ -41,6 +56,11 @@ def mock_pj_api_with_musee_picasso():
 @pytest.fixture
 def mock_pj_api_with_musee_picasso_short():
     yield from mock_pj_api("api", "api_musee_picasso_short.json")
+
+
+@pytest.fixture
+def mock_pj_status_with_musee_picasso_short():
+    yield from mock_pj_status("api_musee_picasso_short.json")
 
 
 @pytest.fixture
