@@ -7,15 +7,13 @@ metadata:
     app: idunn
 data:
   IDUNN_BRAGI_BASE_URL: http://bragi.int-maps.svc.cluster.local:4000/api/v1
+  IDUNN_AUTOCOMPLETE_NLU_DEFAULT: "1"
   IDUNN_LOG_JSON: "1"
   IDUNN_MIMIR_ES: http://elasticsearch-master.int-maps.svc.cluster.local:9200
-  IDUNN_WIKI_API_REDIS_URL: redis://rfh-int-redis-idunn.int-maps.svc.cluster.local:6379
+  IDUNN_REDIS_URL: redis://rfh-int-redis-idunn.int-maps.svc.cluster.local:6379
   IDUNN_WIKI_ES: http://10.100.31.26:9200
   IDUNN_WIKI_USER_AGENT: Idunn/0.1.1 (https://www.qwant.com; https://www.qwant.com/maps)
   IDUNN_THUMBR_URLS: https://s1.qwant.plive/thumbr,https://s2.qwant.plive/thumbr
-  IDUNN_PJ_ES: http://10.100.31.26:9200
-  IDUNN_PJ_ES_QUERY_TEMPLATE: pagesjaunes_query
-  IDUNN_KUZZLE_CLUSTER_URL: http://1216_kuzzle:7512
   IDUNN_DOCS_ENABLED: "true"
   IDUNN_NLU_CLASSIFIER_URL: http://nlu/classify
   IDUNN_NLU_CLASSIFIER_DOMAIN: maps
@@ -30,3 +28,4 @@ data:
   IDUNN_MAPS_BASE_URL: https://maps.dev.qwant.ninja/maps/
   IDUNN_IA_SUCCESS_ON_GENERIC_QUERIES: "true"
   IDUNN_VERIFY_HTTPS: "false"
+
