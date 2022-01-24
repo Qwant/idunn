@@ -18,7 +18,7 @@ data:
   IDUNN_NLU_CLASSIFIER_URL: http://10.108.3.63/classify
   IDUNN_NLU_CLASSIFIER_DOMAIN: maps
   IDUNN_NLU_TAGGER_URL: http://nlu.maps.dev.qwant.ninja/nlu
-  IDUNN_NLU_TAGGER_DOMAIN: POI_NEW
+  IDUNN_NLU_TAGGER_DOMAIN: MAPS
   IDUNN_BLOCK_COVID_ENABLED: "false"
   IDUNN_COVID19_BLOCK_COUNTRIES: FR,CH,ES,FI
   IDUNN_RECYCLING_SERVER_URL: https://api.datalake.pprod.finisteresmartconnect.fr # SDEF preprod
