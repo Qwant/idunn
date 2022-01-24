@@ -3,7 +3,9 @@ from elasticsearch import ConnectionError
 
 from idunn.datasources import wiki_es
 from idunn.datasources.pages_jaunes import pj_source
+from idunn.datasources.wiki_es import WikiEs
 from idunn.geocoder.nlu_client import nlu_client
+from idunn.places.exceptions import PlaceNotFound
 from idunn.utils.es_wrapper import get_mimir_elasticsearch, get_wiki_elasticsearch
 
 ES_RUNNING_STATUS = ("green", "yellow")
@@ -16,31 +18,32 @@ class RequestsHTTPError:
 def get_status():
     """Returns the status of the elastic cluster"""
     es_mimir_status = get_es_status(get_mimir_elasticsearch())
-    try:
-        wiki_es.WikiEs.get_info("Q7652")
+
+    info = WikiEs().get_info("Q7652", "fr")
+    if info is not None:
         es_wiki_status = "up"
-    except:
+    else:
         es_wiki_status = "down"
 
-    try:
-        nlu_client.get_intentions(text="paris", lang="fr")
-        nlp_status = "up"
-    except:
+    intentions = nlu_client.get_intentions(text="paris", lang="fr")
+    if not intentions:
         nlp_status = "down"
+    else:
+        nlp_status = "up"
 
     try:
         pj_source.get_place("pj:05360257")
         pj_status = "up"
-    except:
+    except PlaceNotFound:
         pj_status = "down"
 
     return {
-        "info": [
-            {"es_mimir": es_mimir_status},
-            {"es_wiki": es_wiki_status},
-            {"nlp": nlp_status},
-            {"pagesjaunes": pj_status},
-        ]
+        "info": {
+            "es_mimir": es_mimir_status,
+            "es_wiki": es_wiki_status,
+            "nlp": nlp_status,
+            "pagesjaunes": pj_status,
+        },
     }
 
 
