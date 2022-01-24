@@ -217,5 +217,6 @@ def load_all(mimir_client, init_indices):
 
 @pytest.fixture
 def httpx_mock():
+    # pylint: disable = not-context-manager
     with respx.mock(assert_all_called=False) as rsps:
         yield rsps
