@@ -246,12 +246,14 @@ async def get_instant_answer(
                 IntentionType.BRAND,
                 IntentionType.CATEGORY,
             ]:
+                logger.info("intention")
                 return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query
             intentions = []
 
     # Direct geocoding query
+    logger.info("begin")
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
     query_tripadvisor = deepcopy(query)
     query_tripadvisor.poi_dataset.append("tripadvisor")
@@ -276,11 +278,13 @@ async def get_instant_answer(
     )
 
     for bragi_tripadvisor_feature in bragi_tripadvisor_features:
+        logger.info("tripadvisor")
         feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
         if (
             "poi_types" in feature_properties
             and feature_properties["poi_types"][0]["id"].split(":")[1] == "subclass_hotel"
         ):
+            logger.info("tripadvisor2")
             fetch_pj.cancel()
             fetch_bragi_osm.cancel()
             place_id = feature_properties["id"]
@@ -292,12 +296,14 @@ async def get_instant_answer(
                 type="poi_tripadvisor",
             )
 
+    logger.info("osm")
     bragi_osm_response = await fetch_bragi_osm
     bragi_osm_features = result_filter.filter_bragi_features(
         normalized_query, bragi_osm_response["features"]
     )
 
     if bragi_osm_features:
+        logger.info("osm2")
         fetch_pj.cancel()
         place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
         return await run_in_threadpool(
