@@ -1,12 +1,11 @@
 import logging
 from elasticsearch import ConnectionError
 
-from idunn.datasources import wiki_es
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.wiki_es import WikiEs
 from idunn.geocoder.nlu_client import nlu_client
 from idunn.places.exceptions import PlaceNotFound
-from idunn.utils.es_wrapper import get_mimir_elasticsearch, get_wiki_elasticsearch
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 
 ES_RUNNING_STATUS = ("green", "yellow")
 
@@ -58,5 +57,4 @@ def get_es_status(es):
     es_cluster_health = cluster_health.get("status") in ES_RUNNING_STATUS
     if es_reachable and es_cluster_health:
         return "up"
-    else:
-        return "down"
+    return "down"
