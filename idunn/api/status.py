@@ -1,11 +1,15 @@
+import asyncio
 import logging
+
+import requests
 from elasticsearch import ConnectionError
 
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.wiki_es import WikiEs
-from idunn.geocoder.nlu_client import nlu_client
+from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.places.exceptions import PlaceNotFound
 from idunn.utils.es_wrapper import get_mimir_elasticsearch
+from idunn import settings
 
 ES_RUNNING_STATUS = ("green", "yellow")
 
@@ -24,11 +28,11 @@ def get_status():
     else:
         es_wiki_status = "down"
 
-    intentions = nlu_client.get_intentions(text="paris", lang="fr")
-    if not intentions:
-        nlp_status = "down"
-    else:
+    try:
+        nlu_client.get_intentions(text="paris", lang="fr")
         nlp_status = "up"
+    except NluClientException:
+        nlp_status = "down"
 
     try:
         pj_source.get_place("pj:05360257")
@@ -36,10 +40,17 @@ def get_status():
     except PlaceNotFound:
         pj_status = "down"
 
+    response = requests.get(settings["BRAGI_BASE_URL"] + "/status", verify=settings["VERIFY_HTTPS"])
+    if "version" in response.json()["bragi"]:
+        bragi_status = "up"
+    else:
+        bragi_status = "down"
+
     return {
         "info": {
             "es_mimir": es_mimir_status,
             "es_wiki": es_wiki_status,
+            "bragi": bragi_status,
             "nlp": nlp_status,
             "pagesjaunes": pj_status,
         },

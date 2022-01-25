@@ -18,6 +18,7 @@ def test_v1_status_ok(mimir_es, mock_pj_status_with_musee_picasso_short):
         "info": {
             "es_mimir": "up",
             "es_wiki": "down",
+            "bragi": "up",
             "nlp": "up",
             "pagesjaunes": "up",
         }
@@ -34,6 +35,7 @@ def test_v1_status_es_red(mimir_es, mock_pj_status_with_musee_picasso_short):
         "info": {
             "es_mimir": "down",
             "es_wiki": "down",
+            "bragi": "up",
             "nlp": "up",
             "pagesjaunes": "up",
         }
@@ -54,6 +56,7 @@ def test_v1_status_es_unreachable(
         "info": {
             "es_mimir": "down",
             "es_wiki": "down",
+            "bragi": "up",
             "nlp": "up",
             "pagesjaunes": "up",
         }
