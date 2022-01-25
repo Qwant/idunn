@@ -379,3 +379,5 @@ argo deploy idunn production:
   variables:
     IMAGE_VERSION_FILE: "$HELM_VALUES"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+  except:
+    - master
