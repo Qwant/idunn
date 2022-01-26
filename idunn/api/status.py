@@ -5,16 +5,20 @@ from elasticsearch import ConnectionError
 
 from idunn.datasources.pages_jaunes import pj_source
 from idunn.datasources.wiki_es import WikiEs
-from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.places.exceptions import PlaceNotFound
 from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn import settings
+from tests.utils import read_fixture
 
 ES_RUNNING_STATUS = ("green", "yellow")
 
 
 class RequestsHTTPError:
     pass
+
+
+TAGGER_BODY = read_fixture("fixtures/nlp/tagger_body.json")
+CLASSIFIER_BODY = read_fixture("fixtures/nlp/classifier_body.json")
 
 
 def get_status():
@@ -27,11 +31,17 @@ def get_status():
     else:
         es_wiki_status = "down"
 
-    try:
-        nlu_client.get_intentions(text="paris", lang="fr")
-        nlp_status = "up"
-    except NluClientException:
-        nlp_status = "down"
+    tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=TAGGER_BODY)
+    if tagger_response.status_code == 200:
+        tagger_status = "up"
+    else:
+        tagger_status = "down"
+
+    classifier_response = requests.post(settings["NLU_CLASSIFIER_URL"], json=CLASSIFIER_BODY)
+    if classifier_response.status_code == 200:
+        classifier_status = "up"
+    else:
+        classifier_status = "down"
 
     try:
         pj_source.get_place("pj:05360257")
@@ -50,7 +60,8 @@ def get_status():
             "es_mimir": es_mimir_status,
             "es_wiki": es_wiki_status,
             "bragi": bragi_status,
-            "nlp": nlp_status,
+            "tagger": tagger_status,
+            "classifier": classifier_status,
             "pagesjaunes": pj_status,
         },
     }

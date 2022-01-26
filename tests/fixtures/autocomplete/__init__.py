@@ -3,13 +3,13 @@ import pytest
 
 from tests.utils import override_settings, read_fixture
 
-
 BASE_URL = "http://qwant.bragi"
 NLU_URL = "http://qwant.nlu/"
 CLASSIF_URL = "http://qwant.classif"
 ES_URL = "http://qwant.es"
 
 FIXTURE_AUTOCOMPLETE = read_fixture("fixtures/autocomplete/pavillon_paris.json")
+
 FIXTURE_CLASSIF = {
     "pharmacie": read_fixture("fixtures/autocomplete/classif_pharmacy.json"),
     "bank": read_fixture("fixtures/autocomplete/classif_bank.json"),
