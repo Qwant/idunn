@@ -26,7 +26,6 @@ def get_status():
     es_mimir_status = get_es_status(get_mimir_elasticsearch())
 
     wiki_es_response = requests.get(settings["WIKI_ES"])
-    print(wiki_es_response.json())
     if "name" in wiki_es_response.json():
         es_wiki_status = "up"
     else:
