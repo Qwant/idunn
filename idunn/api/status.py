@@ -8,17 +8,13 @@ from idunn.datasources.wiki_es import WikiEs
 from idunn.places.exceptions import PlaceNotFound
 from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn import settings
-from tests.utils import read_fixture
+
 
 ES_RUNNING_STATUS = ("green", "yellow")
 
 
 class RequestsHTTPError:
     pass
-
-
-TAGGER_BODY = read_fixture("fixtures/nlp/tagger_body.json")
-CLASSIFIER_BODY = read_fixture("fixtures/nlp/classifier_body.json")
 
 
 def get_status():
@@ -37,13 +33,24 @@ def get_status():
     else:
         redis_status = "down"
 
-    tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=TAGGER_BODY)
+    classifier_body_dict = {"text": "hotel paris", "domain": "maps", "language": "fr", "count": 10}
+
+    tagger_body_dict = {
+        "text": "hotel",
+        "lang": "fr",
+        "domain": "MAPS",
+        "debug": True,
+        "detok": True,
+        "lowercase": True,
+    }
+
+    tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=tagger_body_dict)
     if tagger_response.status_code == 200:
         tagger_status = "up"
     else:
         tagger_status = "down"
 
-    classifier_response = requests.post(settings["NLU_CLASSIFIER_URL"], json=CLASSIFIER_BODY)
+    classifier_response = requests.post(settings["NLU_CLASSIFIER_URL"], json=classifier_body_dict)
     if classifier_response.status_code == 200:
         classifier_status = "up"
     else:

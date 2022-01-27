@@ -12,9 +12,7 @@ from .fixtures.pj import (
 from .utils import read_fixture
 
 FIXTURE_STATUS = read_fixture("fixtures/bragi_status.json")
-FIXTURE_TAGGER_BODY = read_fixture("fixtures/nlp/tagger_body.json")
-FIXTURE_CLASSIFIER_BODY = read_fixture("fixtures/nlp/classifier_body.json")
-FIXTURE_WIKI_BODY = read_fixture("fixtures/wiki_es_successful_response.json")
+FIXTURE_WIKI_RESPONSE = read_fixture("fixtures/wiki_es_successful_response.json")
 
 
 @responses.activate
@@ -87,8 +85,6 @@ def mock_requests():
     responses.add(
         responses.GET, settings["BRAGI_BASE_URL"] + "/status", json=FIXTURE_STATUS, status=200
     )
-    responses.add(responses.GET, settings["WIKI_ES"], json=FIXTURE_WIKI_BODY, status=200)
-    responses.add(responses.POST, settings["NLU_TAGGER_URL"], json=FIXTURE_TAGGER_BODY, status=200)
-    responses.add(
-        responses.POST, settings["NLU_CLASSIFIER_URL"], json=FIXTURE_CLASSIFIER_BODY, status=200
-    )
+    responses.add(responses.GET, settings["WIKI_ES"], json=FIXTURE_WIKI_RESPONSE, status=200)
+    responses.add(responses.POST, settings["NLU_TAGGER_URL"], status=200)
+    responses.add(responses.POST, settings["NLU_CLASSIFIER_URL"], status=200)
