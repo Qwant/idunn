@@ -58,8 +58,8 @@ def get_directions(
 ):
     """Get directions to get from a places to another."""
     try:
-        from_place = place_from_id(origin, follow_redirect=True)
-        to_place = place_from_id(destination, follow_redirect=True)
+        from_place = place_from_id(origin, language, follow_redirect=True)
+        to_place = place_from_id(destination, language, follow_redirect=True)
     except IdunnPlaceError as exc:
         raise HTTPException(status_code=404, detail=exc.message) from exc
 

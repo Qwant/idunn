@@ -1,3 +1,4 @@
+import re
 from functools import cached_property
 from urllib.parse import urlencode
 
@@ -7,6 +8,40 @@ from .base import BasePlace
 from abc import abstractmethod
 
 OSM_CONTRIBUTION_HASHTAGS = settings["OSM_CONTRIBUTION_HASHTAGS"]
+TRIPADVISOR_AVAILABLE_LANGS = [
+    "fr",
+    "de",
+    "cl",
+    "ca",
+    "co",
+    "it",
+    "es",
+    "se",
+    "nl",
+    "dk",
+    "ie",
+    "at",
+    "pt",
+    "ch",
+    "jp",
+    "in",
+]
+TRIPADVISOR_AVAILABLE_LANGS_EXTENSION = [
+    "br",
+    "mx",
+    "ar",
+    "pe",
+    "ve",
+    "tr",
+    "my",
+    "gr",
+    "au",
+    "ph",
+    "sg",
+    "vn",
+    "hk",
+]
+REGEX_FIND_DOMAIN_EXTENSION = re.compile(r"(.*?)(com)(.*)")
 
 
 class POI(BasePlace):
@@ -97,11 +132,15 @@ class OsmPOI(POI):
 
 
 class TripadvisorPOI(POI):
+    def __init__(self, d, lang):
+        super().__init__(d)
+        self.lang = lang
+
     def get_source_url(self):
-        return self.properties.get("ta:url")
+        return self.get_tripadvisor_lang_url()
 
     def get_contribute_url(self):
-        return self.properties.get("ta:url")
+        return self.get_tripadvisor_lang_url()
 
     def get_source(self):
         return PoiSource.TRIPADVISOR
@@ -115,7 +154,22 @@ class TripadvisorPOI(POI):
         }
 
     def get_reviews_url(self):
-        return f"{self.properties.get('ta:url')}#REVIEWS"
+        return f"{self.get_tripadvisor_lang_url()}#REVIEWS"
+
+    def get_tripadvisor_lang_url(self):
+        tripadvisor_default_url = self.properties.get("ta:url")
+        if self.lang in TRIPADVISOR_AVAILABLE_LANGS:
+            return re.sub(
+                REGEX_FIND_DOMAIN_EXTENSION, rf"\1{self.lang}\3", tripadvisor_default_url, count=1
+            )
+        if self.lang in TRIPADVISOR_AVAILABLE_LANGS_EXTENSION:
+            return re.sub(
+                REGEX_FIND_DOMAIN_EXTENSION,
+                rf"\1\2.{self.lang}\3",
+                tripadvisor_default_url,
+                count=1,
+            )
+        return tripadvisor_default_url
 
 
 # Bragi POI is only used for OSM right now
@@ -174,8 +228,8 @@ def get_name(properties, lang):
 
 
 class PoiFactory:
-    def get_poi(self, d) -> POI:
+    def get_poi(self, d, lang) -> POI:
         """Get the matching POI type to fetch POIs"""
         if d["id"].startswith("ta:"):
-            return TripadvisorPOI(d)
+            return TripadvisorPOI(d, lang)
         return OsmPOI(d)

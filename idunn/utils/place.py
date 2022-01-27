@@ -7,7 +7,7 @@ from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
 from ..places.poi import POI, PoiFactory
 
 
-def place_from_id(id: str, type=None, follow_redirect=False):
+def place_from_id(id: str, lang: str, type=None, follow_redirect=False):
     """
     :param id: place id
     :param type: Optional type to restrict query in Elasticsearch
@@ -47,7 +47,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
             else:
                 if not follow_redirect:
                     raise RedirectToPlaceId(latlon_id) from exc
-                return place_from_id(latlon_id, follow_redirect=False)
+                return place_from_id(latlon_id, lang, follow_redirect=False)
         raise
 
     places = {
@@ -66,5 +66,5 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         raise Exception(f"Place with id '{id}' has a wrong type: '{place_type}'")
 
     if loader is POI:
-        return PoiFactory().get_poi(es_place["_source"])
+        return PoiFactory().get_poi(es_place["_source"], lang=lang)
     return loader(es_place["_source"])
