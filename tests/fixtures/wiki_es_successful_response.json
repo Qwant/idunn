@@ -1,0 +1,13 @@
+{
+  "name" : "PAR-DEV-NEWS-ESDATA01",
+  "cluster_name" : "PAR-DEV-NEWS-ELASTIC",
+  "cluster_uuid" : "yLEbiCRuRh-J-VZ6KphuIw",
+  "version" : {
+    "number" : "2.4.1",
+    "build_hash" : "c67dc32e24162035d18d6fe1e952c4cbcbe79d16",
+    "build_timestamp" : "2016-09-27T18:57:55Z",
+    "build_snapshot" : false,
+    "lucene_version" : "5.5.2"
+  },
+  "tagline" : "You Know, for Search"
+}

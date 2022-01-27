@@ -25,11 +25,18 @@ def get_status():
     """Returns the status of the elastic cluster"""
     es_mimir_status = get_es_status(get_mimir_elasticsearch())
 
-    info = WikiEs().get_info("Q7652", "fr")
-    if info is not None:
+    wiki_es_response = requests.get(settings["WIKI_ES"])
+    print(wiki_es_response.json())
+    if "name" in wiki_es_response.json():
         es_wiki_status = "up"
     else:
         es_wiki_status = "down"
+
+    info = WikiEs().get_info("Q7652", "fr")
+    if info is not None:
+        redis_status = "up"
+    else:
+        redis_status = "down"
 
     tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=TAGGER_BODY)
     if tagger_response.status_code == 200:
@@ -63,6 +70,7 @@ def get_status():
             "tagger": tagger_status,
             "classifier": classifier_status,
             "pagesjaunes": pj_status,
+            "redis": redis_status,
         },
     }
 

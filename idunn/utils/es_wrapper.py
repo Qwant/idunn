@@ -13,12 +13,3 @@ def get_mimir_elasticsearch():
         kwargs.update({"verify_certs": False, "connection_class": RequestsHttpConnection})
 
     return Elasticsearch(settings["MIMIR_ES"], **kwargs)
-
-
-def get_wiki_elasticsearch():
-    kwargs = {}
-
-    if settings["VERIFY_HTTPS"] is False:
-        kwargs.update({"verify_certs": False, "connection_class": RequestsHttpConnection})
-
-    return Elasticsearch(settings["WIKI_ES"], **kwargs)

@@ -9,7 +9,7 @@ MIMIR_ES: http://localhost:9200/
 
 VERIFY_HTTPS: True # Whether to verify HTTPS certificates for requests to Mimir ES and internal APIs
 
-WIKI_ES:
+WIKI_ES: http://wiki:9202/
 WIKI_ES_TIMEOUT: 0.5 # seconds
 WIKI_ES_MAX_RETRIES: 0
 WIKI_USER_AGENT: "Idunn/0.1" # Used in requests to external wiki* APIs
