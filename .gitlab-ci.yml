@@ -177,10 +177,6 @@ build idunn:
     - docker push "$TARGET_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE_BRANCH"
     - docker push "$TARGET_IMAGE_BRANCH"
-    - subst -i ci/templates/docker-idunn-dev-digest.env
-  artifacts:
-    paths:
-      - "ci"
 
 configure:
   stage: configure
@@ -191,6 +187,7 @@ configure:
     - source ci/bootstrap.sh
   script:
     - configure-values ci/values/
+    - subst -i ci/templates/docker-idunn-dev-digest.env
   artifacts:
     paths:
       - ci/
@@ -211,7 +208,7 @@ argo deploy idunn review:
     auto_stop_in: 5 days
     on_stop: stop idunn review
   needs:
-    - build idunn
+    - configure
   script:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
@@ -236,7 +233,7 @@ argo deploy idunn prelive:
     - .argocd
     - .argocd:prelive
   needs:
-    - build idunn
+    - configure
   script:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
