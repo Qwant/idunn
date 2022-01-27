@@ -32,7 +32,7 @@ def test_v1_status_ok(mimir_es, mock_pj_status_with_musee_picasso_short):
             "tagger": "up",
             "classifier": "up",
             "pagesjaunes": "up",
-            "redis": "down", # in DISABLED_STATE for tests
+            "redis": "down",  # in DISABLED_STATE for tests
         }
     }
 
