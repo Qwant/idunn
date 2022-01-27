@@ -6,7 +6,7 @@ from idunn import settings
 
 
 @lru_cache
-def get_elasticsearch():
+def get_mimir_elasticsearch():
     kwargs = {}
 
     if settings["VERIFY_HTTPS"] is False:

@@ -2,7 +2,7 @@ import logging
 from fastapi import HTTPException
 from elasticsearch import ElasticsearchException
 from idunn import settings
-from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils.index_names import INDICES
 from idunn.places.exceptions import PlaceNotFound
 
@@ -41,7 +41,7 @@ class MimirPoiFilter:
 
 
 def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) -> list:
-    es = get_elasticsearch()
+    es = get_mimir_elasticsearch()
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
     should_terms = []

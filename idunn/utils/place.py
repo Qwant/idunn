@@ -1,5 +1,5 @@
 from idunn.datasources.mimirsbrunn import fetch_es_place, get_es_place_type
-from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils import prometheus
 from ..datasources.pages_jaunes import pj_source
 from ..places import Latlon, Admin, Address, Street
@@ -32,7 +32,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         return Latlon.from_id(id)
 
     # Otherwise handle places from the ES db
-    es = get_elasticsearch()
+    es = get_mimir_elasticsearch()
     try:
         es_place = fetch_es_place(id, es, type)
     except PlaceNotFound as exc:

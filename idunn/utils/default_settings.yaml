@@ -9,7 +9,7 @@ MIMIR_ES: http://localhost:9200/
 
 VERIFY_HTTPS: True # Whether to verify HTTPS certificates for requests to Mimir ES and internal APIs
 
-WIKI_ES:
+WIKI_ES: http://wiki:9202/
 WIKI_ES_TIMEOUT: 0.5 # seconds
 WIKI_ES_MAX_RETRIES: 0
 WIKI_USER_AGENT: "Idunn/0.1" # Used in requests to external wiki* APIs
@@ -131,10 +131,10 @@ AUTOCOMPLETE_NLU_SHADOW_ENABLED: False # if True, NLU APIs are always called, ev
 AUTOCOMPLETE_NLU_FILTER_INTENTIONS: True # Exclude full-text intentions when the query does not match enough results among returned features
 NLU_CLIENT_TIMEOUT: 0.3 # timeout for calls to NLU services, in seconds
 NLU_ALLOWED_LANGUAGES: "en,fr"
-NLU_TAGGER_URL:
+NLU_TAGGER_URL: "http://tagger:9009"
 NLU_TAGGER_DOMAIN: "poi"
 NLU_TAGGER_LOWERCASE: True
-NLU_CLASSIFIER_URL:
+NLU_CLASSIFIER_URL: "http://classifier:8080"
 NLU_CLASSIFIER_DOMAIN: "poi"
 
 # Classifier parameters
