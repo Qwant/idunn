@@ -21,10 +21,13 @@ def get_status():
     """Returns the status of the elastic cluster"""
     es_mimir_status = get_es_status(get_mimir_elasticsearch())
 
-    wiki_es_response = requests.get(settings["WIKI_ES"], timeout=2)
-    if wiki_es_response.status_code == 200:
-        es_wiki_status = "up"
-    else:
+    try:
+        wiki_es_response = requests.get(settings["WIKI_ES"], timeout=2)
+        if wiki_es_response.status_code == 200:
+            es_wiki_status = "up"
+        else:
+            es_wiki_status = "down"
+    except Exception:
         es_wiki_status = "down"
 
     info = WikiEs().get_info("Q7652", "fr")
@@ -44,16 +47,22 @@ def get_status():
         "lowercase": True,
     }
 
-    tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=tagger_body_dict, timeout=2)
-    if tagger_response.status_code == 200:
-        tagger_status = "up"
-    else:
+    try:
+        tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=tagger_body_dict, timeout=2)
+        if tagger_response.status_code == 200:
+            tagger_status = "up"
+        else:
+            tagger_status = "down"
+    except Exception:
         tagger_status = "down"
 
-    classifier_response = requests.post(settings["NLU_CLASSIFIER_URL"], json=classifier_body_dict, timeout=2)
-    if classifier_response.status_code == 200:
-        classifier_status = "up"
-    else:
+    try:
+        classifier_response = requests.post(settings["NLU_CLASSIFIER_URL"], json=classifier_body_dict, timeout=2)
+        if classifier_response.status_code == 200:
+            classifier_status = "up"
+        else:
+            classifier_status = "down"
+    except Exception:
         classifier_status = "down"
 
     try:
@@ -62,10 +71,13 @@ def get_status():
     except PlaceNotFound:
         pj_status = "down"
 
-    response = requests.get(settings["BRAGI_BASE_URL"] + "/status", verify=settings["VERIFY_HTTPS"], timeout=2)
-    if "version" in response.json()["bragi"]:
-        bragi_status = "up"
-    else:
+    try:
+        response = requests.get(settings["BRAGI_BASE_URL"] + "/status", verify=settings["VERIFY_HTTPS"], timeout=2)
+        if "version" in response.json()["bragi"]:
+            bragi_status = "up"
+        else:
+            bragi_status = "down"
+    except Exception:
         bragi_status = "down"
 
     return {
