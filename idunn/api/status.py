@@ -48,7 +48,9 @@ def get_status():
     }
 
     try:
-        tagger_response = requests.post(settings["NLU_TAGGER_URL"], json=tagger_body_dict, timeout=2)
+        tagger_response = requests.post(
+            settings["NLU_TAGGER_URL"], json=tagger_body_dict, timeout=2
+        )
         if tagger_response.status_code == 200:
             tagger_status = "up"
         else:
@@ -57,7 +59,9 @@ def get_status():
         tagger_status = "down"
 
     try:
-        classifier_response = requests.post(settings["NLU_CLASSIFIER_URL"], json=classifier_body_dict, timeout=2)
+        classifier_response = requests.post(
+            settings["NLU_CLASSIFIER_URL"], json=classifier_body_dict, timeout=2
+        )
         if classifier_response.status_code == 200:
             classifier_status = "up"
         else:
@@ -72,7 +76,9 @@ def get_status():
         pj_status = "down"
 
     try:
-        response = requests.get(settings["BRAGI_BASE_URL"] + "/status", verify=settings["VERIFY_HTTPS"], timeout=2)
+        response = requests.get(
+            settings["BRAGI_BASE_URL"] + "/status", verify=settings["VERIFY_HTTPS"], timeout=2
+        )
         if "version" in response.json()["bragi"]:
             bragi_status = "up"
         else:
