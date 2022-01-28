@@ -121,7 +121,7 @@ def get_instant_answer_single_place(
     place_id: str, query: str, lang: str, type: Optional[str] = None
 ) -> Response:
     try:
-        place = place_from_id(place_id, type=type, follow_redirect=True)
+        place = place_from_id(place_id, lang, type=type, follow_redirect=True)
     except Exception:
         logger.warning(
             "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True

@@ -89,7 +89,7 @@ def get_place(
     """Main handler that returns the requested place."""
     lang = validate_lang(lang)
     try:
-        place = place_from_id(id, type)
+        place = place_from_id(id, lang, type)
     except InvalidPlaceId as e:
         raise HTTPException(status_code=404, detail=e.message) from e
     except PlaceNotFound as e:

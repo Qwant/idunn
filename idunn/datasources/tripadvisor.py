@@ -38,7 +38,7 @@ class Tripadvisor(Datasource):
             max_size=params.size,
         )
 
-        return [TripadvisorPOI(p["_source"]) for p in bbox_places]
+        return [TripadvisorPOI(p["_source"], lang="en") for p in bbox_places]
 
     async def get_hotel_pricing_by_hotel_id(self, params=None):
         try:
