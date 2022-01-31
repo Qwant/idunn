@@ -21,15 +21,20 @@ def get_status():
     """Returns the status of the elastic cluster"""
     es_mimir_status = get_es_status(get_mimir_elasticsearch())
 
+    es_wiki_status = "down"
     try:
         wiki_es_response = requests.get(settings["WIKI_ES"], timeout=2)
-        if wiki_es_response.status_code == 200:
-            es_wiki_status = "up"
-        else:
-            es_wiki_status = "down"
-    except Exception:
-        es_wiki_status = "down"
-
+        es_wiki_status = "up"
+        
+    except requests.exceptions.HTTPError as errh:
+        return "An Http Error occurred:" + repr(errh)
+    except requests.exceptions.ConnectionError as errc:
+        return "An Error Connecting to the API occurred:" + repr(errc)
+    except requests.exceptions.Timeout as errt:
+        return "A Timeout Error occurred:" + repr(errt)
+    except requests.exceptions.RequestException as err:
+        return "An Unknown Error occurred" + repr(err)
+        
     info = WikiEs().get_info("Q7652", "fr")
     if info is not None:
         redis_status = "up"
