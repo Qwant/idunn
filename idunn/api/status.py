@@ -24,6 +24,7 @@ def get_status():
     es_wiki_status = "down"
     try:
         wiki_es_response = requests.get(settings["WIKI_ES"], timeout=2)
+        wiki_es_response.raise_for_status()
         es_wiki_status = "up"
 
     except requests.exceptions.HTTPError as errh:
