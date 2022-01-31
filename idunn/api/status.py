@@ -27,14 +27,8 @@ def get_status():
         wiki_es_response.raise_for_status()
         es_wiki_status = "up"
 
-    except requests.exceptions.HTTPError as errh:
-        return "An Http Error occurred:" + repr(errh)
-    except requests.exceptions.ConnectionError as errc:
-        return "An Error Connecting to the API occurred:" + repr(errc)
-    except requests.exceptions.Timeout as errt:
-        return "A Timeout Error occurred:" + repr(errt)
-    except requests.exceptions.RequestException as err:
-        return "An Unknown Error occurred" + repr(err)
+    except Exception as e:
+        logging.getLogger(__name__).error("Failed to connect to ES_WIKI: %s", repr(e))
 
     info = WikiEs().get_info("Q7652", "fr")
     if info is not None:
