@@ -25,7 +25,7 @@ def get_status():
     try:
         wiki_es_response = requests.get(settings["WIKI_ES"], timeout=2)
         es_wiki_status = "up"
-        
+
     except requests.exceptions.HTTPError as errh:
         return "An Http Error occurred:" + repr(errh)
     except requests.exceptions.ConnectionError as errc:
@@ -34,7 +34,7 @@ def get_status():
         return "A Timeout Error occurred:" + repr(errt)
     except requests.exceptions.RequestException as err:
         return "An Unknown Error occurred" + repr(err)
-        
+
     info = WikiEs().get_info("Q7652", "fr")
     if info is not None:
         redis_status = "up"
