@@ -16,7 +16,7 @@ stages:
   before_script:
     - source ci/bootstrap-k8s.sh
   variables:
-    ARGOAPP_REPO_BRANCH: "fix_healthcheck_bis"
+    ARGOAPP_REPO_BRANCH: "master"
     ARGOAPP_REPO_PATH: "c2/${KUBE_NAMESPACE}/charts/idunn"
     ARGOCD_APP_ENVIRONMENT: "$CI_ENVIRONMENT_NAME"
     ARGOCD_OPTS: --insecure
@@ -170,7 +170,7 @@ build idunn:
   variables:
     TARGET_IMAGE: "$CI_REGISTRY_IMAGE/idunn:dev-latest"
     TARGET_IMAGE_BRANCH: "$CI_REGISTRY_IMAGE/idunn:${CI_COMMIT_REF_SLUG}"
-    SOURCE_IMAGE: "qwantresearch/idunn:latest-es7"
+    SOURCE_IMAGE: "qwantresearch/idunn:fix_healthcheck_bis"
   script:
     - docker pull "$SOURCE_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
