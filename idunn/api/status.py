@@ -17,6 +17,9 @@ class RequestsHTTPError:
     pass
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_status():
     """Returns the status of the elastic cluster"""
     es_mimir_status = get_es_status(get_mimir_elasticsearch())
@@ -27,7 +30,8 @@ def get_status():
             es_wiki_status = "up"
         else:
             es_wiki_status = "down"
-    except Exception:
+    except Exception as e:
+        logger.error("Wiki es connection error: %s", e)
         es_wiki_status = "down"
 
     info = WikiEs().get_info("Q7652", "fr")
@@ -55,7 +59,8 @@ def get_status():
             tagger_status = "up"
         else:
             tagger_status = "down"
-    except Exception:
+    except Exception as e:
+        logger.error("Tagger connection error: %s", e)
         tagger_status = "down"
 
     try:
@@ -66,7 +71,8 @@ def get_status():
             classifier_status = "up"
         else:
             classifier_status = "down"
-    except Exception:
+    except Exception as e:
+        logger.error("Classifier connection error: %s", e)
         classifier_status = "down"
 
     try:
@@ -83,7 +89,8 @@ def get_status():
             bragi_status = "up"
         else:
             bragi_status = "down"
-    except Exception:
+    except Exception as e:
+        logger.error("Bragi connection error: %s", e)
         bragi_status = "down"
 
     return {
