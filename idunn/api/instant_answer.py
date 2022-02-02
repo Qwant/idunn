@@ -274,7 +274,6 @@ async def get_instant_answer(
         )
 
     # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
-    # if bragi tripadvisor finds results.
     fetch_pj = asyncio.create_task(fetch_pj_response())
     fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query))
     bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
@@ -282,6 +281,7 @@ async def get_instant_answer(
         normalized_query, bragi_tripadvisor_response["features"]
     )
 
+    # Select datasource instant answer in France
     if len(intentions) > 0 and pj_source.bbox_is_covered(intentions[0].filter.bbox):
         for bragi_tripadvisor_feature in bragi_tripadvisor_features:
             feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
@@ -312,16 +312,16 @@ async def get_instant_answer(
                     maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
                 )
                 return build_response(result, query=q, lang=lang)
+    # Call tripadvisor datasource instant answer outside France or without intention location detection
     else:
-        fetch_pj.cancel()
         for bragi_tripadvisor_feature in bragi_tripadvisor_features:
             feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
-            print(feature_properties)
             if (
                 "poi_types" in feature_properties
                 and feature_properties["poi_types"][0]["id"].split(":")[0]
                 in AVAILABLE_CLASS_TYPE_TRIPADVISOR
             ):
+                fetch_pj.cancel()
                 fetch_bragi_osm.cancel()
                 place_id = feature_properties["id"]
                 return await run_in_threadpool(
@@ -336,6 +336,9 @@ async def get_instant_answer(
 
 
 async def instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country):
+    """
+    Call OSM datasource as fallback. Return No instant answer if there are no results found
+    """
     bragi_osm_response = await fetch_bragi_osm
     bragi_osm_features = result_filter.filter_bragi_features(
         normalized_query, bragi_osm_response["features"]
