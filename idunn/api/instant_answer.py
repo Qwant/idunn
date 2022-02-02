@@ -29,7 +29,12 @@ result_filter = ResultFilter()
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 ia_max_query_length = int(settings["IA_MAX_QUERY_LENGTH"])
-AVAILABLE_CLASS_TYPE_TRIPADVISOR = ["class_hotel", "class_lodging", "class_restaurant", "class_leisure"]
+AVAILABLE_CLASS_TYPE_TRIPADVISOR = [
+    "class_hotel",
+    "class_lodging",
+    "class_restaurant",
+    "class_leisure",
+]
 
 
 class InstantAnswerResult(BaseModel):
@@ -307,25 +312,15 @@ async def get_instant_answer(
                     maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
                 )
                 return build_response(result, query=q, lang=lang)
-
-            bragi_osm_response = await fetch_bragi_osm
-            bragi_osm_features = result_filter.filter_bragi_features(
-                normalized_query, bragi_osm_response["features"]
-            )
-
-            if bragi_osm_features:
-                place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
-                return await run_in_threadpool(
-                    get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
-                )
     else:
         fetch_pj.cancel()
         for bragi_tripadvisor_feature in bragi_tripadvisor_features:
             feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+            print(feature_properties)
             if (
                 "poi_types" in feature_properties
                 and feature_properties["poi_types"][0]["id"].split(":")[0]
-                == AVAILABLE_CLASS_TYPE_TRIPADVISOR
+                in AVAILABLE_CLASS_TYPE_TRIPADVISOR
             ):
                 fetch_bragi_osm.cancel()
                 place_id = feature_properties["id"]
@@ -337,15 +332,17 @@ async def get_instant_answer(
                     type="poi_tripadvisor",
                 )
 
-            bragi_osm_response = await fetch_bragi_osm
-            bragi_osm_features = result_filter.filter_bragi_features(
-                normalized_query, bragi_osm_response["features"]
-            )
+    return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
 
-            if bragi_osm_features:
-                place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
-                return await run_in_threadpool(
-                    get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
-                )
 
+async def instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country):
+    bragi_osm_response = await fetch_bragi_osm
+    bragi_osm_features = result_filter.filter_bragi_features(
+        normalized_query, bragi_osm_response["features"]
+    )
+    if bragi_osm_features:
+        place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
+        return await run_in_threadpool(
+            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
+        )
     return no_instant_answer(query=q, lang=lang, region=user_country)
