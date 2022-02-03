@@ -312,7 +312,8 @@ async def get_instant_answer(
                     maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
                 )
                 return build_response(result, query=q, lang=lang)
-    # Call tripadvisor datasource instant answer outside France or without intention location detection
+    # Call tripadvisor datasource instant answer outside France or
+    # without intention location detection
     else:
         for bragi_tripadvisor_feature in bragi_tripadvisor_features:
             feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
