@@ -149,27 +149,3 @@ def test_ia_without_intention_detected_and_tripadvisor_hotel_poi_found(
     assert response.status_code == 200
     assert response.json()["data"]["result"]["source"] == "tripadvisor"
     assert response.json()["data"]["result"]["places"][0]["name"] == "Hôtel Molière"
-
-
-def test_ia_without_intention_detected_and_only_tripadvisor_restaurant_poi_found(
-    mock_pj_api_find_with_chez_eric, mock_autocomplete_get, mock_NLU_with_chez_eric
-):
-    """
-    Should return Pagesjaunes hotel poi when no brand/category intention detected and
-    no tripadvisor hotels poi are fetched
-    """
-    client = TestClient(app)
-    response = client.get("/v1/instant_answer", params={"q": "chez eric", "user_country": "fr"})
-    assert response.status_code == 200
-    assert response.json()["data"]["result"]["source"] == "pages_jaunes"
-    assert response.json()["data"]["result"]["places"][0]["name"] == "Chez Eric"
-
-
-def test_ia_pj_fallback(
-    mock_pj_api_find_with_musee_picasso, mock_autocomplete_get, mock_NLU_with_picasso
-):
-    client = TestClient(app)
-    response = client.get("/v1/instant_answer", params={"q": "musée picasso", "user_country": "fr"})
-    assert response.status_code == 200
-    assert response.json()["data"]["result"]["source"] == "pages_jaunes"
-    assert response.json()["data"]["result"]["places"][0]["name"] == "Musée Picasso"

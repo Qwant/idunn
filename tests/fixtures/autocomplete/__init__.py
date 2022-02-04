@@ -17,9 +17,7 @@ FIXTURE_CLASSIF = {
 
 
 def mock_NLU_for(httpx_mock, dataset):
-    with override_settings(
-        {"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL, "PJ_ES": ES_URL}
-    ):
+    with override_settings({"NLU_TAGGER_URL": NLU_URL, "NLU_CLASSIFIER_URL": CLASSIF_URL}):
         nlu_json = read_fixture(f"fixtures/autocomplete/nlu/{dataset}.json")
         httpx_mock.post(NLU_URL).respond(json=nlu_json)
 
