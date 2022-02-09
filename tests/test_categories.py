@@ -312,7 +312,7 @@ def test_bbox_should_trigger_tripadvisor_sources_anywhere_on_hotel_category():
                 "local_name": "Hôtel Molière",
                 "meta": ANY,
                 "name": "Hôtel Molière",
-                "subclass_name": "hotel",
+                "subclass_name": "lodging",
                 "type": "poi",
             },
         ],
