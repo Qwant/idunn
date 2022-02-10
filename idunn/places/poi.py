@@ -156,6 +156,27 @@ class TripadvisorPOI(POI):
     def get_reviews_url(self):
         return f"{self.get_tripadvisor_lang_url()}#REVIEWS"
 
+    # Tripadvisor subclasses are not matching OSM subclasses : Tripadvisor classes are more generic
+    def get_subclass_name(self):
+        return self.properties.get("poi_class")
+
+    # Tripadvisor already provide the full address in the label field
+    def build_address(self, lang):
+        raw_address = self.get_raw_address()
+        label = raw_address.get("label")
+
+        return {
+            "id": "",
+            "name": label,
+            "housenumber": "",
+            "postcode": "",
+            "label": label,
+            "admin": self.build_admin(lang),
+            "street": "",
+            "admins": self.build_admins(lang),
+            "country_code": "",
+        }
+
     def get_tripadvisor_lang_url(self):
         tripadvisor_default_url = self.properties.get("ta:url")
         if self.lang in TRIPADVISOR_AVAILABLE_LANGS:
