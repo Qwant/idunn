@@ -36,6 +36,11 @@ AVAILABLE_CLASS_TYPE_TRIPADVISOR = [
     "class_leisure",
 ]
 
+AVAILABLE_CLASS_TYPE_HOTEL_TRIPADVISOR = [
+    "class_hotel",
+    "class_lodging",
+]
+
 
 class InstantAnswerResult(BaseModel):
     places: List[Place] = Field(
@@ -282,12 +287,18 @@ async def get_instant_answer(
     )
 
     # Select datasource instant answer in France
-    if len(intentions) > 0 and pj_source.bbox_is_covered(intentions[0].filter.bbox):
+    if (
+        len(intentions) > 0
+        and intentions[0].filter is not None
+        and intentions[0].filter.bbox is not None
+        and pj_source.bbox_is_covered(intentions[0].filter.bbox)
+    ):
         for bragi_tripadvisor_feature in bragi_tripadvisor_features:
             feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
             if (
                 "poi_types" in feature_properties
-                and feature_properties["poi_types"][0]["id"].split(":")[1] == "subclass_hotel"
+                and feature_properties["poi_types"][0]["id"].split(":")[0]
+                in AVAILABLE_CLASS_TYPE_HOTEL_TRIPADVISOR
             ):
                 fetch_pj.cancel()
                 fetch_bragi_osm.cancel()
