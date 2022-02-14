@@ -57,8 +57,6 @@ stages:
     HELM_VALUES: "values.yaml"
     PRODUCTION: "true"
   when: manual
-  except:
-    - master
 
 .argocd:production:
   stage: production
@@ -254,8 +252,6 @@ idunn promote integration to prod:
   artifacts:
     paths:
       - ci/
-  except:
-    - master
 
 .deploy:
   image: registry.qwant.ninja/docker/dood:18.09
@@ -379,5 +375,3 @@ argo deploy idunn production:
   variables:
     IMAGE_VERSION_FILE: "$HELM_VALUES"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
-  except:
-    - master
