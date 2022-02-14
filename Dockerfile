@@ -1,6 +1,6 @@
 FROM python:3.8-slim
 
-RUN apt-get update && apt-get -y install git gcc
+RUN apt-get update && apt-get -y install git gcc curl
 
 RUN useradd -r app_user
 RUN mkdir /app
