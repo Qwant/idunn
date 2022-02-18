@@ -283,9 +283,11 @@ class BasePlace(dict):
 
     def get_bubble_star_url(self):
         if self.properties.get("ta:average_rating") is not None:
+            rating = float(self.properties.get("ta:average_rating"))
+
             base_url = (
                 f"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
-                f"{self.properties.get('ta:average_rating')}-MCID-66562.svg"
+                f"{rating:.1f}-MCID-66562.svg"
             )
 
             if thumbr.is_enabled():
