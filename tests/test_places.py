@@ -152,7 +152,7 @@ def test_full_query_tripadvisor():
             "contribute_url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=ta%3Apoi%3A3166925",
             "maps_place_url": "https://www.qwant.com/maps/place/ta:poi:3166925",
-            "rating_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/4.5-MCID-66562.svg",
+            "rating_url": "https://s2.qwant.com/thumbr/0x0/5/a/6b6f4892798122d02c825b74f0e59471d42868ffac0df83d9fdd09910ee664/4.5-MCID-66562.svg?u=https%3A%2F%2Fwww.tripadvisor.com%2Fimg%2Fcdsi%2Fimg2%2Fratings%2Ftraveler%2F4.5-MCID-66562.svg&q=0&b=1&p=0&a=0",
             "source": "tripadvisor",
             "source_url": "https://www.tripadvisor.com/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
         },
