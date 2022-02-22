@@ -83,6 +83,7 @@ BLOCK_TRANSACTIONAL_ENABLED: True
 ## Data sources
 
 # Trip Advisor
+TRIPADVISOR_ENABLED: True
 TA_API_KEY:
 TA_API_TIMEOUT: 4 # seconds
 

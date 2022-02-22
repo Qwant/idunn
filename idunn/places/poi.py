@@ -251,6 +251,6 @@ def get_name(properties, lang):
 class PoiFactory:
     def get_poi(self, d, lang) -> POI:
         """Get the matching POI type to fetch POIs"""
-        if d["id"].startswith("ta:"):
+        if settings["TRIPADVISOR_ENABLED"] and d["id"].startswith("ta:"):
             return TripadvisorPOI(d, lang)
         return OsmPOI(d)
