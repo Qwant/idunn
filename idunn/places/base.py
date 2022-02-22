@@ -5,6 +5,7 @@ from pytz import timezone, UTC
 from typing import Optional, Union
 from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import maps_urls, tz
+from idunn.utils.thumbr import thumbr
 from .place import Place, PlaceMeta
 from ..utils.verbosity import build_blocks, Verbosity
 
@@ -281,11 +282,23 @@ class BasePlace(dict):
         )
 
     def get_bubble_star_url(self):
-        if self.properties.get("ta:average_rating") is not None:
-            return (
-                f"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
-                f"{self.properties.get('ta:average_rating')}-MCID-66562.svg"
+        rating = self.properties.get("ta:average_rating")
+
+        if rating is not None:
+            # Tripadvisor bubble star url need a rating with exactly one decimal point
+            # (e.g 4.0 or 4.5)
+            rating = f"{float(rating):.1f}"
+
+            base_url = (
+                r"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
+                f"{rating}-MCID-66562.svg"
             )
+
+            if thumbr.is_enabled():
+                return thumbr.get_url_remote_thumbnail(base_url)
+
+            return base_url
+
         return None
 
     def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
