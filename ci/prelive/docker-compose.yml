@@ -41,7 +41,7 @@ services:
       - IDUNN_IA_SUCCESS_ON_GENERIC_QUERIES=true
       - IDUNN_DIRECTIONS_RL_MAX_REQUESTS=20
       - IDUNN_DIRECTIONS_RL_EXPIRE=180 # per 3 minutes
-      - no_proxy=es,bragi,wiki-es,geocoder-varnish,1701_nlu,foundation,nlu
+      - no_proxy=es,bragi,wiki-es,1701_nlu,foundation,nlu
     extra_hosts:
       - "nlu:10.108.3.64"
       - "wiki-es:10.100.33.34"
