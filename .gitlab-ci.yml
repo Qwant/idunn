@@ -82,18 +82,18 @@ stages:
     refs:
       - master
 
-.promote:integration:
+.release:
   extends: .build
   stage: validation
   variables:
     DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
     GIT_SUBMODULE_STRATEGY: recursive
-    TARGET_IMAGE: "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:master"
     SOURCE_IMAGE: "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${CI_COMMIT_REF_SLUG}"
   script:
+    - export $(xargs <ci/templates/release)
     - docker pull "$SOURCE_IMAGE"
-    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
-    - docker push "$TARGET_IMAGE"
+    - docker tag "$SOURCE_IMAGE" "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${RELEASE_TAG_REF}"
+    - docker push "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${RELEASE_TAG_REF}"
     - subst -i ci/templates/docker-idunn-digest.env
   when: manual
 
@@ -246,7 +246,7 @@ argo deploy idunn prelive:
 
 idunn promote integration to prod:
   extends:
-    - .promote:integration
+    - .release
     - .idunn
   stage: validation
   artifacts:
@@ -366,10 +366,9 @@ argo deploy idunn production:
   needs:
     - idunn promote integration to prod
   script:
-    - export $(xargs <ci/templates/docker-idunn-digest.env)
-    - export IMAGE_DIGEST="$IDUNN_PROD_IMAGE_DIGEST"
+    - export $(xargs <ci/templates/release)
     - ci/bootstrap/bin/sync-version-argocd
-      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${RELEASE_TAG_REF}"
       --image-version-object-path-app ".webapp.image.name"
     - deploy_argo
   variables:
