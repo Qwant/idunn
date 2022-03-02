@@ -12,6 +12,10 @@ from .base import BaseBlock
 
 logger = logging.getLogger(__name__)
 
+# Resize images when using Thumbr, this is consistent with how the front
+# displays them in the pannel and bigger than needed for the list view
+IMAGES_HEIGHT = 165
+
 
 class Image(BaseModel):
     url: str
@@ -51,7 +55,7 @@ class ImagesBlock(BaseBlock):
     @classmethod
     def build_image(cls, raw_url, **kwargs):
         if thumbr.is_enabled():
-            thumb_url = thumbr.get_url_remote_thumbnail(raw_url)
+            thumb_url = thumbr.get_url_remote_thumbnail(raw_url, height=IMAGES_HEIGHT)
         else:
             thumb_url = raw_url
         return Image(url=thumb_url, **kwargs)
