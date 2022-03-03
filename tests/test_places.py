@@ -128,7 +128,7 @@ def test_full_query_tripadvisor():
                         "alt": "",
                         "credits": "",
                         "source_url": "https://media-cdn.tripadvisor.com/media/photo-o/0f/e9/04/82/photo0jpg.jpg",
-                        "url": "https://s1.qwant.com/thumbr/0x0/2/9/7544620396926de281c446798aa58867a2be514c5bdc1f196280d2ea6556b0/photo0jpg.jpg?u=https%3A%2F%2Fmedia-cdn.tripadvisor.com%2Fmedia%2Fphoto-o%2F0f%2Fe9%2F04%2F82%2Fphoto0jpg.jpg&q=0&b=1&p=0&a=0",
+                        "url": "https://s2.qwant.com/thumbr/0x165/f/3/68116512232b4299814330da19513bb35915de590c814b17a3b598aee66c78/photo0jpg.jpg?u=https%3A%2F%2Fmedia-cdn.tripadvisor.com%2Fmedia%2Fphoto-o%2F0f%2Fe9%2F04%2F82%2Fphoto0jpg.jpg&q=0&b=1&p=0&a=0",
                     }
                 ],
                 "type": "images",
