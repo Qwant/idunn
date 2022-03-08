@@ -239,6 +239,8 @@ argo deploy idunn prelive:
       --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
       --image-version-object-path-app ".webapp.image.name"
     - deploy_argo
+    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   when: manual
   variables:
     IMAGE_VERSION_FILE: "$HELM_VALUES"
@@ -372,6 +374,7 @@ argo deploy idunn production:
       --image-version-object-path-app ".webapp.image.name"
     - deploy_argo
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
     IMAGE_VERSION_FILE: "$HELM_VALUES"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
