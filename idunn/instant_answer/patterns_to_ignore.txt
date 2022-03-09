@@ -6,6 +6,7 @@ maps?( of)?
 carte( des?| du)?
 plan( de| du)?
 add?resse?
+contacts?( de)?
 ((num(e|é)ro)|n(o|°)?)( de)? ?t(e|é)l(e|é)phone
 num(e|é)ro$
 t(e|é)l(e|é)phone
