@@ -330,23 +330,19 @@ async def get_instant_answer(
     # without intention location detection
     else:
         if settings["TRIPADVISOR_ENABLED"]:
-            for bragi_tripadvisor_feature in bragi_tripadvisor_features:
-                feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
-                source = feature_properties["id"].split(":")[0]
+            bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
 
-                if source != "ta" or (
-                    feature_properties["poi_types"][0]["id"].split(":")[0]
-                    in AVAILABLE_CLASS_TYPE_TRIPADVISOR
-                ):
-                    fetch_pj.cancel()
-                    fetch_bragi_osm.cancel()
-                    place_id = feature_properties["id"]
-                    return await run_in_threadpool(
-                        get_instant_answer_single_place,
-                        query=q,
-                        place_id=place_id,
-                        lang=lang,
-                    )
+            if bragi_tripadvisor_feature is not None:
+                fetch_pj.cancel()
+                fetch_bragi_osm.cancel()
+                feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+                place_id = feature_properties["id"]
+                return await run_in_threadpool(
+                    get_instant_answer_single_place,
+                    query=q,
+                    place_id=place_id,
+                    lang=lang,
+                )
 
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
 
