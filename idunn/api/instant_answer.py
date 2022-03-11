@@ -267,7 +267,7 @@ async def get_instant_answer(
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
     if settings["TRIPADVISOR_ENABLED"]:
         query_tripadvisor = deepcopy(query)
-        query_tripadvisor.poi_dataset.append("tripadvisor")
+        query_tripadvisor.poi_dataset += ["tripadvisor", "default"]
 
     async def fetch_pj_response():
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
@@ -332,9 +332,10 @@ async def get_instant_answer(
         if settings["TRIPADVISOR_ENABLED"]:
             for bragi_tripadvisor_feature in bragi_tripadvisor_features:
                 feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
-                if (
-                    "poi_types" in feature_properties
-                    and feature_properties["poi_types"][0]["id"].split(":")[0]
+                source = feature_properties["id"].split(":")[0]
+
+                if source != "ta" or (
+                    feature_properties["poi_types"][0]["id"].split(":")[0]
                     in AVAILABLE_CLASS_TYPE_TRIPADVISOR
                 ):
                     fetch_pj.cancel()
@@ -345,7 +346,6 @@ async def get_instant_answer(
                         query=q,
                         place_id=place_id,
                         lang=lang,
-                        type="poi_tripadvisor",
                     )
 
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
