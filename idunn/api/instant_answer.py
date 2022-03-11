@@ -267,7 +267,7 @@ async def get_instant_answer(
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
     if settings["TRIPADVISOR_ENABLED"]:
         query_tripadvisor = deepcopy(query)
-        query_tripadvisor.poi_dataset.append("tripadvisor")
+        query_tripadvisor.poi_dataset += ["tripadvisor", "default"]
 
     async def fetch_pj_response():
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
@@ -330,23 +330,19 @@ async def get_instant_answer(
     # without intention location detection
     else:
         if settings["TRIPADVISOR_ENABLED"]:
-            for bragi_tripadvisor_feature in bragi_tripadvisor_features:
+            bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
+
+            if bragi_tripadvisor_feature is not None:
+                fetch_pj.cancel()
+                fetch_bragi_osm.cancel()
                 feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
-                if (
-                    "poi_types" in feature_properties
-                    and feature_properties["poi_types"][0]["id"].split(":")[0]
-                    in AVAILABLE_CLASS_TYPE_TRIPADVISOR
-                ):
-                    fetch_pj.cancel()
-                    fetch_bragi_osm.cancel()
-                    place_id = feature_properties["id"]
-                    return await run_in_threadpool(
-                        get_instant_answer_single_place,
-                        query=q,
-                        place_id=place_id,
-                        lang=lang,
-                        type="poi_tripadvisor",
-                    )
+                place_id = feature_properties["id"]
+                return await run_in_threadpool(
+                    get_instant_answer_single_place,
+                    query=q,
+                    place_id=place_id,
+                    lang=lang,
+                )
 
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
 
