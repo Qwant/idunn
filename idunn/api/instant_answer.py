@@ -241,7 +241,7 @@ async def get_instant_answer(
             return build_response(result, query=q, lang=lang)
         return no_instant_answer(query=q, lang=lang, region=user_country)
 
-    intentions = None
+    intentions = []
     if lang in nlu_allowed_languages:
         try:
             intentions = await nlu_client.get_intentions(
@@ -290,7 +290,7 @@ async def get_instant_answer(
 
     # Select datasource instant answer in France
     if (
-        len(intentions) > 0
+        intentions
         and intentions[0].filter is not None
         and intentions[0].filter.bbox is not None
         and pj_source.bbox_is_covered(intentions[0].filter.bbox)
