@@ -40,9 +40,8 @@ async def follow_redirection(
         raise HTTPException(403, detail="provided hash does not match the URL")
 
     response = await client.get(url, follow_redirects=False)
-    response.raise_for_status()
 
     if response.status_code not in range(300, 400):
-        raise HTTPException(404, detail="provided URL does not redirect")
+        raise HTTPException(404, detail=f"`{url}` does not redirect, got {response.status_code}")
 
     return RedirectResponse(response.headers["Location"])
