@@ -10,7 +10,7 @@ from pydantic import confloat
 
 from idunn import settings
 
-from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon
 from idunn.places.base import BasePlace
