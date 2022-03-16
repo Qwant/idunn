@@ -58,6 +58,7 @@ def test_full_query_admin():
             "maps_place_url": "https://www.qwant.com/maps/place/admin:osm:relation:123057",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=admin%3Aosm%3Arelation%3A123057",
             "rating_url": None,
+            "rating_url_noicon": None,
         },
     }
 
@@ -153,6 +154,7 @@ def test_full_query_tripadvisor():
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=ta%3Apoi%3A3166925",
             "maps_place_url": "https://www.qwant.com/maps/place/ta:poi:3166925",
             "rating_url": "https://s2.qwant.com/thumbr/0x0/5/a/6b6f4892798122d02c825b74f0e59471d42868ffac0df83d9fdd09910ee664/4.5-MCID-66562.svg?u=https%3A%2F%2Fwww.tripadvisor.com%2Fimg%2Fcdsi%2Fimg2%2Fratings%2Ftraveler%2F4.5-MCID-66562.svg&q=0&b=1&p=0&a=0",
+            "rating_url_noicon": "https://s1.qwant.com/thumbr/0x0/0/4/0d59e4cc8aad5671fba245ad94004f305154601ab8d4d901a3db6be1d14367/s4.5-MCID-66562.svg?u=https%3A%2F%2Fwww.tripadvisor.com%2Fimg%2Fcdsi%2Fimg2%2Fratings%2Ftraveler%2Fs4.5-MCID-66562.svg&q=0&b=1&p=0&a=0",
             "source": "tripadvisor",
             "source_url": "https://www.tripadvisor.fr/Restaurant_Review-g1743691-d3166925-Reviews-Chez_Eric-Vaucluse_Provence_Alpes_Cote_d_Azur.html?m=66562",
         },
@@ -238,6 +240,7 @@ def test_full_query_street():
             "maps_place_url": "https://www.qwant.com/maps/place/street:35460343",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=street%3A35460343",
             "rating_url": None,
+            "rating_url_noicon": None,
         },
     }
 
@@ -320,6 +323,7 @@ def test_full_query_address():
             "maps_place_url": "https://www.qwant.com/maps/place/addr:5.108632;48.810273",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=addr%3A5.108632%3B48.810273",
             "rating_url": None,
+            "rating_url_noicon": None,
         },
     }
 

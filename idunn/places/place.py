@@ -19,6 +19,9 @@ class PlaceMeta(BaseModel):
     rating_url: Optional[HttpUrl] = Field(
         description="Direct URL to the tripadvisor bubble rating image"
     )
+    rating_url_noicon: Optional[HttpUrl] = Field(
+        description="Direct URL to the tripadvisor bubble rating image, without tripadvisor's logo"
+    )
 
 
 class Street(BaseModel):

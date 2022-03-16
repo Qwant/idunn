@@ -30,6 +30,7 @@ def test_pj_place(mock_pj_api_with_musee_picasso):
         "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=pj%3A05360257",
         "maps_place_url": "https://www.qwant.com/maps/place/pj:05360257",
         "rating_url": None,
+        "rating_url_noicon": None,
     }
     assert resp["geometry"]["center"] == [2.362634, 48.859702]
 

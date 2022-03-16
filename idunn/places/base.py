@@ -280,27 +280,29 @@ class BasePlace(dict):
             maps_place_url=maps_urls.get_place_url(place_id),
             maps_directions_url=maps_urls.get_directions_url(place_id),
             rating_url=self.get_bubble_star_url(),
+            rating_url_noicon=self.get_bubble_star_url(icon=False),
         )
 
-    def get_bubble_star_url(self):
+    def get_bubble_star_url(self, icon=True):
         rating = self.properties.get("ta:average_rating")
+        prefix = "" if icon else "s"
 
-        if rating is not None:
-            # Tripadvisor bubble star url need a rating with exactly one decimal point
-            # (e.g 4.0 or 4.5)
-            rating = f"{float(rating):.1f}"
+        if rating is None:
+            return None
 
-            base_url = (
-                r"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
-                f"{rating}-MCID-66562.svg"
-            )
+        # Tripadvisor bubble star url need a rating with exactly one decimal point
+        # (e.g 4.0 or 4.5)
+        rating = f"{float(rating):.1f}"
 
-            if thumbr.is_enabled():
-                return thumbr.get_url_remote_thumbnail(base_url)
+        base_url = (
+            r"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
+            f"{prefix}{rating}-MCID-66562.svg"
+        )
 
-            return base_url
+        if thumbr.is_enabled():
+            return thumbr.get_url_remote_thumbnail(base_url)
 
-        return None
+        return base_url
 
     def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
         return Place(
