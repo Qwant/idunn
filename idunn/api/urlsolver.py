@@ -39,10 +39,9 @@ async def follow_redirection(
     if not hmac.compare_digest(hash_url(url), hash):
         raise HTTPException(403, detail="provided hash does not match the URL")
 
-    response = await client.get(url, allow_redirects=False)
-    response.raise_for_status()
+    response = await client.get(url, follow_redirects=False)
 
     if response.status_code not in range(300, 400):
-        raise HTTPException(404, detail="provided URL does not redirect")
+        raise HTTPException(404, detail=f"`{url}` does not redirect, got {response.status_code}")
 
     return RedirectResponse(response.headers["Location"])

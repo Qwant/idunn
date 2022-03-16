@@ -13,7 +13,6 @@ class GradesBlock(BaseBlock):
         raw_grades = place.get_raw_grades() or {}
         total_grades_count = raw_grades.get("total_grades_count", None)
         global_grade = raw_grades.get("global_grade", None)
-
         if total_grades_count is None or global_grade is None:
             return None
 

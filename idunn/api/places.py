@@ -9,13 +9,16 @@ from pydantic import confloat
 
 
 from idunn import settings
-from idunn.utils.es_wrapper import get_elasticsearch
+
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils.covid19_dataset import covid19_osm_task
-from idunn.places import Place, Latlon, place_from_id
+from idunn.places import Place, Latlon
 from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.exceptions import RedirectToPlaceId, InvalidPlaceId
 from .closest import get_closest_place
+
+from ..utils.place import place_from_id
 from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
@@ -88,7 +91,7 @@ def get_place(
     """Main handler that returns the requested place."""
     lang = validate_lang(lang)
     try:
-        place = place_from_id(id, type)
+        place = place_from_id(id, lang, type)
     except InvalidPlaceId as e:
         raise HTTPException(status_code=404, detail=e.message) from e
     except PlaceNotFound as e:
@@ -116,7 +119,7 @@ def get_place_latlon(
 ) -> Place:
     """Find the closest place to a point."""
 
-    es = get_elasticsearch()
+    es = get_mimir_elasticsearch()
     lang = validate_lang(lang)
     try:
         closest_place = get_closest_place(lat, lon, es)

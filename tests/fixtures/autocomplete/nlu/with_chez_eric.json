@@ -1,0 +1,13 @@
+{
+    "NLU": [
+        {
+            "phrase": "chez eric",
+            "tag": "POI",
+            "value": {}
+        }
+    ],
+    "domain": "MAPS",
+    "lang": "fr",
+    "text": "chez eric",
+    "tokenized": "chez eric"
+}

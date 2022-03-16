@@ -23,6 +23,7 @@ class BragiClient:
 
     async def raw_autocomplete(self, params, body=None):
         url = settings["BRAGI_BASE_URL"] + "/autocomplete"
+        logger.info(url)
         try:
             if body:
                 response = await self.client.post(url, params=params, json=body)

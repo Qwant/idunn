@@ -30,51 +30,71 @@ class Type(str, Enum):
     Zone = "zone"
 
 
+class PlaceDocType(str, Enum):
+    # pylint: disable=invalid-name
+    Admin = "admin"
+    Street = "street"
+    Addr = "addr"
+    Poi = "poi"
+    # Stop = "stop" # this field is available in bragi but not used by Qwant Maps
+
+
 @dataclass
 class QueryParams:
-    q: str = Query(..., title="Query string")
+    """
+    Mimic bragi's parameters as defined in mimirsbrunn:
+    https://github.com/CanalTP/mimirsbrunn/blob/v2.2.0/libs/mimir/src/adapters/primary/bragi/api.rs#L27-L42
 
-    lon: Optional[confloat(ge=-180, le=180)] = Query(
-        None, title="Longitude", description="Latitude of the focus point."
-    )
+    There are a few extra fields that won't be send to bragi at the end of
+    struct definition. These are generaly specific to Qwant, so Idunn acts as a
+    wrapper arround mimirsbrunn to avoid pusing too specific features.
+    """
+
+    q: str = Query(..., title="Query string")
 
     lat: Optional[confloat(ge=-90, le=90)] = Query(
         None, title="Latitude", description="Longitude of the focus point."
     )
 
-    zoom: confloat(ge=1) = Query(
-        11,
-        description=(
-            "Zoom level used to compute how far from the focus point results will typically be."
-        ),
+    lon: Optional[confloat(ge=-180, le=180)] = Query(
+        None, title="Longitude", description="Latitude of the focus point."
     )
 
-    lang: Optional[str] = Query(None, title="Language")
-
-    limit: conint(ge=1, le=100) = Query(10, description="Maximum number of results.")
-
-    pt_dataset: List[str] = Query([], description="Point dataset name.")
-
-    poi_dataset: List[str] = Query([], description="POI dataset name.")
-
-    all_data: bool = Query(
-        False,
-        description=(
-            "Search through the entire dataset while ignoring the coverage filter of the geocoder."
-        ),
-    )
-
-    offset: int = Query(0, ge=0, description="Skip the first results")
-
-    timeout: Optional[int] = Query(
-        None, ge=0, title="Timeout: ms", description="Timeout for the queries to the geocoder."
+    shape_scope: List[PlaceDocType] = Query(
+        [], description="Filter type of documents raised from inside of the shape."
     )
 
     type: List[Type] = Query([], description="Filter on type of document.")
 
     zone_type: List[ZoneType] = Query([], description="Filter on type of zone.")
 
-    poi_type: List[str] = Query([], description="Filter on type of POI.")
+    poi_types: List[str] = Query([], description="Filter on type of POI.")
+
+    limit: conint(ge=1, le=100) = Query(10, description="Maximum number of results.")
+
+    lang: Optional[str] = Query(None, title="Language")
+
+    timeout: Optional[int] = Query(
+        None, ge=0, title="Timeout: ms", description="Timeout for the queries to the geocoder."
+    )
+
+    pt_dataset: List[str] = Query([], description="Point dataset name.")
+
+    poi_dataset: List[str] = Query([], description="POI dataset name.")
+
+    request_id: Optional[str] = Query(
+        None, description="Specify a request ID for debugging purpose."
+    )
+
+    offset: int = Query(0, ge=0, description="Skip the first results")
+
+    # Specific to Idunn
+    zoom: confloat(ge=1) = Query(
+        11,
+        description=(
+            "Zoom level used to compute how far from the focus point results will typically be."
+        ),
+    )
 
     nlu: bool = Query(
         bool(settings["AUTOCOMPLETE_NLU_DEFAULT"]),
@@ -99,16 +119,17 @@ class QueryParams:
         """
         params = {
             "q": self.q,
-            "lang": self.lang,
-            "limit": self.limit,
-            "pt_dataset[]": self.pt_dataset,
-            "poi_dataset[]": self.poi_dataset,
-            "all_data": self.all_data,
-            "offset": self.offset,
-            "timeout": self.timeout,
+            "shape_scope[]": self.shape_scope,
             "type[]": self.type,
             "zone_type[]": self.zone_type,
-            "poi_type[]": self.poi_type,
+            "poi_types[]": self.poi_types,
+            "limit": self.limit,
+            "lang": self.lang,
+            "timeout": self.timeout,
+            "pt_dataset[]": self.pt_dataset,
+            "poi_dataset[]": self.poi_dataset,
+            "request_id": self.request_id,
+            "offset": self.offset,
         }
 
         # Enables the focus mode

@@ -2,11 +2,11 @@ from fastapi import HTTPException, Query, Depends, Path, Request, Response
 from pydantic import confloat
 
 from idunn import settings
-from idunn.places import Latlon, place_from_id
+from idunn.places import Latlon
 from idunn.places.exceptions import IdunnPlaceError
 from idunn.utils.rate_limiter import IdunnRateLimiter
 from ..directions.client import directions_client
-
+from ..utils.place import place_from_id
 
 rate_limiter = IdunnRateLimiter(
     resource="idunn.api.directions",
@@ -58,8 +58,8 @@ def get_directions(
 ):
     """Get directions to get from a places to another."""
     try:
-        from_place = place_from_id(origin, follow_redirect=True)
-        to_place = place_from_id(destination, follow_redirect=True)
+        from_place = place_from_id(origin, language, follow_redirect=True)
+        to_place = place_from_id(destination, language, follow_redirect=True)
     except IdunnPlaceError as exc:
         raise HTTPException(status_code=404, detail=exc.message) from exc
 

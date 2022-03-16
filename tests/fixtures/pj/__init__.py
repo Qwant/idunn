@@ -4,15 +4,30 @@ from unittest import mock
 
 import pytest
 
-from idunn.datasources.pages_jaunes import ApiPjSource
-from idunn.places import utils as places_utils
+from idunn.datasources.pages_jaunes import PagesJaunes
+from idunn.utils import place as places_utils
+from idunn.api import status
 from tests.utils import init_pj_source, override_settings
+
+
+def mock_pj_status(filename: str):
+    api_result = json.load(open(os.path.join(os.path.dirname(__file__), filename)))
+    updated_settings = {}
+    source_type = PagesJaunes
+    with override_settings(updated_settings), init_pj_source(source_type):
+        api_mock = mock.patch.object(
+            status.pj_source,
+            "get_from_params",
+            new=lambda *x, **y: api_result,
+        )
+        with api_mock:
+            yield
 
 
 def mock_pj_api(type_api: str, filename: str):
     api_result = json.load(open(os.path.join(os.path.dirname(__file__), filename)))
     updated_settings = {}
-    source_type = ApiPjSource
+    source_type = PagesJaunes
 
     with override_settings(updated_settings), init_pj_source(source_type):
         if type_api == "api":
@@ -44,6 +59,11 @@ def mock_pj_api_with_musee_picasso_short():
 
 
 @pytest.fixture
+def mock_pj_status_with_musee_picasso_short():
+    yield from mock_pj_status("api_musee_picasso_short.json")
+
+
+@pytest.fixture
 def mock_pj_api_with_restaurant_petit_pan():
     yield from mock_pj_api("api", "api_restaurant_petit_pan.json")
 
@@ -56,3 +76,8 @@ def mock_pj_api_with_hotel_hilton():
 @pytest.fixture
 def mock_pj_api_find_with_musee_picasso():
     yield from mock_pj_api("api_find", "api_musee_picasso.json")
+
+
+@pytest.fixture
+def mock_pj_api_find_with_chez_eric():
+    yield from mock_pj_api("api_find", "api_chez_eric.json")

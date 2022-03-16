@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from app import app
 from idunn.blocks import Covid19Block
-from idunn.places import POI
+from idunn.places import OsmPOI
 from .utils import override_settings
 
 
@@ -34,12 +34,13 @@ def test_covid19_block_unknown_status():
 
 
 @freeze_time("2020-04-23 12:00:00+02:00")
-@patch.object(POI, "get_country_code", lambda *x: "FR")
+@patch.object(OsmPOI, "get_country_code", lambda *x: "FR")
 def test_covid19_parse_hours():
     with override_settings({"BLOCK_COVID_ENABLED": True, "COVID19_USE_REDIS_DATASET": False}):
         covid_block = Covid19Block.from_es(
-            POI(
+            OsmPOI(
                 {
+                    "id": "osm:way:154422021",
                     "coord": {"lon": 2.3, "lat": 48.8},
                     "properties": {
                         "opening_hours": "Tu-Su 08:30-24:00",

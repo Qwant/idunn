@@ -1,18 +1,13 @@
-from idunn.datasources.pages_jaunes import pj_source
-from idunn.datasources.mimirsbrunn import fetch_es_place
-from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.datasources.mimirsbrunn import fetch_es_place, get_es_place_type
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils import prometheus
+from ..datasources.pages_jaunes import pj_source
+from ..places import Latlon, Admin, Address, Street
+from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
+from ..places.poi import POI, PoiFactory
 
 
-from .admin import Admin
-from .street import Street
-from .address import Address
-from .poi import POI
-from .latlon import Latlon
-from .exceptions import InvalidPlaceId, RedirectToPlaceId, PlaceNotFound
-
-
-def place_from_id(id: str, type=None, follow_redirect=False):
+def place_from_id(id: str, lang: str, type=None, follow_redirect=False):
     """
     :param id: place id
     :param type: Optional type to restrict query in Elasticsearch
@@ -28,12 +23,16 @@ def place_from_id(id: str, type=None, follow_redirect=False):
     if namespace == pj_source.PLACE_ID_NAMESPACE:
         return pj_source.get_place(id)
 
+    # Handle place from tripadvisor
+    if namespace == "ta":
+        type = "poi_tripadvisor"
+
     # Simple latlon place id
     if namespace == Latlon.PLACE_ID_NAMESPACE:
         return Latlon.from_id(id)
 
     # Otherwise handle places from the ES db
-    es = get_elasticsearch()
+    es = get_mimir_elasticsearch()
     try:
         es_place = fetch_es_place(id, es, type)
     except PlaceNotFound as exc:
@@ -48,7 +47,7 @@ def place_from_id(id: str, type=None, follow_redirect=False):
             else:
                 if not follow_redirect:
                     raise RedirectToPlaceId(latlon_id) from exc
-                return place_from_id(latlon_id, follow_redirect=False)
+                return place_from_id(latlon_id, lang, follow_redirect=False)
         raise
 
     places = {
@@ -56,10 +55,16 @@ def place_from_id(id: str, type=None, follow_redirect=False):
         "street": Street,
         "addr": Address,
         "poi": POI,
+        "poi_tripadvisor": POI,
     }
-    loader = places.get(es_place.get("_type"))
+
+    place_type = get_es_place_type(es_place)
+    loader = places.get(place_type)
 
     if loader is None:
         prometheus.exception("FoundPlaceWithWrongType")
-        raise Exception(f"Place with id '{id}' has a wrong type: '{es_place[0].get('_type')}'")
+        raise Exception(f"Place with id '{id}' has a wrong type: '{place_type}'")
+
+    if loader is POI:
+        return PoiFactory().get_poi(es_place["_source"], lang=lang)
     return loader(es_place["_source"])

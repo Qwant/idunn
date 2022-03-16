@@ -1,0 +1,13 @@
+{
+  "bragi": {
+    "version": "1.0.0-rc2"
+  },
+  "mimir": {
+    "version": "1.0.0-rc2"
+  },
+  "elasticsearch": {
+    "version": "7.14.0",
+    "health": "ok",
+    "url": "http://elasticsearch-master.dev-maps.svc.cluster.local:9200/"
+  }
+}

@@ -4,11 +4,11 @@ from geopy import Point
 from pytz import timezone, UTC
 from typing import Optional, Union
 
-from ..utils.verbosity import build_blocks, Verbosity
 from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import maps_urls, tz
+from idunn.utils.thumbr import thumbr
 from .place import Place, PlaceMeta
-
+from ..utils.verbosity import build_blocks, Verbosity
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,12 @@ class BasePlace(dict):
         return raw_address.get("street") or {}
 
     def get_raw_admins(self):
-        return self.get("administrative_regions") or []
+        admins = self.get("administrative_regions") or []
+        # ES2 compatibility
+        for a in admins:
+            if isinstance(a.get("codes"), list):
+                a["codes"] = {c["name"]: c["value"] for c in a["codes"]}
+        return admins
 
     def get_country_codes(self):
         """
@@ -274,7 +279,28 @@ class BasePlace(dict):
             contribute_url=self.get_contribute_url(),
             maps_place_url=maps_urls.get_place_url(place_id),
             maps_directions_url=maps_urls.get_directions_url(place_id),
+            rating_url=self.get_bubble_star_url(),
         )
+
+    def get_bubble_star_url(self):
+        rating = self.properties.get("ta:average_rating")
+
+        if rating is not None:
+            # Tripadvisor bubble star url need a rating with exactly one decimal point
+            # (e.g 4.0 or 4.5)
+            rating = f"{float(rating):.1f}"
+
+            base_url = (
+                r"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
+                f"{rating}-MCID-66562.svg"
+            )
+
+            if thumbr.is_enabled():
+                return thumbr.get_url_remote_thumbnail(base_url)
+
+            return base_url
+
+        return None
 
     def load_place(self, lang, verbosity: Verbosity = Verbosity.default()) -> Place:
         return Place(
@@ -338,13 +364,13 @@ class BasePlace(dict):
 
     def get_tz(self):
         """
-        >>> from idunn.places import POI
+        >>> from idunn.places import OsmPOI
 
-        >>> poi1 = POI({"coord": {"lon": 2.3, "lat":48.9}})
+        >>> poi1 = OsmPOI({"coord": {"lon": 2.3, "lat":48.9}, "id": "osm:way:154422021"})
         >>> poi1.get_tz().zone
         'Europe/Paris'
 
-        >>> poi2 = POI({'coord':{"lon":-12.8218, "lat": 37.5118}})
+        >>> poi2 = OsmPOI({'coord':{"lon":-12.8218, "lat": 37.5118}, "id": "osm:way:154422021"})
         >>> poi2.get_tz().zone
         'UTC'
         """
@@ -356,14 +382,14 @@ class BasePlace(dict):
 
     def get_geometry(self):
         """Returns GeoJSON-like geometry. Requires "lon" and "lat" coordinates.
-        >>> from idunn.places import POI
-        >>> assert POI({}).get_geometry() is None
+        >>> from idunn.places import OsmPOI
+        >>> assert OsmPOI({"id": "osm:way:154422021"}).get_geometry() is None
 
-        >>> assert POI({'coord':{"lon": None, "lat": 48.85}}).get_geometry() is None
+        >>> assert OsmPOI({'coord':{"lon": None, "lat": 48.85},"id": "osm:"}).get_geometry() is None
 
-        >>> assert POI({'coord':{"lon": 2.29, "lat": None}}).get_geometry() is None
+        >>> assert OsmPOI({'coord':{"lon": 2.29, "lat": None}, "id": "osm:"}).get_geometry() is None
 
-        >>> POI({'coord':{"lon": 2.29, "lat": 48.85}}).get_geometry()
+        >>> OsmPOI({'coord':{"lon": 2.29, "lat": 48.85},"id": "osm:way:154422021"}).get_geometry()
         {'type': 'Point', 'coordinates': [2.29, 48.85], 'center': [2.29, 48.85]}
         """
         geom = None

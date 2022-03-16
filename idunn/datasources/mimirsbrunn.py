@@ -2,7 +2,7 @@ import logging
 from fastapi import HTTPException
 from elasticsearch import ElasticsearchException
 from idunn import settings
-from idunn.utils.es_wrapper import get_elasticsearch
+from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils.index_names import INDICES
 from idunn.places.exceptions import PlaceNotFound
 
@@ -40,8 +40,8 @@ class MimirPoiFilter:
         return cls(poi_class, poi_subclass)
 
 
-def fetch_es_pois(filters: [MimirPoiFilter], bbox, max_size) -> list:
-    es = get_elasticsearch()
+def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) -> list:
+    es = get_mimir_elasticsearch()
     left, bot, right, top = bbox[0], bbox[1], bbox[2], bbox[3]
 
     should_terms = []
@@ -56,24 +56,22 @@ def fetch_es_pois(filters: [MimirPoiFilter], bbox, max_size) -> list:
 
     # pylint: disable = unexpected-keyword-arg
     bbox_places = es.search(
-        index=INDICES["poi"],
-        body={
-            "query": {
-                "bool": {
-                    "should": should_terms,
-                    "minimum_should_match": 1,
-                    "filter": {
-                        "geo_bounding_box": {
-                            "coord": {
-                                "top_left": {"lat": top, "lon": left},
-                                "bottom_right": {"lat": bot, "lon": right},
-                            }
+        index=INDICES[index_name],
+        query={
+            "bool": {
+                "should": should_terms,
+                "minimum_should_match": 1,
+                "filter": {
+                    "geo_bounding_box": {
+                        "coord": {
+                            "top_left": {"lat": top, "lon": left},
+                            "bottom_right": {"lat": bot, "lon": right},
                         }
-                    },
-                }
-            },
-            "sort": {"weight": "desc"},
+                    }
+                },
+            }
         },
+        sort={"weight": "desc"},
         size=max_size,
         timeout="3s",
         ignore_unavailable=True,
@@ -96,12 +94,14 @@ def fetch_es_place(id, es, type) -> dict:
     else:
         index_name = INDICES.get(type)
 
+    extra_search_params = {"_source_excludes": "boundary"}
+
     try:
         es_places = es.search(
             index=index_name,
-            body={"query": {"bool": {"filter": {"term": {"_id": id}}}}},
+            query={"bool": {"filter": {"term": {"_id": id}}}},
             ignore_unavailable=True,
-            _source_exclude=["boundary"],
+            **extra_search_params,
         )
     except ElasticsearchException as error:
         logger.warning("error with database: %s", error)
@@ -120,38 +120,44 @@ def fetch_es_place(id, es, type) -> dict:
     return es_place[0]
 
 
+def get_es_place_type(es_place) -> str:
+    """
+    Returns the type place from the ES index name
+    The index name format is munin_{addr/street}
+    """
+    return es_place.get("_index").split("_")[1]
+
+
 def fetch_closest(lat, lon, max_distance, es):
     es_addrs = es.search(
         index=",".join([PLACE_ADDRESS_INDEX, PLACE_STREET_INDEX]),
-        body={
-            "query": {
-                "function_score": {
-                    "query": {
-                        "bool": {
-                            "filter": {
-                                "geo_distance": {
-                                    "distance": f"{max_distance}m",
-                                    "coord": {"lat": lat, "lon": lon},
-                                    "distance_type": "plane",
-                                }
+        from_=0,
+        size=1,
+        query={
+            "function_score": {
+                "query": {
+                    "bool": {
+                        "filter": {
+                            "geo_distance": {
+                                "distance": f"{max_distance}m",
+                                "coord": {"lat": lat, "lon": lon},
+                                "distance_type": "plane",
                             }
                         }
-                    },
-                    "boost_mode": "replace",
-                    "functions": [
-                        {
-                            "gauss": {
-                                "coord": {
-                                    "origin": {"lat": lat, "lon": lon},
-                                    "scale": f"{max_distance}m",
-                                }
+                    }
+                },
+                "boost_mode": "replace",
+                "functions": [
+                    {
+                        "gauss": {
+                            "coord": {
+                                "origin": {"lat": lat, "lon": lon},
+                                "scale": f"{max_distance}m",
                             }
                         }
-                    ],
-                }
-            },
-            "from": 0,
-            "size": 1,
+                    }
+                ],
+            }
         },
     )
     es_addrs = es_addrs.get("hits", {}).get("hits", [])
