@@ -39,7 +39,6 @@ class PlaceDocType(str, Enum):
     # Stop = "stop" # this field is available in bragi but not used by Qwant Maps
 
 
-
 @dataclass
 class QueryParams:
     """
