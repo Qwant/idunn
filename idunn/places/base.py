@@ -3,6 +3,7 @@ import re
 from geopy import Point
 from pytz import timezone, UTC
 from typing import Optional, Union
+
 from idunn.datasources.wiki_es import wiki_es
 from idunn.utils import maps_urls, tz
 from idunn.utils.thumbr import thumbr

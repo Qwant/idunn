@@ -7,6 +7,7 @@ from requests import HTTPError as RequestsHTTPError
 from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
+
 from idunn.datasources import Datasource
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.models import pj_info, pj_find

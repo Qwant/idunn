@@ -10,6 +10,7 @@ from shapely.affinity import scale
 from shapely.geometry import MultiPoint, box
 
 from idunn import settings
+
 from idunn.datasources.pages_jaunes import pj_source, PagesJaunes
 from .constants import PoiSource, ALL_POI_SOURCES
 from ..datasources import Datasource

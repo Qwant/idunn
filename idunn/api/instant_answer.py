@@ -20,9 +20,11 @@ from idunn.utils.regions import get_region_lonlat
 from idunn.utils.result_filter import ResultFilter
 from idunn.instant_answer import normalize
 from .constants import PoiSource
+
 from ..utils.place import place_from_id
 from ..utils.verbosity import Verbosity
 from copy import deepcopy
+
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter()
