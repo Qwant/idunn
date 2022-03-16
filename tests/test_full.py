@@ -171,5 +171,6 @@ def test_full(mock_external_requests):
             "maps_place_url": "https://www.qwant.com/maps/place/osm:way:7777778",
             "maps_directions_url": "https://www.qwant.com/maps/routes/?destination=osm%3Away%3A7777778",
             "rating_url": None,
+            "rating_url_noicon": None,
         },
     }
