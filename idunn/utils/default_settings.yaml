@@ -91,6 +91,7 @@ TA_API_TIMEOUT: 4 # seconds
 PJ_API_ID:
 PJ_API_SECRET:
 PJ_API_TIMEOUT: 4 # seconds
+PJ_ENABLED: True
 
 # OSM
 OSM_CONTRIBUTION_HASHTAGS: "QwantMaps" # separated by ",". Used in osm.org/edit URL.
