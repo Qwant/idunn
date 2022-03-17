@@ -30,16 +30,21 @@ def get_metric_handler(settings):
     return expose_metrics
 
 
+def api_route(*args, **kwargs):
+    kwargs["dependencies"] = kwargs.get("dependencies", []) + [Depends(check_banned_client)]
+    return APIRoute(*args, **kwargs)
+
+
 def get_api_urls(settings):
     """Defines all endpoints
     and handlers to build response
     """
     metric_handler = get_metric_handler(settings)
     return [
-        APIRoute("/metrics", metric_handler, include_in_schema=False),
-        APIRoute("/status", get_status, include_in_schema=False),
+        api_route("/metrics", metric_handler, include_in_schema=False),
+        api_route("/status", get_status, include_in_schema=False),
         # Places
-        APIRoute(
+        api_route(
             "/places",
             get_places_bbox,
             dependencies=[
@@ -52,36 +57,36 @@ def get_api_urls(settings):
             response_model=PlacesBboxResponse,
             responses={400: {"description": "Client Error in query params"}},
         ),
-        APIRoute("/places/latlon:{lat}:{lon}", get_place_latlon, response_model=Place),
-        APIRoute("/places/{id}", get_place, response_model=Place),
+        api_route("/places/latlon:{lat}:{lon}", get_place_latlon, response_model=Place),
+        api_route("/places/{id}", get_place, response_model=Place),
         # Categories
-        APIRoute("/categories", get_all_categories, response_model=AllCategoriesResponse),
+        api_route("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
-        APIRoute("/reverse/{lat}:{lon}", closest_address, response_model=Address),
+        api_route("/reverse/{lat}:{lon}", closest_address, response_model=Address),
         # TODO remove hotel_pricing endpoint on merge with master
         # TripAdvisor hotel
-        APIRoute("/hotel_pricing", get_hotel_pricing),
+        api_route("/hotel_pricing", get_hotel_pricing),
         # Directions
-        APIRoute(
+        api_route(
             "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
             get_directions_with_coordinates,
             response_model=DirectionsResponse,
             responses={422: {"description": "Requested Path Not Allowed."}},
         ),
-        APIRoute(
+        api_route(
             "/directions",
             get_directions,
             response_model=DirectionsResponse,
             responses={422: {"description": "Requested Path Not Allowed."}},
         ),
         # Geocoding
-        APIRoute(
+        api_route(
             "/autocomplete",
             get_autocomplete_response,
             methods=["GET", "POST"],
             response_model=IdunnAutocomplete,
         ),
-        APIRoute(
+        api_route(
             "/search",
             search,
             methods=["GET", "POST"],
@@ -92,7 +97,7 @@ def get_api_urls(settings):
             response_model_exclude_unset=True,
         ),
         # Solve URLs
-        APIRoute(
+        api_route(
             "/redirect",
             follow_redirection,
             status_code=307,
@@ -101,10 +106,9 @@ def get_api_urls(settings):
                 404: {"description": "The URL does not redirect."},
             },
         ),
-        APIRoute(
+        api_route(
             "/instant_answer",
             get_instant_answer,
-            dependencies=[Depends(check_banned_client)],
             response_model=InstantAnswerResponse,
             responses={
                 200: {"description": "Details about place(s) to display"},
