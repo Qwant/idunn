@@ -318,7 +318,7 @@ async def get_instant_answer(
 
             pj_response = result_filter.filter_places(normalized_query, await fetch_pj)
 
-            if pj_response:
+            if pj_response and settings["PJ_ENABLED"]:
                 fetch_bragi_osm.cancel()
                 place_id = pj_response[0].get_id()
                 result = InstantAnswerResult(

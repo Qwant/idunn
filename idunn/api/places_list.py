@@ -203,7 +203,7 @@ def select_datasource_for_france(params):
         cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE
     ):
         params.source = PoiSource.TRIPADVISOR
-    elif is_brand_detected_or_pj_category_cover(params):
+    elif is_brand_detected_or_pj_category_cover(params) and settings["PJ_ENABLED"]:
         params.source = PoiSource.PAGESJAUNES
     else:
         params.source = PoiSource.OSM
@@ -247,7 +247,7 @@ class DatasourceFactory:
         """Get the matching datasource to fetch POIs"""
         if settings["TRIPADVISOR_ENABLED"] and source_type == PoiSource.TRIPADVISOR:
             return Tripadvisor()
-        if source_type == PoiSource.PAGESJAUNES:
+        if source_type == PoiSource.PAGESJAUNES and settings["PJ_ENABLED"]:
             return PagesJaunes()
         if (
             source_type == PoiSource.OSM or not settings["TRIPADVISOR_ENABLED"]
