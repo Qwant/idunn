@@ -233,6 +233,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 description={"category": category, "place": place},
             )
 
+        # If it is a category that not exist, use it like a brand
         return Intention(
             type=IntentionType.BRAND,
             filter={"q": cat_query, "bbox": bbox},

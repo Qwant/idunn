@@ -25,7 +25,6 @@ from ..utils.place import place_from_id
 from ..utils.verbosity import Verbosity
 from copy import deepcopy
 
-
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter()
 
@@ -234,14 +233,12 @@ async def get_instant_answer(
         extra_geocoder_params["zoom"] = 6
 
     if normalized_query == "":
-        if settings["IA_SUCCESS_ON_GENERIC_QUERIES"]:
-            result = InstantAnswerResult(
-                places=[],
-                maps_url=maps_urls.get_default_url(),
-                maps_frame_url=maps_urls.get_default_url(no_ui=True),
-            )
-            return build_response(result, query=q, lang=lang)
-        return no_instant_answer(query=q, lang=lang, region=user_country)
+        result = InstantAnswerResult(
+            places=[],
+            maps_url=maps_urls.get_default_url(),
+            maps_frame_url=maps_urls.get_default_url(no_ui=True),
+        )
+        return build_response(result, query=q, lang=lang)
 
     intentions = []
     if lang in nlu_allowed_languages:
@@ -267,24 +264,14 @@ async def get_instant_answer(
 
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
+
+    # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
+    fetch_pj = asyncio.create_task(fetch_pj_response(normalized_query, intentions))
+    fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query))
+
     if settings["TRIPADVISOR_ENABLED"]:
         query_tripadvisor = deepcopy(query)
         query_tripadvisor.poi_dataset += ["tripadvisor", "default"]
-
-    async def fetch_pj_response():
-        if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
-            return []
-
-        return await run_in_threadpool(
-            pj_source.search_places,
-            normalized_query,
-            intentions[0].description._place_in_query,
-        )
-
-    # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
-    fetch_pj = asyncio.create_task(fetch_pj_response())
-    fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query))
-    if settings["TRIPADVISOR_ENABLED"]:
         bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
         bragi_tripadvisor_features = result_filter.filter_bragi_features(
             normalized_query, bragi_tripadvisor_response["features"]
@@ -328,6 +315,7 @@ async def get_instant_answer(
                     maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
                 )
                 return build_response(result, query=q, lang=lang)
+
     # Call tripadvisor datasource instant answer outside France or
     # without intention location detection
     else:
@@ -347,6 +335,14 @@ async def get_instant_answer(
                 )
 
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
+
+
+async def fetch_pj_response(normalized_query, intentions):
+    return await run_in_threadpool(
+        pj_source.search_places,
+        normalized_query,
+        intentions[0].description._place_in_query,
+    )
 
 
 async def instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country):

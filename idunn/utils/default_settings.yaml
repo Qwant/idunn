@@ -187,8 +187,6 @@ RECYCLING_MEASURES_MAX_AGE_IN_HOURS: 168 # 7 days (Older measures will be ignore
 ##########################
 ## Instant Answer
 IA_MAX_QUERY_LENGTH: 100
-IA_SUCCESS_ON_GENERIC_QUERIES: False
-IA_CALL_PJ_POI: True # Early fetch POIs from page jaunes in parallel of Bragi
 
 ###########################
 ## Ban check, for anti-scraping purposes
