@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 class BragiClient:
     def __init__(self):
-        self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
+        self.client = httpx.AsyncClient(
+            verify=settings["VERIFY_HTTPS"],
+            limits=httpx.Limits(max_connections=int(settings["BRAGI_MAX_CONNECTIONS"])),
+        )
 
     async def autocomplete(self, query: QueryParams, extra: ExtraParams = ExtraParams()):
         params = query.bragi_query_dict()
