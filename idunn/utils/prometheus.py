@@ -52,8 +52,6 @@ _HEADERS = {"content-type": CONTENT_TYPE_LATEST}
 
 
 async def update_async_tasks_count():
-    IDUNN_ASYNC_TASKS_COUNT.clear()
-
     def task_properties(task: Task):
         frame = task.get_stack()[0]
         file = frame.f_code.co_filename
@@ -61,7 +59,14 @@ async def update_async_tasks_count():
         name = f"{frame.f_code.co_name}" if task.get_name().startswith("Task-") else task.get_name()
         return {"file": file, "line": line, "name": name}
 
-    for task in asyncio.all_tasks():
+    tasks = asyncio.all_tasks()
+
+    # Reset all counters
+    for task in tasks:
+        IDUNN_ASYNC_TASKS_COUNT.labels(**task_properties(task)).set(0)
+
+    # Compute current cout for each task type by increments
+    for task in tasks:
         IDUNN_ASYNC_TASKS_COUNT.labels(**task_properties(task)).inc()
 
 
