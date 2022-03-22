@@ -282,8 +282,9 @@ async def get_instant_answer(
         )
 
     # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
-    fetch_pj = asyncio.create_task(fetch_pj_response())
-    fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query))
+    fetch_pj = asyncio.create_task(fetch_pj_response(), name="ia_fetch_pj")
+    fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query), name="ia_fetch_bragi")
+
     if settings["TRIPADVISOR_ENABLED"]:
         bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
         bragi_tripadvisor_features = result_filter.filter_bragi_features(
@@ -346,6 +347,7 @@ async def get_instant_answer(
                     lang=lang,
                 )
 
+    fetch_pj.cancel()
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
 
 
