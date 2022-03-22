@@ -282,6 +282,10 @@ async def get_instant_answer(
         )
 
     # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
+    # NOTE: As of httpx >=0.18,<=0.22, cancelling these tasks will fill httpx client's internal
+    #       connection pool which will lead on bragi not being available
+    #       anymore (or a memory leak if the limit is very high).
+    #       See https://github.com/encode/httpx/issues/2139
     fetch_pj = asyncio.create_task(fetch_pj_response(), name="ia_fetch_pj")
     fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query), name="ia_fetch_bragi")
 
@@ -306,8 +310,6 @@ async def get_instant_answer(
                     and feature_properties["poi_types"][0]["id"].split(":")[0]
                     in AVAILABLE_CLASS_TYPE_HOTEL_TRIPADVISOR
                 ):
-                    fetch_pj.cancel()
-                    fetch_bragi_osm.cancel()
                     place_id = feature_properties["id"]
                     return await run_in_threadpool(
                         get_instant_answer_single_place,
@@ -320,7 +322,6 @@ async def get_instant_answer(
             pj_response = result_filter.filter_places(normalized_query, await fetch_pj)
 
             if pj_response and settings["PJ_ENABLED"]:
-                fetch_bragi_osm.cancel()
                 place_id = pj_response[0].get_id()
                 result = InstantAnswerResult(
                     places=[pj_response[0].load_place(lang)],
@@ -336,8 +337,6 @@ async def get_instant_answer(
             bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
 
             if bragi_tripadvisor_feature is not None:
-                fetch_pj.cancel()
-                fetch_bragi_osm.cancel()
                 feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
                 place_id = feature_properties["id"]
                 return await run_in_threadpool(
@@ -347,7 +346,6 @@ async def get_instant_answer(
                     lang=lang,
                 )
 
-    fetch_pj.cancel()
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
 
 

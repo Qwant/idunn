@@ -59,6 +59,7 @@ async def update_async_tasks_count():
         name = f"{frame.f_code.co_name}" if task.get_name().startswith("Task-") else task.get_name()
         return {"file": file, "line": line, "name": name}
 
+    IDUNN_ASYNC_TASKS_COUNT.clear()
     tasks = asyncio.all_tasks()
 
     # Reset all counters
