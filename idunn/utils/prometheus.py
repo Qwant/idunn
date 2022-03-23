@@ -1,7 +1,9 @@
 """The logic of the Prometheus metrics is defined in this module."""
 
+import asyncio
 import contextlib
 import time
+from asyncio.tasks import Task
 
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_client import (
@@ -23,7 +25,15 @@ IDUNN_WIKI_REQUEST_DURATION = Histogram(
 )
 
 IDUNN_EXCEPTIONS_COUNT = Counter(
-    "idunn_exceptions_count", "Number of exceptions caught in Idunn", ["exception_type"]
+    "idunn_exceptions_count",
+    "Number of exceptions caught in Idunn",
+    ["exception_type"],
+)
+
+IDUNN_ASYNC_TASKS_COUNT = Gauge(
+    "idunn_async_tasks_count",
+    "Number of async tasks currently running",
+    ["name", "file", "line"],
 )
 
 
@@ -41,11 +51,33 @@ def exception(exception_type):
 _HEADERS = {"content-type": CONTENT_TYPE_LATEST}
 
 
-def expose_metrics():
+async def update_async_tasks_count():
+    def task_properties(task: Task):
+        frame = task.get_stack()[0]
+        file = frame.f_code.co_filename
+        line = frame.f_code.co_firstlineno
+        name = f"{frame.f_code.co_name}" if task.get_name().startswith("Task-") else task.get_name()
+        return {"file": file, "line": line, "name": name}
+
+    IDUNN_ASYNC_TASKS_COUNT.clear()
+    tasks = asyncio.all_tasks()
+
+    # Reset all counters
+    for task in tasks:
+        IDUNN_ASYNC_TASKS_COUNT.labels(**task_properties(task)).set(0)
+
+    # Compute current cout for each task type by increments
+    for task in tasks:
+        IDUNN_ASYNC_TASKS_COUNT.labels(**task_properties(task)).inc()
+
+
+async def expose_metrics():
+    await update_async_tasks_count()
     return Response(generate_latest(), headers=_HEADERS)
 
 
-def expose_metrics_multiprocess():
+async def expose_metrics_multiprocess():
+    await update_async_tasks_count()
     registry = CollectorRegistry()
     multiprocess.MultiProcessCollector(registry)
     return Response(generate_latest(registry), headers=_HEADERS)

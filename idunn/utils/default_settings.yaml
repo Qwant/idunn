@@ -128,6 +128,7 @@ PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allo
 #######################
 ## Geocoding
 BRAGI_BASE_URL: "http://bragi:4000"
+BRAGI_MAX_CONNECTIONS: 100
 AUTOCOMPLETE_NLU_DEFAULT: False
 AUTOCOMPLETE_NLU_SHADOW_ENABLED: False # if True, NLU APIs are always called, even if nlu intentions are not required by the request
 AUTOCOMPLETE_NLU_FILTER_INTENTIONS: True # Exclude full-text intentions when the query does not match enough results among returned features
