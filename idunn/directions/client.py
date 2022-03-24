@@ -101,6 +101,26 @@ class Instruction(BaseModel):
     length: int
     name: str
 
+    def get_mapbox_modifier(self) -> str:
+        # See https://docs.mapbox.com/api/navigation/directions/#step-maneuver-object
+        mapping = {
+            -135: "sharp left",
+            -90: "left",
+            -45: "slight left",
+            0: "straight",
+            45: "slight right",
+            90: "right",
+            135: "sharp right",
+            180: "uturn",
+        }
+
+        best = min(
+            *mapping.keys(),
+            key=lambda angle: min(abs(self.direction - angle), abs(360 - self.direction - angle)),
+        )
+
+        return mapping[best]
+
 
 class Section(BaseModel):
     sec_type: str = Field(..., alias="type")  # TODO: could be an enum
@@ -165,6 +185,7 @@ class Section(BaseModel):
                     maneuver=RouteManeuver(
                         location=inst.instruction_start_coordinate.to_position(),
                         instruction=inst.instruction or inst.name,
+                        modifier=inst.get_mapbox_modifier(),
                     ),
                     duration=inst.duration,
                     distance=inst.length,
@@ -340,6 +361,7 @@ class DirectionsClient:
             "from": f"{start['lon']};{start['lat']}",
             "to": f"{end['lon']};{end['lat']}",
             "direct_path_mode[]": mode.to_navitia(),
+            "direct_path": "only",
         }
 
         response = self.session.get(
