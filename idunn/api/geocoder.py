@@ -91,4 +91,9 @@ async def get_autocomplete(
 
 
 async def get_autocomplete_response(autocomplete: IdunnAutocomplete = Depends(get_autocomplete)):
-    return ORJSONResponse(autocomplete.dict(exclude_unset=True))
+    from pympler.tracker import SummaryTracker
+
+    tracker = SummaryTracker()
+    res = ORJSONResponse(autocomplete.dict(exclude_unset=True))
+    tracker.print_diff()
+    return res

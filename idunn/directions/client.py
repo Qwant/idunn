@@ -1,15 +1,17 @@
-from geojson_pydantic.geometries import Geometry
+from enum import Enum
+from geojson_pydantic.geometries import Geometry, LineString
+from geojson_pydantic.types import Position
 from pydantic.fields import Field
 import requests
 import logging
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Iterator, List, Optional, Tuple
 from pydantic.class_validators import validator
 from shapely.geometry import Point
 from geojson_pydantic import Feature
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 from shapely.geometry import shape
 import shapely.geometry
 
@@ -28,6 +30,38 @@ from .models import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class IdunnTransportMode(Enum):
+    CAR = "car"
+    BIKE = "bike"
+    WALKING = "walking"
+    PUBLICTRANSPORT = "publictransport"
+
+    @classmethod
+    def parse(cls, mode: str):
+        if mode in ("driving-traffic", "driving", "car"):
+            return cls.CAR
+        elif mode in ("cycling",):
+            return cls.BIKE
+        elif mode in ("walking", "walk"):
+            return cls.WALKING
+        elif mode in ("publictransport", "taxi", "vtc", "carpool"):
+            return cls.PUBLICTRANSPORT
+
+    def to_navitia(self) -> str:
+        # NOTE: switch to Python 3.10 for more eleguant matching ?
+        return self.value
+
+    def to_mapbox(self) -> TransportMode:
+        if self == self.CAR:
+            return TransportMode.car
+        elif self == self.BIKE:
+            return TransportMode.bicycle
+        elif self == self.WALKING:
+            return TransportMode.walk
+        elif self == self.PUBLICTRANSPORT:
+            return TransportMode.tram
 
 
 # Mapbox <-> Navitia correspondance
@@ -51,68 +85,95 @@ class Coordinate(BaseModel):
     lat: float
     lon: float
 
+    def to_position(self) -> Position:
+        return (self.lon, self.lat)
+
 
 class Instruction(BaseModel):
     direction: int
     duration: int
-    instruction: str
-    instruction_start_coordinate: Coordinate
+    instruction: Optional[str]
+    instruction_start_coordinate: Optional[Coordinate]
     length: int
     name: str
-
-    #  def as_api_route_step(self, mode, prev=Coordinate) -> RouteStep:
-    #      RouteStep(
-    #          maneuver=RouteManeuver(
-    #              location=(
-    #                  self.instruction_start_coordinate.lon,
-    #                  self.instruction_start_coordinate.lat,
-    #              ),
-    #              instruction=self.instruction,
-    #              # type, modifier ??
-    #          ),
-    #          duration=self.duration,
-    #          distance=self.length,
-    #          geometry={
-    #              "coordinates": [
-    #                  [prev.lon, prev.lat],
-    #                  [self.instruction_start_coordinate.lon, self.instruction_start_coordinate.lat],
-    #              ]
-    #          },
-    #          mode=mode,
-    #      )
 
 
 class Section(BaseModel):
     sec_type: str = Field(..., alias="type")  # TODO: could be an enum
-    mode: Optional[str]
+    mode: Optional[IdunnTransportMode]
     duration: int
-    #  path: List[Instruction]
+    path: List[Instruction] = []
     geojson: Optional[Geometry]  # TODO: always set when not waiting
 
+    def cut_linestring(self) -> Iterator[Tuple[Instruction, Geometry]]:
+        """
+        Split path geometry at each instruction and wrap them together
+        """
+        all_coords = list(self.geojson.coordinates)
+        first_pass = True
+        last_inst = None
+
+        for inst in self.path:
+            if not inst.instruction_start_coordinate:
+                continue
+
+            end_coord = inst.instruction_start_coordinate.to_position()
+
+            try:
+                end_index = all_coords.index(end_coord)
+            except ValueError:
+                continue
+
+            if first_pass:
+                first_pass = False
+                last_inst = inst
+                continue
+
+            yield (last_inst, LineString(coordinates=all_coords[: end_index + 1]))
+            all_coords = all_coords[end_index:]
+            last_inst = inst
+
+        if last_inst and len(all_coords) >= 2:
+            yield (last_inst, LineString(coordinates=all_coords))
+
     def as_api_route_leg(self) -> RouteLeg:
-        #  steps = []
-        #  prev_coord = Coordinate(self.geojson["coordinates"]["0"])
-        #
-        #  for [lon,lat] in geojson['coordinates']:
-        #      step = inst.as_api_route_step(prev_coord)
-        #      prev_coord = inst.instruction_start_coordinate
-        #      steps.append(RouteStep(
-        #
-        #          ))
-        print(self.geojson)
+        default_location = (0, 0)  # TODO
+        insts = list(self.cut_linestring())
+
+        if self.mode:
+            mode = self.mode.to_mapbox()
+        else:
+            mode = TransportMode.unknown
+
+        if not insts:
+            steps = [
+                RouteStep(
+                    maneuver=RouteManeuver(instruction="no instruction", location=default_location),
+                    duration=self.duration,
+                    distance=sum(inst.length for inst in self.path),
+                    geometry=self.geojson.dict(),
+                    mode=mode,
+                )
+            ]
+        else:
+            steps = [
+                RouteStep(
+                    maneuver=RouteManeuver(
+                        location=inst.instruction_start_coordinate.to_position(),
+                        instruction=inst.instruction or inst.name,
+                    ),
+                    duration=inst.duration,
+                    distance=inst.length,
+                    geometry=geo,
+                    mode=mode,
+                )
+                for (inst, geo) in insts
+            ]
 
         return RouteLeg(
             duration=self.duration,
             summary="todo",
-            steps=[
-                RouteStep(
-                    maneuver=RouteManeuver(instruction="todo", location=(0, 0)),
-                    duration=self.duration,
-                    distance=42,
-                    mode=TransportMode.bike,
-                    geometry=self.geojson.dict(),
-                )
-            ],
+            steps=steps,
         )
 
 
@@ -137,7 +198,7 @@ class Journey(BaseModel):
             end_time=datetime.isoformat(self.arrival_date_time),
             legs=legs,
             geometry=shapely.geometry.mapping(
-                cascaded_union([shape(leg.steps[0].geometry) for leg in legs])
+                unary_union([shape(leg.steps[0].geometry) for leg in legs])
             ),
         )
 
@@ -253,7 +314,7 @@ class DirectionsClient:
         res["data"]["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
         return DirectionsResponse(**res)
 
-    def directions_navitia(self, start, end, mode, lang, extra=None):
+    def directions_navitia(self, start, end, mode: IdunnTransportMode, lang, extra=None):
         url = settings["NAVITIA_API_BASE_URL"]
         start = start.get_coord()
         end = end.get_coord()
@@ -261,7 +322,7 @@ class DirectionsClient:
         params = {
             "from": f"{start['lon']};{start['lat']}",
             "to": f"{end['lon']};{end['lat']}",
-            "direct_path_mode[]": mode,
+            "direct_path_mode[]": mode.to_navitia(),
         }
 
         response = self.session.get(
@@ -342,7 +403,8 @@ class DirectionsClient:
         else:
             raise HTTPException(status_code=400, detail=f"unknown mode {mode}")
 
-        res = self.directions_navitia(from_place, to_place, "bike", lang)
+        idunn_mode = IdunnTransportMode.parse(mode)
+        res = self.directions_navitia(from_place, to_place, idunn_mode, lang)
         return res.as_api_response()
 
         #  method_name = method.__name__

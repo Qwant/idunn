@@ -23,6 +23,7 @@ responses = "*"
 black = "22.3.0"
 respx = "*"
 pylint = "*"
+pympler = "*"
 
 [packages]
 fastapi="==0.78.*"
