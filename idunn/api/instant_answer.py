@@ -265,6 +265,13 @@ async def get_instant_answer(
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
 
+    async def fetch_pj_response():
+        return await run_in_threadpool(
+            pj_source.search_places,
+            normalized_query,
+            intentions[0].description._place_in_query,
+        )
+
     # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
     # NOTE: As of httpx >=0.18,<=0.22, cancelling these tasks will fill httpx client's internal
     #       connection pool which will lead on bragi not being available
@@ -334,14 +341,6 @@ async def get_instant_answer(
                 )
 
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
-
-
-async def fetch_pj_response(normalized_query, intentions):
-    return await run_in_threadpool(
-        pj_source.search_places,
-        normalized_query,
-        intentions[0].description._place_in_query,
-    )
 
 
 async def instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country):
