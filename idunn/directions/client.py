@@ -1,9 +1,9 @@
 import requests
 import logging
 from datetime import datetime, timedelta
-from starlette.requests import QueryParams
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
+from httpx import QueryParams
 from pydantic import BaseModel
 from typing import Optional
 
