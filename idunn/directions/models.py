@@ -31,6 +31,52 @@ class TransportMode(str, Enum):
     wait = "WAIT"
 
 
+class IdunnTransportMode(Enum):
+    CAR = "car"
+    BIKE = "bike"
+    WALKING = "walking"
+    PUBLICTRANSPORT = "publictransport"
+
+    @classmethod
+    def parse(cls, mode: str):
+        match mode:
+            case "driving-traffic" | "driving" | "car" | "car_no_park":
+                return cls.CAR
+            case "cycling":
+                return cls.BIKE
+            case "walking" | "walk":
+                return cls.WALKING
+            case "publictransport" | "taxi" | "vtc" | "carpool":
+                return cls.PUBLICTRANSPORT
+
+    def to_hove(self) -> str:
+        if self == self.CAR:
+            return "car_no_park"
+        return self.value
+
+    def to_mapbox(self) -> TransportMode:
+        match self:
+            case self.CAR:
+                return TransportMode.car
+            case self.BIKE:
+                return TransportMode.bicycle
+            case self.WALKING:
+                return TransportMode.walk
+            case self.PUBLICTRANSPORT:
+                return TransportMode.tram
+
+    def to_mapbox_query_param(self) -> str:
+        match self:
+            case self.CAR:
+                return "driving-traffic"
+            case self.BIKE:
+                return "cycling"
+            case self.WALKING:
+                return "walking"
+            case _:
+                raise Exception(f"Invalid mode {self} for mapbox")
+
+
 class RouteManeuver(BaseModel):
     location: Tuple[float, float] = Field(..., description="[lon, lat]")
     modifier: Optional[str]
@@ -42,6 +88,7 @@ class TransportInfo(BaseModel):
     num: Optional[str]
     direction: Optional[str]
     lineColor: Optional[str]
+    lineTextColor: Optional[str]  # extended from mapbox
     network: Optional[str]
 
     def __init__(self, **data):
@@ -85,18 +132,24 @@ class RouteStep(BaseModel):
     duration: int
     distance: int
     geometry: dict = Field(..., description="GeoJSON")
+    properties: dict = {}
     mode: TransportMode
 
     def __init__(self, **data):
         if "shapes" in data:
             data["geometry"] = {"coordinates": data["shapes"], "type": "LineString"}
+
         if "type" in data:
             data["mode"] = data.pop("type")
-        if "instruction" not in data["maneuver"]:
-            data["maneuver"]["instruction"] = data.get("instruction")
-        if "location" not in data["maneuver"]:
-            if len(data.get("shapes", [])) > 0:
-                data["maneuver"]["location"] = tuple(data["shapes"][0])
+
+        if isinstance(data["maneuver"], dict):
+            if "instruction" not in data["maneuver"]:
+                data["maneuver"]["instruction"] = data.get("instruction")
+
+            if "location" not in data["maneuver"]:
+                if len(data.get("shapes", [])) > 0:
+                    data["maneuver"]["location"] = tuple(data["shapes"][0])
+
         super().__init__(**data)
 
     @validator("mode", pre=True)
@@ -200,7 +253,7 @@ class DirectionsRoute(BaseModel):
                     feature = {
                         "type": "Feature",
                         "geometry": {"coordinates": leg["shapes"], "type": "LineString"},
-                        "properties": {"leg_index": idx},
+                        "properties": {"leg_index": idx, "mode": "WALK"},
                     }
                     features_list.append(feature)
             data["geometry"] = {"type": "FeatureCollection", "features": features_list}
@@ -247,7 +300,8 @@ class DirectionsData(BaseModel):
             data["routes"] = data.pop("results")
 
         for route in data["routes"]:
-            route["context"] = context
+            if isinstance(route, dict):
+                route["context"] = context
 
         super().__init__(**data)
 

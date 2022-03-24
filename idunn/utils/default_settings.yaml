@@ -124,7 +124,15 @@ MAPBOX_DIRECTIONS_API_BASE_URL: "https://api.mapbox.com/directions/v5/mapbox"
 MAPBOX_DIRECTIONS_ACCESS_TOKEN:
 COMBIGO_API_BASE_URL: "https://maps.combigo.com/v1.1"
 COMBIGO_API_KEY:
-PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allow any itinerary
+PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "" # use an empty string to allow any itinerary
+HOVE_API_BASE_URL: "https://api.navitia.io/v1/journeys"
+HOVE_API_TOKEN:
+
+# Which provider to use for each kind of directions, between "mapbox" and "hove".
+DIRECTIONS_PROVIDER_WALK: "mapbox"
+DIRECTIONS_PROVIDER_CYCLE: "mapbox"
+DIRECTIONS_PROVIDER_DRIVE: "mapbox"
+DIRECTIONS_PROVIDER_PUBLICTRANSPORT: "hove"
 
 #######################
 ## Geocoding
