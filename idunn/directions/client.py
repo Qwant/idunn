@@ -1,3 +1,4 @@
+from copy import deepcopy
 from enum import Enum
 from geojson_pydantic.geometries import Geometry, LineString
 from geojson_pydantic.types import Position
@@ -11,7 +12,7 @@ from typing import Iterator, List, Optional, Tuple
 from pydantic.class_validators import validator
 from shapely.geometry import Point
 from geojson_pydantic import Feature
-from shapely.ops import unary_union
+from shapely.ops import unary_union, cascaded_union
 from shapely.geometry import shape
 import shapely.geometry
 
@@ -129,7 +130,7 @@ class Section(BaseModel):
         """
         Split path geometry at each instruction and wrap them together
         """
-        all_coords = list(self.geojson.coordinates)
+        all_coords = self.geojson.coordinates
         first_pass = True
         last_inst = None
 
@@ -140,8 +141,12 @@ class Section(BaseModel):
             end_coord = inst.instruction_start_coordinate.to_position()
 
             try:
-                end_index = all_coords.index(end_coord)
-            except ValueError:
+                end_index = next(
+                    i
+                    for i, coord in enumerate(all_coords)
+                    if abs(coord[0] - end_coord[0]) < 1e-6 and abs(coord[1] - end_coord[1]) < 1e-6
+                )
+            except StopIteration:
                 continue
 
             if first_pass:
@@ -210,8 +215,8 @@ class Journey(BaseModel):
         return datetime.strptime(v, "%Y%m%dT%H%M%S")
 
     def as_api_route(self) -> DirectionsRoute:
-
         legs = [sec.as_api_route_leg() for sec in self.sections if sec.sec_type != "waiting"]
+
         return DirectionsRoute(
             duration=self.duration,
             distance=self.distances.overall(),
@@ -219,7 +224,7 @@ class Journey(BaseModel):
             end_time=datetime.isoformat(self.arrival_date_time),
             legs=legs,
             geometry=shapely.geometry.mapping(
-                unary_union([shape(leg.steps[0].geometry) for leg in legs])
+                unary_union([shape(step.geometry) for leg in legs for step in leg.steps])
             ),
         )
 
