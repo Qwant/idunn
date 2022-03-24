@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 from typing import Optional
 from httpx import AsyncClient
 from fastapi import Header, HTTPException
@@ -19,6 +20,7 @@ def get_ban_check_http():
 ban_check_http = get_ban_check_http()
 
 
+@lru_cache(maxsize=100)
 async def check_banned_client(x_client_hash: Optional[str] = Header(None)):
     if ban_check_http is None:
         return
