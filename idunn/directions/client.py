@@ -1,3 +1,5 @@
+from geojson_pydantic.geometries import Geometry
+from pydantic.fields import Field
 import requests
 import logging
 from datetime import datetime, timedelta
@@ -7,8 +9,13 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from pydantic.class_validators import validator
-
 from shapely.geometry import Point
+from geojson_pydantic import Feature
+from shapely.ops import cascaded_union
+from shapely.geometry import shape
+import shapely.geometry
+
+
 from idunn import settings
 from idunn.utils.geometry import city_surrounds_polygons
 from idunn.places.base import BasePlace
@@ -57,33 +64,34 @@ class Instruction(BaseModel):
     length: int
     name: str
 
-    def as_api_route_step(self, mode, prev=Coordinate) -> RouteStep:
-        RouteStep(
-            maneuver=RouteManeuver(
-                location=(
-                    self.instruction_start_coordinate.lon,
-                    self.instruction_start_coordinate.lat,
-                ),
-                instruction=self.instruction,
-                # type, modifier ??
-            ),
-            duration=self.duration,
-            distance=self.length,
-            geometry={
-                "coordinates": [
-                    [prev.lon, prev.lat],
-                    [self.instruction_start_coordinate.lon, self.instruction_start_coordinate.lat],
-                ]
-            },
-            mode=mode,
-        )
+    #  def as_api_route_step(self, mode, prev=Coordinate) -> RouteStep:
+    #      RouteStep(
+    #          maneuver=RouteManeuver(
+    #              location=(
+    #                  self.instruction_start_coordinate.lon,
+    #                  self.instruction_start_coordinate.lat,
+    #              ),
+    #              instruction=self.instruction,
+    #              # type, modifier ??
+    #          ),
+    #          duration=self.duration,
+    #          distance=self.length,
+    #          geometry={
+    #              "coordinates": [
+    #                  [prev.lon, prev.lat],
+    #                  [self.instruction_start_coordinate.lon, self.instruction_start_coordinate.lat],
+    #              ]
+    #          },
+    #          mode=mode,
+    #      )
 
 
 class Section(BaseModel):
+    sec_type: str = Field(..., alias="type")  # TODO: could be an enum
     mode: Optional[str]
     duration: int
     #  path: List[Instruction]
-    geojson: dict
+    geojson: Optional[Geometry]  # TODO: always set when not waiting
 
     def as_api_route_leg(self) -> RouteLeg:
         #  steps = []
@@ -95,6 +103,7 @@ class Section(BaseModel):
         #      steps.append(RouteStep(
         #
         #          ))
+        print(self.geojson)
 
         return RouteLeg(
             duration=self.duration,
@@ -105,7 +114,7 @@ class Section(BaseModel):
                     duration=self.duration,
                     distance=42,
                     mode=TransportMode.bike,
-                    geometry=self.geojson,
+                    geometry=self.geojson.dict(),
                 )
             ],
         )
@@ -123,12 +132,17 @@ class Journey(BaseModel):
         return datetime.strptime(v, "%Y%m%dT%H%M%S")
 
     def as_api_route(self) -> DirectionsRoute:
+
+        legs = [sec.as_api_route_leg() for sec in self.sections if sec.sec_type != "waiting"]
         return DirectionsRoute(
             duration=self.duration,
             distance=self.distances.overall(),
             start_time=datetime.isoformat(self.departure_date_time),
             end_time=datetime.isoformat(self.arrival_date_time),
-            legs=[sec.as_api_route_leg() for sec in self.sections],
+            legs=legs,
+            geometry=shapely.geometry.mapping(
+                cascaded_union([shape(leg.steps[0].geometry) for leg in legs])
+            ),
         )
 
 
@@ -261,8 +275,6 @@ class DirectionsClient:
         start = start.get_coord()
         end = end.get_coord()
 
-        print({"Authorization": settings["NAVITIA_API_TOKEN"]})
-
         params = {
             "from": f"{start['lon']};{start['lat']}",
             "to": f"{end['lon']};{end['lat']}",
@@ -276,7 +288,6 @@ class DirectionsClient:
         )
 
         response.raise_for_status()
-        print(response.json())
         return NavitiaResponse(**response.json())
 
     @staticmethod
@@ -349,7 +360,6 @@ class DirectionsClient:
             raise HTTPException(status_code=400, detail=f"unknown mode {mode}")
 
         res = self.directions_navitia(from_place, to_place, "bike", lang)
-        print(res)
         return res.as_api_response()
 
         #  method_name = method.__name__
