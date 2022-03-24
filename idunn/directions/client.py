@@ -5,17 +5,141 @@ from starlette.requests import QueryParams
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+from pydantic.class_validators import validator
 
 from shapely.geometry import Point
 from idunn import settings
 from idunn.utils.geometry import city_surrounds_polygons
 from idunn.places.base import BasePlace
-from .models import DirectionsResponse
+from .models import (
+    DirectionsData,
+    DirectionsResponse,
+    DirectionsRoute,
+    RouteLeg,
+    RouteManeuver,
+    RouteStep,
+    TransportMode,
+)
 
 logger = logging.getLogger(__name__)
 
 COMBIGO_SUPPORTED_LANGUAGES = {"en", "es", "de", "fr", "it"}
+
+
+# Mapbox <-> Navitia correspondance
+#  - route <-> journey
+#  - leg <-> section
+#  - step <-> single element of section ? Can be re-cut later ?
+
+
+class Distances(BaseModel):
+    bike: int
+    car: int
+    ridesharing: int
+    taxi: int
+    walking: int
+
+    def overall(self):
+        return self.bike + self.car + self.ridesharing + self.taxi + self.walking
+
+
+class Coordinate(BaseModel):
+    lat: float
+    lon: float
+
+
+class Instruction(BaseModel):
+    direction: int
+    duration: int
+    instruction: str
+    instruction_start_coordinate: Coordinate
+    length: int
+    name: str
+
+    def as_api_route_step(self, mode, prev=Coordinate) -> RouteStep:
+        RouteStep(
+            maneuver=RouteManeuver(
+                location=(
+                    self.instruction_start_coordinate.lon,
+                    self.instruction_start_coordinate.lat,
+                ),
+                instruction=self.instruction,
+                # type, modifier ??
+            ),
+            duration=self.duration,
+            distance=self.length,
+            geometry={
+                "coordinates": [
+                    [prev.lon, prev.lat],
+                    [self.instruction_start_coordinate.lon, self.instruction_start_coordinate.lat],
+                ]
+            },
+            mode=mode,
+        )
+
+
+class Section(BaseModel):
+    mode: Optional[str]
+    duration: int
+    #  path: List[Instruction]
+    geojson: dict
+
+    def as_api_route_leg(self) -> RouteLeg:
+        #  steps = []
+        #  prev_coord = Coordinate(self.geojson["coordinates"]["0"])
+        #
+        #  for [lon,lat] in geojson['coordinates']:
+        #      step = inst.as_api_route_step(prev_coord)
+        #      prev_coord = inst.instruction_start_coordinate
+        #      steps.append(RouteStep(
+        #
+        #          ))
+
+        return RouteLeg(
+            duration=self.duration,
+            summary="todo",
+            steps=[
+                RouteStep(
+                    maneuver=RouteManeuver(instruction="todo", location=(0, 0)),
+                    duration=self.duration,
+                    distance=42,
+                    mode=TransportMode.bike,
+                    geometry=self.geojson,
+                )
+            ],
+        )
+
+
+class Journey(BaseModel):
+    arrival_date_time: datetime
+    departure_date_time: datetime
+    duration: int
+    distances: Distances
+    sections: List[Section]
+
+    @validator("arrival_date_time", "departure_date_time", pre=True)
+    def parse_date(cls, v):
+        return datetime.strptime(v, "%Y%m%dT%H%M%S")
+
+    def as_api_route(self) -> DirectionsRoute:
+        return DirectionsRoute(
+            duration=self.duration,
+            distance=self.distances.overall(),
+            start_time=datetime.isoformat(self.departure_date_time),
+            end_time=datetime.isoformat(self.arrival_date_time),
+            legs=[sec.as_api_route_leg() for sec in self.sections],
+        )
+
+
+class NavitiaResponse(BaseModel):
+    journeys: List[Journey]
+
+    def as_api_response(self) -> DirectionsResponse:
+        return DirectionsResponse(
+            status="ok",  # TODO,
+            data=DirectionsData(routes=[journey.as_api_route() for journey in self.journeys]),
+        )
 
 
 class MapboxAPIExtraParams(BaseModel):
@@ -132,6 +256,29 @@ class DirectionsClient:
         res["data"]["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
         return DirectionsResponse(**res)
 
+    def directions_navitia(self, start, end, mode, lang, extra=None):
+        url = settings["NAVITIA_API_BASE_URL"]
+        start = start.get_coord()
+        end = end.get_coord()
+
+        print({"Authorization": settings["NAVITIA_API_TOKEN"]})
+
+        params = {
+            "from": f"{start['lon']};{start['lat']}",
+            "to": f"{end['lon']};{end['lat']}",
+            "direct_path_mode[]": mode,
+        }
+
+        response = self.session.get(
+            url,
+            params=params,
+            headers={"Authorization": settings["NAVITIA_API_TOKEN"]},
+        )
+
+        response.raise_for_status()
+        print(response.json())
+        return NavitiaResponse(**response.json())
+
     @staticmethod
     def place_to_combigo_location(place, lang):
         coord = place.get_coord()
@@ -201,19 +348,23 @@ class DirectionsClient:
         else:
             raise HTTPException(status_code=400, detail=f"unknown mode {mode}")
 
-        method_name = method.__name__
-        logger.info(
-            "Calling directions API '%s'",
-            method_name,
-            extra={
-                "method": method_name,
-                "mode": mode,
-                "lang": lang,
-                "from_place": from_place.get_id(),
-                "to_place": to_place.get_id(),
-            },
-        )
-        return method(from_place, to_place, mode, lang, **kwargs)
+        res = self.directions_navitia(from_place, to_place, "bike", lang)
+        print(res)
+        return res.as_api_response()
+
+        #  method_name = method.__name__
+        #  logger.info(
+        #      "Calling directions API '%s'",
+        #      method_name,
+        #      extra={
+        #          "method": method_name,
+        #          "mode": mode,
+        #          "lang": lang,
+        #          "from_place": from_place.get_id(),
+        #          "to_place": to_place.get_id(),
+        #      },
+        #  )
+        #  return method(from_place, to_place, mode, lang, **kwargs)
 
 
 directions_client = DirectionsClient()

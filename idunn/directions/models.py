@@ -87,17 +87,17 @@ class RouteStep(BaseModel):
     geometry: dict = Field(..., description="GeoJSON")
     mode: TransportMode
 
-    def __init__(self, **data):
-        if "shapes" in data:
-            data["geometry"] = {"coordinates": data["shapes"], "type": "LineString"}
-        if "type" in data:
-            data["mode"] = data.pop("type")
-        if "instruction" not in data["maneuver"]:
-            data["maneuver"]["instruction"] = data.get("instruction")
-        if "location" not in data["maneuver"]:
-            if len(data.get("shapes", [])) > 0:
-                data["maneuver"]["location"] = tuple(data["shapes"][0])
-        super().__init__(**data)
+    #  def __init__(self, **data):
+    #      if "shapes" in data:
+    #          data["geometry"] = {"coordinates": data["shapes"], "type": "LineString"}
+    #      if "type" in data:
+    #          data["mode"] = data.pop("type")
+    #      if "instruction" not in data["maneuver"]:
+    #          data["maneuver"]["instruction"] = data.get("instruction")
+    #      if "location" not in data["maneuver"]:
+    #          if len(data.get("shapes", [])) > 0:
+    #              data["maneuver"]["location"] = tuple(data["shapes"][0])
+    #      super().__init__(**data)
 
     @validator("mode", pre=True)
     def transform_mode(cls, value):
@@ -239,17 +239,18 @@ class DirectionsData(BaseModel):
     message: Optional[str]  # in case of errors
     code: Optional[str]  # in case of errors
 
-    def __init__(self, **data):
-        context = data.get("context")
-
-        if "results" in data:
-            # Handle combigo's output format
-            data["routes"] = data.pop("results")
-
-        for route in data["routes"]:
-            route["context"] = context
-
-        super().__init__(**data)
+    # TODO: removes combigo compat
+    #  def __init__(self, **data):
+    #      context = data.get("context")
+    #
+    #      if "results" in data:
+    #          # Handle combigo's output format
+    #          data["routes"] = data.pop("results")
+    #
+    #      for route in data["routes"]:
+    #          route["context"] = context
+    #
+    #      super().__init__(**data)
 
 
 class DirectionsResponse(BaseModel):
