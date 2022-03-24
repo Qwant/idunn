@@ -97,19 +97,6 @@ stages:
     - subst -i ci/templates/docker-idunn-digest.env
   when: manual
 
-push docker-service-network image:
-  stage: build
-  tags:
-    - light
-  script:
-    - docker pull "$SOURCE_IMAGE"
-    - docker tag "$SOURCE_IMAGE" "$DEST_IMAGE"
-    - docker push "$DEST_IMAGE"
-  variables:
-    SOURCE_IMAGE: "${CI_REGISTRY}/continuous-integration/docker-service-network:3a735904"
-    DEST_IMAGE: "${CI_REGISTRY_IMAGE}/ci/docker-service-network:latest"
-  when: manual
-
 .build:
   stage: build
   before_script:
@@ -127,29 +114,6 @@ push docker-service-network image:
   tags:
     - edge
     - shell
-
-build:
-  extends:
-    - .build
-  tags:
-    - light
-  script:
-    - export REDIS_IMAGE_TAG="$(echo $CI_COMMIT_REF_SLUG | sed 's/master/latest/g')"
-    - docker-compose build --pull
-    - docker-compose push
-    - subst < ci/templates/docker-content-digest.env | tee docker-content-digest.env
-  variables:
-    IDUNN_IMAGE_TAG: "latest"
-  artifacts:
-    paths:
-      - docker-content-digest.env
-      - ci/bootstrap.sh
-      - ci/bin/docker-stack-wait
-      - ci/bin/docker-service-network
-      - ci/development/docker-compose.yml
-      - ci/prelive/docker-compose.yml
-      - ci/production/docker-compose.yml
-      - docker-compose.yml
 
 build classifier:
   extends:
@@ -190,9 +154,6 @@ configure:
     paths:
       - ci/
       - docker-compose.yml
-      - docker-content-digest.env
-  dependencies:
-    - build
   tags:
     - light
 
@@ -301,18 +262,6 @@ idunn promote integration to prod:
   resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
   when: manual
 
-deploy development:
-  extends: .deploy
-  stage: development
-  environment:
-    name: "development/idunn"
-    url: "http://maps.dev.qwant.ninja/maps"
-  script:
-    - deploy
-  variables:
-    KUZZLE_SERVICE_NAME: "1216_kuzzle"
-    NLU_SERVICE_NAME: "1701_nlu"
-
 deploy classifier development:
   extends: .deploy-kube
   stage: development
@@ -321,15 +270,6 @@ deploy classifier development:
   variables:
     KUBE_ENV: development
 
-deploy prelive:
-  extends: "deploy development"
-  stage: prelive
-  environment:
-    name: "prelive/idunn"
-    url: "https://www.qwant.plive/maps"
-  variables:
-    DOCKER_HOST: "tcp://10.103.9.1:2375"
-
 deploy classifier prelive:
   extends: .deploy-kube
   stage: prelive
@@ -337,20 +277,6 @@ deploy classifier prelive:
     name: "prelive/classifier"
   variables:
     KUBE_ENV: integration
-
-deploy production:
-  extends: "deploy prelive"
-  stage: production
-  script:
-    - echo "10.100.56.249 manager.maps.qwant.infra" > /etc/hosts
-    - deploy
-  environment:
-    name: production
-    url: "https://www.qwant.com/maps"
-  variables:
-    DOCKER_HOST: "tcp://manager.maps.qwant.infra:2376"
-    DOCKER_TLS_VERIFY: "1"
-    ROUTER_SERVICE_NAME: "product-maps-production_traefik"
 
 deploy classifier production:
   extends: .deploy-kube
