@@ -125,6 +125,8 @@ MAPBOX_DIRECTIONS_ACCESS_TOKEN:
 COMBIGO_API_BASE_URL: "https://maps.combigo.com/v1.1"
 COMBIGO_API_KEY:
 PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allow any itinerary
+NAVITIA_API_BASE_URL: "https://api.navitia.io/v1/coverage/fr-idf/journeys"
+NAVITIA_API_TOKEN:
 
 #######################
 ## Geocoding
