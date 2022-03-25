@@ -30,6 +30,7 @@ from .models import (
     RouteManeuver,
     RouteStep,
     TransportMode,
+    TransportStop,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,27 +46,29 @@ class IdunnTransportMode(Enum):
 
     @classmethod
     def parse(cls, mode: str):
-        if mode in ("driving-traffic", "driving", "car"):
+        if mode in ("driving-traffic", "driving", "car", "car_no_park"):
             return cls.CAR
-        elif mode in ("cycling",):
+        if mode in ("cycling",):
             return cls.BIKE
-        elif mode in ("walking", "walk"):
+        if mode in ("walking", "walk"):
             return cls.WALKING
-        elif mode in ("publictransport", "taxi", "vtc", "carpool"):
+        if mode in ("publictransport", "taxi", "vtc", "carpool"):
             return cls.PUBLICTRANSPORT
 
     def to_navitia(self) -> str:
-        # NOTE: switch to Python 3.10 for more eleguant matching ?
+        if self == self.CAR:
+            return "car_no_park"
         return self.value
 
     def to_mapbox(self) -> TransportMode:
+        # NOTE: switch to Python 3.10 for more eleguant matching ?
         if self == self.CAR:
             return TransportMode.car
-        elif self == self.BIKE:
+        if self == self.BIKE:
             return TransportMode.bicycle
-        elif self == self.WALKING:
+        if self == self.WALKING:
             return TransportMode.walk
-        elif self == self.PUBLICTRANSPORT:
+        if self == self.PUBLICTRANSPORT:
             return TransportMode.tram
 
 
@@ -115,12 +118,12 @@ class Instruction(BaseModel):
             180: "uturn",
         }
 
-        best = min(
+        closest = min(
             *mapping.keys(),
             key=lambda angle: min(abs(self.direction - angle), abs(360 - self.direction - angle)),
         )
 
-        return mapping[best]
+        return mapping[closest]
 
 
 class Section(BaseModel):
@@ -129,6 +132,10 @@ class Section(BaseModel):
     duration: int
     path: List[Instruction] = []
     geojson: Optional[Geometry]  # TODO: always set when not waiting
+
+    @validator("mode", pre=True)
+    def mode_from_navitia(cls, v):
+        return IdunnTransportMode.parse(v)
 
     def cut_linestring(self) -> Iterator[Tuple[Instruction, Geometry]]:
         """
@@ -204,6 +211,8 @@ class Section(BaseModel):
             duration=self.duration,
             summary="todo",
             steps=steps,
+            from_=TransportStop(location=self.geojson.coordinates[0]),
+            to=TransportStop(location=self.geojson.coordinates[-1]),
         )
 
 
@@ -234,7 +243,7 @@ class Journey(BaseModel):
 
 
 class NavitiaResponse(BaseModel):
-    journeys: List[Journey]
+    journeys: List[Journey] = []
 
     def as_api_response(self) -> DirectionsResponse:
         return DirectionsResponse(
@@ -367,6 +376,13 @@ class DirectionsClient:
             "to": f"{end['lon']};{end['lat']}",
             "direct_path_mode[]": mode.to_navitia(),
             "direct_path": "only",
+            "free_radius_from": 50,
+            "free_radius_to": 50,
+            "max_walking_direct_path_duration": 86400,
+            "max_bike_direct_path_duration": 86400,
+            "max_car_no_park_direct_path_duration": 86400,
+            "min_nb_journeys": 2,
+            "max_nb_journeys": 5,
         }
 
         response = self.session.get(
