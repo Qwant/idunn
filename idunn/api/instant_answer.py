@@ -281,7 +281,7 @@ async def get_instant_answer(
     fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query), name="ia_fetch_bragi")
 
     query_tripadvisor = deepcopy(query)
-    query_tripadvisor.poi_dataset += ["tripadvisor", "default"]
+    query_tripadvisor.poi_dataset = ["tripadvisor"]
     bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
     bragi_tripadvisor_features = result_filter.filter_bragi_features(
         normalized_query, bragi_tripadvisor_response["features"]
