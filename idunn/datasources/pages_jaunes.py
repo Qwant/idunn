@@ -4,7 +4,7 @@ from typing import List
 
 import requests
 from requests import HTTPError as RequestsHTTPError
-from starlette.concurrency import run_in_threadpool
+from fastapi.concurrency import run_in_threadpool
 
 from idunn import settings
 
