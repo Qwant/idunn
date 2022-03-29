@@ -1,6 +1,6 @@
 import logging
 from fastapi import Body, Depends
-from httpx import Response
+from starlette.responses import Response
 
 from idunn import settings
 from idunn.api.geocoder import get_autocomplete

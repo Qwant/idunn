@@ -1,11 +1,10 @@
 import logging
 import urllib.parse
 from enum import Enum
+from starlette.datastructures import URL
 from fastapi import HTTPException, BackgroundTasks, Request, Query
 from fastapi.responses import JSONResponse
 from typing import Optional
-
-from httpx import URL
 from pydantic import confloat
 
 

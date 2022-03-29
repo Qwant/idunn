@@ -1,6 +1,6 @@
 import logging
 
-from fastapi.concurrency import run_in_threadpool
+from starlette.concurrency import run_in_threadpool
 
 from idunn.api.constants import PoiSource
 from idunn.datasources import Datasource
