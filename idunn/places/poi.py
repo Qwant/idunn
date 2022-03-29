@@ -251,6 +251,6 @@ class BragiPOI(OsmPOI):
 class PoiFactory:
     def get_poi(self, d, lang) -> POI:
         """Get the matching POI type to fetch POIs"""
-        if settings["TRIPADVISOR_ENABLED"] and d["id"].startswith("ta:"):
+        if d["id"].startswith("ta:"):
             return TripadvisorPOI(d, lang)
         return OsmPOI(d)
