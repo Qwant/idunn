@@ -1,7 +1,7 @@
 from idunn.datasources.mimirsbrunn import fetch_es_place, get_es_place_type
 from idunn.utils.es_wrapper import get_mimir_elasticsearch
 from idunn.utils import prometheus
-from .. import settings
+
 from ..datasources.pages_jaunes import pj_source
 from ..places import Latlon, Admin, Address, Street
 from ..places.exceptions import InvalidPlaceId, PlaceNotFound, RedirectToPlaceId
@@ -21,7 +21,7 @@ def place_from_id(id: str, lang: str, type=None, follow_redirect=False):
         raise InvalidPlaceId(id) from exc
 
     # Handle place from "pages jaunes"
-    if namespace == pj_source.PLACE_ID_NAMESPACE and settings["PJ_ENABLED"]:
+    if namespace == pj_source.PLACE_ID_NAMESPACE:
         return pj_source.get_place(id)
 
     # Handle place from tripadvisor
