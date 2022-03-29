@@ -267,9 +267,8 @@ async def get_instant_answer(
 
     # Direct geocoding query
     query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
-    if settings["TRIPADVISOR_ENABLED"]:
-        query_tripadvisor = deepcopy(query)
-        query_tripadvisor.poi_dataset += ["tripadvisor", "default"]
+    query_tripadvisor = deepcopy(query)
+    query_tripadvisor.poi_dataset += ["tripadvisor", "default"]
 
     async def fetch_pj_response():
         if not (settings["IA_CALL_PJ_POI"] and user_country == "fr" and intentions):
@@ -289,11 +288,10 @@ async def get_instant_answer(
     fetch_pj = asyncio.create_task(fetch_pj_response(), name="ia_fetch_pj")
     fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query), name="ia_fetch_bragi")
 
-    if settings["TRIPADVISOR_ENABLED"]:
-        bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
-        bragi_tripadvisor_features = result_filter.filter_bragi_features(
-            normalized_query, bragi_tripadvisor_response["features"]
-        )
+    bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
+    bragi_tripadvisor_features = result_filter.filter_bragi_features(
+        normalized_query, bragi_tripadvisor_response["features"]
+    )
 
     # Select datasource instant answer in France
     if (
@@ -302,49 +300,47 @@ async def get_instant_answer(
         and intentions[0].filter.bbox is not None
         and pj_source.bbox_is_covered(intentions[0].filter.bbox)
     ):
-        if settings["TRIPADVISOR_ENABLED"]:
-            for bragi_tripadvisor_feature in bragi_tripadvisor_features:
-                feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
-                if (
-                    "poi_types" in feature_properties
-                    and feature_properties["poi_types"][0]["id"].split(":")[0]
-                    in AVAILABLE_CLASS_TYPE_HOTEL_TRIPADVISOR
-                ):
-                    place_id = feature_properties["id"]
-                    return await run_in_threadpool(
-                        get_instant_answer_single_place,
-                        query=q,
-                        place_id=place_id,
-                        lang=lang,
-                        type="poi_tripadvisor",
-                    )
-
-            pj_response = result_filter.filter_places(normalized_query, await fetch_pj)
-
-            if pj_response and settings["PJ_ENABLED"]:
-                place_id = pj_response[0].get_id()
-                result = InstantAnswerResult(
-                    places=[pj_response[0].load_place(lang)],
-                    source=pj_response[0].get_source(),
-                    maps_url=maps_urls.get_place_url(place_id),
-                    maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
-                )
-                return build_response(result, query=q, lang=lang)
-    # Call tripadvisor datasource instant answer outside France or
-    # without intention location detection
-    else:
-        if settings["TRIPADVISOR_ENABLED"]:
-            bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
-
-            if bragi_tripadvisor_feature is not None:
-                feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+        for bragi_tripadvisor_feature in bragi_tripadvisor_features:
+            feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+            if (
+                "poi_types" in feature_properties
+                and feature_properties["poi_types"][0]["id"].split(":")[0]
+                in AVAILABLE_CLASS_TYPE_HOTEL_TRIPADVISOR
+            ):
                 place_id = feature_properties["id"]
                 return await run_in_threadpool(
                     get_instant_answer_single_place,
                     query=q,
                     place_id=place_id,
                     lang=lang,
+                    type="poi_tripadvisor",
                 )
+
+        pj_response = result_filter.filter_places(normalized_query, await fetch_pj)
+
+        if pj_response:
+            place_id = pj_response[0].get_id()
+            result = InstantAnswerResult(
+                places=[pj_response[0].load_place(lang)],
+                source=pj_response[0].get_source(),
+                maps_url=maps_urls.get_place_url(place_id),
+                maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
+            )
+            return build_response(result, query=q, lang=lang)
+    # Call tripadvisor datasource instant answer outside France or
+    # without intention location detection
+    else:
+        bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
+
+        if bragi_tripadvisor_feature is not None:
+            feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+            place_id = feature_properties["id"]
+            return await run_in_threadpool(
+                get_instant_answer_single_place,
+                query=q,
+                place_id=place_id,
+                lang=lang,
+            )
 
     return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
 

@@ -83,7 +83,6 @@ BLOCK_TRANSACTIONAL_ENABLED: True
 ## Data sources
 
 # Trip Advisor
-TRIPADVISOR_ENABLED: True
 TA_API_KEY:
 TA_API_TIMEOUT: 4 # seconds
 
@@ -91,7 +90,6 @@ TA_API_TIMEOUT: 4 # seconds
 PJ_API_ID:
 PJ_API_SECRET:
 PJ_API_TIMEOUT: 4 # seconds
-PJ_ENABLED: True
 
 # OSM
 OSM_CONTRIBUTION_HASHTAGS: "QwantMaps" # separated by ",". Used in osm.org/edit URL.

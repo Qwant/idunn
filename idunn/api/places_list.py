@@ -199,20 +199,16 @@ def select_datasource(params):
 
 
 def select_datasource_for_france(params):
-    if settings["TRIPADVISOR_ENABLED"] and any(
-        cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE
-    ):
+    if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE):
         params.source = PoiSource.TRIPADVISOR
-    elif is_brand_detected_or_pj_category_cover(params) and settings["PJ_ENABLED"]:
+    elif is_brand_detected_or_pj_category_cover(params):
         params.source = PoiSource.PAGESJAUNES
     else:
         params.source = PoiSource.OSM
 
 
 def select_datasource_outside_france(params):
-    if settings["TRIPADVISOR_ENABLED"] and any(
-        cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE
-    ):
+    if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE):
         params.source = PoiSource.TRIPADVISOR
     else:
         params.source = PoiSource.OSM
@@ -245,12 +241,10 @@ async def _fetch_places_list(params: PlacesQueryParam):
 class DatasourceFactory:
     def get_datasource(self, source_type: PoiSource) -> Datasource:
         """Get the matching datasource to fetch POIs"""
-        if settings["TRIPADVISOR_ENABLED"] and source_type == PoiSource.TRIPADVISOR:
+        if source_type == PoiSource.TRIPADVISOR:
             return Tripadvisor()
-        if source_type == PoiSource.PAGESJAUNES and settings["PJ_ENABLED"]:
+        if source_type == PoiSource.PAGESJAUNES:
             return PagesJaunes()
-        if (
-            source_type == PoiSource.OSM or not settings["TRIPADVISOR_ENABLED"]
-        ):  # fallback tripadvisor enable flag
+        if source_type == PoiSource.OSM:  # fallback tripadvisor enable flag
             return Osm()
         raise ValueError(f"{source_type} is not a valid source type")
