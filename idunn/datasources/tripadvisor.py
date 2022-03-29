@@ -4,7 +4,7 @@ from json import JSONDecodeError
 import httpx
 import pydantic
 from fastapi import HTTPException
-from fastapi.concurrency import run_in_threadpool
+from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
 from idunn.datasources import Datasource
