@@ -183,8 +183,11 @@ class TripadvisorPOI(POI):
     def get_reviews(self):
         if self.properties.get("ta:reviews:0") is None:
             return None
-        return [json.load(value) for key, value in self.properties.iteritems()
-                if key.startswith("ta:reviews:")]
+        return [
+            json.load(value)
+            for key, value in self.properties.iteritems()
+            if key.startswith("ta:reviews:")
+        ]
 
     def get_reviews_url(self):
         return f"{self.get_tripadvisor_lang_url()}#REVIEWS"
