@@ -184,8 +184,8 @@ class TripadvisorPOI(POI):
         if self.properties.get("ta:reviews:0") is None:
             return None
         return [
-            json.load(value)
-            for key, value in self.properties.iteritems()
+            json.loads(value)
+            for key, value in self.properties.items()
             if key.startswith("ta:reviews:")
         ]
 

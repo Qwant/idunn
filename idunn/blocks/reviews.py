@@ -1,16 +1,17 @@
-from typing import Literal, Optional, List
+from typing import Literal, List
+from pydantic import BaseModel, validator
 
 from .base import BaseBlock
 
 
-class Review:
-    date: Optional[str]
-    url: Optional[str]
-    lang: Optional[str]
-    title: Optional[str]
-    text: Optional[str]
-    trip_type: Optional[str]
-    author_name: Optional[str]
+class Review(BaseModel):
+    date: str
+    url: str
+    lang: str
+    title: str
+    text: str
+    trip_type: str
+    author_name: str
 
 
 class ReviewsBlock(BaseBlock):
@@ -18,7 +19,25 @@ class ReviewsBlock(BaseBlock):
     reviews: List[Review]
 
     @classmethod
+    def build_reviews(cls, place):
+        reviews = []
+        for review_dict in place.get_reviews():
+            reviews.append(
+                Review(
+                    date=review_dict["DatePublished"],
+                    url="".join([place.get_source_url(), review_dict["ReviewURL"]]),
+                    lang=review_dict["Language"],
+                    title=review_dict["Title"],
+                    text=review_dict["Text"],
+                    trip_type=review_dict["TripType"],
+                    author_name=review_dict["Author"]["AuthorName"],
+                )
+            )
+        return reviews
+
+    @classmethod
     def from_es(cls, place, lang):
+        print(place)
         return cls(
-            reviews=place.get_reviews() or None,
+            reviews=cls.build_reviews(place) or None,
         )

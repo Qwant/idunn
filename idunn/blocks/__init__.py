@@ -4,6 +4,7 @@ from .opening_hour import OpeningHourBlock
 from .covid19 import Covid19Block
 from .phone import PhoneBlock
 from .information import InformationBlock
+from .reviews import ReviewsBlock
 from .website import WebSiteBlock
 from .contact import ContactBlock
 from .images import ImagesBlock
@@ -47,4 +48,5 @@ AnyBlock = Union[
     DescriptionBlock,
     DeliveryBlock,
     StarsBlock,
+    ReviewsBlock,
 ]
