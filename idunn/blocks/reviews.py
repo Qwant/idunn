@@ -1,5 +1,5 @@
 from typing import Literal, List
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from .base import BaseBlock
 
