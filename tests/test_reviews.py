@@ -1,12 +1,12 @@
 from idunn.blocks import ReviewsBlock
 from idunn.blocks.grades import GradesBlock
-from idunn.places import PjApiPOI
+from idunn.places import PjApiPOI, TripadvisorPOI
 from idunn.places.models import pj_info
 
 
 def test_reviews_block():
     reviews_block = ReviewsBlock.from_es(
-        {
+        TripadvisorPOI({
             "address": {
                 "administrative_regions": [],
                 "coord": {"lon": 9.52061, "lat": 47.14165},
@@ -185,7 +185,7 @@ def test_reviews_block():
             },
         },
         lang="de",
-    )
+    ),lang="de")
 
     assert reviews_block == ReviewsBlock(
         date="2019-03-07T14:42:06.000+0000",
