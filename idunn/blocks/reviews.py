@@ -37,7 +37,7 @@ class ReviewsBlock(BaseBlock):
 
     @classmethod
     def from_es(cls, place, lang):
-        if place.get_reviews() is None:
+        if len(place.get_reviews()) == 0:
             return None
         reviews = cls.build_reviews(place)
         return cls(reviews=reviews)
