@@ -118,6 +118,7 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
             },
             "response": {
                 "nb_places": nb_places,
+                "source": result.source,
                 "place_id": result.places[0].id if nb_places == 1 else None,
             },
         },
