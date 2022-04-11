@@ -10,12 +10,43 @@ from .models import QueryParams, ExtraParams
 logger = logging.getLogger(__name__)
 
 
+async def get_explain_error(response):
+    try:
+        explain = response.json()["long"]
+    except (IndexError, JSONDecodeError):
+        explain = response.text
+    logger.error(
+        'Request to Bragi returned with unexpected status %d: "%s"',
+        response.status_code,
+        explain,
+    )
+    raise HTTPException(503, "Unexpected geocoder error")
+
+
 class BragiClient:
     def __init__(self):
         self.client = httpx.AsyncClient(
             verify=settings["VERIFY_HTTPS"],
             limits=httpx.Limits(max_connections=int(settings["BRAGI_MAX_CONNECTIONS"])),
         )
+
+    async def search(self, query: QueryParams):
+        url = settings["BRAGI_BASE_URL"] + "/search"
+        params = query.bragi_query_dict()
+        try:
+            response = await self.client.get(url, params=params)
+        except httpx.ConnectTimeout as exc:
+            logger.error("Request to Bragi %s failed with timeout", url, exc_info=True)
+            raise HTTPException(503, "Server error: geocoder timeout") from exc
+
+        if response.status_code != httpx.codes.OK:
+            await get_explain_error(response)
+
+        try:
+            return response.json()
+        except (JSONDecodeError, pydantic.ValidationError) as exc:
+            logger.exception("Search invalid response")
+            raise HTTPException(503, "Invalid response from the geocoder") from exc
 
     async def autocomplete(self, query: QueryParams, extra: ExtraParams = ExtraParams()):
         params = query.bragi_query_dict()
@@ -37,16 +68,7 @@ class BragiClient:
             raise HTTPException(503, "Server error: geocoder timeout") from exc
 
         if response.status_code != httpx.codes.OK:
-            try:
-                explain = response.json()["long"]
-            except (IndexError, JSONDecodeError):
-                explain = response.text
-            logger.error(
-                'Request to Bragi returned with unexpected status %d: "%s"',
-                response.status_code,
-                explain,
-            )
-            raise HTTPException(503, "Unexpected geocoder error")
+            await get_explain_error(response)
 
         try:
             return response.json()

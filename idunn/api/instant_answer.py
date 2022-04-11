@@ -283,14 +283,11 @@ async def get_instant_answer(
     #       anymore (or a memory leak if the limit is very high).
     #       See https://github.com/encode/httpx/issues/2139
     fetch_pj = asyncio.create_task(fetch_pj_response(), name="ia_fetch_pj")
-    fetch_bragi_osm = asyncio.create_task(bragi_client.autocomplete(query), name="ia_fetch_bragi")
+    fetch_bragi_osm = asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
 
     query_tripadvisor = deepcopy(query)
     query_tripadvisor.poi_dataset = ["tripadvisor"]
-    bragi_tripadvisor_response = await bragi_client.autocomplete(query_tripadvisor)
-    bragi_tripadvisor_features = result_filter.filter_bragi_features(
-        normalized_query, bragi_tripadvisor_response["features"]
-    )
+    bragi_tripadvisor_response = await bragi_client.search(query_tripadvisor)
 
     # Select datasource instant answer in France
     if (
@@ -299,8 +296,10 @@ async def get_instant_answer(
         and intentions[0].filter.bbox is not None
         and pj_source.bbox_is_covered(intentions[0].filter.bbox)
     ):
-        for bragi_tripadvisor_feature in bragi_tripadvisor_features:
-            feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
+        if bragi_tripadvisor_response["features"]:
+            feature_properties = bragi_tripadvisor_response["features"][0]["properties"][
+                "geocoding"
+            ]
             if (
                 "poi_types" in feature_properties
                 and feature_properties["poi_types"][0]["id"].split(":")[0]
@@ -348,7 +347,7 @@ async def get_instant_answer(
             ]:
                 return build_instant_answer_single_place(lang, place, place_id, q)
 
-        bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
+        bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_response["features"]), None)
 
         if bragi_tripadvisor_feature is not None:
             feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
@@ -360,19 +359,17 @@ async def get_instant_answer(
                 lang=lang,
             )
 
-    return await instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country)
+    return await instant_answer_fallback(fetch_bragi_osm, lang, q, user_country)
 
 
-async def instant_answer_fallback(fetch_bragi_osm, lang, normalized_query, q, user_country):
+async def instant_answer_fallback(fetch_bragi_osm, lang, q, user_country):
     """
     Call OSM datasource as fallback. Return No instant answer if there are no results found
     """
     bragi_osm_response = await fetch_bragi_osm
-    bragi_osm_features = result_filter.filter_bragi_features(
-        normalized_query, bragi_osm_response["features"]
-    )
-    if bragi_osm_features:
-        place_id = bragi_osm_features[0]["properties"]["geocoding"]["id"]
+
+    if bragi_osm_response["features"]:
+        place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
         return await run_in_threadpool(
             get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
         )
