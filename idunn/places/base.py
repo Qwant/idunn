@@ -325,7 +325,7 @@ class BasePlace(dict):
         return {}
 
     def get_reviews(self):
-        return {}
+        return None
 
     def get_reviews_url(self):
         return ""
