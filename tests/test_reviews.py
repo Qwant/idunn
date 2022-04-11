@@ -1,3 +1,5 @@
+from unittest.mock import ANY
+
 from idunn.blocks import ReviewsBlock
 from idunn.blocks.grades import GradesBlock
 from idunn.places import PjApiPOI, TripadvisorPOI
@@ -190,12 +192,17 @@ def test_reviews_block():
         lang="de",
     )
 
-    assert reviews_block == ReviewsBlock(
-        date="2019-03-07T14:42:06.000+0000",
-        url="https://www.tripadvisor.com/Restaurant_Review-g190371-d14122469-Reviews-Cafe_Etagere-Vaduz.html?m=66562/ShowUserReviews-g190371-d14122469-r657030168-Cafe_Etagere-Vaduz.html?m=66562",
-        lang="en",
-        title="Good food",
-        text="While here for work, this was one of two places I had dinner. Really good food, very fresh and the w...",
-        trip_type="Business",
-        author_name="Eddie N",
-    )
+    assert reviews_block.dict() == {
+        "type": "reviews",
+        "reviews": [
+            {
+                "date": "2019-03-07T14:42:06.000+0000",
+                "url": ANY,
+                "lang": "en",
+                "title": "Good food",
+                "text": "While here for work, this was one of two places I had dinner. Really good food, very fresh and the w...",
+                "trip_type": "Business",
+                "author_name": "Eddie N",
+            }
+        ],
+    }
