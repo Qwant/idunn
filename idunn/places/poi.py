@@ -1,3 +1,4 @@
+import json
 import re
 from functools import cached_property
 from urllib.parse import urlencode
@@ -178,6 +179,15 @@ class TripadvisorPOI(POI):
             "total_grades_count": self.properties.get("ta:review_count"),
             "global_grade": self.properties.get("ta:average_rating"),
         }
+
+    def get_reviews(self):
+        if self.properties.get("ta:reviews:0") is None:
+            return None
+        return [
+            json.loads(value)
+            for key, value in self.properties.items()
+            if key.startswith("ta:reviews:")
+        ]
 
     def get_reviews_url(self):
         return f"{self.get_tripadvisor_lang_url()}#REVIEWS"
