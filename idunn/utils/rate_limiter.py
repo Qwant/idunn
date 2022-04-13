@@ -1,5 +1,6 @@
 import logging
 from fastapi import HTTPException, Depends, Request
+from functools import lru_cache
 from contextlib import contextmanager
 from redis import RedisError
 from redis_rate_limit import RateLimiter, TooManyRequests
@@ -23,6 +24,7 @@ class IdunnRateLimiter:
         self.expire = expire
         self._init_limiter()
 
+    @lru_cache
     def _init_limiter(self):
         try:
             redis_pool = get_redis_pool(db=settings["RATE_LIMITER_REDIS_DB"])
