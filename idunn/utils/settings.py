@@ -32,11 +32,9 @@ class SettingsComponent:
         settings.
     """
 
-    def __init__(self, project_name: str) -> None:
+    def __init__(self, project_name) -> None:
         self._settings = Settings()
         self._load_default_config()
-        if os.environ.get("IS_TEST"):
-            self._load_default_test_config()
         self._load_specific_config(project_name)
         self._load_from_env_var(project_name)
         logging.getLogger(__name__).debug("config: %s", self._settings)
@@ -47,15 +45,6 @@ class SettingsComponent:
         """
         default_config_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "default_settings.yaml"
-        )
-        self._settings.update(_load_yaml_file(default_config_path))
-
-    def _load_default_test_config(self):
-        """
-        load the default test config from a default_test_settings.yaml in the same directory
-        """
-        default_config_path = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), "default_test_settings.yaml"
         )
         self._settings.update(_load_yaml_file(default_config_path))
 
