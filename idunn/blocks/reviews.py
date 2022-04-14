@@ -67,7 +67,10 @@ class ReviewsBlock(BaseBlock):
             ),
             key=lambda x: lang_priority_order.get(x["Language"], 2),
         )
-        return [build_review(review, source_url) for review in sorted_reviews[:MAX_REVIEW_DISPLAY_NUMBER]]
+        return [
+            build_review(review, source_url)
+            for review in sorted_reviews[:MAX_REVIEW_DISPLAY_NUMBER]
+        ]
 
     @classmethod
     def from_es(cls, place, lang: str):
