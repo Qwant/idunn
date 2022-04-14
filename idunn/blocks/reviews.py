@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 from .base import BaseBlock
 
+MAX_REVIEW_DISPLAY_NUMBER = 3
+
 
 class Review(BaseModel):
     date: str
@@ -59,9 +61,9 @@ class ReviewsBlock(BaseBlock):
     def build_reviews(cls, reviews: List[dict], source_url: str, lang: str) -> List[Review]:
         sorted_reviews = []
         sorted_reviews.extend(find_reviews_with_specific_lang(reviews, lang, source_url))
-        if len(sorted_reviews) < 3:
+        if len(sorted_reviews) < MAX_REVIEW_DISPLAY_NUMBER:
             sorted_reviews.extend(find_reviews_with_specific_lang(reviews, "en", source_url))
-        if len(sorted_reviews) < 3:
+        if len(sorted_reviews) < MAX_REVIEW_DISPLAY_NUMBER:
             sorted_reviews.extend(find_other_reviews(reviews, lang, source_url))
         return sorted_reviews[:3]
 
