@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Literal, List, Optional
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from idunn.utils.thumbr import thumbr
 
 from .base import BaseBlock
