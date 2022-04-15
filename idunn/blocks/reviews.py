@@ -28,8 +28,7 @@ def build_rating_bubble_star_url(rating):
     rating = f"{float(rating):.1f}"
 
     base_url = (
-        r"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/"
-        f"s{rating}-MCID-66562.svg"
+        r"https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/" f"s{rating}-MCID-66562.svg"
     )
 
     if thumbr.is_enabled():
