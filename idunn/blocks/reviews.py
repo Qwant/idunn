@@ -59,14 +59,14 @@ class ReviewsBlock(BaseBlock):
 
     @classmethod
     def build_reviews(cls, reviews: List[dict], source_url: str, lang: str) -> List[Review]:
-        lang_priority_order = {lang: 0, "en": 1}
+        lang_priority_order = {lang: 2, "en": 1}
         sorted_reviews = sorted(
-            sorted(
-                reviews,
-                key=lambda x: datetime.strptime(x["DatePublished"][:-5], "%Y-%m-%dT%H:%M:%S.%f"),
-                reverse=True,
+            reviews,
+            reverse=True,
+            key=lambda x: (
+                lang_priority_order.get(x["Language"], 0),
+                datetime.strptime(x["DatePublished"][:-5], "%Y-%m-%dT%H:%M:%S.%f"),
             ),
-            key=lambda x: lang_priority_order.get(x["Language"], 2),
         )
         return [
             build_review(review, source_url)
