@@ -11,6 +11,7 @@ MAX_REVIEW_DISPLAY_NUMBER = 3
 class Review(BaseModel):
     date: str
     rating: str
+    # rating_bubble_star_url is not store is ES but build for UI with pydantic validator
     rating_bubble_star_url: str
     url: str
     more_reviews_url: str
@@ -21,7 +22,7 @@ class Review(BaseModel):
     author_name: str
 
     @validator("rating_bubble_star_url", pre=True, always=True)
-    def valid_rating_bubble_star_url(cls, rating):
+    def build_rating_bubble_star_url(cls, rating):
         # Tripadvisor bubble star url need a rating with exactly one decimal point
         # (e.g 4.0 or 4.5)
         rating = f"{float(rating):.1f}"
@@ -76,6 +77,6 @@ class ReviewsBlock(BaseBlock):
     def from_es(cls, place, lang: str):
         if place.get_reviews() is None:
             return None
-        place.get_bubble_star_url(icon=False)
+
         reviews = cls.build_reviews(place.get_reviews(), place.get_source_url(), lang)
         return cls(reviews=reviews)
