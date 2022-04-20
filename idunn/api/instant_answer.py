@@ -323,14 +323,9 @@ async def get_instant_answer(
             )
             return build_response(result, query=q, lang=lang)
 
-        return await instant_answer_fallback(
-            fetch_bragi_osm, lang, normalized_query, q, user_country
-        )
-
-    # Call tripadvisor datasource instant answer outside France or
+    # Get osm if result with wikidataID or tripadvisor datasource instant answer outside France or
     # without intention location detection
     else:
-
         bragi_osm_response = await fetch_bragi_osm
         if bragi_osm_response:
             place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
