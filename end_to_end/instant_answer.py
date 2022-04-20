@@ -36,7 +36,7 @@ def test_admin_saffre():
     assert_autocomplete("http://localhost:5000/v1/instant_answer?q=Saffré", 'admin:osm:relation:173715')
 
 
-def test_admin_mdph():
+def test_mdph():
     assert_autocomplete("http://localhost:5000/v1/instant_answer?q=Direction de la Solidarité Départementale - MDPH",
                         'osm:relation:1672143')
 
@@ -56,7 +56,7 @@ def test_poi_without_place_intention_should_call_tripadvisor_when_found():
 def test_restaurant_without_place_intention_should_call_tripadvisor_when_found():
     assert_autocomplete("http://localhost:5000/v1/instant_answer?q=café rive droite", 'ta:poi:1540773')
 
-
+#TODO to fix
 def test_osm_for_famous_poi():
     assert_autocomplete("http://localhost:5000/v1/instant_answer?q=tour eiffel", 'osm:way:5013364')
 
