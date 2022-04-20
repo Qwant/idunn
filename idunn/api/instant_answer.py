@@ -141,6 +141,10 @@ def get_instant_answer_single_place(
         )
         return no_instant_answer()
 
+    return build_instant_answer_single_place(lang, place, place_id, query)
+
+
+def build_instant_answer_single_place(lang, place, place_id, query):
     detailed_place = place.load_place(lang=lang)
     result = InstantAnswerResult(
         places=[detailed_place],
@@ -330,16 +334,8 @@ async def get_instant_answer(
         if bragi_osm_response:
             place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
             place = place_from_id(place_id, lang, follow_redirect=True)
-            detailed_place = place.load_place(lang=lang)
             if place.wikidata_id:
-                result = InstantAnswerResult(
-                    places=[detailed_place],
-                    source=place.get_source(),
-                    intention_bbox=None,
-                    maps_url=maps_urls.get_place_url(place_id),
-                    maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
-                )
-                return build_response(result, query=q, lang=lang)
+                return build_instant_answer_single_place(lang, place, place_id, q)
 
         bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
 
