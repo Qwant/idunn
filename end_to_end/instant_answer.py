@@ -62,8 +62,8 @@ def test_osm_for_famous_poi():
 
 
 def test_attraction_should_call_tripadvisor():
-    assert_autocomplete("http://localhost:5000/v1/instant_answer?q=groupama stadium", 'ta:poi:9769104')
+    assert_autocomplete("http://localhost:5000/v1/instant_answer?q=groupama stadium", 'osm:way:848361602')
 
 
 def test_fallback_osm():
-    assert_autocomplete("http://localhost:5000/v1/instant_answer?q=ecole maternel jacques prevert orléans", 'osm:way:810143256')
+    assert_autocomplete("http://localhost:5000/v1/instant_answer?q=ecole maternelle jacques prevert orléans", 'osm:way:810143256')
