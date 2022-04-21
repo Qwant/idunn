@@ -331,10 +331,13 @@ async def get_instant_answer(
     # without intention location detection
     else:
         bragi_osm_response = await fetch_bragi_osm
-        if bragi_osm_response:
+        if bragi_osm_response["features"]:
             place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
             place = place_from_id(place_id, lang, follow_redirect=True)
-            if place.wikidata_id:
+            if place.wikidata_id and place.properties.get("poi_subclass", True) not in [
+                "hotel",
+                "lodging",
+            ]:
                 return build_instant_answer_single_place(lang, place, place_id, q)
 
         bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)

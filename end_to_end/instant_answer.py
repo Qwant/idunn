@@ -36,8 +36,22 @@ class TestShouldCallTripadvisor:
     def test_when_poi_without_place_intention(self):
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=garden bistro", 'ta:poi:1509459')
 
-    def test_when_restaurant_without_place_intention(self):
-        assert_autocomplete("http://localhost:5000/v1/instant_answer?q=café rive droite", 'ta:poi:1540773')
+    def test_when_poi_of_type_hotel_with_wikidataid(self):
+        assert_autocomplete("http://localhost:5000/v1/instant_answer?q=Waldorf Astoria Versailles - Trianon Palace",
+                            'ta:poi:229673')
+
+    @pytest.mark.parametrize("query, expected_id", [
+        ("café rive droite", 'ta:poi:1540773'),
+        ("CiPASSO Bistrot", 'ta:poi:14121704'),
+    ])
+    def test_when_restaurant_without_place_intention(self, query, expected_id):
+        assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
+
+    @pytest.mark.parametrize("query, expected_id", [
+        ("CiPASSO Bistrot rome", 'ta:poi:14121704'),
+    ])
+    def test_when_restaurant_with_place_intention_outside_france(self, query, expected_id):
+        assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
 
 
 class TestShouldCallPagesJaunes:
@@ -53,12 +67,14 @@ class TestShouldCallOSM:
     @pytest.mark.parametrize("query, expected_id", [
         ("tour eiffel", 'osm:way:5013364'),
         ("groupama stadium", 'osm:way:848361602'),
+        ("Museo Ebraico di Bologna", 'osm:node:1704239999'),
     ])
     def test_when_poi_link_with_wikidata_id(self, query, expected_id):
         assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
 
     @pytest.mark.parametrize("query, expected_id", [
-        ("Direction de la Solidarité Départementale - MDPH", 'osm:relation:1672143')
+        ("Direction de la Solidarité Départementale - MDPH", 'osm:relation:1672143'),
+        ("Dipartimento di Filosofia e Comunicazione", 'osm:way:378227146')
     ])
     def test_fallback_osm(self, query, expected_id):
         assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
