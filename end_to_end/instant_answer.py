@@ -33,10 +33,8 @@ class TestShouldCallTripadvisor:
     def test_when_hotel_category_is_detected(self):
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=hotel gabriel paris", 'ta:poi:529918')
 
-
     def test_when_poi_without_place_intention(self):
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=garden bistro", 'ta:poi:1509459')
-
 
     def test_when_restaurant_without_place_intention(self):
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=café rive droite", 'ta:poi:1540773')
@@ -47,7 +45,8 @@ class TestShouldCallPagesJaunes:
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=garden bistro lyon", 'pj:58140933')
 
     def test_when_poi_with_place_in_france(self):
-        assert_autocomplete("http://localhost:5000/v1/instant_answer?q=ecole maternelle jacques prevert orléans", 'pj:12359795')
+        assert_autocomplete("http://localhost:5000/v1/instant_answer?q=ecole maternelle jacques prevert orléans",
+                            'pj:12359795')
 
 
 class TestShouldCallOSM:
