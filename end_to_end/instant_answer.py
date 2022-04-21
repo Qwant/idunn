@@ -30,8 +30,12 @@ class TestAdmin:
 
 
 class TestShouldCallTripadvisor:
-    def test_when_hotel_category_is_detected(self):
-        assert_autocomplete("http://localhost:5000/v1/instant_answer?q=hotel gabriel paris", 'ta:poi:529918')
+    @pytest.mark.parametrize("query, expected_id", [
+        ("hotel gabriel paris", 'ta:poi:529918'),
+        ("hotel moliere", 'ta:poi:232545'),
+    ])
+    def test_when_hotel_category_is_detected(self, query, expected_id):
+        assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
 
     def test_when_poi_without_place_intention(self):
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=garden bistro", 'ta:poi:1509459')

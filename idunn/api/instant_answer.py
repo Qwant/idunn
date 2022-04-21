@@ -333,7 +333,13 @@ async def get_instant_answer(
         bragi_osm_response = await fetch_bragi_osm
         if bragi_osm_response["features"]:
             place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
-            place = place_from_id(place_id, lang, follow_redirect=True)
+            try:
+                place = place_from_id(place_id, lang, follow_redirect=True)
+            except Exception:
+                logger.warning(
+                    "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
+                )
+                return no_instant_answer()
             if place.wikidata_id and place.properties.get("poi_subclass", True) not in [
                 "hotel",
                 "lodging",
