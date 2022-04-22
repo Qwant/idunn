@@ -3,15 +3,14 @@ import json
 import responses
 import re
 import pytest
+from app import app
+from fastapi.testclient import TestClient
+from freezegun import freeze_time
 from idunn import settings
 from idunn.utils import rate_limiter
-from fastapi.testclient import TestClient
-from app import app
-from freezegun import freeze_time
 from idunn.utils.redis import get_redis_pool
 
-from tests.test_rate_limiter import disable_redis, limiter_test_normal
-
+from .test_rate_limiter import disable_redis, limiter_test_normal
 from .utils import override_settings
 
 

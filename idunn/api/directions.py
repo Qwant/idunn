@@ -4,15 +4,8 @@ from pydantic import confloat
 from idunn import settings
 from idunn.places import Latlon
 from idunn.places.exceptions import IdunnPlaceError
-from idunn.utils.rate_limiter import IdunnRateLimiter
 from ..directions.client import directions_client
 from ..utils.place import place_from_id
-
-rate_limiter = IdunnRateLimiter(
-    resource="idunn.api.directions",
-    max_requests=int(settings["DIRECTIONS_RL_MAX_REQUESTS"]),
-    expire=int(settings["DIRECTIONS_RL_EXPIRE"]),
-)
 
 
 def directions_request(request: Request, response: Response):
@@ -20,7 +13,6 @@ def directions_request(request: Request, response: Response):
     FastAPI Dependency
     Responsible for rate limit and cache headers for directions requests
     """
-    rate_limiter.check_limit_per_client(request)
     response.headers["cache-control"] = f"max-age={settings['DIRECTIONS_CLIENT_CACHE']}"
     return request
 
