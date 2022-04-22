@@ -557,11 +557,6 @@ categories:
           - class: "cemetery"
         pj_what: "cimetière"
 
-    shop_beauty:
-        raw_filters:
-          - subclass: "beauty"
-        pj_what: "salon de beauté"
-
     shop_florist:
         raw_filters:
           - subclass: "florist"
@@ -579,9 +574,19 @@ categories:
 
     shop_doityourself:
         raw_filters:
+          - class: "shop"
           - subclass: "doityourself"
           - subclass: "interior_decoration"
+          - subclass: "electical"
+          - subclass: "energy"
+          - subclass: "fireplace"
+          - subclass: "gas"
+          - subclass: "glaziery"
+          - subclass: "groundskeeping"
           - subclass: "hardware"
+          - subclass: "bathroom_furnishing"
+          - subclass: "paint"
+          - subclass: "trade"
         pj_what: "magasin de bricolage"
 
     bicycle_rental:
@@ -712,3 +717,217 @@ categories:
     marketplace:
         raw_filters:
           - subclass: "marketplace"
+
+    shop_confectionery:
+      raw_filters:
+        - class: "shop"
+        - subclass: "confectionery"
+      pj_what: "Confiserie"
+
+    shop_locksmith:
+      raw_filters:
+        - class: "shop"
+        - subclass: "locksmith"
+      pj_what: "Serrurier"
+
+    craft_shoemaker:
+      raw_filters:
+        - class: "craft"
+        - subclass: "shoemaker"
+      pj_what: "Coordonier"
+
+    shop_alcohol:
+      raw_filters:
+        - class: "alcohol_shop"
+      pj_what: "Alcool"
+
+    shop_fine_food:
+      raw_filters:
+        - class: "shop"
+        - subclass: "tea"
+        - subclass: "cheese"
+        - subclass: "coffee"
+        - subclass: "chocolate"
+        - subclass: "deli"
+        - subclass: "pastry"
+      pj_what: "epicerie fine"
+
+    shop_crop:
+      raw_filters:
+        - class: "shop"
+        - subclass: "farm"
+        - subclass: "greengrocer"
+      pj_what: "ferme bio"
+
+    shop_frozen_food:
+      raw_filters:
+        - class: "shop"
+        - subclass: "frozen_food"
+      pj_what: "surgele"
+
+    amenity_ice_cream:
+      raw_filters:
+        - class: "ice_cream"
+      pj_what: "glacier"
+
+    shop_seafood:
+      raw_filters:
+        - class: "shop"
+        - subclass: "seafood"
+      pj_what: "poissonier"
+
+    shop_baby_goods:
+      raw_filters:
+        - class: "shop"
+        - subclass: "baby"
+      pj_what: "magasin pour bébé"
+
+    shop_tatoo:
+      raw_filters:
+        - class: "shop"
+        - subclass: "tatoo"
+      pj_what: "Tatoueur"
+
+    shop_erotic:
+      raw_filters:
+        - class: "shop"
+        - subclass: "erotic"
+      pj_what: "sexe shop"
+
+    shop_watches:
+      raw_filters:
+        - subclass: "watches"
+        - subclass: "watchmaker"
+      pj_what: "Horlogier"
+
+    shop_discount:
+      raw_filters:
+        - class: "shop"
+        - subclass: "discount"
+        - subclass: "second_hand"
+      pj_what: "destockage"
+
+# TODO maybe divide in cosmetic / well being
+    shop_well_being:
+      raw_filters:
+        - class: "shop"
+        - subclass: "beauty"
+        - subclass: "chemist"
+        - subclass: "perfumery"
+        - subclass: "herbalist"
+        - subclass: "massage"
+        - subclass: "nutrition_supplements"
+        - subclass: "hairdresser_supply"
+      pj_what: "Cosmétique"
+
+    shop_doityourself_clothes:
+      raw_filters:
+        - class: "shop"
+        - subclass: "fabric"
+        - subclass: "wool"
+        - subclass: "sewing"
+      pj_what: "tissu"
+
+    shop_medical_supply:
+      raw_filters:
+        - class: "shop"
+        - subclass: "medical_supply"
+        - subclass: "hearing_aids"
+      pj_what: "equipement medical"
+
+    shop_furnitures:
+      raw_filters:
+        - class: "shop"
+        - subclass: "appliance"
+        - subclass: "interior_decoration"
+        - subclass: "antiques"
+        - subclass: "bed"
+        - subclass: "candles"
+        - subclass: "carpet"
+        - subclass: "doors"
+        - subclass: "flooring"
+        - subclass: "furniture"
+        - subclass: "household_linen"
+        - subclass: "kitchen"
+        - subclass: "lighting"
+        - subclass: "tiles"
+        - subclass: "window_blind"
+        - subclass: "security"
+      pj_what: "magasin de meubles"
+
+    shop_outdoor_activites:
+      raw_filters:
+        - class: "shop"
+        - subclass: "outdoor"
+        - subclass: "fishing"
+        - subclass: "hunting"
+      pj_what: "magasin de sport"
+
+    shop_vehicules:
+      raw_filters:
+        - class: "shop"
+        - subclass: "car"
+        - subclass: "car_parts"
+        - subclass: "caravan"
+        - subclass: "car_repair"
+        - subclass: "motorcycle"
+        - subclass: "tyres"
+        - subclass: "trailer"
+      pj_what: "concessionaire"
+
+    shop_boat:
+      raw_filters:
+        - class: "shop"
+        - subclass: "boat"
+        - subclass: "jetski"
+      pj_what: "magasin de bateau"
+
+    shop_hobbies:
+      raw_filters:
+        - class: "shop"
+        - subclass: "art"
+        - subclass: "frame"
+        - subclass: "games"
+        - subclass: "video"
+        - subclass: "video_games"
+        - subclass: "music"
+        - subclass: "musical_instrument"
+        - subclass: "camera"
+        - subclass: "photo"
+        - subclass: "model"
+        - subclass: "craft"
+      pj_what: "magasin divertissement"
+
+    shop_gift:
+      raw_filters:
+        - class: "shop"
+        - subclass: "gift"
+      pj_what: "magasin de souvenir"
+
+    shop_e-cigarette:
+      raw_filters:
+        - class: "shop"
+        - subclass: "e-cigarette"
+      pj_what: "magasin e-cigarette"
+
+    shop_dry_cleaning:
+      raw_filters:
+        - class: "shop"
+        - subclass: "dry_cleaning"
+      pj_what: "pressing"
+
+    retirement_home:
+      raw_filters:
+        - subclass: "nursing_home"
+      pj_what: "maison de retraite"
+
+    shop_ticket:
+      raw_filters:
+        - class: "shop"
+        - subclass: "ticket"
+      pj_what: "billeterie"
+
+    coworking:
+      raw_filters:
+        - class: "coworking"
+      pj_what: "coworking"
