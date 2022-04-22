@@ -119,7 +119,7 @@ build classifier:
   extends:
     - .build
   variables:
-    TARGET_IMAGE: &target-nlu-image "$CI_REGISTRY_IMAGE/classifier/maps:1.2"
+    TARGET_IMAGE: &target-nlu-image "$CI_REGISTRY_IMAGE/classifier/maps:latest"
     SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:latest"
   script:
     - docker pull "$SOURCE_IMAGE"
