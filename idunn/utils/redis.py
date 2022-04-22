@@ -27,7 +27,6 @@ def get_redis_pool(db):
 
     if not redis_url.startswith("redis://"):
         redis_url = "redis://" + redis_url
-
     return ConnectionPool.from_url(url=redis_url, socket_timeout=REDIS_TIMEOUT, db=db)
 
 

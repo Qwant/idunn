@@ -1,14 +1,16 @@
 import responses
 import pytest
 import re
-from freezegun import freeze_time
-from app import app, settings
+from app import app
 from fastapi.testclient import TestClient
+from freezegun import freeze_time
+from idunn import settings
 from idunn.datasources.wikipedia import WikipediaSession
-from idunn.utils.redis import RedisWrapper
-from .utils import override_settings
+from idunn.utils import rate_limiter
+from idunn.utils.redis import RedisWrapper, get_redis_pool
 from .test_api_with_wiki import mock_wikipedia_response
 from .test_cache import has_wiki_desc
+from .utils import override_settings
 
 from redis import RedisError
 from redis_rate_limit import RateLimiter
@@ -36,10 +38,12 @@ def limiter_test_normal(redis, disable_redis):
         {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 6, "REDIS_URL": redis}
     ):
         # To force settings overriding we need to set to None the limiter
+        rate_limiter.redis_pool = get_redis_pool(settings["RATE_LIMITER_REDIS_DB"])
         WikipediaSession.Helpers._rate_limiter = None
         yield
 
     # We reset the rate limiter to remove the context of previous test
+    rate_limiter.redis_pool = None
     WikipediaSession.Helpers._rate_limiter = None
 
 
@@ -54,8 +58,11 @@ def limiter_test_interruption(redis, disable_redis):
     with override_settings(
         {"WIKI_API_RL_PERIOD": 5, "WIKI_API_RL_MAX_CALLS": 100, "REDIS_URL": redis}
     ):
+        rate_limiter.redis_pool = get_redis_pool(settings["RATE_LIMITER_REDIS_DB"])
         WikipediaSession.Helpers._rate_limiter = None
         yield
+
+    rate_limiter.redis_pool = None
     WikipediaSession.Helpers._rate_limiter = None
 
 
@@ -117,6 +124,7 @@ def restart_wiki_redis(docker_services):
     port = docker_services.port_for("wiki_redis", 6379)
     url = f"{docker_services.docker_ip}:{port}"
     settings._settings["REDIS_URL"] = url
+    rate_limiter.redis_pool = get_redis_pool(settings["RATE_LIMITER_REDIS_DB"])
     WikipediaSession.Helpers._rate_limiter = None
 
 

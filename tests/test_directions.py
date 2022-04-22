@@ -3,10 +3,14 @@ import json
 import responses
 import re
 import pytest
+from idunn import settings
+from idunn.utils import rate_limiter
 from fastapi.testclient import TestClient
 from app import app
-from idunn.api.directions import rate_limiter
 from freezegun import freeze_time
+from idunn.utils.redis import get_redis_pool
+
+from tests.test_rate_limiter import disable_redis, limiter_test_normal
 
 from .utils import override_settings
 
@@ -37,10 +41,11 @@ def mock_directions_car():
 @pytest.fixture
 def mock_directions_car_with_rate_limiter(redis, mock_directions_car):
     with override_settings({"REDIS_URL": redis}):
-        rate_limiter._init_limiter()
+        rate_limiter.redis_pool = get_redis_pool(settings["RATE_LIMITER_REDIS_DB"])
         yield
+
     # reset rate_limiter to default redis connection url
-    rate_limiter._init_limiter()
+    rate_limiter.redis_pool = None
 
 
 @pytest.fixture
@@ -207,7 +212,7 @@ def test_directions_not_configured():
         assert response.status_code == 501
 
 
-def test_directions_rate_limiter(mock_directions_car_with_rate_limiter):
+def test_directions_rate_limiter(limiter_test_normal, mock_directions_car_with_rate_limiter):
     client = TestClient(app)
     # rate limiter is triggered after 30 req/min by default
     for _ in range(40):

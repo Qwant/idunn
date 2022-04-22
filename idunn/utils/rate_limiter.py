@@ -16,6 +16,13 @@ def dummy_limit():
     yield
 
 
+try:
+    redis_pool = get_redis_pool(db=settings["RATE_LIMITER_REDIS_DB"])
+except RedisNotConfigured:
+    logger.warning("Redis URL not configured: rate limiter not started")
+    redis_pool = None
+
+
 class IdunnRateLimiter:
     def __init__(self, resource, max_requests, expire):
         self.resource = resource
@@ -24,12 +31,7 @@ class IdunnRateLimiter:
         self._init_limiter()
 
     def _init_limiter(self):
-        try:
-            redis_pool = get_redis_pool(db=settings["RATE_LIMITER_REDIS_DB"])
-        except RedisNotConfigured:
-            logger.warning("Redis URL not configured: rate limiter not started")
-            self._limiter = None
-        else:
+        if redis_pool:
             # If a redis is configured, then we use the corresponding redis service in the rate
             # limiter.
             self._limiter = RateLimiter(
@@ -38,8 +40,14 @@ class IdunnRateLimiter:
                 expire=self.expire,
                 redis_pool=redis_pool,
             )
+        else:
+            self._limiter = None
 
     def limit(self, client, ignore_redis_error=False):
+        # Handle lazy initialization of the redis pool for test context
+        if (redis_pool is None) ^ (self._limiter is None):
+            self._init_limiter()
+
         if self._limiter is None:
             return dummy_limit()
 
