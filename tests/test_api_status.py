@@ -11,8 +11,8 @@ from .fixtures.api.pj import (
 )
 from .utils import read_fixture
 
-FIXTURE_STATUS = read_fixture("fixtures/bragi_status.json")
-FIXTURE_WIKI_RESPONSE = read_fixture("fixtures/wiki_es_successful_response.json")
+FIXTURE_STATUS = read_fixture("fixtures/api/bragi_status.json")
+FIXTURE_WIKI_RESPONSE = read_fixture("fixtures/api/wiki_es_successful_response.json")
 
 
 @responses.activate

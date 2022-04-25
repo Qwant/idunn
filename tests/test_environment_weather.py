@@ -135,7 +135,9 @@ def test_weather_city():
     """
     Check result when place is a city
     """
-    filepath = os.path.join(os.path.dirname(__file__), "fixtures", "api_weather_response.json")
+    filepath = os.path.join(
+        os.path.dirname(__file__), "fixtures", "api", "api_weather_response.json"
+    )
 
     with open(filepath, "r") as f:
         json_aq = json.load(f)
