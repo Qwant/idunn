@@ -607,7 +607,9 @@ categories:
 
     shop_newsagent:
         raw_filters:
+          - class: "shop"
           - subclass: "newsagent"
+          - subclass: "tobacco"
           - subclass: "kiosk"
         pj_what: "kiosque à journaux"
 
