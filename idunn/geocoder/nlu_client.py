@@ -202,13 +202,28 @@ class NLU_Helper:  # pylint: disable = invalid-name
             get_category(),
         )
 
+        bbox, place = await self.get_bbox_place(bragi_result, place_query)
+
+        if category:
+            return Intention(
+                type=IntentionType.CATEGORY,
+                filter={"category": category, "bbox": bbox},
+                description={"category": category, "place": place},
+            )
+
+        # If it is a category that not exist, use it like a brand
+        return Intention(
+            type=IntentionType.BRAND,
+            filter={"q": cat_query, "bbox": bbox},
+            description={"query": cat_query, "place": place},
+        )
+
+    async def get_bbox_place(self, bragi_result, place_query):
         if not bragi_result["features"]:
             raise NluClientException("no matching place")
-
         place = bragi_result["features"][0]
         if not self.fuzzy_match(place_query, place):
             raise NluClientException("matching place too different from query")
-
         bbox = place["properties"]["geocoding"].get("bbox")
         if bbox:
             if bbox[2] - bbox[0] > MAX_WIDTH or bbox[3] - bbox[1] > MAX_HEIGHT:
@@ -225,20 +240,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 ]
             else:
                 raise NluClientException("matching place has no coordinates")
-
-        if category:
-            return Intention(
-                type=IntentionType.CATEGORY,
-                filter={"category": category, "bbox": bbox},
-                description={"category": category, "place": place},
-            )
-
-        # If it is a category that not exist, use it like a brand
-        return Intention(
-            type=IntentionType.BRAND,
-            filter={"q": cat_query, "bbox": bbox},
-            description={"query": cat_query, "place": place},
-        )
+        return bbox, place
 
     async def build_intention_category(self, cat_query, is_brand=False):
         category = await self.classify_category(cat_query, is_brand)
@@ -350,11 +352,29 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 logger.info("Detected POI request for '%s'", text, extra=logs_extra)
                 return []
 
-            intention = Intention(
-                type=IntentionType.POI,
-                filter={"q": text},
-                description={"query": text},
-            )
+            place_query = self.build_place_query(tags_list)
+            if place_query:
+                bragi_params = GeocoderParams.build(
+                    q=place_query,
+                    lang=lang,
+                    limit=1,
+                    **(extra_geocoder_params or {}),
+                )
+
+                bragi_result = await bragi_client.autocomplete(bragi_params)
+                bbox, place = await self.get_bbox_place(bragi_result, place_query)
+
+                intention = Intention(
+                    type=IntentionType.POI,
+                    filter={"q": text, "bbox": bbox},
+                    description={"query": text, "place": place},
+                )
+            else:
+                intention = Intention(
+                    type=IntentionType.POI,
+                    filter={"q": text},
+                    description={"query": text},
+                )
 
             intention.description._place_in_query = any(
                 t.get("tag") in NLU_PLACE_TAGS for t in tags_list

@@ -141,6 +141,10 @@ def get_instant_answer_single_place(
         )
         return no_instant_answer()
 
+    return build_instant_answer_single_place(lang, place, place_id, query)
+
+
+def build_instant_answer_single_place(lang, place, place_id, query):
     detailed_place = place.load_place(lang=lang)
     result = InstantAnswerResult(
         places=[detailed_place],
@@ -323,9 +327,27 @@ async def get_instant_answer(
             )
             return build_response(result, query=q, lang=lang)
 
-    # Call tripadvisor datasource instant answer outside France or
+    # Get osm if result with wikidataID or tripadvisor datasource instant answer outside France or
     # without intention location detection
     else:
+        bragi_osm_response = await fetch_bragi_osm
+        if bragi_osm_response["features"]:
+            place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
+            try:
+                place = place_from_id(place_id, lang, follow_redirect=True)
+            except Exception:
+                logger.warning(
+                    "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
+                )
+                return no_instant_answer()
+            # The default value 'True' is used to validate the condition for admin
+            # that don't have poi_sublass key in their dict.
+            if place.wikidata_id and place.properties.get("poi_subclass", True) not in [
+                "hotel",
+                "lodging",
+            ]:
+                return build_instant_answer_single_place(lang, place, place_id, q)
+
         bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_features), None)
 
         if bragi_tripadvisor_feature is not None:
