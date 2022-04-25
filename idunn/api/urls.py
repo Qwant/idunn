@@ -40,6 +40,25 @@ def get_api_urls(settings):
     and handlers to build response
     """
     metric_handler = get_metric_handler(settings)
+
+    rate_limiter_get_place = rate_limiter_dependency(
+        resource="idunn.get_places_bbox",
+        max_requests=int(settings["GET_PLACE_RL_MAX_REQUESTS"]),
+        expire=int(settings["GET_PLACE_RL_EXPIRE"]),
+    )
+
+    rate_limiter_places_list = rate_limiter_dependency(
+        resource="idunn.get_places_bbox",
+        max_requests=int(settings["LIST_PLACES_RL_MAX_REQUESTS"]),
+        expire=int(settings["LIST_PLACES_RL_EXPIRE"]),
+    )
+
+    rate_limiter_directions = rate_limiter_dependency(
+        resource="idunn.api.directions",
+        max_requests=int(settings["DIRECTIONS_RL_MAX_REQUESTS"]),
+        expire=int(settings["DIRECTIONS_RL_EXPIRE"]),
+    )
+
     return [
         api_route("/metrics", metric_handler, include_in_schema=False),
         api_route("/status", get_status, include_in_schema=False),
@@ -47,18 +66,22 @@ def get_api_urls(settings):
         api_route(
             "/places",
             get_places_bbox,
-            dependencies=[
-                rate_limiter_dependency(
-                    resource="idunn.get_places_bbox",
-                    max_requests=int(settings["LIST_PLACES_RL_MAX_REQUESTS"]),
-                    expire=int(settings["LIST_PLACES_RL_EXPIRE"]),
-                )
-            ],
+            dependencies=[rate_limiter_places_list],
             response_model=PlacesBboxResponse,
             responses={400: {"description": "Client Error in query params"}},
         ),
-        api_route("/places/latlon:{lat}:{lon}", get_place_latlon, response_model=Place),
-        api_route("/places/{id}", get_place, response_model=Place),
+        api_route(
+            "/places/latlon:{lat}:{lon}",
+            get_place_latlon,
+            dependencies=[rate_limiter_get_place],
+            response_model=Place,
+        ),
+        api_route(
+            "/places/{id}",
+            get_place,
+            dependencies=[rate_limiter_get_place],
+            response_model=Place,
+        ),
         # Categories
         api_route("/categories", get_all_categories, response_model=AllCategoriesResponse),
         # Reverse
@@ -70,12 +93,14 @@ def get_api_urls(settings):
         api_route(
             "/directions/{f_lon},{f_lat};{t_lon},{t_lat}",
             get_directions_with_coordinates,
+            dependencies=[rate_limiter_directions],
             response_model=DirectionsResponse,
             responses={422: {"description": "Requested Path Not Allowed."}},
         ),
         api_route(
             "/directions",
             get_directions,
+            dependencies=[rate_limiter_directions],
             response_model=DirectionsResponse,
             responses={422: {"description": "Requested Path Not Allowed."}},
         ),
