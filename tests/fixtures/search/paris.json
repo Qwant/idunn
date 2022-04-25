@@ -1,0 +1,172 @@
+{
+  "type": "FeatureCollection",
+  "geocoding": {
+    "version": "0.1.0",
+    "query": "paris"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          2.3514616,
+          48.8566969
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "geocoding": {
+          "id": "admin:osm:relation:7444",
+          "type": "zone",
+          "zone_type": "city",
+          "label": "Paris (75000-75116), Île-de-France, France",
+          "name": "Paris",
+          "postcode": "75000;75001;75002;75003;75004;75005;75006;75007;75008;75009;75010;75011;75012;75013;75014;75015;75016;75017;75018;75019;75020;75116",
+          "city": null,
+          "citycode": "75056",
+          "level": 8,
+          "administrative_regions": [
+            {
+              "id": "admin:osm:relation:71525",
+              "insee": "75",
+              "level": 6,
+              "label": "Paris, Île-de-France, France",
+              "name": "Paris",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                2.224122,
+                48.8155755,
+                2.4697602,
+                48.902156
+              ],
+              "zone_type": "state_district",
+              "parent_id": "admin:osm:relation:8649",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-75"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "75"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR101"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:8649",
+              "insee": "11",
+              "level": 4,
+              "label": "Île-de-France, France",
+              "name": "Île-de-France",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                1.4462445,
+                48.1201456,
+                3.5592208,
+                49.241431
+              ],
+              "zone_type": "state",
+              "parent_id": "admin:osm:relation:2202162",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-IDF"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "11"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR10"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q13917"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:2202162",
+              "insee": "",
+              "level": 2,
+              "label": "France",
+              "name": "France",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                -178.3873749,
+                -50.2187169,
+                172.30571519999998,
+                51.268318
+              ],
+              "zone_type": "country",
+              "parent_id": null,
+              "codes": [
+                {
+                  "name": "ISO3166-1",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha2",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha3",
+                  "value": "FRA"
+                },
+                {
+                  "name": "ISO3166-1:numeric",
+                  "value": "250"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q142"
+                }
+              ]
+            }
+          ],
+          "codes": [
+            {
+              "name": "ref:FR:MGP",
+              "value": "T1"
+            },
+            {
+              "name": "ref:INSEE",
+              "value": "75056"
+            },
+            {
+              "name": "wikidata",
+              "value": "Q90"
+            }
+          ],
+          "bbox": [
+            2.224122,
+            48.8155755,
+            2.4697602,
+            48.902156
+          ],
+          "properties": [
+              {"key": "name:fr", "value":"Paris"},
+              {"key": "name:it", "value": "Parigi"}
+          ]
+        }
+      }
+    }
+  ]
+}
