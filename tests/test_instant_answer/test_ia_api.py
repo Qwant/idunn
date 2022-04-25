@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app import app
 
-from ..fixtures.autocomplete import (
+from ..fixtures.geocodeur.autocomplete import (
     mock_autocomplete_get,
     mock_NLU_with_cat,
     mock_NLU_with_city,
@@ -16,11 +16,11 @@ from ..fixtures.autocomplete import (
     mock_bragi_carrefour_in_bbox,
 )
 
-from ..fixtures.search import (
+from ..fixtures.geocodeur.search import (
     mock_search_get,
 )
 
-from ..fixtures.pj import mock_pj_api_find_with_musee_picasso, mock_pj_api_find_with_chez_eric
+from ..fixtures.api.pj import mock_pj_api_find_with_musee_picasso, mock_pj_api_find_with_chez_eric
 
 
 def test_ia_paris(mock_search_get, mock_NLU_with_city):
@@ -132,7 +132,7 @@ def test_ia_query_too_long():
     assert response.status_code == 204
 
 
-def test_ia_addresses_ranking(mock_search_get):
+def test_ia_addresses_ranking(mock_search_get, mock_autocomplete_get):
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "43 rue de paris rennes"})
     assert response.status_code == 200

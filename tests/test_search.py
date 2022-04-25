@@ -1,8 +1,7 @@
-import pytest
 from fastapi.testclient import TestClient
 from app import app
 
-from .fixtures.autocomplete import (
+from .fixtures.geocodeur.autocomplete import (
     mock_autocomplete_get,
     mock_NLU_with_city,
     mock_NLU_with_brand_and_city,

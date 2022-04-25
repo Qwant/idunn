@@ -2,7 +2,7 @@ from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
-from .fixtures.autocomplete import mock_bragi_carrefour_in_bbox
+from .fixtures.geocodeur.autocomplete import mock_bragi_carrefour_in_bbox
 
 BBOX = "-4.5689169,48.3572972,-4.4278311,48.4595521"
 

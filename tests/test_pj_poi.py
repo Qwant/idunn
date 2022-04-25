@@ -1,9 +1,8 @@
 from fastapi.testclient import TestClient
-import pytest
 
 from app import app
 
-from .fixtures.pj import (
+from .fixtures.api.pj import (
     mock_pj_api_with_musee_picasso,
     mock_pj_api_with_restaurant_petit_pan,
     mock_pj_api_with_hotel_hilton,

@@ -6,7 +6,7 @@ from elasticsearch.exceptions import ConnectionError
 from app import app
 from idunn import settings
 
-from .fixtures.pj import (
+from .fixtures.api.pj import (
     mock_pj_status_with_musee_picasso_short,
 )
 from .utils import read_fixture

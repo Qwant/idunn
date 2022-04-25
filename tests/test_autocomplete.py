@@ -2,7 +2,8 @@ from unittest.mock import ANY
 from fastapi.testclient import TestClient
 
 from app import app
-from .fixtures.autocomplete import (
+
+from .fixtures.geocodeur.autocomplete import (
     mock_autocomplete_get,
     mock_autocomplete_post,
     mock_autocomplete_unavailable,
