@@ -59,7 +59,7 @@ LIST_PLACES_RL_MAX_REQUESTS: 100 # req per client
 LIST_PLACES_RL_EXPIRE: 900 # seconds
 
 ## Place detail
-GET_PLACE_RL_MAX_REQUESTS: 30 # req per client
+GET_PLACE_RL_MAX_REQUESTS: 60 # req per client
 GET_PLACE_RL_EXPIRE: 60 # seconds
 
 ########################
