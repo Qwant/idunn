@@ -4,6 +4,8 @@ from unittest import mock
 from redis import Redis, RedisError
 from app import app, settings
 from fastapi.testclient import TestClient
+from freezegun import freeze_time
+from idunn.utils.cache import lru_cache_with_expiration
 from idunn.utils.redis import RedisWrapper
 from functools import wraps
 import pytest
@@ -126,3 +128,41 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia_response):
         resp = response.json()
         assert len(mock_wikipedia_response.calls) == 0
         assert not has_wiki_desc(resp)
+
+
+def test_lru_cache_with_expiration():
+    class CachedCounter:
+        def __init__(self):
+            self.counter = 0
+
+        @lru_cache_with_expiration(seconds=60, maxsize=4)
+        def get_counter(self, incr: int = 1):
+            self.counter += incr
+            return self.counter
+
+    counter = CachedCounter()
+
+    with freeze_time("2022-04-25 12:00:00"):
+        assert counter.get_counter() == 1
+        assert counter.get_counter() == 1
+        assert counter.get_counter() == 1
+
+        assert counter.get_counter(1) == 2
+        assert counter.get_counter(1) == 2
+        assert counter.get_counter(1) == 2
+
+        assert counter.get_counter(incr=1) == 3
+        assert counter.get_counter(incr=1) == 3
+        assert counter.get_counter(incr=1) == 3
+
+        assert counter.get_counter(10) == 13
+        assert counter.get_counter(10) == 13
+        assert counter.get_counter(10) == 13
+
+    # 2 min later, the cache should have expired
+    with freeze_time("2022-04-25 12:02:00"):
+        assert counter.get_counter(1) == 14
+
+    # Etc...
+    with freeze_time("2022-04-26 12:00:00"):
+        assert counter.get_counter(incr=1) == 15

@@ -3,8 +3,13 @@ from typing import Optional
 from httpx import AsyncClient
 from fastapi import Header, HTTPException
 from idunn import settings
+from idunn.utils.cache import lru_cache_with_expiration
 
 logger = logging.getLogger(__name__)
+
+
+BANCHECK_CACHE_SIZE = int(settings["BANCHECK_CACHE_SIZE"])
+BANCHECK_CACHE_DURATION = int(settings["BANCHECK_CACHE_DURATION"])
 
 
 def get_ban_check_http():
@@ -19,6 +24,7 @@ def get_ban_check_http():
 ban_check_http = get_ban_check_http()
 
 
+@lru_cache_with_expiration(seconds=BANCHECK_CACHE_DURATION, maxsize=BANCHECK_CACHE_SIZE)
 async def check_banned_client(x_client_hash: Optional[str] = Header(None)):
     if ban_check_http is None:
         return
