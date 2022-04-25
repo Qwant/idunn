@@ -340,8 +340,8 @@ async def get_instant_answer(
                     "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
                 )
                 return no_instant_answer()
-            # The default value 'True' is used to validate the condition for admin that don't have poi_sublass key in
-            # their dict.
+            # The default value 'True' is used to validate the condition for admin
+            # that don't have poi_sublass key in their dict.
             if place.wikidata_id and place.properties.get("poi_subclass", True) not in [
                 "hotel",
                 "lodging",
