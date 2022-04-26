@@ -5,7 +5,7 @@ from redis import Redis, RedisError
 from app import app, settings
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from idunn.utils.cache import lru_cache_with_expiration
+from idunn.utils.cache import async_lru_cache_with_expiration
 from idunn.utils.redis import RedisWrapper
 from functools import wraps
 import pytest
@@ -130,39 +130,49 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia_response):
         assert not has_wiki_desc(resp)
 
 
-def test_lru_cache_with_expiration():
+@pytest.mark.asyncio
+async def async_test_lru_cache_with_expiration():
     class CachedCounter:
         def __init__(self):
             self.counter = 0
 
-        @lru_cache_with_expiration(seconds=60, maxsize=4)
-        def get_counter(self, incr: int = 1):
+        @async_lru_cache_with_expiration(seconds=60, maxsize=4)
+        async def get_counter(self, incr: int = 1):
             self.counter += incr
             return self.counter
 
     counter = CachedCounter()
 
     with freeze_time("2022-04-25 12:00:00"):
-        assert counter.get_counter() == 1
-        assert counter.get_counter() == 1
-        assert counter.get_counter() == 1
+        assert await counter.get_counter() == 1
+        assert await counter.get_counter() == 1
+        assert await counter.get_counter() == 1
 
-        assert counter.get_counter(1) == 2
-        assert counter.get_counter(1) == 2
-        assert counter.get_counter(1) == 2
+        assert await counter.get_counter(1) == 2
+        assert await counter.get_counter(1) == 2
+        assert await counter.get_counter(1) == 2
 
-        assert counter.get_counter(incr=1) == 3
-        assert counter.get_counter(incr=1) == 3
-        assert counter.get_counter(incr=1) == 3
+        assert await counter.get_counter(incr=1) == 3
+        assert await counter.get_counter(incr=1) == 3
+        assert await counter.get_counter(incr=1) == 3
 
-        assert counter.get_counter(10) == 13
-        assert counter.get_counter(10) == 13
-        assert counter.get_counter(10) == 13
+        assert await counter.get_counter(10) == 13
+        assert await counter.get_counter(10) == 13
+        assert await counter.get_counter(10) == 13
+
+        assert await counter.get_counter(2) == 15
+        assert await counter.get_counter(2) == 15
+        assert await counter.get_counter(2) == 15
+
+        # The first key should have been removed because the cache is full.
+        assert await counter.get_counter() == 16
+        assert await counter.get_counter() == 16
+        assert await counter.get_counter() == 16
 
     # 2 min later, the cache should have expired
     with freeze_time("2022-04-25 12:02:00"):
-        assert counter.get_counter(1) == 14
+        assert await counter.get_counter() == 17
 
     # Etc...
     with freeze_time("2022-04-26 12:00:00"):
-        assert counter.get_counter(incr=1) == 15
+        assert await counter.get_counter(incr=1) == 18

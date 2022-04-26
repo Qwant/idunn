@@ -1,7 +1,8 @@
+from collections import OrderedDict
 from dataclasses import dataclass
 from functools import lru_cache, wraps
 from time import monotonic_ns
-from typing import Tuple
+from typing import Generic, Optional, Tuple, TypeVar
 
 
 @dataclass(eq=True, frozen=True)
@@ -18,7 +19,7 @@ class _CacheKey:
 
     @classmethod
     def from_args(cls, args: list, kwargs: dict, delta_seconds: int):
-        delta = delta_seconds * 10 ** 9  # nanoseconds
+        delta = delta_seconds * 10**9  # nanoseconds
 
         # Convert parameters to tuples to allow hashing
         args = tuple(args)
@@ -29,17 +30,42 @@ class _CacheKey:
         rounded = (monotonic_ns() // delta) * delta
 
         # Added offset in [0, delta[ to desynchronize cache expiration of different keys
-        offset = (delta * (hash((args, kwargs)) + 2 ** 63)) // 2 ** 64
+        offset = (delta * (hash((args, kwargs)) + 2**63)) // 2**64
 
         return cls(rounded + offset, args, kwargs)
 
 
-def lru_cache_with_expiration(
+# pylint: disable = invalid-name
+K, V = TypeVar("K"), TypeVar("V")
+
+
+class LRUCache(Generic[K, V]):
+    def __init__(self, maxsize: int):
+        self.cache = OrderedDict()
+        self.capacity = maxsize
+
+    def contains(self, key: K) -> bool:
+        return key in self.cache
+
+    def get(self, key: K) -> V:
+        if key not in self.cache:
+            raise IndexError
+
+        self.cache.move_to_end(key, last=False) # moves key at the beginning
+        return self.cache[key]
+
+    def put(self, key: K, value: V):
+        self.cache[key] = value
+
+        if len(self.cache) > self.capacity:
+            self.cache.popitem()
+
+
+def async_lru_cache_with_expiration(
     func=None,
     *,
     seconds: int,
     maxsize: int = 128,
-    typed: bool = False,
 ):
     """
     Extension over existing lru_cache with per-key timeout. Each key will
@@ -48,28 +74,23 @@ def lru_cache_with_expiration(
 
     :param seconds: timeout value
     :param maxsize: maximum size of the cache
-    :param typed: whether different keys for different types of cache keys
 
     Some inspiration has been taken from this thread:
     https://gist.github.com/Morreski/c1d08a3afa4040815eafd3891e16b945?permalink_comment_id=3521580#gistcomment-3521580
     """
-    if maxsize is None:
-        raise Exception(
-            "using an unbounded `lru_cache_with_expiration` would result in a memory leak"
-        )
+    cache = LRUCache(maxsize)
 
     def wrapper_cache(f):
-        # Wrap the function to accept its parameters wrapped with a timestamp.
-        def func_with_timestamp(key: _CacheKey):
-            return f(*key.args, **dict(key.kwargs))
-
-        # Cached version of the function using the new `CacheKey` parameter
-        func_with_cache = lru_cache(maxsize=maxsize, typed=typed)(func_with_timestamp)
-
         @wraps(f)
-        def wrapped_func(*args, **kwargs):
+        async def wrapped_func(*args, **kwargs):
             key = _CacheKey.from_args(list(args), kwargs, seconds)
-            return func_with_cache(key)
+
+            if cache.contains(key):
+                return cache.get(key)
+
+            res = await f(*args, **kwargs)
+            cache.put(key, res)
+            return res
 
         return wrapped_func
 
