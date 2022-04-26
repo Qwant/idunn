@@ -131,7 +131,7 @@ def test_wiki_cache_unavailable(cache_test_normal, mock_wikipedia_response):
 
 
 @pytest.mark.asyncio
-async def async_test_lru_cache_with_expiration():
+async def test_lru_cache_with_expiration():
     class CachedCounter:
         def __init__(self):
             self.counter = 0
@@ -160,20 +160,23 @@ async def async_test_lru_cache_with_expiration():
         assert await counter.get_counter(10) == 13
         assert await counter.get_counter(10) == 13
 
+        # Put cached value for get_counter() back on top
+        assert await counter.get_counter() == 1
+
         assert await counter.get_counter(2) == 15
         assert await counter.get_counter(2) == 15
         assert await counter.get_counter(2) == 15
 
-        # The first key should have been removed because the cache is full.
-        assert await counter.get_counter() == 16
-        assert await counter.get_counter() == 16
-        assert await counter.get_counter() == 16
+        # The older key should have been removed because the cache is full
+        assert await counter.get_counter(1) == 16
+        assert await counter.get_counter(1) == 16
+        assert await counter.get_counter(1) == 16
 
     # 55s later, the cache should not have expired
     with freeze_time("2022-04-25 12:00:55"):
-        assert await counter.get_counter() == 16
-        assert await counter.get_counter(2) == 16
-        assert await counter.get_counter(incr=1) == 16
+        assert await counter.get_counter() == 1
+        assert await counter.get_counter(incr=1) == 3
+        assert await counter.get_counter(2) == 15
 
     # 1 min 05 later, the cache should have expired
     with freeze_time("2022-04-25 12:01:05"):

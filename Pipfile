@@ -24,6 +24,7 @@ responses = "*"
 black = "==20.8b1"
 respx = "*"
 pylint = "*"
+pytest-asyncio = "*"
 
 [packages]
 fastapi="==0.65.*"

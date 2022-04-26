@@ -11,6 +11,9 @@ K, V = TypeVar("K"), TypeVar("V")
 
 @dataclass
 class _CacheTsValue(Generic[V]):
+    """
+    Store a cached value together with the timestamp it was computed at.
+    """
     value: V
     timestamp: int
 
@@ -21,25 +24,25 @@ class TimedLRUCache(Generic[K, V]):
     """
 
     def __init__(self, maxsize: int, seconds: float):
-        self.cache = OrderedDict()
+        self.inner = OrderedDict()
         self.capacity = maxsize
         self.ttl = int(seconds * 10 ** 9)  # nanoseconds
 
     def _is_expired(self, key: K) -> bool:
-        return self.cache[key].timestamp + self.ttl >= monotonic_ns()
+        return monotonic_ns() >= self.inner[key].timestamp + self.ttl
 
     def get(self, key: K) -> V:
-        if key not in self.cache or self._is_expired(key):
+        if key not in self.inner or self._is_expired(key):
             raise IndexError
 
-        self.cache.move_to_end(key, last=False)  # moves key at the beginning
-        return self.cache[key].value
+        self.inner.move_to_end(key)
+        return self.inner[key].value
 
     def put(self, key: K, value: V):
-        self.cache[key] = _CacheTsValue(value, monotonic_ns())
+        self.inner[key] = _CacheTsValue(value, monotonic_ns())
 
-        if len(self.cache) > self.capacity:
-            self.cache.popitem()
+        if len(self.inner) > self.capacity:
+            self.inner.popitem(last=False)
 
 
 def async_timed_lru_cache(
