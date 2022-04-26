@@ -5,7 +5,7 @@ from redis import Redis, RedisError
 from app import app, settings
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from idunn.utils.cache import async_lru_cache_with_expiration
+from idunn.utils.cache import async_timed_lru_cache
 from idunn.utils.redis import RedisWrapper
 from functools import wraps
 import pytest
@@ -136,7 +136,7 @@ async def async_test_lru_cache_with_expiration():
         def __init__(self):
             self.counter = 0
 
-        @async_lru_cache_with_expiration(seconds=60, maxsize=4)
+        @async_timed_lru_cache(seconds=60, maxsize=4)
         async def get_counter(self, incr: int = 1):
             self.counter += incr
             return self.counter
@@ -169,8 +169,14 @@ async def async_test_lru_cache_with_expiration():
         assert await counter.get_counter() == 16
         assert await counter.get_counter() == 16
 
-    # 2 min later, the cache should have expired
-    with freeze_time("2022-04-25 12:02:00"):
+    # 55s later, the cache should not have expired
+    with freeze_time("2022-04-25 12:00:55"):
+        assert await counter.get_counter() == 16
+        assert await counter.get_counter(2) == 16
+        assert await counter.get_counter(incr=1) == 16
+
+    # 1 min 05 later, the cache should have expired
+    with freeze_time("2022-04-25 12:01:05"):
         assert await counter.get_counter() == 17
 
     # Etc...
