@@ -45,12 +45,7 @@ class TimedLRUCache(Generic[K, V]):
             self.inner.popitem(last=False)
 
 
-def async_timed_lru_cache(
-    func=None,
-    *,
-    seconds: float,
-    maxsize: int = 128,
-):
+def async_timed_lru_cache(seconds: float = 60., maxsize: int = 128):
     """
     Extension over existing lru_cache with per-key timeout. Each key will
     expire with a delay of `seconds` after its last computation.
@@ -78,8 +73,4 @@ def async_timed_lru_cache(
 
         return wrapped_func
 
-    # Allows decorator to be used without arguments
-    if func is None:
-        return wrapper_cache
-
-    return wrapper_cache(func)
+    return wrapper_cache

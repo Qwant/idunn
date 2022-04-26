@@ -163,11 +163,12 @@ async def test_lru_cache_with_expiration():
         # Put cached value for get_counter() back on top
         assert await counter.get_counter() == 1
 
+        # get_counter(1) will be removed (cache is full)
         assert await counter.get_counter(2) == 15
         assert await counter.get_counter(2) == 15
         assert await counter.get_counter(2) == 15
 
-        # The older key should have been removed because the cache is full
+        # get_counter(incr=1) will be removed (cache is full)
         assert await counter.get_counter(1) == 16
         assert await counter.get_counter(1) == 16
         assert await counter.get_counter(1) == 16
@@ -175,7 +176,7 @@ async def test_lru_cache_with_expiration():
     # 55s later, the cache should not have expired
     with freeze_time("2022-04-25 12:00:55"):
         assert await counter.get_counter() == 1
-        assert await counter.get_counter(incr=1) == 3
+        assert await counter.get_counter(10) == 13
         assert await counter.get_counter(2) == 15
 
     # 1 min 05 later, the cache should have expired
