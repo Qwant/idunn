@@ -17,6 +17,7 @@ lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
 
 [dev-packages]
 pytest = "*"
+pytest-asyncio = "*"
 lovely-pytest-docker = "*"
 freezegun = "*"
 ipython = "*"
@@ -24,7 +25,6 @@ responses = "*"
 black = "==20.8b1"
 respx = "*"
 pylint = "*"
-pytest-asyncio = "*"
 
 [packages]
 fastapi="==0.65.*"

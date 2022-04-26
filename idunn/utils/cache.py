@@ -14,6 +14,7 @@ class _CacheTsValue(Generic[V]):
     """
     Store a cached value together with the timestamp it was computed at.
     """
+
     value: V
     timestamp: int
 
@@ -45,7 +46,7 @@ class TimedLRUCache(Generic[K, V]):
             self.inner.popitem(last=False)
 
 
-def async_timed_lru_cache(seconds: float = 60., maxsize: int = 128):
+def async_timed_lru_cache(seconds: float = 60.0, maxsize: int = 128):
     """
     Extension over existing lru_cache with per-key timeout. Each key will
     expire with a delay of `seconds` after its last computation.
