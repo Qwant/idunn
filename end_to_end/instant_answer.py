@@ -25,7 +25,19 @@ class TestAdmin:
         ("Megève", 'admin:osm:relation:75312'),
         ("Saffré", 'admin:osm:relation:173715'),
     ])
-    def test_admin(self, query, expected_id):
+    def test_city(self, query, expected_id):
+        assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
+
+    @pytest.mark.parametrize("query, expected_id", [
+        ("lyon 4e arrondissement", 'admin:osm:relation:18510'),
+    ])
+    def test_city_district(self, query, expected_id):
+        assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
+
+    @pytest.mark.parametrize("query, expected_id", [
+        ("vaise", 'admin:osm:relation:120966'),
+    ])
+    def test_suburb(self, query, expected_id):
         assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
 
 
