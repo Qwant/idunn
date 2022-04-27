@@ -48,7 +48,7 @@ def build_review(review: dict, source_url: str) -> Review:
         title=review["Title"],
         text=review["Text"],
         trip_type=review["TripType"],
-        author_name=review["Author"]["AuthorName"],
+        author_name=review["Author"]["AuthorName"] if review["Author"] is not None else "",
     )
 
 
