@@ -1,4 +1,6 @@
+import asyncio
 import logging
+from copy import deepcopy
 from json import JSONDecodeError
 
 import httpx
@@ -9,12 +11,18 @@ from starlette.concurrency import run_in_threadpool
 from idunn import settings
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
+from idunn.geocoder.bragi_client import bragi_client
 from idunn.places.poi import TripadvisorPOI
 
 logger = logging.getLogger(__name__)
 
 TA_API_BASE_URL = "https://api.tripadvisor.com/api/partner/3.0/synmeta-pricing"
 
+SUBCLASS_HOTEL_TRIPADVISOR = [
+    "subclass_hotel",
+    "subclass_specialty_lodging",
+    "subclass_bed_and_breakfast",
+]
 
 class Tripadvisor(Datasource):
     TA_API_TIMEOUT = float(settings.get("TA_API_TIMEOUT"))
@@ -22,6 +30,26 @@ class Tripadvisor(Datasource):
     def __init__(self):
         super().__init__()
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
+
+    @staticmethod
+    def async_call_france(query):
+        query_tripadvisor = deepcopy(query)
+        query_tripadvisor.poi_dataset = ["tripadvisor"]
+        query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
+        return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
+
+    @classmethod
+    def fetch_search(cls, query):
+        query_tripadvisor = deepcopy(query)
+        query_tripadvisor.poi_dataset = ["tripadvisor"]
+        query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
+        return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
+
+    @staticmethod
+    def async_call_world(query):
+        query_tripadvisor = deepcopy(query)
+        query_tripadvisor.poi_dataset = ["tripadvisor"]
+        return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
 
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
@@ -70,6 +98,8 @@ class Tripadvisor(Datasource):
             raise HTTPException(503, "Invalid response from the tripadvisor API") from exc
 
 
+
+
 def cleanup_empty_params(d):
     """
     Delete keys with the value ``None`` in a dictionary, recursively.
@@ -81,6 +111,3 @@ def cleanup_empty_params(d):
         elif isinstance(value, dict):
             cleanup_empty_params(value)
     return d  # For convenience
-
-
-tripadvisor_api = Tripadvisor()

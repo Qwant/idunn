@@ -8,8 +8,10 @@ with open(patterns_path) as file:
     ignore_pattern_end = re.compile(rf' +({"|".join(patterns)})$')
 
 
-def normalize(query):
+def normalize_instant_answer_param(query, user_country) -> (str, str):
     query = query.strip().lower()
     query = ignore_pattern_start.sub("", query)
     query = ignore_pattern_end.sub("", query)
-    return query
+    if user_country is not None:
+        user_country = user_country.lower()
+    return query, user_country

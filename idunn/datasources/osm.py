@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from starlette.concurrency import run_in_threadpool
@@ -12,6 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 class Osm(Datasource):
+
+    @staticmethod
+    def async_call_world(query):
+        return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
+
+    @classmethod
+    def async_call_france(cls, query):
+        return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
+
+    @classmethod
+    def fetch_search(cls, query):
+        return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
+
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
         if params.q:

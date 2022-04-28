@@ -11,3 +11,11 @@ class Datasource(ABC):
     @abstractmethod
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
+
+    @abstractmethod
+    async def async_call(self):
+        """async call"""
+
+    @abstractmethod
+    async def filter(self):
+        """filter response"""

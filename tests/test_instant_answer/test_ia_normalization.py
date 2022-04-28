@@ -1,4 +1,4 @@
-from idunn.instant_answer import normalize
+from idunn.services.instant_answer import normalize
 
 
 def test_normalization():

@@ -47,7 +47,7 @@ class QueryParams:
 
     There are a few extra fields that won't be send to bragi at the end of
     struct definition. These are generaly specific to Qwant, so Idunn acts as a
-    wrapper arround mimirsbrunn to avoid pusing too specific features.
+    wrapper arround mimirsbrunn to avoid pushing too specific features.
     """
 
     q: str = Query(..., title="Query string")
