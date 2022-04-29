@@ -45,7 +45,7 @@ class Tripadvisor(Datasource):
         return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
 
     @classmethod
-    def filter(cls, results, lang, normalized_query=None):
+    def filter_search_result(cls, results, lang, normalized_query=None):
         try:
             feature_properties = results["features"][0]["properties"]["geocoding"]
             place_id = feature_properties["id"]

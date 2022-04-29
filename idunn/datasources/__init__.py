@@ -14,8 +14,11 @@ class Datasource(ABC):
 
     @abstractmethod
     def fetch_search(cls, query, intentions=None, is_france_query=False, is_wiki=False):
-        """async call"""
+        """
+        Create a task that will asynchronously search results for a specific query from the /search
+        bragi endpoint or for the search PJ api
+        """
 
     @abstractmethod
-    def filter(cls, results, lang, normalized_query):
-        """filter response"""
+    def filter_search_result(cls, results, lang, normalized_query):
+        """Filter results from the `fetch_search` query"""

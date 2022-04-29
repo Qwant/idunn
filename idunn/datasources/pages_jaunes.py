@@ -83,7 +83,7 @@ class PagesJaunes(Datasource):
         )
 
     @classmethod
-    def filter(cls, results, lang=None, normalized_query=None):
+    def filter_search_result(cls, results, lang=None, normalized_query=None):
         place = next(iter(result_filter.filter_places(normalized_query, results)), None)
         if place:
             return place.load_place(lang=lang)

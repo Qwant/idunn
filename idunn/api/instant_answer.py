@@ -1,6 +1,5 @@
 import logging
-from dataclasses import dataclass
-from typing import Optional, List, Tuple, Type
+from typing import Optional, List, Tuple, Union
 
 from fastapi import Query
 from fastapi.responses import ORJSONResponse, Response
@@ -22,7 +21,6 @@ from ..datasources import Datasource
 from ..datasources.osm import Osm
 from ..datasources.tripadvisor import Tripadvisor
 from ..services.instant_answer.normalization import normalize_instant_answer_param
-from ..utils.place import place_from_id
 from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
@@ -131,32 +129,6 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
     )
 
 
-def get_instant_answer_single_place(
-    place_id: str, query: str, lang: str, type: Optional[str] = None
-) -> Response:
-    try:
-        place = place_from_id(place_id, lang, type=type, follow_redirect=True)
-    except Exception:
-        logger.warning(
-            "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
-        )
-        return no_instant_answer()
-
-    return build_instant_answer_single_place(lang, place, place_id, query)
-
-
-def build_instant_answer_single_place(lang, place, place_id, query):
-    detailed_place = place.load_place(lang=lang)
-    result = InstantAnswerResult(
-        places=[detailed_place],
-        source=place.get_source(),
-        intention_bbox=None,
-        maps_url=maps_urls.get_place_url(place_id),
-        maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
-    )
-    return build_response(result, query=query, lang=lang)
-
-
 async def get_instant_answer_intention(intention, query: str, lang: str):
     if not intention.filter.bbox:
         return no_instant_answer(query=query, lang=lang)
@@ -175,7 +147,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     places_bbox_response = await get_places_bbox_impl(
         PlacesQueryParam(
             category=[category] if category else [],
-            bbox=intention.filter.bbox,
+            bbox=intention.filter_.bbox,
             q=intention.filter.q,
             raw_filter=None,
             source=None,
@@ -212,25 +184,19 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     return build_response(result, query=query, lang=lang)
 
 
-@dataclass
-class DatasourceTask:
-    datasource: Type[Datasource]
-    task: any
-
-
-def get_ia_single_datasource_priority(
-    is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm, fetch_bragi_osm_wiki
-) -> List[DatasourceTask]:
+def get_single_ia_datasource_priority(
+    is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
+) -> List[Union[Datasource, any]]:
     if is_france_query:
         return [
-            DatasourceTask(Tripadvisor, fetch_bragi_tripadvisor),
-            DatasourceTask(PagesJaunes, fetch_pj),
-            DatasourceTask(Osm, fetch_bragi_osm),
+            (Tripadvisor(), fetch_bragi_tripadvisor),
+            (PagesJaunes(), fetch_pj),
+            (Osm(is_wiki_search=False), fetch_bragi_osm),
         ]
     return [
-        DatasourceTask(Osm, fetch_bragi_osm_wiki),
-        DatasourceTask(Tripadvisor, fetch_bragi_tripadvisor),
-        DatasourceTask(Osm, fetch_bragi_osm),
+        (Osm(is_wiki_search=True), fetch_bragi_osm),
+        (Tripadvisor(), fetch_bragi_tripadvisor),
+        (Osm(is_wiki_search=False), fetch_bragi_osm),
     ]
 
 
@@ -302,31 +268,31 @@ async def get_instant_answer(
     #       connection pool which will lead on bragi not being available
     #       anymore (or a memory leak if the limit is very high).
     #       See https://github.com/encode/httpx/issues/2139
-
     fetch_pj = pj_source.fetch_search(
         normalized_query, intentions=intentions, is_france_query=is_france_query
     )
     fetch_bragi_osm = Osm.fetch_search(query)
-    fetch_bragi_osm_wiki = Osm.fetch_search(query, is_wiki=True)
     fetch_bragi_tripadvisor = Tripadvisor.fetch_search(query, is_france_query=is_france_query)
 
-    datasource_task_list_priority = get_ia_single_datasource_priority(
-        is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm, fetch_bragi_osm_wiki
+    datasource_priority_list = get_single_ia_datasource_priority(
+        is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
     )
 
-    for datasource_task in datasource_task_list_priority:
-        datasource_response = await datasource_task.task
-        result_place = datasource_task.datasource().filter(
-            datasource_response, lang, normalized_query
-        )
+    for (datasource, task) in datasource_priority_list:
+        datasource_response = await task
+        result_place = datasource.filter_search_result(datasource_response, lang, normalized_query)
         if result_place:
-            result = InstantAnswerResult(
-                places=[result_place],
-                source=result_place.meta.source,
-                intention_bbox=None,
-                maps_url=maps_urls.get_place_url(result_place.id),
-                maps_frame_url=maps_urls.get_place_url(result_place.id, no_ui=True),
-            )
-            return build_response(result, query=q, lang=lang)
+            return await build_single_ia_answer(lang, q, result_place)
 
     return no_instant_answer(query=q, lang=lang, region=user_country)
+
+
+async def build_single_ia_answer(lang, q, result_place):
+    result = InstantAnswerResult(
+        places=[result_place],
+        source=result_place.meta.source,
+        intention_bbox=None,
+        maps_url=maps_urls.get_place_url(result_place.id),
+        maps_frame_url=maps_urls.get_place_url(result_place.id, no_ui=True),
+    )
+    return build_response(result, query=q, lang=lang)

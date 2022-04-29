@@ -21,18 +21,24 @@ SUBCLASS_HOTEL_OSM = [
 
 
 class Osm(Datasource):
+    is_wiki_search: bool = False
+
+    def __init__(self, is_wiki_search: bool):
+        super().__init__()
+        self.is_wiki_search = is_wiki_search
+
     @classmethod
     def fetch_search(
         cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
     ):
         query_osm = deepcopy(query)
-        if is_wiki:
+        if cls.is_wiki_search:
             query_osm.wikidata = True
             query_osm.except_poi_types = SUBCLASS_HOTEL_OSM
         return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
 
     @classmethod
-    def filter(cls, results, lang, normalized_query=None):
+    def filter_search_result(cls, results, lang, normalized_query=None):
         try:
             feature_properties = results["features"][0]["properties"]["geocoding"]
             place_id = feature_properties["id"]

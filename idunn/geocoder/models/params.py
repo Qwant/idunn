@@ -156,7 +156,8 @@ class AutocompleteQueryParams:
 @dataclass
 class SearchQueryParams:
     """
-    Similar to AutocompleteQueryParams: we can find a merge with AutocompleteQueryParams
+        Parameter for bragi /search endpoint which is similar to autocomplete.
+        It could probably be merged.
     """
 
     q: str = Query(..., title="Query string")
@@ -182,8 +183,6 @@ class SearchQueryParams:
     poi_types: List[str] = Query([], description="Filter on type of POI.")
 
     exclude_poi_types: List[str] = Query([], description="Exclude on type of POI.")
-
-    limit: conint(ge=1, le=100) = Query(10, description="Maximum number of results.")
 
     lang: Optional[str] = Query(None, title="Language")
 
@@ -238,7 +237,6 @@ class SearchQueryParams:
             "zone_type[]": self.zone_type,
             "poi_types[]": self.poi_types,
             "exclude_poi_types[]": self.poi_types,
-            "limit": self.limit,
             "lang": self.lang,
             "timeout": self.timeout,
             "pt_dataset[]": self.pt_dataset,
