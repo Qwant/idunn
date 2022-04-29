@@ -275,12 +275,12 @@ async def get_instant_answer(
         datasource_response = await task
         result_place = datasource.filter_search_result(datasource_response, lang, normalized_query)
         if result_place:
-            return await build_single_ia_answer(lang, q, result_place)
+            return build_single_ia_answer(lang, q, result_place)
 
     return no_instant_answer(query=q, lang=lang, region=user_country)
 
 
-async def build_single_ia_answer(lang, q, result_place, intention_bbox=None):
+def build_single_ia_answer(lang, q, result_place, intention_bbox=None):
     result = InstantAnswerResult(
         places=[result_place],
         source=result_place.meta.source,
