@@ -36,7 +36,7 @@ class Osm(Datasource):
         try:
             feature_properties = results["features"][0]["properties"]["geocoding"]
             place_id = feature_properties["id"]
-            place = place_from_id(place_id, lang, type=type, follow_redirect=True)
+            place = place_from_id(place_id, lang, follow_redirect=True)
             return place.load_place(lang=lang)
         except Exception:
             return None

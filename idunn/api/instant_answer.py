@@ -230,7 +230,6 @@ def get_ia_single_datasource_priority(
     return [
         DatasourceTask(Osm, fetch_bragi_osm_wiki),
         DatasourceTask(Tripadvisor, fetch_bragi_tripadvisor),
-        DatasourceTask(PagesJaunes, fetch_pj),
         DatasourceTask(Osm, fetch_bragi_osm),
     ]
 
@@ -317,16 +316,17 @@ async def get_instant_answer(
 
     for datasource_task in datasource_task_list_priority:
         datasource_response = await datasource_task.task
-        result_place = datasource_task.datasource.filter(datasource_response)
+        result_place = datasource_task.datasource().filter(
+            datasource_response, lang, normalized_query
+        )
         if result_place:
-            place_id = result_place.get_id()
             result = InstantAnswerResult(
                 places=[result_place],
-                source=result_place.get_source(),
+                source=result_place.meta.source,
                 intention_bbox=None,
-                maps_url=maps_urls.get_place_url(place_id),
-                maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
+                maps_url=maps_urls.get_place_url(result_place.id),
+                maps_frame_url=maps_urls.get_place_url(result_place.id, no_ui=True),
             )
-            return build_response(result, query=query, lang=lang)
+            return build_response(result, query=q, lang=lang)
 
     return no_instant_answer(query=q, lang=lang, region=user_country)

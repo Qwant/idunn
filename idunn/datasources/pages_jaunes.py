@@ -64,18 +64,30 @@ class PagesJaunes(Datasource):
     def fetch_search(
         cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
     ):
+        if len(intentions) > 0:
+            return asyncio.create_task(
+                run_in_threadpool(
+                    pj_source.search_places,
+                    query,
+                    intentions[0].description._place_in_query,
+                ),
+                name="ia_fetch_pj",
+            )
         return asyncio.create_task(
             run_in_threadpool(
-                cls.search_places,
+                pj_source.search_places,
                 query,
-                intentions[0].description._place_in_query,
+                False,
             ),
             name="ia_fetch_pj",
         )
 
     @classmethod
     def filter(cls, results, lang=None, normalized_query=None):
-        return next(iter(result_filter.filter_places(normalized_query, results)), None)
+        place = next(iter(result_filter.filter_places(normalized_query, results)), None)
+        if place:
+            return place.load_place(lang=lang)
+        return None
 
     def bbox_is_covered(self, bbox):
         if not self.enabled:
