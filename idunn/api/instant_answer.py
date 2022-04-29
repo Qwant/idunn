@@ -165,14 +165,14 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
 
     if len(places) == 1:
         return build_single_ia_answer(lang, query, places[0], intention.filter.bbox)
-    else:
-        result = InstantAnswerResult(
-            places=places,
-            source=places_bbox_response.source,
-            intention_bbox=intention.filter.bbox,
-            maps_url=maps_urls.get_places_url(intention.filter),
-            maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
-        )
+
+    result = InstantAnswerResult(
+        places=places,
+        source=places_bbox_response.source,
+        intention_bbox=intention.filter.bbox,
+        maps_url=maps_urls.get_places_url(intention.filter),
+        maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
+    )
 
     return build_response(result, query=query, lang=lang)
 
