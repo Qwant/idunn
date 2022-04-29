@@ -6,7 +6,7 @@ from idunn import settings
 from idunn.api.geocoder import get_autocomplete
 from idunn.utils.result_filter import ResultFilter
 from ..geocoder.models import ExtraParams, AutocompleteQueryParams
-from ..services.instant_answer.normalization import normalize_instant_answer_param
+from ..services.instant_answer.normalization import normalize_search
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter(match_word_prefix=True, min_matching_words=3)
@@ -25,7 +25,7 @@ async def search(
     Similarly to `instant_answer`, the result will need some quality checks.
     """
     # Fetch autocomplete results which will be filtered
-    query.q = normalize_instant_answer_param(query.q, query.lang)
+    query.q = normalize_search(query.q)
     if query.q == "":
         return Response(status_code=200, content=build_empty_query_content_response())
     response = await get_autocomplete(query, extra)
