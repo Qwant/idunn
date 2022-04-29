@@ -5,7 +5,7 @@ from starlette.responses import Response
 from idunn import settings
 from idunn.api.geocoder import get_autocomplete
 from idunn.utils.result_filter import ResultFilter
-from ..geocoder.models import ExtraParams, QueryParams
+from ..geocoder.models import ExtraParams, AutocompleteQueryParams
 from ..services.instant_answer.normalization import normalize_instant_answer_param
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,8 @@ nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 
 
 async def search(
-    query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
+    query: AutocompleteQueryParams = Depends(AutocompleteQueryParams),
+    extra: ExtraParams = Body(ExtraParams()),
 ):
     """
     Perform a query which is intended to display a relevant result directly (as

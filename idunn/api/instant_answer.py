@@ -1,8 +1,8 @@
 import logging
-from typing import Optional, List, Tuple
+from dataclasses import dataclass
+from typing import Optional, List, Tuple, Type
 
 from fastapi import Query
-from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import ORJSONResponse, Response
 from geopy import Point
 from pydantic import BaseModel, Field, validator, HttpUrl
@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, validator, HttpUrl
 from idunn import settings
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
 from idunn.datasources.pages_jaunes import pj_source, PagesJaunes
-from idunn.geocoder.models import QueryParams
+from idunn.geocoder.models import AutocompleteQueryParams
 from idunn.geocoder.models.geocodejson import IntentionType
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.places import Place
@@ -46,8 +46,8 @@ AVAILABLE_CLASS_TYPE_HOTEL_TRIPADVISOR = [
 class InstantAnswerResult(BaseModel):
     places: List[Place] = Field(
         description="List of relevant places to display on the instant answer."
-                    "When no place is returned, display the default instant answer"
-                    "At most 1 place is returned if no broad intention has been detected."
+        "When no place is returned, display the default instant answer"
+        "At most 1 place is returned if no broad intention has been detected."
     )
     source: Optional[PoiSource] = Field(
         description=(
@@ -68,7 +68,7 @@ class InstantAnswerResult(BaseModel):
     )
     maps_frame_url: HttpUrl = Field(
         description="URL to the map displaying the results on Qwant Maps, with no user interface. "
-                    "This URL can be used to display an `<iframe>`."
+        "This URL can be used to display an `<iframe>`."
     )
 
     @validator("intention_bbox")
@@ -132,7 +132,7 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
 
 
 def get_instant_answer_single_place(
-        place_id: str, query: str, lang: str, type: Optional[str] = None
+    place_id: str, query: str, lang: str, type: Optional[str] = None
 ) -> Response:
     try:
         place = place_from_id(place_id, lang, type=type, follow_redirect=True)
@@ -212,17 +212,33 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     return build_response(result, query=query, lang=lang)
 
 
-def get_ia_single_datasource_priority(is_france_query) -> List[Datasource]:
+@dataclass
+class DatasourceTask:
+    datasource: Type[Datasource]
+    task: any
+
+
+def get_ia_single_datasource_priority(
+    is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm, fetch_bragi_osm_wiki
+) -> List[DatasourceTask]:
     if is_france_query:
-        return [Tripadvisor, PagesJaunes, Osm]
-    else:
-        return [Osm, Tripadvisor, PagesJaunes, Osm]
+        return [
+            DatasourceTask(Tripadvisor, fetch_bragi_tripadvisor),
+            DatasourceTask(PagesJaunes, fetch_pj),
+            DatasourceTask(Osm, fetch_bragi_osm),
+        ]
+    return [
+        DatasourceTask(Osm, fetch_bragi_osm_wiki),
+        DatasourceTask(Tripadvisor, fetch_bragi_tripadvisor),
+        DatasourceTask(PagesJaunes, fetch_pj),
+        DatasourceTask(Osm, fetch_bragi_osm),
+    ]
 
 
 async def get_instant_answer(
-        q: str = Query(..., title="Query string"),
-        lang: str = Query("en", title="Language"),
-        user_country: Optional[str] = Query(None, title="Region where the user is located"),
+    q: str = Query(..., title="Query string"),
+    lang: str = Query("en", title="Language"),
+    user_country: Optional[str] = Query(None, title="Region where the user is located"),
 ):
     """
     Perform a query with result intended to be displayed as an instant answer
@@ -273,11 +289,13 @@ async def get_instant_answer(
             intentions = []
 
     # Direct geocoding query
-    query = QueryParams.build(q=normalized_query, lang=lang, limit=5, **extra_geocoder_params)
+    query = AutocompleteQueryParams.build(
+        q=normalized_query, lang=lang, limit=5, **extra_geocoder_params
+    )
 
     try:
         is_france_query = pj_source.bbox_is_covered(intentions[0].filter.bbox)
-    except:
+    except Exception:
         is_france_query = False
 
     # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
@@ -285,88 +303,30 @@ async def get_instant_answer(
     #       connection pool which will lead on bragi not being available
     #       anymore (or a memory leak if the limit is very high).
     #       See https://github.com/encode/httpx/issues/2139
-    fetch_pj = pj_source.async_call(normalized_query, intentions)
+
+    fetch_pj = pj_source.fetch_search(
+        normalized_query, intentions=intentions, is_france_query=is_france_query
+    )
     fetch_bragi_osm = Osm.fetch_search(query)
-    fetch_bragi_tripadvisor = Tripadvisor.fetch_search(query)
-    # Select datasource instant answer in France
-    get_ia_single_datasource_priority(is_france_query)
+    fetch_bragi_osm_wiki = Osm.fetch_search(query, is_wiki=True)
+    fetch_bragi_tripadvisor = Tripadvisor.fetch_search(query, is_france_query=is_france_query)
 
-    return await instant_answer_fallback(fetch_bragi_osm, lang, q, user_country)
-    #
-    #     bragi_tripadvisor_response = await fetch_bragi_tripadvisor
-    #     if bragi_tripadvisor_response["features"]:
-    #         feature_properties = bragi_tripadvisor_response["features"][0]["properties"]["geocoding"]
-    #         place_id = feature_properties["id"]
-    #         return await run_in_threadpool(
-    #             get_instant_answer_single_place,
-    #             query=q,
-    #             place_id=place_id,
-    #             lang=lang,
-    #             type="poi_tripadvisor",
-    #         )
-    #
-    #     pj_response = result_filter.filter_places(normalized_query, await fetch_pj)
-    #
-    #     if pj_response:
-    #         place_id = pj_response[0].get_id()
-    #         result = InstantAnswerResult(
-    #             places=[pj_response[0].load_place(lang)],
-    #             source=pj_response[0].get_source(),
-    #             maps_url=maps_urls.get_place_url(place_id),
-    #             maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
-    #         )
-    #         return build_response(result, query=q, lang=lang)
-    #
-    # # Get osm if result with wikidataID or tripadvisor datasource instant answer outside France or
-    # # without intention location detection
-    # else:
-    #     fetch_pj = pj_source.fetch_search_world(normalized_query, intentions)
-    #     fetch_bragi_osm = Osm.fetch_search_world(query)
-    #     fetch_bragi_tripadvisor = Tripadvisor.fetch_search_world(query)
-    #
-    #     bragi_osm_response = await fetch_bragi_osm
-    #     if bragi_osm_response["features"]:
-    #         place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
-    #         try:
-    #             place = place_from_id(place_id, lang, follow_redirect=True)
-    #         except Exception:
-    #             logger.warning(
-    #                 "get_instant_answer: Failed to get place with id '%s'", place_id, exc_info=True
-    #             )
-    #             return no_instant_answer()
-    #         # The default value 'True' is used to validate the condition for admin
-    #         # that don't have poi_sublass key in their dict.
-    #         if place.wikidata_id and place.properties.get("poi_subclass", True) not in [
-    #             "hotel",
-    #             "lodging",
-    #         ]:
-    #             return build_instant_answer_single_place(lang, place, place_id, q)
-    #
-    #     bragi_tripadvisor_response = await fetch_bragi_tripadvisor
-    #     bragi_tripadvisor_feature = next(iter(bragi_tripadvisor_response["features"]), None)
-    #
-    #     if bragi_tripadvisor_feature is not None:
-    #         feature_properties = bragi_tripadvisor_feature["properties"]["geocoding"]
-    #         place_id = feature_properties["id"]
-    #         return await run_in_threadpool(
-    #             get_instant_answer_single_place,
-    #             query=q,
-    #             place_id=place_id,
-    #             lang=lang,
-    #         )
-    #
-    # return await instant_answer_fallback(fetch_bragi_osm, lang, q, user_country)
+    datasource_task_list_priority = get_ia_single_datasource_priority(
+        is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm, fetch_bragi_osm_wiki
+    )
 
+    for datasource_task in datasource_task_list_priority:
+        datasource_response = await datasource_task.task
+        result_place = datasource_task.datasource.filter(datasource_response)
+        if result_place:
+            place_id = result_place.get_id()
+            result = InstantAnswerResult(
+                places=[result_place],
+                source=result_place.get_source(),
+                intention_bbox=None,
+                maps_url=maps_urls.get_place_url(place_id),
+                maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
+            )
+            return build_response(result, query=query, lang=lang)
 
-async def instant_answer_fallback(fetch_bragi_osm, lang, q, user_country):
-    """
-    Call OSM datasource as fallback. Return No instant answer if there are no results found
-    """
-    bragi_osm_response = await fetch_bragi_osm
-
-    if bragi_osm_response["features"]:
-        place_id = bragi_osm_response["features"][0]["properties"]["geocoding"]["id"]
-        return await run_in_threadpool(
-            get_instant_answer_single_place, query=q, place_id=place_id, lang=lang
-        )
     return no_instant_answer(query=q, lang=lang, region=user_country)

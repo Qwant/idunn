@@ -12,7 +12,9 @@ from idunn import settings
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
 from idunn.geocoder.bragi_client import bragi_client
+from idunn.geocoder.models.params import SearchQueryParams
 from idunn.places.poi import TripadvisorPOI
+from idunn.utils.place import place_from_id
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,7 @@ SUBCLASS_HOTEL_TRIPADVISOR = [
     "subclass_bed_and_breakfast",
 ]
 
+
 class Tripadvisor(Datasource):
     TA_API_TIMEOUT = float(settings.get("TA_API_TIMEOUT"))
 
@@ -31,25 +34,25 @@ class Tripadvisor(Datasource):
         super().__init__()
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
-    @staticmethod
-    def async_call_france(query):
+    @classmethod
+    def fetch_search(
+        cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
+    ):
         query_tripadvisor = deepcopy(query)
-        query_tripadvisor.poi_dataset = ["tripadvisor"]
-        query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
+        if is_france_query:
+            query_tripadvisor.poi_dataset = ["tripadvisor"]
+            query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
         return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
 
     @classmethod
-    def fetch_search(cls, query):
-        query_tripadvisor = deepcopy(query)
-        query_tripadvisor.poi_dataset = ["tripadvisor"]
-        query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
-        return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
-
-    @staticmethod
-    def async_call_world(query):
-        query_tripadvisor = deepcopy(query)
-        query_tripadvisor.poi_dataset = ["tripadvisor"]
-        return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
+    def filter(cls, results, lang, normalized_query=None):
+        try:
+            feature_properties = results["features"][0]["properties"]["geocoding"]
+            place_id = feature_properties["id"]
+            place = place_from_id(place_id, lang, type=type, follow_redirect=True)
+            return place.load_place(lang=lang)
+        except Exception:
+            return None
 
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
@@ -96,8 +99,6 @@ class Tripadvisor(Datasource):
         except (JSONDecodeError, pydantic.ValidationError) as exc:
             logger.exception("Tripadvisor hotel pricing api invalid response")
             raise HTTPException(503, "Invalid response from the tripadvisor API") from exc
-
-
 
 
 def cleanup_empty_params(d):

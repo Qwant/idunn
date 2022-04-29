@@ -13,9 +13,9 @@ class Datasource(ABC):
         """Get places within a given Bbox"""
 
     @abstractmethod
-    async def async_call(self):
+    def fetch_search(cls, query, intentions=None, is_france_query=False, is_wiki=False):
         """async call"""
 
     @abstractmethod
-    async def filter(self):
+    def filter(cls, results, lang, normalized_query):
         """filter response"""

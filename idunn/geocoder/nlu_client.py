@@ -6,7 +6,7 @@ from typing import Optional
 from unidecode import unidecode
 
 from idunn.api.places_list import MAX_HEIGHT, MAX_WIDTH
-from idunn.geocoder.models.params import QueryParams as GeocoderParams
+from idunn.geocoder.models.params import AutocompleteQueryParams as GeocoderParams
 from idunn import settings
 from idunn.utils.circuit_breaker import IdunnCircuitBreaker
 from idunn.utils.result_filter import ResultFilter

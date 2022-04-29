@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from copy import deepcopy
 from os import path
 from typing import List
 
@@ -9,17 +8,18 @@ from requests import HTTPError as RequestsHTTPError
 from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
-
 from idunn.datasources import Datasource
-from idunn.geocoder.bragi_client import bragi_client
+from idunn.geocoder.models.params import SearchQueryParams
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.models import pj_info, pj_find
 from idunn.places.pj_poi import PjApiPOI
 from idunn.utils.auth_session import AuthSession
 from idunn.utils.category import CategoryEnum
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
+from idunn.utils.result_filter import ResultFilter
 
 logger = logging.getLogger(__name__)
+result_filter = ResultFilter()
 
 
 class PjAuthSession(AuthSession):
@@ -60,16 +60,22 @@ class PagesJaunes(Datasource):
         left, bot, right, top = bbox
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
-    def async_call(self, query, intentions):
-        return asyncio.create_task(run_in_threadpool(
-            self.search_places,
-            query,
-            intentions[0].description._place_in_query,
-        ), name="ia_fetch_pj")
+    @classmethod
+    def fetch_search(
+        cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
+    ):
+        return asyncio.create_task(
+            run_in_threadpool(
+                cls.search_places,
+                query,
+                intentions[0].description._place_in_query,
+            ),
+            name="ia_fetch_pj",
+        )
 
-
-    def filter(self):
-        return None
+    @classmethod
+    def filter(cls, results, lang=None, normalized_query=None):
+        return next(iter(result_filter.filter_places(normalized_query, results)), None)
 
     def bbox_is_covered(self, bbox):
         if not self.enabled:
@@ -102,10 +108,10 @@ class PagesJaunes(Datasource):
         pois = [PjApiPOI(listing) for listing in res.search_results.listings[:size] or []]
 
         if (
-                len(pois) < size
-                and res.context
-                and res.context.pages
-                and res.context.pages.next_page_url
+            len(pois) < size
+            and res.context
+            and res.context.pages
+            and res.context.pages.next_page_url
         ):
             pois += self.get_places_from_url(
                 res.context.pages.next_page_url,
@@ -130,7 +136,7 @@ class PagesJaunes(Datasource):
         )
 
     def fetch_places_bbox(
-            self, categories: List[CategoryEnum], bbox, size=10, query=""
+        self, categories: List[CategoryEnum], bbox, size=10, query=""
     ) -> List[PjApiPOI]:
         query_params = {
             "what": " ".join(c.pj_what() for c in categories),

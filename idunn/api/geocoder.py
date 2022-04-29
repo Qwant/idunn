@@ -4,7 +4,7 @@ from fastapi import Body, Depends
 from fastapi.responses import ORJSONResponse
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.nlu_client import nlu_client, NluClientException
-from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
+from ..geocoder.models import AutocompleteQueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings
 from idunn.utils.result_filter import ResultFilter
@@ -59,7 +59,8 @@ def post_filter_intention(intention, bragi_response, limit):
 
 
 async def get_autocomplete(
-    query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
+    query: AutocompleteQueryParams = Depends(AutocompleteQueryParams),
+    extra: ExtraParams = Body(ExtraParams()),
 ) -> IdunnAutocomplete:
     """
     Get a list of suggested places or intentions from a potentially incomplete

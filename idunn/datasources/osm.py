@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from copy import deepcopy
 
 from starlette.concurrency import run_in_threadpool
 
@@ -7,24 +8,38 @@ from idunn.api.constants import PoiSource
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.geocoder.bragi_client import bragi_client
+from idunn.geocoder.models.params import SearchQueryParams
 from idunn.places.poi import BragiPOI, OsmPOI
+from idunn.utils.place import place_from_id
 
 logger = logging.getLogger(__name__)
 
+SUBCLASS_HOTEL_OSM = [
+    "subclass_hotel",
+    "subclass_lodging",
+]
+
 
 class Osm(Datasource):
-
-    @staticmethod
-    def async_call_world(query):
+    @classmethod
+    def fetch_search(
+        cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
+    ):
+        query_osm = deepcopy(query)
+        if is_wiki:
+            query_osm.wikidata = True
+            query_osm.except_poi_types = SUBCLASS_HOTEL_OSM
         return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
 
     @classmethod
-    def async_call_france(cls, query):
-        return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
-
-    @classmethod
-    def fetch_search(cls, query):
-        return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
+    def filter(cls, results, lang, normalized_query=None):
+        try:
+            feature_properties = results["features"][0]["properties"]["geocoding"]
+            place_id = feature_properties["id"]
+            place = place_from_id(place_id, lang, type=type, follow_redirect=True)
+            return place.load_place(lang=lang)
+        except Exception:
+            return None
 
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
