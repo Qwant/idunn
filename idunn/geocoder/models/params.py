@@ -156,8 +156,8 @@ class AutocompleteQueryParams:
 @dataclass
 class SearchQueryParams:
     """
-        Parameter for bragi /search endpoint which is similar to autocomplete.
-        It could probably be merged.
+    Parameter for bragi /search endpoint which is similar to autocomplete.
+    It could probably be merged.
     """
 
     q: str = Query(..., title="Query string")
