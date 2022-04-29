@@ -147,7 +147,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     places_bbox_response = await get_places_bbox_impl(
         PlacesQueryParam(
             category=[category] if category else [],
-            bbox=intention.filter_.bbox,
+            bbox=intention.filter.bbox,
             q=intention.filter.q,
             raw_filter=None,
             source=None,
@@ -164,14 +164,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
         return no_instant_answer(query=query, lang=lang)
 
     if len(places) == 1:
-        place_id = places[0].id
-        result = InstantAnswerResult(
-            places=places,
-            source=places_bbox_response.source,
-            intention_bbox=intention.filter.bbox,
-            maps_url=maps_urls.get_place_url(place_id),
-            maps_frame_url=maps_urls.get_place_url(place_id, no_ui=True),
-        )
+        return build_single_ia_answer(lang, query, places[0], intention.filter.bbox)
     else:
         result = InstantAnswerResult(
             places=places,
@@ -287,11 +280,11 @@ async def get_instant_answer(
     return no_instant_answer(query=q, lang=lang, region=user_country)
 
 
-async def build_single_ia_answer(lang, q, result_place):
+async def build_single_ia_answer(lang, q, result_place, intention_bbox=None):
     result = InstantAnswerResult(
         places=[result_place],
         source=result_place.meta.source,
-        intention_bbox=None,
+        intention_bbox=intention_bbox,
         maps_url=maps_urls.get_place_url(result_place.id),
         maps_frame_url=maps_urls.get_place_url(result_place.id, no_ui=True),
     )
