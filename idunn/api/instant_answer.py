@@ -131,6 +131,7 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
 
 
 async def get_instant_answer_intention(intention, query: str, lang: str):
+    # if there is not brand or category intention with an associated place
     if not intention.filter.bbox:
         return no_instant_answer(query=query, lang=lang)
 
@@ -228,20 +229,13 @@ async def get_instant_answer(
     intentions = []
     if lang in nlu_allowed_languages:
         try:
-            intentions = await nlu_client.get_intentions(
+            intention = await nlu_client.get_intention(
                 normalized_query,
                 lang,
                 extra_geocoder_params,
-                allow_types=[
-                    IntentionType.BRAND,
-                    IntentionType.CATEGORY,
-                    IntentionType.POI,
-                ],
+                allow_types=[IntentionType.BRAND, IntentionType.CATEGORY, IntentionType.POI],
             )
-            if intentions and intentions[0].type in [
-                IntentionType.BRAND,
-                IntentionType.CATEGORY,
-            ]:
+            if intention and intention.type in [IntentionType.BRAND, IntentionType.CATEGORY]:
                 return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query

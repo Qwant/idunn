@@ -165,7 +165,7 @@ class Feature(BaseModel):
 
 
 class IntentionType(Enum):
-    ADDRESS = "address"
+    STREET = "street"
     BRAND = "brand"
     CATEGORY = "category"
     POI = "poi"
@@ -209,7 +209,7 @@ class Geocoding(BaseModel):
 class IdunnAutocomplete(BaseModel):
     type: str = "FeatureCollection"
     geocoding: Geocoding = Geocoding()
-    intentions: Optional[List[Intention]] = Field(None, description="Intentions detected by NLU.")
+    intention: Optional[Intention] = Field(None, description="Intentions detected by NLU.")
     features: List[Feature] = Field([], description="Geographic places matching the query.")
 
 
