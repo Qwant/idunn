@@ -166,8 +166,6 @@ class SearchQueryParams:
         None, title="Latitude", description="Longitude of the focus point."
     )
 
-    wikidata: bool = Query(None, title="wikidata", description="Filter document with wikidata tag")
-
     lon: Optional[confloat(ge=-180, le=180)] = Query(
         None, title="Longitude", description="Latitude of the focus point."
     )
@@ -181,8 +179,6 @@ class SearchQueryParams:
     zone_type: List[ZoneType] = Query([], description="Filter on type of zone.")
 
     poi_types: List[str] = Query([], description="Filter on type of POI.")
-
-    exclude_poi_types: List[str] = Query([], description="Exclude on type of POI.")
 
     lang: Optional[str] = Query(None, title="Language")
 
@@ -233,10 +229,8 @@ class SearchQueryParams:
             "q": self.q,
             "shape_scope[]": self.shape_scope,
             "type[]": self.type,
-            "wikidata": self.wikidata,
             "zone_type[]": self.zone_type,
             "poi_types[]": self.poi_types,
-            "exclude_poi_types[]": self.poi_types,
             "lang": self.lang,
             "timeout": self.timeout,
             "pt_dataset[]": self.pt_dataset,

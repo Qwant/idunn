@@ -184,12 +184,12 @@ def get_single_ia_datasource_priority(
         return [
             (Tripadvisor(), fetch_bragi_tripadvisor),
             (PagesJaunes(), fetch_pj),
-            (Osm(is_wiki_search=False), fetch_bragi_osm),
+            (Osm(is_wiki_filter=False), fetch_bragi_osm),
         ]
     return [
-        (Osm(is_wiki_search=True), fetch_bragi_osm),
+        (Osm(is_wiki_filter=True), fetch_bragi_osm),
         (Tripadvisor(), fetch_bragi_tripadvisor),
-        (Osm(is_wiki_search=False), fetch_bragi_osm),
+        (Osm(is_wiki_filter=False), fetch_bragi_osm),
     ]
 
 

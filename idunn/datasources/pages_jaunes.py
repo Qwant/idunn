@@ -61,9 +61,7 @@ class PagesJaunes(Datasource):
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     @classmethod
-    def fetch_search(
-        cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
-    ):
+    def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
         if len(intentions) > 0:
             return asyncio.create_task(
                 run_in_threadpool(

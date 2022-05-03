@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from copy import deepcopy
 
 from starlette.concurrency import run_in_threadpool
 
@@ -21,20 +20,14 @@ SUBCLASS_HOTEL_OSM = [
 
 
 class Osm(Datasource):
-    is_wiki_search: bool = False
+    is_wiki_filter: bool = False
 
-    def __init__(self, is_wiki_search: bool):
+    def __init__(self, is_wiki_filter: bool):
         super().__init__()
-        self.is_wiki_search = is_wiki_search
+        self.is_wiki_filter = is_wiki_filter
 
     @classmethod
-    def fetch_search(
-        cls, query: SearchQueryParams, intentions=None, is_france_query=False, is_wiki=False
-    ):
-        query_osm = deepcopy(query)
-        if cls.is_wiki_search:
-            query_osm.wikidata = True
-            query_osm.except_poi_types = SUBCLASS_HOTEL_OSM
+    def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
         return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
 
     @classmethod
@@ -43,6 +36,10 @@ class Osm(Datasource):
             feature_properties = results["features"][0]["properties"]["geocoding"]
             place_id = feature_properties["id"]
             place = place_from_id(place_id, lang, follow_redirect=True)
+            if cls.is_wiki_filter:
+                if place.wikidata_id and place.get_subclass_name() not in SUBCLASS_HOTEL_OSM:
+                    return place.load_place(lang=lang)
+                return None
             return place.load_place(lang=lang)
         except Exception:
             return None
