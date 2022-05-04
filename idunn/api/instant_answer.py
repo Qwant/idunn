@@ -226,7 +226,7 @@ async def get_instant_answer(
         extra_geocoder_params["lon"], extra_geocoder_params["lat"] = get_region_lonlat(user_country)
         extra_geocoder_params["zoom"] = 6
 
-    intentions = []
+    intention = None
     if lang in nlu_allowed_languages:
         try:
             intention = await nlu_client.get_intention(
@@ -239,7 +239,7 @@ async def get_instant_answer(
                 return await get_instant_answer_intention(intention, query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query
-            intentions = None
+            intention = None
 
     # Direct geocoding query
     query = AutocompleteQueryParams.build(
