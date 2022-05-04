@@ -236,10 +236,10 @@ async def get_instant_answer(
                 allow_types=[IntentionType.BRAND, IntentionType.CATEGORY, IntentionType.POI],
             )
             if intention and intention.type in [IntentionType.BRAND, IntentionType.CATEGORY]:
-                return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
+                return await get_instant_answer_intention(intention, query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query
-            intentions = []
+            intentions = None
 
     # Direct geocoding query
     query = AutocompleteQueryParams.build(
@@ -247,7 +247,7 @@ async def get_instant_answer(
     )
 
     try:
-        is_france_query = pj_source.bbox_is_covered(intentions[0].filter.bbox)
+        is_france_query = pj_source.bbox_is_covered(intention.filter.bbox)
     except Exception:
         is_france_query = False
 
@@ -258,7 +258,7 @@ async def get_instant_answer(
     #       See https://github.com/encode/httpx/issues/2139
     fetch_pj = asyncio.create_task(
         await pj_source.fetch_search(
-            normalized_query, intentions=intentions, is_france_query=is_france_query
+            normalized_query, intention=intention, is_france_query=is_france_query
         ),
         name="ia_fetch_pj",
     )

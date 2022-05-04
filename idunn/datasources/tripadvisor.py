@@ -34,7 +34,7 @@ class Tripadvisor(Datasource):
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
     @classmethod
-    async def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
+    async def fetch_search(cls, query: SearchQueryParams, intention=None, is_france_query=False):
         query_tripadvisor = deepcopy(query)
         if is_france_query:
             query_tripadvisor.poi_dataset = ["tripadvisor"]
