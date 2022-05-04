@@ -140,7 +140,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     # For intention results around a point, rerank results by distance
     intention_around_point = None
     intention_place = intention.description.place
-    if intention_place and intention_place.properties.geocoding.type == "poi":
+    if intention_place and intention_place["properties"]["geocoding"]["type"] == "poi":
         place_coord = intention_place.geometry.get("coordinates")
         if place_coord and len(place_coord) == 2:
             lon, lat = place_coord
