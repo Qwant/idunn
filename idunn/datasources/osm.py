@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from starlette.concurrency import run_in_threadpool
@@ -27,8 +26,8 @@ class Osm(Datasource):
         self.is_wiki_filter = is_wiki_filter
 
     @classmethod
-    def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
-        return asyncio.create_task(bragi_client.search(query), name="ia_fetch_bragi")
+    async def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
+        return bragi_client.search(query)
 
     @classmethod
     def filter_search_result(cls, results, lang, normalized_query=None):

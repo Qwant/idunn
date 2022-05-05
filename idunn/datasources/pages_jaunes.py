@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from os import path
 from typing import List
@@ -61,23 +60,17 @@ class PagesJaunes(Datasource):
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     @classmethod
-    def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
+    async def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
         if len(intentions) > 0:
-            return asyncio.create_task(
-                run_in_threadpool(
-                    pj_source.search_places,
-                    query,
-                    intentions[0].description._place_in_query,
-                ),
-                name="ia_fetch_pj",
-            )
-        return asyncio.create_task(
-            run_in_threadpool(
+            return run_in_threadpool(
                 pj_source.search_places,
                 query,
-                False,
-            ),
-            name="ia_fetch_pj",
+                intentions[0].description._place_in_query,
+            )
+        return run_in_threadpool(
+            pj_source.search_places,
+            query,
+            False,
         )
 
     @classmethod

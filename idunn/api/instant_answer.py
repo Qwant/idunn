@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional, List, Tuple, Union
 
@@ -20,7 +21,7 @@ from .constants import PoiSource
 from ..datasources import Datasource
 from ..datasources.osm import Osm
 from ..datasources.tripadvisor import Tripadvisor
-from ..services.instant_answer.normalization import normalize_instant_answer_param
+from ..instant_answer.normalization import normalize_instant_answer_param
 from ..utils.verbosity import Verbosity
 
 logger = logging.getLogger(__name__)
@@ -261,11 +262,16 @@ async def get_instant_answer(
     #       connection pool which will lead on bragi not being available
     #       anymore (or a memory leak if the limit is very high).
     #       See https://github.com/encode/httpx/issues/2139
-    fetch_pj = pj_source.fetch_search(
-        normalized_query, intentions=intentions, is_france_query=is_france_query
+    fetch_pj = asyncio.create_task(
+        pj_source.fetch_search(
+            normalized_query, intentions=intentions, is_france_query=is_france_query
+        ),
+        name="ia_fetch_pj",
     )
-    fetch_bragi_osm = Osm.fetch_search(query)
-    fetch_bragi_tripadvisor = Tripadvisor.fetch_search(query, is_france_query=is_france_query)
+    fetch_bragi_osm = asyncio.create_task(Osm.fetch_search(query), name="ia_fetch_bragi")
+    fetch_bragi_tripadvisor = asyncio.create_task(
+        Tripadvisor.fetch_search(query, is_france_query=is_france_query), name="fetch_ta_bragi"
+    )
 
     datasource_priority_list = get_single_ia_datasource_priority(
         is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm

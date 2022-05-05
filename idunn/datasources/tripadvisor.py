@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from copy import deepcopy
 from json import JSONDecodeError
@@ -35,12 +34,12 @@ class Tripadvisor(Datasource):
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
     @classmethod
-    def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
+    async def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
         query_tripadvisor = deepcopy(query)
         if is_france_query:
             query_tripadvisor.poi_dataset = ["tripadvisor"]
             query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
-        return asyncio.create_task(bragi_client.search(query_tripadvisor), name="fetch_ta_bragi")
+        return bragi_client.search(query_tripadvisor)
 
     @classmethod
     def filter_search_result(cls, results, lang, normalized_query=None):
