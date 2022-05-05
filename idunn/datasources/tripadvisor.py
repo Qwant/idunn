@@ -109,3 +109,6 @@ def cleanup_empty_params(d):
         elif isinstance(value, dict):
             cleanup_empty_params(value)
     return d  # For convenience
+
+
+tripadvisor = Tripadvisor()

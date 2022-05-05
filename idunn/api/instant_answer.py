@@ -18,7 +18,7 @@ from idunn.utils import maps_urls
 from idunn.utils.regions import get_region_lonlat
 from idunn.utils.result_filter import ResultFilter
 from .constants import PoiSource
-from ..datasources import Datasource
+from ..datasources import Datasource, tripadvisor
 from ..datasources.osm import Osm
 from ..datasources.tripadvisor import Tripadvisor
 from ..instant_answer.normalization import normalize_instant_answer_param
@@ -183,13 +183,13 @@ def get_single_ia_datasource_priority(
 ) -> List[Union[Datasource, any]]:
     if is_france_query:
         return [
-            (Tripadvisor(), fetch_bragi_tripadvisor),
-            (PagesJaunes(), fetch_pj),
+            (tripadvisor, fetch_bragi_tripadvisor),
+            (pj_source, fetch_pj),
             (Osm(is_wiki_filter=False), fetch_bragi_osm),
         ]
     return [
         (Osm(is_wiki_filter=True), fetch_bragi_osm),
-        (Tripadvisor(), fetch_bragi_tripadvisor),
+        (tripadvisor, fetch_bragi_tripadvisor),
         (Osm(is_wiki_filter=False), fetch_bragi_osm),
     ]
 
