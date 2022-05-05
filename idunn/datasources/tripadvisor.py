@@ -111,4 +111,4 @@ def cleanup_empty_params(d):
     return d  # For convenience
 
 
-tripadvisor = Tripadvisor()
+ta = Tripadvisor()
