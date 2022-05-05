@@ -47,15 +47,15 @@ def assert_intention(client, params, expected_intention=None, expected_intention
     data = response.json()
     assert response.status_code == 200
     assert len(data.get("features")) > 0
-    intentions = data.get("intentions", None)
-    assert intentions == expected_intention
+    intention = data.get("intention", None)
+    assert intention == expected_intention
 
-    if intentions:
+    if intention:
         if expected_intention_place is None:
-            assert intentions[0]["description"].get("place") is None
+            assert intention["description"].get("place") is None
         else:
             assert (
-                intentions[0]["description"]["place"]["properties"]["geocoding"]["label"]
+                intention["description"]["place"]["properties"]["geocoding"]["label"]
                 == expected_intention_place
             )
 
@@ -101,16 +101,14 @@ def test_autocomplete_with_nlu_brand_and_city(mock_autocomplete_get, mock_NLU_wi
     assert_intention(
         client,
         params={"q": "auchan à paris", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[
-            {
-                "type": "brand",
-                "filter": {"q": "auchan", "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156]},
-                "description": {
-                    "query": "auchan",
-                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
-                },
-            }
-        ],
+        expected_intention={
+            "type": "brand",
+            "filter": {"q": "auchan", "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156]},
+            "description": {
+                "query": "auchan",
+                "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
+            },
+        },
         expected_intention_place="Paris (75000-75116), Île-de-France, France",
     )
 
@@ -120,13 +118,11 @@ def test_autocomplete_with_nlu_brand_no_focus(mock_autocomplete_get, mock_NLU_wi
     assert_intention(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[
-            {
-                "type": "brand",
-                "filter": {"q": "auchan"},
-                "description": {"query": "auchan"},
-            }
-        ],
+        expected_intention={
+            "type": "brand",
+            "filter": {"q": "auchan"},
+            "description": {"query": "auchan"},
+        },
         expected_intention_place=None,
     )
 
@@ -136,13 +132,11 @@ def test_autocomplete_with_nlu_brand_focus(mock_autocomplete_get, mock_NLU_with_
     assert_intention(
         client,
         params={"q": "auchan", "lang": "fr", "limit": 7, "nlu": True, "lat": 48.9, "lon": 2.3},
-        expected_intention=[
-            {
-                "type": "brand",
-                "filter": {"q": "auchan"},
-                "description": {"query": "auchan"},
-            }
-        ],
+        expected_intention={
+            "type": "brand",
+            "filter": {"q": "auchan"},
+            "description": {"query": "auchan"},
+        },
         expected_intention_place=None,
     )
 
@@ -152,13 +146,11 @@ def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
     assert_intention(
         client,
         params={"q": "pharmacie", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[
-            {
-                "type": "category",
-                "filter": {"category": "pharmacy"},
-                "description": {"category": "pharmacy"},
-            }
-        ],
+        expected_intention={
+            "type": "category",
+            "filter": {"category": "pharmacy"},
+            "description": {"category": "pharmacy"},
+        },
         expected_intention_place=None,
     )
 
@@ -169,13 +161,11 @@ def test_autocomplete_with_nlu_regex_cat(mock_autocomplete_get, mock_NLU_with_ca
     assert_intention(
         client,
         params={"q": "bank", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[
-            {
-                "type": "category",
-                "filter": {"category": "bank"},
-                "description": {"category": "bank"},
-            }
-        ],
+        expected_intention={
+            "type": "category",
+            "filter": {"category": "bank"},
+            "description": {"category": "bank"},
+        },
         expected_intention_place=None,
     )
 
@@ -185,19 +175,17 @@ def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_cat_
     assert_intention(
         client,
         params={"q": "pharmacie à paris, france", "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[
-            {
-                "type": "category",
-                "filter": {
-                    "category": "pharmacy",
-                    "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
-                },
-                "description": {
-                    "category": "pharmacy",
-                    "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
-                },
-            }
-        ],
+        expected_intention={
+            "type": "category",
+            "filter": {
+                "category": "pharmacy",
+                "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
+            },
+            "description": {
+                "category": "pharmacy",
+                "place": {"type": "Feature", "geometry": ANY, "properties": ANY},
+            },
+        },
         expected_intention_place="Paris (75000-75116), Île-de-France, France",
     )
 
@@ -207,7 +195,7 @@ def test_autocomplete_with_nlu_poi(mock_autocomplete_get, mock_NLU_with_poi):
     assert_intention(
         client,
         params={"q": mock_NLU_with_poi["text"], "lang": "fr", "limit": 7, "nlu": True},
-        expected_intention=[],
+        expected_intention=None,
     )
 
 
@@ -226,5 +214,5 @@ def test_no_intention_for_brand_with_no_matching_feature(
             "limit": 7,
             "nlu": True,
         },
-        expected_intention=[],
+        expected_intention=None,
     )

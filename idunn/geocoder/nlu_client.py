@@ -289,9 +289,6 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
         try:
             place_query = self.build_place_query(tags_list)
-            bbox, place = await self.try_get_place_and_bbox_from_query(
-                extra_geocoder_params, lang, place_query
-            )
             if self.is_poi_request(tags_list):
                 if IntentionType.POI not in allow_types:
                     logger.info("Detected POI request for '%s'", text, extra=logs_extra)
@@ -325,26 +322,27 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
                 self.add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query)
                 logger.info("Detected intentions for '%s'", text, extra=logs_extra)
-
-            if bbox and place:
-                intention.filter.bbox = bbox
-                intention.description.place = place
+                if place_query:
+                    bbox, place = await self.get_place_and_bbox_from_query(
+                        extra_geocoder_params, lang, place_query
+                    )
+                    intention.filter.bbox = bbox
+                    intention.description.place = place
             return intention
 
         except NluClientException as exp:
             exp.extra.update(logs_extra)
             raise exp
 
-    async def try_get_place_and_bbox_from_query(self, extra_geocoder_params, lang, place_query):
-        if place_query:
-            bragi_params = GeocoderParams.build(
-                q=place_query,
-                lang=lang,
-                limit=1,
-                **(extra_geocoder_params or {}),
-            )
-            bragi_result = await bragi_client.autocomplete(bragi_params)
-            return await self.get_bbox_place(bragi_result, place_query)
+    async def get_place_and_bbox_from_query(self, extra_geocoder_params, lang, place_query):
+        bragi_params = GeocoderParams.build(
+            q=place_query,
+            lang=lang,
+            limit=1,
+            **(extra_geocoder_params or {}),
+        )
+        bragi_result = await bragi_client.autocomplete(bragi_params)
+        return await self.get_bbox_place(bragi_result, place_query)
 
     @staticmethod
     def add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query):
