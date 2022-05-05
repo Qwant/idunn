@@ -263,14 +263,15 @@ async def get_instant_answer(
     #       anymore (or a memory leak if the limit is very high).
     #       See https://github.com/encode/httpx/issues/2139
     fetch_pj = asyncio.create_task(
-        pj_source.fetch_search(
+        await pj_source.fetch_search(
             normalized_query, intentions=intentions, is_france_query=is_france_query
         ),
         name="ia_fetch_pj",
     )
-    fetch_bragi_osm = asyncio.create_task(Osm.fetch_search(query), name="ia_fetch_bragi")
+    fetch_bragi_osm = asyncio.create_task(await Osm.fetch_search(query), name="ia_fetch_bragi")
     fetch_bragi_tripadvisor = asyncio.create_task(
-        Tripadvisor.fetch_search(query, is_france_query=is_france_query), name="fetch_ta_bragi"
+        await Tripadvisor.fetch_search(query, is_france_query=is_france_query),
+        name="fetch_ta_bragi",
     )
 
     datasource_priority_list = get_single_ia_datasource_priority(
