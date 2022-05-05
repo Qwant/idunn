@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, validator, HttpUrl
 
 from idunn import settings
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
-from idunn.datasources.pages_jaunes import pj_source, PagesJaunes
+from idunn.datasources.pages_jaunes import pj_source
 from idunn.geocoder.models import AutocompleteQueryParams
 from idunn.geocoder.models.geocodejson import IntentionType
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
