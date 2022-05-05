@@ -17,6 +17,7 @@ lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
 
 [dev-packages]
 pytest = "*"
+pytest-asyncio = "*"
 lovely-pytest-docker = "*"
 freezegun = "*"
 ipython = "*"
