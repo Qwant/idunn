@@ -1,10 +1,13 @@
 import asyncio
 import logging
+from typing import Optional
+
 from fastapi import Body, Depends
 from fastapi.responses import ORJSONResponse
 from ..geocoder.bragi_client import bragi_client
+from ..geocoder.models.geocodejson import Intention
 from ..geocoder.nlu_client import nlu_client, NluClientException
-from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
+from ..geocoder.models import AutocompleteQueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings
 from idunn.utils.result_filter import ResultFilter
@@ -13,13 +16,12 @@ logger = logging.getLogger(__name__)
 result_filter = ResultFilter()
 
 nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
-autocomplete_nlu_shadow_enabled = settings["AUTOCOMPLETE_NLU_SHADOW_ENABLED"]
 autocomplete_nlu_filter_intentions = settings["AUTOCOMPLETE_NLU_FILTER_INTENTIONS"]
 
 
-def post_filter_intention(intention, bragi_response, limit):
+def filter_wrong_brand_intention(intention: Intention, bragi_response, limit):
     if not intention.description.query or intention.description.place:
-        return True
+        return intention
 
     # Detected intention is a full-text query only (brand).
     # A generic brand query will typically match dozens of POIs.
@@ -38,7 +40,7 @@ def post_filter_intention(intention, bragi_response, limit):
     )
 
     if matches > expected_matches:
-        return True
+        return intention
 
     logging.info(
         "Ignored intention which doesn't match enough geocoding results `%s`",
@@ -55,42 +57,35 @@ def post_filter_intention(intention, bragi_response, limit):
             "limit": limit,
         },
     )
-    return False
+    return None
 
 
 async def get_autocomplete(
-    query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
+    query: AutocompleteQueryParams = Depends(AutocompleteQueryParams),
+    extra: ExtraParams = Body(ExtraParams()),
 ) -> IdunnAutocomplete:
     """
     Get a list of suggested places or intentions from a potentially incomplete
     query.
     """
 
-    async def get_intentions():
-        if query.lang not in nlu_allowed_languages:
-            return None
-
-        if not query.nlu and not autocomplete_nlu_shadow_enabled:
+    async def get_intention() -> Optional[Intention]:
+        if query.lang not in nlu_allowed_languages or not query.nlu:
             return None
 
         try:
-            return await nlu_client.get_intentions(text=query.q, lang=query.lang)
+            return await nlu_client.get_intention(text=query.q, lang=query.lang)
         except NluClientException as exp:
             logger.info("Ignored NLU for '%s': %s", query.q, exp.reason(), extra=exp.extra)
-            return []
+            return None
 
-    autocomplete_response, intentions = await asyncio.gather(
-        bragi_client.autocomplete(query, extra), get_intentions()
+    autocomplete_response, intention = await asyncio.gather(
+        bragi_client.autocomplete(query, extra), get_intention()
     )
-    if intentions is not None and query.nlu:
+    if intention is not None and query.nlu:
         if autocomplete_nlu_filter_intentions:
-            intentions = list(
-                filter(
-                    lambda i: post_filter_intention(i, autocomplete_response, query.limit),
-                    intentions,
-                )
-            )
-        autocomplete_response["intentions"] = intentions
+            intention = filter_wrong_brand_intention(intention, autocomplete_response, query.limit)
+        autocomplete_response["intention"] = intention
     autocomplete_response["geocoding"]["query"] = query.q
     return IdunnAutocomplete(**autocomplete_response)
 

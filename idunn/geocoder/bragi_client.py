@@ -5,7 +5,7 @@ import pydantic
 from fastapi import HTTPException
 
 from idunn import settings
-from .models import QueryParams, ExtraParams
+from .models import AutocompleteQueryParams, ExtraParams
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class BragiClient:
             limits=httpx.Limits(max_connections=int(settings["BRAGI_MAX_CONNECTIONS"])),
         )
 
-    async def search(self, query: QueryParams):
+    async def search(self, query: AutocompleteQueryParams):
         url = settings["BRAGI_BASE_URL"] + "/search"
         params = query.bragi_query_dict()
         try:
@@ -48,7 +48,9 @@ class BragiClient:
             logger.exception("Search invalid response")
             raise HTTPException(503, "Invalid response from the geocoder") from exc
 
-    async def autocomplete(self, query: QueryParams, extra: ExtraParams = ExtraParams()):
+    async def autocomplete(
+        self, query: AutocompleteQueryParams, extra: ExtraParams = ExtraParams()
+    ):
         params = query.bragi_query_dict()
         body = None
         if extra.shape:

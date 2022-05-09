@@ -6,7 +6,7 @@ from fastapi import Depends, Query
 from pydantic import BaseModel
 
 from idunn import settings
-from idunn.datasources.tripadvisor import tripadvisor_api
+from idunn.datasources.tripadvisor import Tripadvisor
 from idunn.places.models.ta_api_reponse import HotelPricingResponse
 
 
@@ -85,4 +85,4 @@ class SearchHotelByIdParam(CommonQueryParam):
 
 async def get_hotel_pricing(params: SearchHotelByIdParam = Depends()) -> HotelPricingResponse:
     """Get availability and price for a given hotel Id with TripAdvisor api"""
-    return await tripadvisor_api.get_hotel_pricing_by_hotel_id(json.loads(params.json()))
+    return await Tripadvisor().get_hotel_pricing_by_hotel_id(json.loads(params.json()))

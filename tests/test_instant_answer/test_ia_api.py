@@ -23,7 +23,7 @@ from ..fixtures.geocodeur.search import (
 from ..fixtures.api.pj import mock_pj_api_find_with_musee_picasso, mock_pj_api_find_with_chez_eric
 
 
-def test_ia_paris(mock_search_get, mock_NLU_with_city):
+def test_ia_paris(mock_search_get, mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "paris", "lang": "fr"})
     assert response.status_code == 200
@@ -34,13 +34,13 @@ def test_ia_paris(mock_search_get, mock_NLU_with_city):
     assert place["name"] == "Paris"
 
 
-def test_ia_item_not_found_in_db(mock_search_get, mock_NLU_with_city):
+def test_ia_item_not_found_in_db(mock_search_get, mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get("/v1/instant_answer", params={"q": "pavillon paris", "lang": "fr"})
     assert response.status_code == 204
 
 
-def test_ia_paris_with_region(mock_search_get, mock_NLU_with_city):
+def test_ia_paris_with_region(mock_search_get, mock_autocomplete_get, mock_NLU_with_city):
     client = TestClient(app)
     response = client.get(
         "/v1/instant_answer",
@@ -54,7 +54,7 @@ def test_ia_paris_with_region(mock_search_get, mock_NLU_with_city):
     assert place["name"] == "Paris"
 
 
-def test_ia_paris_request_international(mock_search_get, mock_NLU_with_city):
+def test_ia_paris_request_international(mock_search_get, mock_autocomplete_get, mock_NLU_with_city):
     """
     The user queries for the name in Italian while lang = "fr".
     """
