@@ -6,7 +6,7 @@ from idunn.api.constants import PoiSource
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.geocoder.models.params import SearchQueryParams
+from idunn.geocoder.models.params import QueryParams
 from idunn.places.poi import BragiPOI, OsmPOI
 from idunn.utils.place import place_from_id
 
@@ -26,7 +26,7 @@ class Osm(Datasource):
         self.is_wiki_filter = is_wiki_filter
 
     @classmethod
-    async def fetch_search(cls, query: SearchQueryParams, intention=None, is_france_query=False):
+    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
         return bragi_client.search(query)
 
     @classmethod

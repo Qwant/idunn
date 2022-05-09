@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, validator, HttpUrl
 from idunn import settings
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
 from idunn.datasources.pages_jaunes import pj_source
-from idunn.geocoder.models import AutocompleteQueryParams
+from idunn.geocoder.models import QueryParams
 from idunn.geocoder.models.geocodejson import IntentionType
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
 from idunn.places import Place
@@ -242,9 +242,7 @@ async def get_instant_answer(
             intention = None
 
     # Direct geocoding query
-    query = AutocompleteQueryParams.build(
-        q=normalized_query, lang=lang, limit=5, **extra_geocoder_params
-    )
+    query = QueryParams.build(q=normalized_query, lang=lang, limit=1, **extra_geocoder_params)
 
     try:
         is_france_query = pj_source.bbox_is_covered(intention.filter.bbox)

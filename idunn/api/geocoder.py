@@ -7,7 +7,7 @@ from fastapi.responses import ORJSONResponse
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.models.geocodejson import Intention
 from ..geocoder.nlu_client import nlu_client, NluClientException
-from ..geocoder.models import AutocompleteQueryParams, ExtraParams, IdunnAutocomplete
+from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings
 from idunn.utils.result_filter import ResultFilter
@@ -61,7 +61,7 @@ def filter_wrong_brand_intention(intention: Intention, bragi_response, limit):
 
 
 async def get_autocomplete(
-    query: AutocompleteQueryParams = Depends(AutocompleteQueryParams),
+    query: QueryParams = Depends(QueryParams),
     extra: ExtraParams = Body(ExtraParams()),
 ) -> IdunnAutocomplete:
     """

@@ -11,7 +11,7 @@ from idunn import settings
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
 from idunn.geocoder.bragi_client import bragi_client
-from idunn.geocoder.models.params import SearchQueryParams
+from idunn.geocoder.models.params import QueryParams
 from idunn.places.poi import TripadvisorPOI
 from idunn.utils.place import place_from_id
 
@@ -34,7 +34,7 @@ class Tripadvisor(Datasource):
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
     @classmethod
-    async def fetch_search(cls, query: SearchQueryParams, intention=None, is_france_query=False):
+    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
         query_tripadvisor = deepcopy(query)
         if is_france_query:
             query_tripadvisor.poi_dataset = ["tripadvisor"]

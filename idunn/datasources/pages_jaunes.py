@@ -8,7 +8,7 @@ from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
 from idunn.datasources import Datasource
-from idunn.geocoder.models.params import SearchQueryParams
+from idunn.geocoder.models.params import QueryParams
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.models import pj_info, pj_find
 from idunn.places.pj_poi import PjApiPOI
@@ -60,7 +60,7 @@ class PagesJaunes(Datasource):
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     @classmethod
-    async def fetch_search(cls, query: SearchQueryParams, intention=None, is_france_query=False):
+    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
         if intention:
             return run_in_threadpool(
                 pj_source.search_places,
