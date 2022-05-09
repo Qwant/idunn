@@ -268,6 +268,9 @@ class BasePlace(dict):
     def get_source_url(self):
         return None
 
+    def get_source_base_url(self):
+        return None
+
     def get_contribute_url(self):
         return None
 

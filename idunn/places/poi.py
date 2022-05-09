@@ -166,6 +166,9 @@ class TripadvisorPOI(POI):
     def get_source_url(self):
         return self.get_tripadvisor_lang_url()
 
+    def get_source_base_url(self):
+        return self.get_base_tripadvisor_lang_url()
+
     def get_contribute_url(self):
         return self.get_tripadvisor_lang_url()
 
@@ -227,6 +230,12 @@ class TripadvisorPOI(POI):
                 count=1,
             )
         return tripadvisor_default_url
+
+    def get_base_tripadvisor_lang_url(self):
+        tripadvisor_poi_url = self.get_tripadvisor_lang_url()
+        ta_url_part = tripadvisor_poi_url.split("/")
+        ta_url_base = "{}//{}".format(ta_url_part[0], ta_url_part[2])
+        return ta_url_base
 
 
 # Bragi POI is only used for OSM right now
