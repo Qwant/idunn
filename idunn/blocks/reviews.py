@@ -37,13 +37,13 @@ def build_rating_bubble_star_url(rating):
     return base_url
 
 
-def build_review(review: dict, source_url: str) -> Review:
+def build_review(review: dict, source_base_url: str) -> Review:
     return Review(
         date=review["DatePublished"],
         rating=review["Rating"],
         rating_bubble_star_url=build_rating_bubble_star_url(review["Rating"]),
-        url="".join([source_url, review["ReviewURL"]]),
-        more_reviews_url="".join([source_url, review["MoreReviewsURL"]]),
+        url="".join([source_base_url, review["ReviewURL"]]),
+        more_reviews_url="".join([source_base_url, f"{review['MoreReviewsURL']}#REVIEWS"]),
         lang=review["Language"],
         title=review["Title"],
         text=review["Text"],
@@ -57,7 +57,7 @@ class ReviewsBlock(BaseBlock):
     reviews: List[Review]
 
     @classmethod
-    def build_reviews(cls, reviews: List[dict], source_url: str, lang: str) -> List[Review]:
+    def build_reviews(cls, reviews: List[dict], source_base_url: str, lang: str) -> List[Review]:
         lang_priority_order = {lang: 2, "en": 1}
         sorted_reviews = sorted(
             reviews,
@@ -68,7 +68,7 @@ class ReviewsBlock(BaseBlock):
             ),
         )
         return [
-            build_review(review, source_url)
+            build_review(review, source_base_url)
             for review in sorted_reviews[:MAX_REVIEW_DISPLAY_NUMBER]
         ]
 
@@ -76,5 +76,5 @@ class ReviewsBlock(BaseBlock):
     def from_es(cls, place, lang: str):
         if place.get_reviews() is None:
             return None
-        reviews = cls.build_reviews(place.get_reviews(), place.get_source_url(), lang)
+        reviews = cls.build_reviews(place.get_reviews(), place.get_source_base_url(), lang)
         return cls(reviews=reviews)
