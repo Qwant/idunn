@@ -131,6 +131,7 @@ def build_response(result: InstantAnswerResult, query: str, lang: str):
 
 
 async def get_instant_answer_intention(intention, query: str, lang: str):
+    # if there is not brand or category intention with an associated place
     if not intention.filter.bbox:
         return no_instant_answer(query=query, lang=lang)
 
@@ -139,7 +140,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     # For intention results around a point, rerank results by distance
     intention_around_point = None
     intention_place = intention.description.place
-    if intention_place and intention_place.properties.geocoding.type == "poi":
+    if intention_place and intention_place["properties"]["geocoding"]["type"] == "poi":
         place_coord = intention_place.geometry.get("coordinates")
         if place_coord and len(place_coord) == 2:
             lon, lat = place_coord
@@ -225,27 +226,20 @@ async def get_instant_answer(
         extra_geocoder_params["lon"], extra_geocoder_params["lat"] = get_region_lonlat(user_country)
         extra_geocoder_params["zoom"] = 6
 
-    intentions = []
+    intention = None
     if lang in nlu_allowed_languages:
         try:
-            intentions = await nlu_client.get_intentions(
+            intention = await nlu_client.get_intention(
                 normalized_query,
                 lang,
                 extra_geocoder_params,
-                allow_types=[
-                    IntentionType.BRAND,
-                    IntentionType.CATEGORY,
-                    IntentionType.POI,
-                ],
+                allow_types=[IntentionType.BRAND, IntentionType.CATEGORY, IntentionType.POI],
             )
-            if intentions and intentions[0].type in [
-                IntentionType.BRAND,
-                IntentionType.CATEGORY,
-            ]:
-                return await get_instant_answer_intention(intentions[0], query=q, lang=lang)
+            if intention and intention.type in [IntentionType.BRAND, IntentionType.CATEGORY]:
+                return await get_instant_answer_intention(intention, query=q, lang=lang)
         except NluClientException:
             # No intention could be interpreted from query
-            intentions = []
+            intention = None
 
     # Direct geocoding query
     query = AutocompleteQueryParams.build(
@@ -253,7 +247,7 @@ async def get_instant_answer(
     )
 
     try:
-        is_france_query = pj_source.bbox_is_covered(intentions[0].filter.bbox)
+        is_france_query = pj_source.bbox_is_covered(intention.filter.bbox)
     except Exception:
         is_france_query = False
 
@@ -264,7 +258,7 @@ async def get_instant_answer(
     #       See https://github.com/encode/httpx/issues/2139
     fetch_pj = asyncio.create_task(
         await pj_source.fetch_search(
-            normalized_query, intentions=intentions, is_france_query=is_france_query
+            normalized_query, intention=intention, is_france_query=is_france_query
         ),
         name="ia_fetch_pj",
     )

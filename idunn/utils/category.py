@@ -20,9 +20,6 @@ class CategoryEnum(str):
     Methods defining the behavior of the enum `Category` defined bellow.
     """
 
-    def match_brand(self):
-        return ALL_CATEGORIES[self].get("match_brand", False)
-
     def pj_what(self):
         return ALL_CATEGORIES[self].get("pj_what")
 

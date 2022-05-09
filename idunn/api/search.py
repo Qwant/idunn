@@ -35,7 +35,7 @@ async def search(
         return Response(status_code=204)
 
     # When an intention is detected, it takes over on geocoding features
-    if response.intentions:
+    if response.intention:
         response.features = []
         return response
 

@@ -1,4 +1,3 @@
-import asyncio
 import httpx
 import logging
 import re
@@ -125,7 +124,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
         return self.nlu_classifier_handle_response(response_classifier.json())
 
     @staticmethod
-    def regex_classifier(text, is_brand=False) -> Optional[Category]:
+    def regex_classifier(text) -> Optional[Category]:
         """Match text with a category, using 'regex'
         >>> NLU_Helper.regex_classifier("restau").value
         'restaurant'
@@ -136,17 +135,13 @@ class NLU_Helper:  # pylint: disable = invalid-name
         """
         normalized_text = unidecode(text).lower().strip()
         for cat in list(Category):
-            if is_brand and not cat.match_brand():
-                continue
             regex = cat.regex()
             if regex and re.search(regex, normalized_text):
                 return cat
         return None
 
-    async def classify_category(self, text, is_brand=False):
-        if settings["NLU_CLASSIFIER_URL"] and not is_brand:
-            return await self.nlu_classifier(text) or self.regex_classifier(text, is_brand=is_brand)
-        return self.regex_classifier(text, is_brand=is_brand)
+    async def classify_category(self, text):
+        return await self.nlu_classifier(text) or self.regex_classifier(text)
 
     @classmethod
     def fuzzy_match(cls, query, bragi_res):
@@ -179,45 +174,6 @@ class NLU_Helper:  # pylint: disable = invalid-name
             return True
         return bool(result_filter.filter_bragi_features(q, [bragi_res]))
 
-    async def build_intention_category_place(
-        self,
-        cat_query,
-        place_query,
-        lang,
-        is_brand=False,
-        extra_geocoder_params=None,
-    ):
-        async def get_category():
-            return await self.classify_category(cat_query, is_brand=is_brand)
-
-        bragi_params = GeocoderParams.build(
-            q=place_query,
-            lang=lang,
-            limit=1,
-            **(extra_geocoder_params or {}),
-        )
-
-        bragi_result, category = await asyncio.gather(
-            bragi_client.autocomplete(bragi_params),
-            get_category(),
-        )
-
-        bbox, place = await self.get_bbox_place(bragi_result, place_query)
-
-        if category:
-            return Intention(
-                type=IntentionType.CATEGORY,
-                filter={"category": category, "bbox": bbox},
-                description={"category": category, "place": place},
-            )
-
-        # If it is a category that not exist, use it like a brand
-        return Intention(
-            type=IntentionType.BRAND,
-            filter={"q": cat_query, "bbox": bbox},
-            description={"query": cat_query, "place": place},
-        )
-
     async def get_bbox_place(self, bragi_result, place_query):
         if not bragi_result["features"]:
             raise NluClientException("no matching place")
@@ -242,8 +198,8 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 raise NluClientException("matching place has no coordinates")
         return bbox, place
 
-    async def build_intention_category(self, cat_query, is_brand=False):
-        category = await self.classify_category(cat_query, is_brand)
+    async def build_intention_category(self, cat_query):
+        category = await self.classify_category(cat_query)
 
         if category:
             return Intention(
@@ -262,25 +218,6 @@ class NLU_Helper:  # pylint: disable = invalid-name
     def is_poi_request(cls, tags_list):
         """Check if a request is addressed to a POI"""
         return any(t.get("tag") in NLU_POI_TAGS for t in tags_list)
-
-    @classmethod
-    def is_street_request(cls, tags_list):
-        """
-        Check if a request only contains a street description.
-        >>> NLU_Helper.is_street_request([
-        ...     {"phrase": "3 rue des Rosiers", "tag": "street"},
-        ...     {"phrase": "Paris", "tag": "city"},
-        ... ])
-        True
-        >>> NLU_Helper.is_street_request([
-        ...     {"phrase": "restaurant", "tag": "cat"},
-        ...     {"phrase": "rue des Rosiers, Paris", "tag": "street"},
-        ... ])
-        False
-        """
-        contains_street_tag = any(t.get("tag") in NLU_STREET_TAGS for t in tags_list)
-        only_place_tags = all(t.get("tag") in NLU_STREET_TAGS + NLU_PLACE_TAGS for t in tags_list)
-        return contains_street_tag and only_place_tags
 
     @classmethod
     def build_brand_query(cls, tags_list):
@@ -324,13 +261,16 @@ class NLU_Helper:  # pylint: disable = invalid-name
         response_nlu.raise_for_status()
         return response_nlu
 
-    async def get_intentions(
+    async def get_intention(
         self,
         text,
         lang,
         extra_geocoder_params=None,
         allow_types=[IntentionType.BRAND, IntentionType.CATEGORY],
-    ) -> [Intention]:
+    ) -> Optional[Intention]:
+        """
+        Get the intention with an associated bbox when a place is found in the query
+        """
         logs_extra = {
             "intention_detection": {
                 "text": text,
@@ -343,131 +283,93 @@ class NLU_Helper:  # pylint: disable = invalid-name
             response_nlu = await tagger_circuit_breaker.call_async(self.post_intentions, text, lang)
         except Exception:
             logger.error("Request to NLU tagger failed", exc_info=True, extra=logs_extra)
-            return []
+            return None
 
         tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
 
-        if self.is_poi_request(tags_list):
-            if IntentionType.POI not in allow_types:
-                logger.info("Detected POI request for '%s'", text, extra=logs_extra)
-                return []
-
+        try:
             place_query = self.build_place_query(tags_list)
-            if place_query:
-                bragi_params = GeocoderParams.build(
-                    q=place_query,
-                    lang=lang,
-                    limit=1,
-                    **(extra_geocoder_params or {}),
-                )
-
-                bragi_result = await bragi_client.autocomplete(bragi_params)
-                bbox, place = await self.get_bbox_place(bragi_result, place_query)
+            if self.is_poi_request(tags_list):
+                if IntentionType.POI not in allow_types:
+                    logger.info("Detected POI request for '%s'", text, extra=logs_extra)
+                    return None
 
                 intention = Intention(
                     type=IntentionType.POI,
-                    filter={"q": text, "bbox": bbox},
-                    description={"query": text, "place": place},
+                    filter={"q": text},
+                    description={"query": text},
+                )
+
+                intention.description._place_in_query = any(
+                    t.get("tag") in NLU_PLACE_TAGS for t in tags_list
                 )
             else:
-                intention = Intention(
-                    type=IntentionType.POI,
-                    filter={"q": text},
-                    description={"query": text},
-                )
+                brand_query = self.build_brand_query(tags_list)
+                cat_query = self.build_category_query(tags_list)
 
-            intention.description._place_in_query = any(
-                t.get("tag") in NLU_PLACE_TAGS for t in tags_list
-            )
+                if brand_query and cat_query:
+                    raise NluClientException("detected a category and a brand")
 
-            return [intention]
-
-        if self.is_street_request(tags_list):
-            if IntentionType.ADDRESS not in allow_types:
-                logger.info("Detected street request for '%s'", text, extra=logs_extra)
-                return []
-
-            return [
-                Intention(
-                    type=IntentionType.ADDRESS,
-                    filter={"q": text},
-                    description={"query": text},
-                )
-            ]
-
-        brand_query = self.build_brand_query(tags_list)
-        cat_query = self.build_category_query(tags_list)
-        place_query = self.build_place_query(tags_list)
-
-        logs_extra["intention_detection"].update(
-            {"brand_query": brand_query, "cat_query": cat_query, "place_query": place_query}
-        )
-
-        try:
-            if brand_query and cat_query:
-                raise NluClientException("detected a category and a brand")
-
-            if not brand_query and not cat_query:
-                if IntentionType.ANY_PLACE not in allow_types:
+                if not brand_query and not cat_query:
                     raise NluClientException("no category or brand detected")
 
-                return [
-                    Intention(
-                        type=IntentionType.ANY_PLACE,
-                        filter={"q": text},
-                        description={"query": text},
-                    )
-                ]
+                cat_or_brand_query = brand_query or cat_query
 
-            cat_or_brand_query = brand_query or cat_query
+                intention = await self.build_intention_category(cat_or_brand_query)
 
-            if place_query:
-                # 1 category or brand + 1 place
-                # Brands are handled the same way categories except that we don't want to process
-                # them with the classifier.
-                intention = await self.build_intention_category_place(
-                    cat_or_brand_query, place_query, lang, bool(brand_query), extra_geocoder_params
-                )
-            else:
-                # 1 category or brand
-                intention = await self.build_intention_category(
-                    cat_or_brand_query, is_brand=bool(brand_query)
-                )
-
-                # A query tagged as "category" and not recognized by the classifier often
-                # leads to irrelevant intention. Let's ignore them for now.
                 if cat_query and not intention.filter.category:
                     raise NluClientException("no category matched")
 
-            intention_dict = intention.dict(exclude_none=True)
-            place_props = (
-                intention_dict.get("description", {})
-                .get("place", {})
-                .get("properties", {})
-                .get("geocoding", {})
-            )
+                self.add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query)
+                logger.info("Detected intentions for '%s'", text, extra=logs_extra)
+                if place_query:
+                    bbox, place = await self.get_place_and_bbox_from_query(
+                        extra_geocoder_params, lang, place_query
+                    )
+                    intention.filter.bbox = bbox
+                    intention.description.place = place
+            return intention
 
-            logs_extra["intention_detection"].update(
-                {
-                    "res_category": intention_dict.get("filter", {}).get("category"),
-                    "res_bbox": intention_dict.get("filter", {}).get("bbox"),
-                    "res_query": intention_dict.get("filter", {}).get("q"),
-                }
-            )
-
-            if place_props:
-                logs_extra["intention_detection"].update(
-                    {
-                        "res_place_id": place_props.get("id"),
-                        "res_place_name": place_props.get("name"),
-                    }
-                )
-
-            logger.info("Detected intentions for '%s'", text, extra=logs_extra)
-            return [intention]
         except NluClientException as exp:
             exp.extra.update(logs_extra)
             raise exp
+
+    async def get_place_and_bbox_from_query(self, extra_geocoder_params, lang, place_query):
+        bragi_params = GeocoderParams.build(
+            q=place_query,
+            lang=lang,
+            limit=1,
+            **(extra_geocoder_params or {}),
+        )
+        bragi_result = await bragi_client.autocomplete(bragi_params)
+        return await self.get_bbox_place(bragi_result, place_query)
+
+    @staticmethod
+    def add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query):
+        intention_dict = intention.dict(exclude_none=True)
+        place_props = (
+            intention_dict.get("description", {})
+            .get("place", {})
+            .get("properties", {})
+            .get("geocoding", {})
+        )
+        logs_extra["intention_detection"].update(
+            {
+                "res_category": intention_dict.get("filter", {}).get("category"),
+                "res_bbox": intention_dict.get("filter", {}).get("bbox"),
+                "res_query": intention_dict.get("filter", {}).get("q"),
+                "brand_query": brand_query,
+                "cat_query": cat_query,
+                "place_query": place_query,
+            }
+        )
+        if place_props:
+            logs_extra["intention_detection"].update(
+                {
+                    "res_place_id": place_props.get("id"),
+                    "res_place_name": place_props.get("name"),
+                }
+            )
 
 
 nlu_client = NLU_Helper()

@@ -26,7 +26,7 @@ class Osm(Datasource):
         self.is_wiki_filter = is_wiki_filter
 
     @classmethod
-    async def fetch_search(cls, query: SearchQueryParams, intentions=None, is_france_query=False):
+    async def fetch_search(cls, query: SearchQueryParams, intention=None, is_france_query=False):
         return bragi_client.search(query)
 
     @classmethod
