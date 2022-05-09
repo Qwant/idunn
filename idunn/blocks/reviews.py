@@ -43,9 +43,7 @@ def build_review(review: dict, source_base_url: str) -> Review:
         rating=review["Rating"],
         rating_bubble_star_url=build_rating_bubble_star_url(review["Rating"]),
         url="".join([source_base_url, review["ReviewURL"]]),
-        more_reviews_url="".join(
-            [source_base_url, "{}{}".format(review["MoreReviewsURL"], "#REVIEWS")]
-        ),
+        more_reviews_url="".join([source_base_url, f"{review['MoreReviewsURL']}{'#REVIEWS'}"]),
         lang=review["Language"],
         title=review["Title"],
         text=review["Text"],
