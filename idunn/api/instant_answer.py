@@ -179,15 +179,19 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     return build_response(result, query=query, lang=lang)
 
 
-def get_single_ia_datasource_priority(
-    is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
+def get_single_ia_datasource_priority_france(
+    fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
 ) -> List[Union[Datasource, any]]:
-    if is_france_query:
-        return [
-            (ta, fetch_bragi_tripadvisor),
-            (pj_source, fetch_pj),
-            (Osm(is_wiki_filter=False), fetch_bragi_osm),
-        ]
+    return [
+        (ta, fetch_bragi_tripadvisor),
+        (pj_source, fetch_pj),
+        (Osm(is_wiki_filter=False), fetch_bragi_osm),
+    ]
+
+
+def get_single_ia_datasource_priority_world(
+    fetch_bragi_tripadvisor, fetch_bragi_osm
+) -> List[Union[Datasource, any]]:
     return [
         (Osm(is_wiki_filter=True), fetch_bragi_osm),
         (ta, fetch_bragi_tripadvisor),
@@ -254,21 +258,23 @@ async def get_instant_answer(
     #       connection pool which will lead on bragi not being available
     #       anymore (or a memory leak if the limit is very high).
     #       See https://github.com/encode/httpx/issues/2139
-    fetch_pj = asyncio.create_task(
-        await pj_source.fetch_search(
-            normalized_query, intention=intention, is_france_query=is_france_query
-        ),
-        name="ia_fetch_pj",
-    )
     fetch_bragi_osm = asyncio.create_task(await Osm.fetch_search(query), name="ia_fetch_bragi")
     fetch_bragi_tripadvisor = asyncio.create_task(
         await Tripadvisor.fetch_search(query, is_france_query=is_france_query),
         name="fetch_ta_bragi",
     )
-
-    datasource_priority_list = get_single_ia_datasource_priority(
-        is_france_query, fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
-    )
+    if is_france_query:
+        fetch_pj = asyncio.create_task(
+            await pj_source.fetch_search(normalized_query, intention=intention),
+            name="ia_fetch_pj",
+        )
+        datasource_priority_list = get_single_ia_datasource_priority_france(
+            fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
+        )
+    else:
+        datasource_priority_list = get_single_ia_datasource_priority_world(
+            fetch_bragi_tripadvisor, fetch_bragi_osm
+        )
 
     for (datasource, task) in datasource_priority_list:
         datasource_response = await task

@@ -36,8 +36,8 @@ class Tripadvisor(Datasource):
     @classmethod
     async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
         query_tripadvisor = deepcopy(query)
+        query_tripadvisor.poi_dataset = ["tripadvisor"]
         if is_france_query:
-            query_tripadvisor.poi_dataset = ["tripadvisor"]
             query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
         return bragi_client.search(query_tripadvisor)
 

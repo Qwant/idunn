@@ -60,17 +60,11 @@ class PagesJaunes(Datasource):
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     @classmethod
-    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
-        if intention:
-            return run_in_threadpool(
-                pj_source.search_places,
-                query,
-                intention.description._place_in_query,
-            )
+    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=True):
         return run_in_threadpool(
             pj_source.search_places,
             query,
-            False,
+            intention.description._place_in_query,
         )
 
     @classmethod
