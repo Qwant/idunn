@@ -968,6 +968,7 @@ categories:
       running_track:
         raw_filters:
           - class: "athletics"
+          - class: "running"
           - class: "track"
             subclass: "athletics"
 
