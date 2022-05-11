@@ -923,47 +923,46 @@ categories:
     pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "multi"
 
     football_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "soccer"
+          subclass: "soccer"
 
     boules_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "boules"
+          subclass: "boules"
 
     basketball_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "basketball"
+          subclass: "basketball"
 
     rugby_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "rugby"
+          subclass: "rugby"
 
     tennis_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "tennis"
+          subclass: "tennis"
 
     skateboard_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "skateboard"
+          subclass: "skateboard"
 
     table_tennis_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "table_tennis"
+          subclass: "table_tennis"
 
     equestrian_pitch:
       raw_filters:
         - class: "pitch"
-        - subclass: "equestrian"
+          subclass: "equestrian"
 
     running_track:
       raw_filters:
