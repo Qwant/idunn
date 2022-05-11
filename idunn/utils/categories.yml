@@ -929,6 +929,7 @@ categories:
       raw_filters:
         - class: "pitch"
         - subclass: "soccer"
+
     boules_pitch:
       raw_filters:
         - class: "pitch"
