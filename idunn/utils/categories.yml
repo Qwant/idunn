@@ -920,125 +920,124 @@ categories:
         - class: "coworking"
       pj_what: "coworking"
 
-      pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "multi"
+    pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "multi"
 
-      football_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "soccer"
+    football_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "soccer"
+    boules_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "boules"
 
-      boules_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "boules"
+    basketball_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "basketball"
 
-      basketball_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "basketball"
+    rugby_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "rugby"
 
-      rugby_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "rugby"
+    tennis_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "tennis"
 
-      tennis_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "tennis"
+    skateboard_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "skateboard"
 
-      skateboard_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "skateboard"
+    table_tennis_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "table_tennis"
 
-      table_tennis_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "table_tennis"
+    equestrian_pitch:
+      raw_filters:
+        - class: "pitch"
+        - subclass: "equestrian"
 
-      equestrian_pitch:
-        raw_filters:
-          - class: "pitch"
-          - subclass: "equestrian"
+    running_track:
+      raw_filters:
+        - class: "athletics"
+        - class: "running"
+        - class: "track"
+          subclass: "athletics"
 
-      running_track:
-        raw_filters:
-          - class: "athletics"
-          - class: "running"
-          - class: "track"
-            subclass: "athletics"
+    sports_hall:
+      raw_filters:
+        - class: "sports_hall"
 
-      sports_hall:
-        raw_filters:
-          - class: "sports_hall"
+    sport_climbing:
+      raw_filters:
+        - subclass: "climbing"
 
-      sport_climbing:
-        raw_filters:
-          - subclass: "climbing"
+    sport_martial_art:
+      raw_filters:
+        - subclass: "aikido"
+        - subclass: "hapkido"
+        - subclass: "judo"
+        - subclass: "karate"
+        - subclass: "kickboxing"
+        - subclass: "martial_arts"
+        - subclass: "sumo"
+        - subclass: "taekwondo"
 
-      sport_martial_art:
-        raw_filters:
-          - subclass: "aikido"
-          - subclass: "hapkido"
-          - subclass: "judo"
-          - subclass: "karate"
-          - subclass: "kickboxing"
-          - subclass: "martial_arts"
-          - subclass: "sumo"
-          - subclass: "taekwondo"
+    sport_badminton:
+      raw_filters:
+        - subclass: "badminton"
 
-      sport_badminton:
-        raw_filters:
-          - subclass: "badminton"
+    sport_baseball:
+      raw_filters:
+        - subclass: "baseball"
 
-      sport_baseball:
-        raw_filters:
-          - subclass: "baseball"
+    sport_beach_volley_ball:
+      raw_filters:
+        - subclass: "beachvolleyball"
 
-      sport_beach_volley_ball:
-        raw_filters:
-          - subclass: "beachvolleyball"
+    sport_golf:
+      raw_filters:
+        - subclass: "golf"
 
-      sport_golf:
-        raw_filters:
-          - subclass: "golf"
+    sport_handball:
+      raw_filters:
+        - subclass: "handball"
 
-      sport_handball:
-        raw_filters:
-          - subclass: "handball"
+    sport_ice_skating:
+      raw_filters:
+        - subclass: "ice_skating"
 
-      sport_ice_skating:
-        raw_filters:
-          - subclass: "ice_skating"
+    sport_karting:
+      raw_filters:
+        - subclass: "karting"
 
-      sport_karting:
-        raw_filters:
-          - subclass: "karting"
+    sport_motor:
+      raw_filters:
+        - subclass: "motor"
 
-      sport_motor:
-        raw_filters:
-          - subclass: "motor"
+    sport_skiing:
+      raw_filters:
+        - subclass: "skiing"
 
-      sport_skiing:
-        raw_filters:
-          - subclass: "skiing"
+    sport_volleyball:
+      raw_filters:
+        - subclass: "volleyball"
 
-      sport_volleyball:
-        raw_filters:
-          - subclass: "volleyball"
+    sport_sailing:
+      raw_filters:
+        - subclass: "sailing"
 
-      sport_sailing:
-        raw_filters:
-          - subclass: "sailing"
+    stadium:
+      raw_filters:
+        - class: "stadium"
 
-      stadium:
-        raw_filters:
-          - class: "stadium"
-
-      viewpoint:
-        raw_filters:
-          - subclass: "viewpoint"
+    viewpoint:
+      raw_filters:
+        - subclass: "viewpoint"
