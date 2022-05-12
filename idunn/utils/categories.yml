@@ -1041,3 +1041,7 @@ categories:
     viewpoint:
       raw_filters:
         - subclass: "viewpoint"
+
+    charging_station:
+      raw_filters:
+        - class: "charging_station"
