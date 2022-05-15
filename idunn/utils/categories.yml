@@ -497,6 +497,11 @@ categories:
           - class: "physiotherapist"
         pj_what: "kinésithérapeute"
 
+    health_osteopathy:
+        raw_filters:
+          - class: "physiotherapist"
+        pj_what: "ostéopathe"
+
     health_pharmacy:
         raw_filters:
           - class: "pharmacy"
