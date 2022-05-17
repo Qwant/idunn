@@ -70,7 +70,12 @@ class IdunnRateLimiter:
         return limit()
 
     def check_limit_per_client(self, request):
-        client_id = request.headers.get("x-client-hash") or "default"
+        client_id = request.headers.get("x-client-hash")
+
+        if client_id is None:
+            logger.warning("Ignoring rate limiting for request with no hash")
+            return
+
         try:
             with self.limit(client=client_id, ignore_redis_error=True):
                 pass
