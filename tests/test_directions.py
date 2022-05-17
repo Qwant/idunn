@@ -218,5 +218,6 @@ def test_directions_rate_limiter(limiter_test_normal, mock_directions_car_with_r
         response = client.get(
             "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
             params={"language": "fr", "type": "driving"},
+            headers={"x-client-hash": "test-client-hash-value"},
         )
     assert response.status_code == 429
