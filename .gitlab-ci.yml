@@ -54,8 +54,7 @@ workflow:
   stage: prelive
   variables:
     KUBE_NAMESPACE: "int-maps"
-    ARGOCD_APP_NAME: "integration-${COMPONENT_NAME}"
-    FULLNAME_OVERRIDE: "${COMPONENT_NAME}"
+    ARGOCD_APP_NAME: "int-${COMPONENT_NAME}"
     HELM_VALUES: "values.yaml,version.yaml"
 
 .argocd:production:
