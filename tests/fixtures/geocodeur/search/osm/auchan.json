@@ -1,0 +1,411 @@
+{
+  "type": "FeatureCollection",
+  "geocoding": {
+    "version": "0.1.0",
+    "query": ""
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          1.8608980495583296,
+          47.9039778818001
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "geocoding": {
+          "id": "osm:node:2345407777",
+          "type": "poi",
+          "label": "Auchan (Saint-Jean-de-la-Ruelle)",
+          "name": "Auchan",
+          "postcode": "45140",
+          "city": "Saint-Jean-de-la-Ruelle",
+          "citycode": "45285",
+          "administrative_regions": [
+            {
+              "id": "admin:osm:relation:147558",
+              "insee": "45285",
+              "level": 8,
+              "label": "Saint-Jean-de-la-Ruelle (45140), Loiret, Centre-Val de Loire, France",
+              "name": "Saint-Jean-de-la-Ruelle",
+              "zip_codes": [
+                "45140"
+              ],
+              "coord": {
+                "lon": 1.8717431,
+                "lat": 47.9098024
+              },
+              "bbox": [
+                1.8558227,
+                47.8937545,
+                1.8881393,
+                47.9268906
+              ],
+              "zone_type": "city",
+              "parent_id": "admin:osm:relation:7440",
+              "codes": [
+                {
+                  "name": "ref:INSEE",
+                  "value": "45285"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q1423260"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:7440",
+              "insee": "45",
+              "level": 6,
+              "label": "Loiret, Centre-Val de Loire, France",
+              "name": "Loiret",
+              "zip_codes": [],
+              "coord": {
+                "lon": 1.9086066,
+                "lat": 47.9027336
+              },
+              "bbox": [
+                1.5122045,
+                47.483059399999995,
+                3.1286392,
+                48.344952799999994
+              ],
+              "zone_type": "state_district",
+              "parent_id": "admin:osm:relation:8640",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-45"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "45"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR246"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q12574"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:8640",
+              "insee": "24",
+              "level": 4,
+              "label": "Centre-Val de Loire, France",
+              "name": "Centre-Val de Loire",
+              "zip_codes": [],
+              "coord": {
+                "lon": 1.9086066,
+                "lat": 47.9027336
+              },
+              "bbox": [
+                0.0527585,
+                46.3471572,
+                3.1286392,
+                48.9410263
+              ],
+              "zone_type": "state",
+              "parent_id": "admin:osm:relation:2202162",
+              "codes": [
+                {
+                  "name": "ISO3166-2",
+                  "value": "FR-CVL"
+                },
+                {
+                  "name": "ref:INSEE",
+                  "value": "24"
+                },
+                {
+                  "name": "ref:NUTS",
+                  "value": "FR24"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q13947"
+                }
+              ]
+            },
+            {
+              "id": "admin:osm:relation:2202162",
+              "insee": "",
+              "level": 2,
+              "label": "France",
+              "name": "France",
+              "zip_codes": [],
+              "coord": {
+                "lon": 2.3514616,
+                "lat": 48.8566969
+              },
+              "bbox": [
+                -178.3873749,
+                -50.2187169,
+                172.30571519999998,
+                51.3055721
+              ],
+              "zone_type": "country",
+              "parent_id": null,
+              "codes": [
+                {
+                  "name": "ISO3166-1",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha2",
+                  "value": "FR"
+                },
+                {
+                  "name": "ISO3166-1:alpha3",
+                  "value": "FRA"
+                },
+                {
+                  "name": "ISO3166-1:numeric",
+                  "value": "250"
+                },
+                {
+                  "name": "wikidata",
+                  "value": "Q142"
+                }
+              ]
+            }
+          ],
+          "poi_types": [
+            {
+              "id": "class_grocery:subclass_supermarket",
+              "name": "class_grocery subclass_supermarket"
+            }
+          ],
+          "properties": [
+            {
+              "key": "brand:wikidata",
+              "value": "Q758603"
+            },
+            {
+              "key": "operator:wikipedia",
+              "value": "fr:Auchan"
+            },
+            {
+              "key": "name",
+              "value": "Auchan"
+            },
+            {
+              "key": "addr:street",
+              "value": "Avenue Pierre Mendès France"
+            },
+            {
+              "key": "brand:wikipedia",
+              "value": "en:Auchan"
+            },
+            {
+              "key": "operator:wikidata",
+              "value": "Q758603"
+            },
+            {
+              "key": "shop",
+              "value": "supermarket"
+            },
+            {
+              "key": "brand",
+              "value": "Auchan"
+            },
+            {
+              "key": "addr:postcode",
+              "value": "45140"
+            },
+            {
+              "key": "name:latin",
+              "value": "Auchan"
+            },
+            {
+              "key": "name_int",
+              "value": "Auchan"
+            },
+            {
+              "key": "poi_subclass",
+              "value": "supermarket"
+            },
+            {
+              "key": "poi_class",
+              "value": "grocery"
+            }
+          ],
+          "address": {
+            "id": "street_poi:osm:node:2345407777",
+            "type": "street",
+            "label": "Avenue Pierre Mendès France (Saint-Jean-de-la-Ruelle)",
+            "name": "Avenue Pierre Mendès France",
+            "street": "Avenue Pierre Mendès France",
+            "postcode": "45140",
+            "city": "Saint-Jean-de-la-Ruelle",
+            "citycode": "45285",
+            "administrative_regions": [
+              {
+                "id": "admin:osm:relation:147558",
+                "insee": "45285",
+                "level": 8,
+                "label": "Saint-Jean-de-la-Ruelle (45140), Loiret, Centre-Val de Loire, France",
+                "name": "Saint-Jean-de-la-Ruelle",
+                "zip_codes": [
+                  "45140"
+                ],
+                "coord": {
+                  "lon": 1.8717431,
+                  "lat": 47.9098024
+                },
+                "bbox": [
+                  1.8558227,
+                  47.8937545,
+                  1.8881393,
+                  47.9268906
+                ],
+                "zone_type": "city",
+                "parent_id": "admin:osm:relation:7440",
+                "codes": [
+                  {
+                    "name": "ref:INSEE",
+                    "value": "45285"
+                  },
+                  {
+                    "name": "wikidata",
+                    "value": "Q1423260"
+                  }
+                ]
+              },
+              {
+                "id": "admin:osm:relation:7440",
+                "insee": "45",
+                "level": 6,
+                "label": "Loiret, Centre-Val de Loire, France",
+                "name": "Loiret",
+                "zip_codes": [],
+                "coord": {
+                  "lon": 1.9086066,
+                  "lat": 47.9027336
+                },
+                "bbox": [
+                  1.5122045,
+                  47.483059399999995,
+                  3.1286392,
+                  48.344952799999994
+                ],
+                "zone_type": "state_district",
+                "parent_id": "admin:osm:relation:8640",
+                "codes": [
+                  {
+                    "name": "ISO3166-2",
+                    "value": "FR-45"
+                  },
+                  {
+                    "name": "ref:INSEE",
+                    "value": "45"
+                  },
+                  {
+                    "name": "ref:NUTS",
+                    "value": "FR246"
+                  },
+                  {
+                    "name": "wikidata",
+                    "value": "Q12574"
+                  }
+                ]
+              },
+              {
+                "id": "admin:osm:relation:8640",
+                "insee": "24",
+                "level": 4,
+                "label": "Centre-Val de Loire, France",
+                "name": "Centre-Val de Loire",
+                "zip_codes": [],
+                "coord": {
+                  "lon": 1.9086066,
+                  "lat": 47.9027336
+                },
+                "bbox": [
+                  0.0527585,
+                  46.3471572,
+                  3.1286392,
+                  48.9410263
+                ],
+                "zone_type": "state",
+                "parent_id": "admin:osm:relation:2202162",
+                "codes": [
+                  {
+                    "name": "ISO3166-2",
+                    "value": "FR-CVL"
+                  },
+                  {
+                    "name": "ref:INSEE",
+                    "value": "24"
+                  },
+                  {
+                    "name": "ref:NUTS",
+                    "value": "FR24"
+                  },
+                  {
+                    "name": "wikidata",
+                    "value": "Q13947"
+                  }
+                ]
+              },
+              {
+                "id": "admin:osm:relation:2202162",
+                "insee": "",
+                "level": 2,
+                "label": "France",
+                "name": "France",
+                "zip_codes": [],
+                "coord": {
+                  "lon": 2.3514616,
+                  "lat": 48.8566969
+                },
+                "bbox": [
+                  -178.3873749,
+                  -50.2187169,
+                  172.30571519999998,
+                  51.3055721
+                ],
+                "zone_type": "country",
+                "parent_id": null,
+                "codes": [
+                  {
+                    "name": "ISO3166-1",
+                    "value": "FR"
+                  },
+                  {
+                    "name": "ISO3166-1:alpha2",
+                    "value": "FR"
+                  },
+                  {
+                    "name": "ISO3166-1:alpha3",
+                    "value": "FRA"
+                  },
+                  {
+                    "name": "ISO3166-1:numeric",
+                    "value": "250"
+                  },
+                  {
+                    "name": "wikidata",
+                    "value": "Q142"
+                  }
+                ]
+              }
+            ],
+            "country_codes": [
+              "FR"
+            ]
+          },
+          "country_codes": [
+            "FR"
+          ]
+        }
+      },
+      "distance": 14876
+    }
+  ]
+}

@@ -5,8 +5,8 @@ from starlette.responses import Response
 from idunn import settings
 from idunn.api.geocoder import get_autocomplete
 from idunn.utils.result_filter import ResultFilter
-from idunn.instant_answer import normalize
 from ..geocoder.models import ExtraParams, QueryParams
+from ..instant_answer.normalization import normalize_search
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter(match_word_prefix=True, min_matching_words=3)
@@ -15,7 +15,8 @@ nlu_allowed_languages = settings["NLU_ALLOWED_LANGUAGES"].split(",")
 
 
 async def search(
-    query: QueryParams = Depends(QueryParams), extra: ExtraParams = Body(ExtraParams())
+    query: QueryParams = Depends(QueryParams),
+    extra: ExtraParams = Body(ExtraParams()),
 ):
     """
     Perform a query which is intended to display a relevant result directly (as
@@ -24,7 +25,7 @@ async def search(
     Similarly to `instant_answer`, the result will need some quality checks.
     """
     # Fetch autocomplete results which will be filtered
-    query.q = normalize(query.q)
+    query.q = normalize_search(query.q)
     if query.q == "":
         return Response(status_code=200, content=build_empty_query_content_response())
     response = await get_autocomplete(query, extra)
@@ -34,7 +35,7 @@ async def search(
         return Response(status_code=204)
 
     # When an intention is detected, it takes over on geocoding features
-    if response.intentions:
+    if response.intention:
         response.features = []
         return response
 

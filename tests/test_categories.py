@@ -3,7 +3,7 @@ from app import app
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
-from .fixtures.pj import mock_pj_api_with_musee_picasso_short
+from .fixtures.api.pj import mock_pj_api_with_musee_picasso_short
 from .test_full import OH_BLOCK
 
 BBOX_PARIS = "2.252876,48.819862,2.395707,48.891132"

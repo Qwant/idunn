@@ -6,13 +6,13 @@ from elasticsearch.exceptions import ConnectionError
 from app import app
 from idunn import settings
 
-from .fixtures.pj import (
+from .fixtures.api.pj import (
     mock_pj_status_with_musee_picasso_short,
 )
 from .utils import read_fixture
 
-FIXTURE_STATUS = read_fixture("fixtures/bragi_status.json")
-FIXTURE_WIKI_RESPONSE = read_fixture("fixtures/wiki_es_successful_response.json")
+FIXTURE_STATUS = read_fixture("fixtures/api/bragi_status.json")
+FIXTURE_WIKI_RESPONSE = read_fixture("fixtures/api/wiki_es_successful_response.json")
 
 
 @responses.activate

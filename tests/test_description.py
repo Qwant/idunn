@@ -6,7 +6,7 @@ from .utils import read_fixture
 def orsay(lang=None):
     place = {"properties": {}, "id": "osm:way:154422021"}
 
-    full = read_fixture("fixtures/orsay_museum.json")
+    full = read_fixture("fixtures/place_to_load_in_es/orsay_museum.json")
     place["administrative_regions"] = full["administrative_regions"]
 
     key = f"description:{lang}" if lang else "description"

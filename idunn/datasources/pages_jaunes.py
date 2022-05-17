@@ -7,16 +7,18 @@ from requests import HTTPError as RequestsHTTPError
 from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
-
 from idunn.datasources import Datasource
+from idunn.geocoder.models.params import QueryParams
 from idunn.places.exceptions import PlaceNotFound
 from idunn.places.models import pj_info, pj_find
 from idunn.places.pj_poi import PjApiPOI
 from idunn.utils.auth_session import AuthSession
 from idunn.utils.category import CategoryEnum
 from idunn.utils.geometry import bbox_inside_polygon, france_polygon
+from idunn.utils.result_filter import ResultFilter
 
 logger = logging.getLogger(__name__)
+result_filter = ResultFilter()
 
 
 class PjAuthSession(AuthSession):
@@ -56,6 +58,21 @@ class PagesJaunes(Datasource):
         """
         left, bot, right, top = bbox
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
+
+    @classmethod
+    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=True):
+        return run_in_threadpool(
+            pj_source.search_places,
+            query,
+            intention.description._place_in_query,
+        )
+
+    @classmethod
+    def filter_search_result(cls, results, lang=None, normalized_query=None):
+        place = next(iter(result_filter.filter_places(normalized_query, results)), None)
+        if place:
+            return place.load_place(lang=lang)
+        return None
 
     def bbox_is_covered(self, bbox):
         if not self.enabled:

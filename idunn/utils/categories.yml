@@ -303,13 +303,11 @@ categories:
         regex: "cathedral|church|eglise|mosque|synagogue|temple"
         raw_filters:
           - class: "place_of_worship"
-        match_brand: True
 
     recycling:
         regex: "recycl|tri selectif|dechett?err?ie"
         raw_filters:
           - class: "recycling"
-        match_brand: True
 
     bicycle_parking:
         raw_filters:

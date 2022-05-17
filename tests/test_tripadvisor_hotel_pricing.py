@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from .fixtures.ta import (
+from .fixtures.api.tripadvisor_hotel_pricing import (
     mock_ta_search_by_hotel_id_api_with_the_hotel_captain_cook,
 )
 from app import app

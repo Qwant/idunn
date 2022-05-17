@@ -246,5 +246,5 @@ class DatasourceFactory:
         if source_type == PoiSource.PAGESJAUNES:
             return PagesJaunes()
         if source_type == PoiSource.OSM:  # fallback tripadvisor enable flag
-            return Osm()
+            return Osm(False)
         raise ValueError(f"{source_type} is not a valid source type")

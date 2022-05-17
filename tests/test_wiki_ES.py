@@ -17,7 +17,9 @@ def basket_ball_wiki_es(wiki_client, init_indices):
     """
     fill the elasticsearch WIKI_ES with a POI of basket ball
     """
-    filepath = os.path.join(os.path.dirname(__file__), "fixtures", "basket_ball_wiki_es.json")
+    filepath = os.path.join(
+        os.path.dirname(__file__), "fixtures", "wiki", "basket_ball_wiki_es.json"
+    )
     with open(filepath, "r") as f:
         poi = json.load(f)
         poi_id = poi["id"]
