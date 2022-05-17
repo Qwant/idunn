@@ -167,8 +167,8 @@ argo deploy idunn review:
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
     - deploy_argo
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"'
-      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: on_success
 
@@ -183,8 +183,8 @@ stop idunn review:
     name: "review/$CI_COMMIT_REF_NAME/$COMPONENT_NAME"
     action: stop
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"'
-      when: manual
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: manual
 
