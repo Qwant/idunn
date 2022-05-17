@@ -6,6 +6,10 @@ stages:
   - validation
   - production
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
+
 .idunn:
   variables:
     COMPONENT_NAME: idunn
@@ -45,8 +49,6 @@ stages:
     FULLNAME_OVERRIDE: "${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
     HELM_VALUES: "values.yaml"
     PRODUCTION: "false"
-  except:
-    - master
 
 .argocd:prelive:
   stage: prelive
@@ -54,9 +56,7 @@ stages:
     KUBE_NAMESPACE: "int-maps"
     ARGOCD_APP_NAME: "integration-${COMPONENT_NAME}"
     FULLNAME_OVERRIDE: "${COMPONENT_NAME}"
-    HELM_VALUES: "values.yaml"
-    PRODUCTION: "true"
-  when: manual
+    HELM_VALUES: "values.yaml,version.yaml"
 
 .argocd:production:
   stage: production
@@ -67,9 +67,7 @@ stages:
     ARGOCD_BASE_DOMAIN: c4.par1.kube.qwant.ninja
     KUBE_NAMESPACE: "prod-maps"
     ARGOCD_APP_NAME: "production-$COMPONENT_NAME"
-    HELM_VALUES: "values.yaml"
-    PRODUCTION: "true"
-  when: manual
+    HELM_VALUES: "values.yaml,version.yaml"
 
 .argocd:destroy:
   script:
@@ -78,9 +76,6 @@ stages:
       --auth-token $ARGOCD_AUTH_TOKEN
       --server $ARGOCD_SERVER
       --grpc-web
-  except:
-    refs:
-      - master
 
 .release:
   extends: .build
@@ -112,7 +107,6 @@ stages:
     DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
     GIT_SUBMODULE_STRATEGY: recursive
   tags:
-    - edge
     - shell
 
 build classifier:
@@ -172,7 +166,11 @@ argo deploy idunn review:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
     - deploy_argo
-  when: on_success
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: on_success
 
 stop idunn review:
   extends:
@@ -184,7 +182,31 @@ stop idunn review:
   environment:
     name: "review/$CI_COMMIT_REF_NAME/$COMPONENT_NAME"
     action: stop
-  when: manual
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"'
+      when: manual
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: manual
+
+argo deploy idunn dev:
+  extends:
+    - .idunn
+    - .argocd
+    - .argocd:review
+  environment:
+    name: "review/$CI_COMMIT_REF_NAME/$COMPONENT_NAME"
+  needs:
+    - configure
+  script:
+    - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
+    - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
+    - deploy_argo
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: manual
+  variables:
+    ARGOCD_APP_NAME: "dev-${COMPONENT_NAME}"
+    FULLNAME_OVERRIDE: "${COMPONENT_NAME}"
 
 argo deploy idunn prelive:
   extends:
@@ -199,13 +221,14 @@ argo deploy idunn prelive:
     - ci/bootstrap/bin/sync-version-argocd
       --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
       --image-version-object-path-app ".webapp.image.name"
-    - deploy_argo
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
-  when: manual
   variables:
-    IMAGE_VERSION_FILE: "$HELM_VALUES"
+    IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: manual
 
 idunn promote integration to prod:
   extends:
@@ -215,27 +238,6 @@ idunn promote integration to prod:
   artifacts:
     paths:
       - ci/
-
-.deploy:
-  image: registry.qwant.ninja/docker/dood:18.09
-  before_script:
-    - source ci/bootstrap.sh
-    - docker login 
-      --username "$CI_DEPLOY_USER" 
-      --password-stdin "$CI_REGISTRY" <<< "$CI_DEPLOY_PASSWORD"
-  dependencies:
-    - configure
-  tags:
-    - light-docker
-  variables:
-    COMPOSE_FILE: "docker-compose.yml:ci/${CI_JOB_STAGE}/docker-compose.yml"
-    COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
-    DOCKER_HOST: "tcp://10.100.31.132:2375"
-    GIT_STRATEGY: none
-    PROMETHEUS_SERVICE_NAME: "1120_prometheus"
-    ROUTER_SERVICE_NAME: "product-maps-traefik_traefik"
-    STACK_NAME: "$CI_PROJECT_ID"
-  when: manual
 
 .deploy-kube:
   image: registry.qwant.ninja/docker/kubectl:master
@@ -260,7 +262,6 @@ idunn promote integration to prod:
     HELM_RELEASE: "classifier"
     HELM_CHART: "ci/text-classifier"
   resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
-  when: manual
 
 deploy classifier development:
   extends: .deploy-kube
@@ -298,9 +299,8 @@ argo deploy idunn production:
     - ci/bootstrap/bin/sync-version-argocd
       --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${RELEASE_TAG_REF}"
       --image-version-object-path-app ".webapp.image.name"
-    - deploy_argo
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
-    IMAGE_VERSION_FILE: "$HELM_VALUES"
+    IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
