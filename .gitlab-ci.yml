@@ -292,6 +292,7 @@ argo deploy idunn production:
     - .idunn
     - .argocd
     - .argocd:production
+  needs: []
   script:
     - export $(xargs <ci/templates/release)
     - ci/bootstrap/bin/sync-version-argocd
