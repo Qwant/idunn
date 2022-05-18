@@ -292,15 +292,14 @@ argo deploy idunn production:
     - .idunn
     - .argocd
     - .argocd:production
-  needs:
-    - idunn promote integration to prod
   script:
     - export $(xargs <ci/templates/release)
     - ci/bootstrap/bin/sync-version-argocd
       --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${RELEASE_TAG_REF}"
       --image-version-object-path-app ".webapp.image.name"
+    - deploy_argo
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
-    IMAGE_VERSION_FILE: "version.yaml"
+    IMAGE_VERSION_FILE: "$HELM_VALUES"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
