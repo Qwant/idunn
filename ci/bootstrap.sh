@@ -4,7 +4,7 @@ shopt -s expand_aliases
 
 source ci/bootstrap/src/bootstrap.sh
 
-export PATH="$PWD/ci/bootstrap/bin:$PATH"
+export PATH="$PWD/ci/bootstrap/bin:$PWD/bin:$PATH"
 
 function deploy
 {
