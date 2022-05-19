@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-docker run -i --rm --name "jq" \
-    'endeveit/docker-jq@sha256:b7d34fd4c839d165af0359c1555918a5f48abcd6d313326c7bd3fa64a08dbd79' \
-        jq "$@"

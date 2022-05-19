@@ -1,4 +1,4 @@
 [submodule "ci/bootstrap"]
-	branch = SA-794
+	branch = dist
 	path = ci/bootstrap
 	url = ../../../continuous-integration/gitlab-runner-bootstrap.git
