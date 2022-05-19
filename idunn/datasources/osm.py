@@ -29,13 +29,12 @@ class Osm(Datasource):
     async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
         return bragi_client.search(query)
 
-    @classmethod
-    def filter_search_result(cls, results, lang, normalized_query=None):
+    def filter_search_result(self, results, lang, normalized_query=None):
         try:
             feature_properties = results["features"][0]["properties"]["geocoding"]
             place_id = feature_properties["id"]
             place = place_from_id(place_id, lang, follow_redirect=True)
-            if cls.is_wiki_filter:
+            if self.is_wiki_filter:
                 if place.wikidata_id and place.get_subclass_name() not in SUBCLASS_HOTEL_OSM:
                     return place.load_place(lang=lang)
                 return None
