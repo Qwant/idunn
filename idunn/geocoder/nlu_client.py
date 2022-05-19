@@ -322,12 +322,12 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
                 self.add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query)
                 logger.info("Detected intentions for '%s'", text, extra=logs_extra)
-                if place_query:
-                    bbox, place = await self.get_place_and_bbox_from_query(
-                        extra_geocoder_params, lang, place_query
-                    )
-                    intention.filter.bbox = bbox
-                    intention.description.place = place
+            if place_query:
+                bbox, place = await self.get_place_and_bbox_from_query(
+                    extra_geocoder_params, lang, place_query
+                )
+                intention.filter.bbox = bbox
+                intention.description.place = place
             return intention
 
         except NluClientException as exp:
