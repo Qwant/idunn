@@ -262,6 +262,7 @@ idunn promote integration to prod:
     HELM_RELEASE: "classifier"
     HELM_CHART: "ci/text-classifier"
   resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
+  when: manual
 
 deploy classifier development:
   extends: .deploy-kube
