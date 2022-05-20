@@ -13,8 +13,16 @@ from idunn.utils.place import place_from_id
 logger = logging.getLogger(__name__)
 
 SUBCLASS_HOTEL_OSM = [
-    "subclass_hotel",
-    "subclass_lodging",
+    "hotel",
+    "guest_house",
+    "hostel",
+    "apartment",
+    "motel",
+    "chalet",
+    "dormitory",
+    "alpine_hut",
+    "bed_and_breakfast",
+    "lodging",
 ]
 
 
