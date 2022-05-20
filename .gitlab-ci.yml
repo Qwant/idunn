@@ -153,7 +153,7 @@ configure:
       - ci/
       - docker-compose.yml
   tags:
-    - light
+    - shell
 
 argo deploy idunn review:
   extends:
@@ -251,7 +251,7 @@ idunn promote integration to prod:
 .deploy-kube:
   image: registry.qwant.ninja/docker/kubectl:master
   tags:
-    - light-docker
+    - docker
   before_script:
     - source ci/bootstrap.sh
     - helm registry login
