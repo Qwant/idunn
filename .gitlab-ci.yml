@@ -47,7 +47,7 @@ workflow:
     KUBE_NAMESPACE: "dev-maps"
     ARGOCD_APP_NAME: "review-${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
     FULLNAME_OVERRIDE: "${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
-    HELM_VALUES: "values.yaml"
+    HELM_VALUES: "values.yaml,version.yaml"
     PRODUCTION: "false"
 
 .argocd:prelive:
@@ -87,6 +87,10 @@ workflow:
   script:
     - export $(xargs <ci/templates/release)
     - docker pull "$SOURCE_IMAGE"
+    - if ci/bootstrap/bin/docker-content-digest "qwant" "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}" "${RELEASE_TAG_REF}"; then
+        echo "Released Docker image already exist please update the release tag,....";
+        exit 1;
+      fi
     - docker tag "$SOURCE_IMAGE" "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${RELEASE_TAG_REF}"
     - docker push "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${RELEASE_TAG_REF}"
     - subst -i ci/templates/docker-idunn-digest.env
@@ -200,13 +204,18 @@ argo deploy idunn dev:
   script:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
-    - deploy_argo
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
+      --image-version-object-path-app ".webapp.image.name"
+    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+  variables:
+    ARGOCD_APP_NAME: "dev-${COMPONENT_NAME}"
+    IMAGE_VERSION_FILE: "version.yaml"
+    ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: manual
-  variables:
-    ARGOCD_APP_NAME: "dev-${COMPONENT_NAME}"
-    FULLNAME_OVERRIDE: "${COMPONENT_NAME}"
 
 argo deploy idunn prelive:
   extends:
@@ -262,6 +271,7 @@ idunn promote integration to prod:
     HELM_RELEASE: "classifier"
     HELM_CHART: "ci/text-classifier"
   resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
+  when: manual
 
 deploy classifier development:
   extends: .deploy-kube
