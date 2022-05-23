@@ -36,8 +36,6 @@ workflow:
     ARGOAPP_REPO_URL_SSH: "git@git.qwant.ninja:teams/search-apps/argo_apps.git"
     ARGOCD_KUBE_REPO_URL_HTTPS: https://git.qwant.ninja/teams/search-apps/argo_apps.git
   interruptible: false
-  script:
-    - deploy_argo
   tags:
     - k8s
 
@@ -169,7 +167,7 @@ argo deploy idunn review:
   script:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
-    - deploy_argo
+    - deploy_argoapp_review
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: never
