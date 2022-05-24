@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from enum import Enum
 from typing import Optional, List, Tuple, Union
 
 from fastapi import Query
@@ -9,7 +10,7 @@ from pydantic import BaseModel, Field, validator, HttpUrl
 
 from idunn import settings
 from idunn.api.places_list import get_places_bbox_impl, PlacesQueryParam
-from idunn.datasources.pages_jaunes import pj_source
+from idunn.datasources.pages_jaunes import pj_source, Location
 from idunn.geocoder.models import QueryParams
 from idunn.geocoder.models.geocodejson import IntentionType
 from idunn.geocoder.nlu_client import nlu_client, NluClientException
@@ -179,7 +180,7 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
     return build_response(result, query=query, lang=lang)
 
 
-def get_single_ia_datasource_priority_france(
+def get_single_ia_datasource_priority_france_or_unknown(
     fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
 ) -> List[Union[Datasource, any]]:
     return [
@@ -189,7 +190,7 @@ def get_single_ia_datasource_priority_france(
     ]
 
 
-def get_single_ia_datasource_priority_world(
+def get_single_ia_datasource_priority_outside_france(
     fetch_bragi_tripadvisor, fetch_bragi_osm
 ) -> List[Union[Datasource, any]]:
     return [
@@ -249,9 +250,9 @@ async def get_instant_answer(
     query = QueryParams.build(q=normalized_query, lang=lang, limit=1, **extra_geocoder_params)
 
     try:
-        is_france_query = pj_source.bbox_is_covered(intention.filter.bbox)
+        location = pj_source.bbox_is_covered(intention.filter.bbox)
     except Exception:
-        is_france_query = False
+        location = Location.UNKNOWN
 
     # Query PJ API and Bragi osm asynchronously as a task which may be cancelled
     # NOTE: As of httpx >=0.18,<=0.22, cancelling these tasks will fill httpx client's internal
@@ -260,19 +261,19 @@ async def get_instant_answer(
     #       See https://github.com/encode/httpx/issues/2139
     fetch_bragi_osm = asyncio.create_task(await Osm.fetch_search(query), name="ia_fetch_bragi")
     fetch_bragi_tripadvisor = asyncio.create_task(
-        await Tripadvisor.fetch_search(query, is_france_query=is_france_query),
+        await Tripadvisor.fetch_search(query, location=location),
         name="fetch_ta_bragi",
     )
-    if is_france_query:
+    if location.FRANCE or location.UNKNOWN:
         fetch_pj = asyncio.create_task(
             await pj_source.fetch_search(normalized_query, intention=intention),
             name="ia_fetch_pj",
         )
-        datasource_priority_list = get_single_ia_datasource_priority_france(
+        datasource_priority_list = get_single_ia_datasource_priority_france_or_unknown(
             fetch_bragi_tripadvisor, fetch_pj, fetch_bragi_osm
         )
     else:
-        datasource_priority_list = get_single_ia_datasource_priority_world(
+        datasource_priority_list = get_single_ia_datasource_priority_outside_france(
             fetch_bragi_tripadvisor, fetch_bragi_osm
         )
 

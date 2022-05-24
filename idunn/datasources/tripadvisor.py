@@ -10,6 +10,7 @@ from starlette.concurrency import run_in_threadpool
 from idunn import settings
 from idunn.datasources import Datasource
 from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
+from idunn.datasources.pages_jaunes import Location
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models.params import QueryParams
 from idunn.places.poi import TripadvisorPOI
@@ -34,10 +35,10 @@ class Tripadvisor(Datasource):
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
     @classmethod
-    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
+    async def fetch_search(cls, query: QueryParams, location: Location, intention=None):
         query_tripadvisor = deepcopy(query)
         query_tripadvisor.poi_dataset = ["tripadvisor"]
-        if is_france_query:
+        if location == Location.FRANCE or location == Location.UNKNOWN:
             query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
         return bragi_client.search(query_tripadvisor)
 

@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from os import path
 from typing import List
 
@@ -19,6 +20,12 @@ from idunn.utils.result_filter import ResultFilter
 
 logger = logging.getLogger(__name__)
 result_filter = ResultFilter()
+
+
+class Location(Enum):
+    FRANCE = "france"
+    OUTSIDE_FRANCE = "outside_france"
+    UNKNOWN = "unknown"
 
 
 class PjAuthSession(AuthSession):
@@ -43,11 +50,7 @@ class PagesJaunes(Datasource):
     def __init__(self):
         super().__init__()
         pj_api_url = settings.get("PJ_API_ID")
-        if pj_api_url:
-            self.session = PjAuthSession(refresh_timeout=self.PJ_API_TIMEOUT)
-            self.enabled = True
-        else:
-            self.enabled = False
+        self.session = PjAuthSession(refresh_timeout=self.PJ_API_TIMEOUT)
 
     @staticmethod
     def format_where(bbox):
@@ -60,12 +63,16 @@ class PagesJaunes(Datasource):
         return f"gZ{left:.6f},{bot:.6f},{right:.6f},{top:.6f}"
 
     @classmethod
-    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=True):
-        return run_in_threadpool(
-            pj_source.search_places,
-            query,
-            intention.description._place_in_query,
-        )
+    async def fetch_search(cls, query: QueryParams, location=None, intention=None):
+        if intention:
+            return run_in_threadpool(
+                pj_source.search_places,
+                query,
+                intention.description._place_in_query,
+            )
+        else:
+            # if unknown location
+            return
 
     @classmethod
     def filter_search_result(cls, results, lang=None, normalized_query=None):
@@ -74,14 +81,13 @@ class PagesJaunes(Datasource):
             return place.load_place(lang=lang)
         return None
 
-    def bbox_is_covered(self, bbox):
-        if not self.enabled:
-            return False
-        return bbox_inside_polygon(*bbox, poly=france_polygon)
+    def bbox_is_covered(self, bbox) -> Location:
+        if bbox_inside_polygon(*bbox, poly=france_polygon):
+            return Location.FRANCE
+        else:
+            return Location.OUTSIDE_FRANCE
 
     def point_is_covered(self, point):
-        if not self.enabled:
-            return False
         return france_polygon.contains(point)
 
     def internal_id(self, poi_id):
