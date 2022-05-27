@@ -99,7 +99,6 @@ class DirectionsClient:
                 detail="requested path is not inside an allowed area",
             )
 
-        kwargs = {"extra": params}
         method = self.directions_mapbox
 
         if mode in ("driving-traffic", "driving", "car"):
@@ -123,7 +122,7 @@ class DirectionsClient:
                 "to_place": to_place.get_id(),
             },
         )
-        return method(from_place, to_place, mode, lang, **kwargs)
+        return method(from_place, to_place, mode, lang)
 
 
 directions_client = DirectionsClient()
