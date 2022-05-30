@@ -1,7 +1,5 @@
 import requests
 import logging
-from datetime import datetime, timedelta
-from starlette.requests import QueryParams
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -88,7 +86,7 @@ class DirectionsClient:
         data["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
         return DirectionsResponse(status="success", data=data)
 
-    def get_directions(self, from_place, to_place, mode, lang, params: QueryParams):
+    def get_directions(self, from_place, to_place, mode, lang):
         if not DirectionsClient.is_in_allowed_zone(mode, from_place, to_place):
             raise HTTPException(
                 status_code=422,
