@@ -18,8 +18,7 @@ from .utils import override_settings
 def mock_directions_car():
     with override_settings(
         {
-            "QWANT_DIRECTIONS_API_BASE_URL": "http://api.qwant/directions",
-            "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,
+            "MAPBOX_DIRECTIONS_ACCESS_TOKEN": "test",
         }
     ):
         fixture_path = os.path.join(
@@ -97,7 +96,6 @@ def test_direction_car_with_ids(mock_directions_car):
 def test_directions_not_configured():
     with override_settings(
         {
-            "QWANT_DIRECTIONS_API_BASE_URL": None,
             "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,
         }
     ):
