@@ -88,6 +88,11 @@ class DirectionsClient:
         return DirectionsResponse(status="success", data=data)
 
     def get_directions(self, from_place, to_place, mode, lang, params: QueryParams):
+        if not self.MAPBOX_API_ENABLED:
+            raise HTTPException(
+                status_code=501, detail=f"Directions API is currently unavailable for mode {mode}"
+            )
+
         if not DirectionsClient.is_in_allowed_zone(mode, from_place, to_place):
             raise HTTPException(
                 status_code=422,
