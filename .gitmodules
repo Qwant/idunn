@@ -2,3 +2,7 @@
 	branch = dist
 	path = ci/bootstrap
 	url = ../../../continuous-integration/gitlab-runner-bootstrap.git
+[submodule "bragi"]
+	path = bragi
+	url = https://github.com/hove-io/mimirsbrunn.git
+	branch = master

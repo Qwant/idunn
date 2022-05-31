@@ -103,7 +103,7 @@ workflow:
       --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
   variables:
     COMPOSE_DOCKER_CLI_BUILD: "1"
-    COMPOSE_FILE: "docker-compose.build.yml"
+    COMPOSE_FILE: "ci/docker-compose.build.yml"
     COMPOSE_PROJECT_NAME: "$CI_PROJECT_PATH_SLUG-j$CI_JOB_ID"
     DOCKER_BUILDKIT: "1"
     DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
@@ -126,15 +126,23 @@ build idunn:
   extends:
     - .build
   variables:
-    TARGET_IMAGE: "$CI_REGISTRY_IMAGE/idunn:dev-latest"
-    TARGET_IMAGE_BRANCH: "$CI_REGISTRY_IMAGE/idunn:${CI_COMMIT_REF_SLUG}"
+    TARGET_IMAGE: "$CI_REGISTRY_IMAGE/idunn:${CI_COMMIT_REF_SLUG}"
     SOURCE_IMAGE: "qwantresearch/idunn:latest"
   script:
     - docker pull "$SOURCE_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
     - docker push "$TARGET_IMAGE"
-    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE_BRANCH"
-    - docker push "$TARGET_IMAGE_BRANCH"
+
+build bragi:
+  extends:
+    - .build
+  variables:
+    COMPOSE_IMAGE: "$CI_REGISTRY_IMAGE/bragi:${CI_COMMIT_REF_SLUG}"
+  script:
+    - export RUST_VERSION=$(xargs <bragi/rust-toolchain)
+    - export GITHUB_SHA=$(git rev-parse HEAD:bragi)
+    - docker-compose build
+    - docker-compose push
 
 configure:
   stage: configure
@@ -150,6 +158,9 @@ configure:
     paths:
       - ci/
       - docker-compose.yml
+  needs:
+    - build idunn
+    - build classifier
   tags:
     - shell
 
@@ -209,6 +220,28 @@ argo deploy idunn dev:
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
     ARGOCD_APP_NAME: "dev-${COMPONENT_NAME}"
+    IMAGE_VERSION_FILE: "version.yaml"
+    ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: manual
+
+argo deploy bragi dev:
+  extends:
+    - .argocd
+    - .argocd:review
+  needs:
+    - configure
+  script:
+    - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
+    - export IMAGE_DIGEST="$BRAGI_DEV_IMAGE_DIGEST"
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/bragi@${IMAGE_DIGEST}"
+      --image-version-object-path-app ".webapp.image.name"
+    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+  variables:
+    ARGOCD_APP_NAME: "dev-bragi"
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
   rules:
