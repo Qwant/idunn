@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Query, Path, Request, Response
+from fastapi import HTTPException, Query, Path, Request, Response, Depends
 from pydantic import confloat
 
 from idunn import settings
@@ -26,13 +26,17 @@ def get_directions_with_coordinates(
     # Query parameters
     type: str = Query(..., description="Transport mode"),
     language: str = "en",
+    # Request
+    request: Request = Depends(directions_request),
 ):
     """Get directions to get from a point to another."""
     from_place = Latlon(f_lat, f_lon)
     to_place = Latlon(t_lat, t_lon)
     if not type:
         raise HTTPException(status_code=400, detail='"type" query param is required')
-    return directions_client.get_directions(from_place, to_place, type, language)
+    return directions_client.get_directions(
+        from_place, to_place, type, language, params=request.query_params
+    )
 
 
 def get_directions(
@@ -41,6 +45,8 @@ def get_directions(
     destination: str = Query(..., description="Destination place id."),
     type: str = Query(..., description="Transport mode."),
     language: str = Query("en", description="User language."),
+    # Request
+    request: Request = Depends(directions_request),
 ):
     """Get directions to get from a places to another."""
     try:
@@ -49,4 +55,6 @@ def get_directions(
     except IdunnPlaceError as exc:
         raise HTTPException(status_code=404, detail=exc.message) from exc
 
-    return directions_client.get_directions(from_place, to_place, type, language)
+    return directions_client.get_directions(
+        from_place, to_place, type, language, params=request.query_params
+    )
