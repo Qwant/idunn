@@ -87,13 +87,14 @@ class DirectionsClient:
         data["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
         return DirectionsResponse(status="success", data=data)
 
-    def get_directions(self, from_place, to_place, mode, lang):
+    def get_directions(self, from_place, to_place, mode, lang, params: QueryParams):
         if not DirectionsClient.is_in_allowed_zone(mode, from_place, to_place):
             raise HTTPException(
                 status_code=422,
                 detail="requested path is not inside an allowed area",
             )
 
+        kwargs = {"extra": params}
         method = self.directions_mapbox
 
         if mode in ("driving-traffic", "driving", "car"):
@@ -117,7 +118,7 @@ class DirectionsClient:
                 "to_place": to_place.get_id(),
             },
         )
-        return method(from_place, to_place, mode, lang)
+        return method(from_place, to_place, mode, lang, **kwargs)
 
 
 directions_client = DirectionsClient()
