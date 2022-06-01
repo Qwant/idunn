@@ -289,13 +289,10 @@ class ResultFilter:
             # part of a same field. The intention is to avoid swapping words
             # between name and admin.
             # (eg. "rue de Rennes, Paris" vs. "rue de Paris", Rennes)
-            rank_val = (
-                self.count_adj_in_same_block(
-                    query_words,
-                    [*map(self.words, names), *map(self.words, admins)],
-                )
-                / (len(query_words) - 1)
-            )
+            rank_val = self.count_adj_in_same_block(
+                query_words,
+                [*map(self.words, names), *map(self.words, admins)],
+            ) / (len(query_words) - 1)
         else:
             rank_val = 1.0
 
