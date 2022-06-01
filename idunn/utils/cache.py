@@ -27,7 +27,7 @@ class TimedLRUCache(Generic[K, V]):
     def __init__(self, maxsize: int, seconds: float):
         self.inner = OrderedDict()
         self.capacity = maxsize
-        self.ttl = int(seconds * 10 ** 9)  # nanoseconds
+        self.ttl = int(seconds * 10**9)  # nanoseconds
 
     def _is_expired(self, key: K) -> bool:
         return monotonic_ns() >= self.inner[key].timestamp + self.ttl
