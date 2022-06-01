@@ -13,12 +13,5 @@ class Datasource(ABC):
         """Get places within a given Bbox"""
 
     @abstractmethod
-    async def fetch_search(cls, query, intention=None, is_france_query=False):
-        """
-        Create a task that will asynchronously search results for a specific query from the /search
-        bragi endpoint or for the search PJ api
-        """
-
-    @abstractmethod
-    def filter_search_result(cls, results, lang, normalized_query):
+    def filter_search_result(self, results, lang, normalized_query):
         """Filter results from the `fetch_search` query"""
