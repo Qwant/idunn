@@ -34,15 +34,14 @@ class Tripadvisor(Datasource):
         self.client = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
 
     @classmethod
-    async def fetch_search(cls, query: QueryParams, intention=None, is_france_query=False):
+    async def fetch_search(cls, query: QueryParams, is_france_query=False):
         query_tripadvisor = deepcopy(query)
         query_tripadvisor.poi_dataset = ["tripadvisor"]
         if is_france_query:
             query_tripadvisor.poi_types = SUBCLASS_HOTEL_TRIPADVISOR
         return bragi_client.search(query_tripadvisor)
 
-    @classmethod
-    def filter_search_result(cls, results, lang, normalized_query=None):
+    def filter_search_result(self, results, lang, normalized_query=None):
         try:
             feature_properties = results["features"][0]["properties"]["geocoding"]
             place_id = feature_properties["id"]
