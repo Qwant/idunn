@@ -17,10 +17,17 @@ def assert_autocomplete(query: str, doc: str):
     assert response.json()['data']['result']['places'][0]['id'] == doc
 
 
+def assert_places_list_datasource(query: str, datasource: str):
+    response = client.get(query)
+    assert response.status_code == 200
+    assert len(response.json()['data']['result']['places']) > 0
+    assert response.json()['data']['result']['places'][0]['id'][:2] == datasource[:2]
+
+
 class TestAdmin:
     @pytest.mark.parametrize("query, expected_id", [
         ("paris", 'admin:osm:relation:71525'),
-        ("Bruges", 'admin:osm:relation:562654'),
+        ("Bruges", 'admin:osm:relation:105271'),
         ("La Balme-de-Sillingy", 'admin:osm:relation:103823'),
         ("Megève", 'admin:osm:relation:75312'),
         ("Saffré", 'admin:osm:relation:173715'),
@@ -35,7 +42,7 @@ class TestAdmin:
         assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
 
     @pytest.mark.parametrize("query, expected_id", [
-        ("vaise", 'admin:osm:relation:120966'),
+        ("vaise", 'admin:osm:relation:6531571'),
     ])
     def test_suburb(self, query, expected_id):
         assert_autocomplete(f"http://localhost:5000/v1/instant_answer?q={query}", expected_id)
@@ -77,6 +84,9 @@ class TestShouldCallPagesJaunes:
     def test_when_poi_with_place_in_france(self):
         assert_autocomplete("http://localhost:5000/v1/instant_answer?q=ecole maternelle jacques prevert orléans",
                             'pj:12359795')
+
+    def test_when_cat_with_place_in_france(self):
+        assert_places_list_datasource("http://localhost:5000/v1/instant_answer?q=spa paris&lang=fr", 'pj')
 
 
 class TestShouldCallOSM:
