@@ -289,6 +289,9 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
         try:
             place_query = self.build_place_query(tags_list)
+            brand_query = self.build_brand_query(tags_list)
+            cat_query = self.build_category_query(tags_list)
+
             if self.is_poi_request(tags_list):
                 if IntentionType.POI not in allow_types:
                     logger.info("Detected POI request for '%s'", text, extra=logs_extra)
@@ -304,9 +307,6 @@ class NLU_Helper:  # pylint: disable = invalid-name
                     t.get("tag") in NLU_PLACE_TAGS for t in tags_list
                 )
             else:
-                brand_query = self.build_brand_query(tags_list)
-                cat_query = self.build_category_query(tags_list)
-
                 if brand_query and cat_query:
                     raise NluClientException("detected a category and a brand")
 
@@ -317,9 +317,6 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
                 intention = await self.build_intention_category(cat_or_brand_query)
 
-                if cat_query and not intention.filter.category:
-                    raise NluClientException("no category matched")
-
                 self.add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query)
                 logger.info("Detected intentions for '%s'", text, extra=logs_extra)
             if place_query:
@@ -328,6 +325,9 @@ class NLU_Helper:  # pylint: disable = invalid-name
                 )
                 intention.filter.bbox = bbox
                 intention.description.place = place
+            else:
+                if cat_query and not intention.filter.category:
+                    raise NluClientException("no category matched")
             return intention
 
         except NluClientException as exp:
