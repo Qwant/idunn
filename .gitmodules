@@ -4,5 +4,5 @@
 	url = ../../../continuous-integration/gitlab-runner-bootstrap.git
 [submodule "bragi"]
 	path = bragi
-	url = https://github.com/hove-io/mimirsbrunn.git
-	branch = master
+	url = https://github.com/fatal69100/mimirsbrunn.git
+	branch = update_poi_types
