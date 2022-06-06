@@ -48,7 +48,7 @@ workflow:
     HELM_VALUES: "values.yaml,version.yaml"
     PRODUCTION: "false"
 
-.argocd:prelive:
+.argocd:integration:
   stage: prelive
   variables:
     KUBE_NAMESPACE: "int-maps"
@@ -248,11 +248,11 @@ argo deploy bragi dev:
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: manual
 
-argo deploy idunn prelive:
+argo deploy idunn integration:
   extends:
     - .idunn
     - .argocd
-    - .argocd:prelive
+    - .argocd:integration
   needs:
     - configure
   script:
@@ -267,17 +267,29 @@ argo deploy idunn prelive:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
   rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: manual
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
 
-idunn promote integration to prod:
+argo deploy idunn preprod:
   extends:
-    - .release
-    - .idunn
-  stage: validation
-  artifacts:
-    paths:
-      - ci/
+    - argo deploy idunn integration
+  script:
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${CI_COMMIT_REF_SLUG}"
+      --image-version-object-path-app ".webapp.image.name"
+    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: manual
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
 
 .deploy-kube:
   image: registry.qwant.ninja/docker/kubectl:master
@@ -333,11 +345,7 @@ argo deploy idunn production:
     - .idunn
     - .argocd
     - .argocd:production
-  needs:
-    - idunn promote integration to prod
   script:
-    - export $(xargs <ci/templates/release)
-    - ci/bootstrap/bin/sync-version-argocd
       --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${RELEASE_TAG_REF}"
       --image-version-object-path-app ".webapp.image.name"
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
@@ -345,3 +353,10 @@ argo deploy idunn production:
   variables:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: manual
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
