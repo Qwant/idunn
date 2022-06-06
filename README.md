@@ -12,3 +12,5 @@ Note that this documentation is bounded to the version available on the dev envi
 ## CI notes on development and release process
 
 ![Alt text](flow.png "K8sdedevelopment flow")
+
+Every branch can deploy to dev and integration using image sha. After the validation is completed use ci/scripts/release script to tag and release a version: this will trigger a pipeline where it will be possible to sync the argo apps repository.

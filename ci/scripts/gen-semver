@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+import os
+import re
+import sys
+import semver
+import subprocess
+
+
+def git(*args):
+    return subprocess.check_output(["git"] + list(args))
+
+def bump(latest):
+    # TODO decide what to bump
+    # Then use bump_patch, bump_minor or bump_major
+    return semver.bump_patch(latest)
+
+
+def main():
+    new_tag = bump(os.environ["LAST_TAG_REF"])
+    print(new_tag)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
