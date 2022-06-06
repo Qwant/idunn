@@ -346,7 +346,7 @@ argo deploy idunn production:
     - .argocd
     - .argocd:production
   script:
-      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${RELEASE_TAG_REF}"
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${CI_COMMIT_REF_SLUG}"
       --image-version-object-path-app ".webapp.image.name"
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER

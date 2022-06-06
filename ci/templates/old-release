@@ -1,0 +1,1 @@
+LAST_TAG_REF=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
