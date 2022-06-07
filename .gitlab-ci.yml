@@ -46,15 +46,24 @@ workflow:
     ARGOCD_APP_NAME: "review-${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
     FULLNAME_OVERRIDE: "${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
     HELM_VALUES: "values.yaml,version.yaml"
-    PRODUCTION: "false"
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: manual
 
-.argocd:prelive:
+.argocd:integration:
   stage: prelive
   variables:
     KUBE_NAMESPACE: "int-maps"
     ARGOCD_APP_NAME: "integration-${COMPONENT_NAME}"
     FULLNAME_OVERRIDE: "${COMPONENT_NAME}"
     HELM_VALUES: "values.yaml,version.yaml"
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: never
+    - when: manual
 
 .argocd:production:
   stage: production
@@ -74,25 +83,6 @@ workflow:
       --auth-token $ARGOCD_AUTH_TOKEN
       --server $ARGOCD_SERVER
       --grpc-web
-
-.release:
-  extends: .build
-  stage: validation
-  variables:
-    DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
-    GIT_SUBMODULE_STRATEGY: recursive
-    SOURCE_IMAGE: "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${CI_COMMIT_REF_SLUG}"
-  script:
-    - export $(xargs <ci/templates/release)
-    - docker pull "$SOURCE_IMAGE"
-    - if ci/bootstrap/bin/docker-content-digest "qwant" "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}" "${RELEASE_TAG_REF}"; then
-        echo "Released Docker image already exist please update the release tag,....";
-        exit 1;
-      fi
-    - docker tag "$SOURCE_IMAGE" "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${RELEASE_TAG_REF}"
-    - docker push "${CI_REGISTRY_IMAGE}/${COMPONENT_NAME}:${RELEASE_TAG_REF}"
-    - subst -i ci/templates/docker-idunn-digest.env
-  when: manual
 
 .build:
   stage: build
@@ -143,6 +133,7 @@ build bragi:
     - export GITHUB_SHA=$(git rev-parse HEAD:bragi)
     - docker-compose build
     - docker-compose push
+  when: manual
 
 configure:
   stage: configure
@@ -180,10 +171,11 @@ argo deploy idunn review:
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
     - deploy_argoapp_review
   rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: never
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-      when: on_success
+    - when: on_success
 
 stop idunn review:
   extends:
@@ -195,11 +187,6 @@ stop idunn review:
   environment:
     name: "review/$CI_COMMIT_REF_NAME/$COMPONENT_NAME"
     action: stop
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-      when: manual
 
 argo deploy idunn dev:
   extends:
@@ -223,8 +210,9 @@ argo deploy idunn dev:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-      when: manual
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: never
+    - when: manual
 
 argo deploy bragi dev:
   extends:
@@ -245,14 +233,15 @@ argo deploy bragi dev:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-      when: manual
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: never
+    - when: manual
 
-argo deploy idunn prelive:
+argo deploy idunn integration:
   extends:
     - .idunn
     - .argocd
-    - .argocd:prelive
+    - .argocd:integration
   needs:
     - configure
   script:
@@ -266,18 +255,20 @@ argo deploy idunn prelive:
   variables:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-      when: manual
 
-idunn promote integration to prod:
+argo deploy idunn preprod:
   extends:
-    - .release
-    - .idunn
-  stage: validation
-  artifacts:
-    paths:
-      - ci/
+    - argo deploy idunn integration
+  script:
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${CI_COMMIT_REF_SLUG}"
+      --image-version-object-path-app ".webapp.image.name"
+    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: manual
+    - when: never
 
 .deploy-kube:
   image: registry.qwant.ninja/docker/kubectl:master
@@ -333,15 +324,15 @@ argo deploy idunn production:
     - .idunn
     - .argocd
     - .argocd:production
-  needs:
-    - idunn promote integration to prod
   script:
-    - export $(xargs <ci/templates/release)
-    - ci/bootstrap/bin/sync-version-argocd
-      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${RELEASE_TAG_REF}"
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${CI_COMMIT_REF_SLUG}"
       --image-version-object-path-app ".webapp.image.name"
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: manual
+    - when: never

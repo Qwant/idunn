@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# to be used just on master branch
+
+function tag
+{
+    echo $RELEASE_TAG_REF
+    git tag $RELEASE_TAG_REF
+    git push --tags
+}
+
+function release
+{
+    if [ -z "$1" ]
+    then
+        mkdir -p ../rendered
+        pip install semver
+        ../bootstrap/bin/subst < ../templates/old-release > ../rendered/old-release
+        export $(xargs <../rendered/old-release)
+        ../bootstrap/bin/subst < ../templates/new-release > ../rendered/new-release
+        export $(xargs <../rendered/new-release)
+    else
+        export RELEASE_TAG_REF=$1
+    fi
+    tag
+}
+
+release $@
