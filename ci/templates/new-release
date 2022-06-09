@@ -1,1 +1,1 @@
-RELEASE_TAG_REF=$(../scripts/gen-semver)
+RELEASE_TAG_REF=$(ci/scripts/gen-semver)

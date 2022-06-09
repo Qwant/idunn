@@ -1,6 +1,7 @@
 stages:
   - build
   - configure
+  - argo:sync
   - development
   - prelive
   - production
@@ -39,7 +40,7 @@ workflow:
     - k8s
 
 .argocd:review:
-  stage: development
+  stage: argo:sync
   variables:
     KUBE_NAMESPACE: "dev-maps"
     ARGOCD_APP_NAME: "review-${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
@@ -53,7 +54,7 @@ workflow:
     - when: manual
 
 .argocd:integration:
-  stage: prelive
+  stage: argo:sync
   variables:
     KUBE_NAMESPACE: "int-maps"
     ARGOCD_APP_NAME: "integration-${COMPONENT_NAME}"
@@ -65,7 +66,7 @@ workflow:
     - when: manual
 
 .argocd:production:
-  stage: production
+  stage: argo:sync
   variables:
     ARGOCD_AUTH_TOKEN: $ARGOCD_AUTH_TOKEN_PRODUCTION
     ARGOCD_SERVER: $ARGOCD_SERVER_PROD
