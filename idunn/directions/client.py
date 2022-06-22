@@ -367,7 +367,7 @@ class DirectionsClient:
         return DirectionsResponse(**res)
 
     def directions_navitia(self, start, end, mode: IdunnTransportMode, lang, extra=None):
-        url = settings["NAVITIA_API_BASE_URL"]
+        url = settings["HOVE_API_BASE_URL"]
         start = start.get_coord()
         end = end.get_coord()
 
@@ -388,7 +388,7 @@ class DirectionsClient:
         response = self.session.get(
             url,
             params=params,
-            headers={"Authorization": settings["NAVITIA_API_TOKEN"]},
+            headers={"Authorization": settings["HOVE_API_TOKEN"]},
         )
 
         response.raise_for_status()
