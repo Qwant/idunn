@@ -5,6 +5,7 @@ Derialize Hove's responses and conversion primitives following the following equ
  - step <-> single element of section ? Can be re-cut later ?
 """
 
+import logging
 from datetime import datetime
 from typing import Iterator, List, Optional, Tuple
 
@@ -16,6 +17,8 @@ from pydantic import BaseModel
 
 import idunn.directions.models as api
 from idunn.directions.models import IdunnTransportMode
+
+logger = logging.getLogger(__name__)
 
 
 class Distances(BaseModel):
@@ -47,23 +50,26 @@ class Instruction(BaseModel):
 
     def get_api_modifier(self) -> str:
         # See https://docs.api.com/api/navigation/directions/#step-maneuver-object
-        mapping = {
-            -135: "sharp left",
-            -90: "left",
-            -45: "slight left",
-            0: "straight",
-            45: "slight right",
-            90: "right",
-            135: "sharp right",
-            180: "uturn",
-        }
+        mapping = [
+            (-135, "sharp left"),
+            (-90, "left"),
+            (-45, "slight left"),
+            (0, "straight"),
+            (45, "slight right"),
+            (90, "right"),
+            (135, "sharp right"),
+            (180, "uturn"),
+        ]
 
-        closest = min(
-            *mapping.keys(),
-            key=lambda angle: min(abs(self.direction - angle), abs(360 - self.direction - angle)),
+        _, closest = min(
+            (
+                min(abs(self.direction - angle), abs(360 - self.direction - angle)),
+                modifier,
+            )
+            for angle, modifier in mapping
         )
 
-        return mapping[closest]
+        return closest
 
 
 class DisplayInformations(BaseModel):
@@ -80,6 +86,7 @@ class DisplayInformations(BaseModel):
             num=self.code or self.label,
             direction=self.direction,
             lineColor=self.color,
+            lineTextColor=self.text_color,
             network=self.network,
         )
 
@@ -137,14 +144,21 @@ class Section(BaseModel):
 
         # TODO: should we just return the api-provided name?
         if self.display_informations:
-            if self.display_informations.physical_mode == "Métro":
-                return api.TransportMode.subway
-            if self.display_informations.physical_mode == "RER":
-                return api.TransportMode.suburban_train
-            if self.display_informations.physical_mode == "Bus":
-                return api.TransportMode.bus
+            match self.display_informations.physical_mode:
+                case "Métro":
+                    return api.TransportMode.subway
+                case "RER":
+                    return api.TransportMode.suburban_train
+                case "Train Transilien":
+                    return api.TransportMode.train
+                case "Bus":
+                    return api.TransportMode.bus
+                case "Tramway":
+                    return api.TransportMode.tram
+                case other:
+                    logger.warning("Unknown physical mode '%s'", other)
 
-        return api.TransportMode.tram
+        return api.TransportMode.unknown
 
     def as_api_route_summary_part(self) -> api.RouteSummaryPart:
         return api.RouteSummaryPart(
@@ -214,11 +228,8 @@ class Journey(BaseModel):
         return datetime.strptime(v, "%Y%m%dT%H%M%S")
 
     def as_api_route(self) -> api.DirectionsRoute:
-        legs = [
-            sec.as_api_route_leg()
-            for sec in self.sections
-            if sec.sec_type != "waiting" and sec.sec_type != "tram"
-        ]
+        secs = [sec for sec in self.sections if sec.sec_type != "waiting"]
+        legs = [sec.as_api_route_leg() for sec in secs]
 
         return api.DirectionsRoute(
             duration=self.duration,
@@ -232,7 +243,7 @@ class Journey(BaseModel):
                     {
                         "type": "Feature",
                         "properties": {
-                            "mode": leg.mode.value,
+                            "mode": leg.mode.value if leg.mode.value != "UNKNOW" else "WALK",
                             **(
                                 {"lineColor": sec.display_informations.color}
                                 if sec.display_informations
@@ -244,7 +255,7 @@ class Journey(BaseModel):
                             "coordinates": [step.geometry["coordinates"] for step in leg.steps],
                         },
                     }
-                    for sec, leg in zip(self.sections, legs)
+                    for sec, leg in zip(secs, legs)
                     for step in leg.steps
                 ],
             },

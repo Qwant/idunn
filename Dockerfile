@@ -1,14 +1,11 @@
-# ---
-# --- Builder image
-# ---
+FROM python:3.10-slim
 
 FROM python:3.10-alpine as builder
 
 # Install build dependancies
 RUN apk update && apk add --upgrade --no-cache g++ make
 
-# Install pipenv
-RUN pip install --no-cache-dir --upgrade pip
+# Installing packages
 RUN pip install pipenv
 
 WORKDIR /usr/local/src

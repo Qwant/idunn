@@ -48,8 +48,6 @@ class IdunnTransportMode(Enum):
         if mode in ("publictransport", "taxi", "vtc", "carpool"):
             return cls.PUBLICTRANSPORT
 
-        print("UNKNOWN MODE:", mode)
-
     def to_hove(self) -> str:
         if self == self.CAR:
             return "car_no_park"
@@ -78,6 +76,7 @@ class TransportInfo(BaseModel):
     num: Optional[str]
     direction: Optional[str]
     lineColor: Optional[str]
+    lineTextColor: Optional[str]  # extended from mapbox
     network: Optional[str]
 
     def __init__(self, **data):
