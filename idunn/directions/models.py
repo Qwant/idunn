@@ -31,6 +31,42 @@ class TransportMode(str, Enum):
     wait = "WAIT"
 
 
+class IdunnTransportMode(Enum):
+    CAR = "car"
+    BIKE = "bike"
+    WALKING = "walking"
+    PUBLICTRANSPORT = "publictransport"
+
+    @classmethod
+    def parse(cls, mode: str):
+        if mode in ("driving-traffic", "driving", "car", "car_no_park"):
+            return cls.CAR
+        if mode in ("cycling",):
+            return cls.BIKE
+        if mode in ("walking", "walk"):
+            return cls.WALKING
+        if mode in ("publictransport", "taxi", "vtc", "carpool"):
+            return cls.PUBLICTRANSPORT
+
+        print("UNKNOWN MODE:", mode)
+
+    def to_navitia(self) -> str:
+        if self == self.CAR:
+            return "car_no_park"
+        return self.value
+
+    def to_mapbox(self) -> TransportMode:
+        # NOTE: switch to Python 3.10 for more eleguant matching ?
+        if self == self.CAR:
+            return TransportMode.car
+        if self == self.BIKE:
+            return TransportMode.bicycle
+        if self == self.WALKING:
+            return TransportMode.walk
+        if self == self.PUBLICTRANSPORT:
+            return TransportMode.tram
+
+
 class RouteManeuver(BaseModel):
     location: Tuple[float, float] = Field(..., description="[lon, lat]")
     modifier: Optional[str]
