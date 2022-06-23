@@ -85,6 +85,7 @@ class RouteStep(BaseModel):
     duration: int
     distance: int
     geometry: dict = Field(..., description="GeoJSON")
+    properties: dict = {}
     mode: TransportMode
 
     #  def __init__(self, **data):
@@ -200,7 +201,7 @@ class DirectionsRoute(BaseModel):
                     feature = {
                         "type": "Feature",
                         "geometry": {"coordinates": leg["shapes"], "type": "LineString"},
-                        "properties": {"leg_index": idx},
+                        "properties": {"leg_index": idx, "mode": "WALK"},
                     }
                     features_list.append(feature)
             data["geometry"] = {"type": "FeatureCollection", "features": features_list}
