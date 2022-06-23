@@ -96,7 +96,10 @@ class Section(BaseModel):
     mode: Optional[IdunnTransportMode]
     duration: int
     path: List[Instruction] = []
-    geojson: Optional[Geometry]  # TODO: always set when not waiting
+    # TODO: always set when not waiting
+    # NOTE: this is not a purely valid geojson because of the properties field which is present in
+    #       a LineString geometry and which contains a list of objects instead of an object
+    geojson: Optional[dict]
     display_informations: Optional[DisplayInformations]
 
     @validator("mode", pre=True)
@@ -107,7 +110,7 @@ class Section(BaseModel):
         """
         Split path geometry at each instruction and wrap them together
         """
-        all_coords = self.geojson.coordinates
+        all_coords = self.geojson["coordinates"]
         first_pass = True
         last_inst = None
 
@@ -184,8 +187,8 @@ class Section(BaseModel):
                         instruction="no instruction", location=default_location
                     ),
                     duration=self.duration,
-                    distance=sum(inst.length for inst in self.path),
-                    geometry=self.geojson.dict(),
+                    distance=self.geojson["properties"][0]["length"],
+                    geometry=self.geojson,
                     properties={"mode": self.mode.value if self.mode else "tram"},
                     mode=mode,
                 )
@@ -209,7 +212,7 @@ class Section(BaseModel):
 
         return api.RouteLeg(
             duration=self.duration,
-            distance=sum(step.distance for step in steps),
+            distance=self.geojson["properties"][0]["length"],
             summary="todo",
             steps=steps,
             info=(
@@ -217,8 +220,8 @@ class Section(BaseModel):
                 if self.display_informations
                 else None
             ),
-            to=api.TransportStop(location=self.geojson.coordinates[-1]),
-            **{"from": api.TransportStop(location=self.geojson.coordinates[0])},
+            to=api.TransportStop(location=self.geojson["coordinates"][-1]),
+            **{"from": api.TransportStop(location=self.geojson["coordinates"][0])},
         )
 
 
