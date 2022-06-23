@@ -142,8 +142,8 @@ class DirectionsClient:
         params = {
             "from": f"{start['lon']};{start['lat']}",
             "to": f"{end['lon']};{end['lat']}",
-            "free_radius_from": 50,
-            "free_radius_to": 50,
+            #  "free_radius_from": 50, # TODO: isn't this necessary for car/bike/walk?
+            #  "free_radius_to": 50,
             "max_walking_direct_path_duration": 86400,
             "max_bike_direct_path_duration": 86400,
             "max_car_no_park_direct_path_duration": 86400,
