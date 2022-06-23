@@ -29,6 +29,8 @@ from .models import (
     RouteLeg,
     RouteManeuver,
     RouteStep,
+    RouteSummaryPart,
+    TransportInfo,
     TransportMode,
     TransportStop,
 )
@@ -54,6 +56,8 @@ class IdunnTransportMode(Enum):
             return cls.WALKING
         if mode in ("publictransport", "taxi", "vtc", "carpool"):
             return cls.PUBLICTRANSPORT
+
+        print("UNKNOWN MODE:", mode)
 
     def to_navitia(self) -> str:
         if self == self.CAR:
@@ -126,12 +130,19 @@ class Instruction(BaseModel):
         return mapping[closest]
 
 
+class DisplayInformations(BaseModel):
+    color: Optional[str]
+    text_color: Optional[str]
+    label: Optional[str]
+
+
 class Section(BaseModel):
     sec_type: str = Field(..., alias="type")  # TODO: could be an enum
     mode: Optional[IdunnTransportMode]
     duration: int
     path: List[Instruction] = []
     geojson: Optional[Geometry]  # TODO: always set when not waiting
+    display_informations: Optional[DisplayInformations]
 
     @validator("mode", pre=True)
     def mode_from_navitia(cls, v):
@@ -179,7 +190,7 @@ class Section(BaseModel):
         if self.mode:
             mode = self.mode.to_mapbox()
         else:
-            mode = TransportMode.unknown
+            mode = TransportMode.tram
 
         if not insts:
             steps = [
@@ -188,6 +199,7 @@ class Section(BaseModel):
                     duration=self.duration,
                     distance=sum(inst.length for inst in self.path),
                     geometry=self.geojson.dict(),
+                    properties={"mode": self.mode.value if self.mode else "tram"},
                     mode=mode,
                 )
             ]
@@ -202,6 +214,7 @@ class Section(BaseModel):
                     duration=inst.duration,
                     distance=inst.length,
                     geometry=geo,
+                    properties={"mode": self.mode.value if self.mode else "tram"},
                     mode=mode,
                 )
                 for (inst, geo) in insts
@@ -228,7 +241,11 @@ class Journey(BaseModel):
         return datetime.strptime(v, "%Y%m%dT%H%M%S")
 
     def as_api_route(self) -> DirectionsRoute:
-        legs = [sec.as_api_route_leg() for sec in self.sections if sec.sec_type != "waiting"]
+        legs = [
+            sec.as_api_route_leg()
+            for sec in self.sections
+            if sec.sec_type != "waiting" and sec.sec_type != "tram"
+        ]
 
         return DirectionsRoute(
             duration=self.duration,
@@ -236,9 +253,58 @@ class Journey(BaseModel):
             start_time=datetime.isoformat(self.departure_date_time),
             end_time=datetime.isoformat(self.arrival_date_time),
             legs=legs,
-            geometry=shapely.geometry.mapping(
-                unary_union([shape(step.geometry) for leg in legs for step in leg.steps])
-            ),
+            geometry={
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "mode": leg.mode.value,
+                            **(
+                                {"lineColor": sec.display_informations.color}
+                                if sec.display_informations
+                                else {}
+                            ),
+                        },
+                        "geometry": {
+                            "type": "MultiLineString",
+                            "coordinates": [step.geometry["coordinates"] for step in leg.steps],
+                        },
+                    }
+                    for sec, leg in zip(self.sections, legs)
+                    for step in leg.steps
+                ]
+            },
+            summary=[
+                RouteSummaryPart(
+                    mode=TransportMode.bike,
+                    info=TransportInfo(
+                        num="42",
+                        direction="todo",
+                        lineColor="ff0000",
+                        network="RATP",
+                    ),
+                    distance=1337,
+                    duration=42,
+                ),
+                RouteSummaryPart(
+                    mode=TransportMode.walk,
+                    info=None,
+                    distance=1337,
+                    duration=42,
+                ),
+                RouteSummaryPart(
+                    mode=TransportMode.bike,
+                    info=TransportInfo(
+                        num="0",
+                        direction="todo",
+                        lineColor="00ff00",
+                        network="RATP",
+                    ),
+                    distance=1337,
+                    duration=42,
+                ),
+            ],
         )
 
 
@@ -374,8 +440,6 @@ class DirectionsClient:
         params = {
             "from": f"{start['lon']};{start['lat']}",
             "to": f"{end['lon']};{end['lat']}",
-            "direct_path_mode[]": mode.to_navitia(),
-            "direct_path": "only",
             "free_radius_from": 50,
             "free_radius_to": 50,
             "max_walking_direct_path_duration": 86400,
@@ -384,6 +448,16 @@ class DirectionsClient:
             "min_nb_journeys": 2,
             "max_nb_journeys": 5,
         }
+
+        if mode == IdunnTransportMode.PUBLICTRANSPORT:
+            params.update({"direct_path": "none"})
+        else:
+            params.update(
+                {
+                    "direct_path_mode[]": mode.to_navitia(),
+                    "direct_path": "only",
+                }
+            )
 
         response = self.session.get(
             url,
