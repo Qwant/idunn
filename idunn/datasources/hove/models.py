@@ -158,7 +158,7 @@ class Section(BaseModel):
                 case other:
                     logger.warning("Unknown physical mode '%s'", other)
 
-        return api.TransportMode.unknown
+        return api.TransportMode.walk
 
     def as_api_route_summary_part(self) -> api.RouteSummaryPart:
         return api.RouteSummaryPart(
@@ -209,10 +209,16 @@ class Section(BaseModel):
 
         return api.RouteLeg(
             duration=self.duration,
+            distance=sum(step.distance for step in steps),
             summary="todo",
             steps=steps,
-            from_=api.TransportStop(location=self.geojson.coordinates[0]),
+            info=(
+                self.display_informations.as_api_transport_info()
+                if self.display_informations
+                else None
+            ),
             to=api.TransportStop(location=self.geojson.coordinates[-1]),
+            **{"from": api.TransportStop(location=self.geojson.coordinates[0])},
         )
 
 
@@ -243,7 +249,7 @@ class Journey(BaseModel):
                     {
                         "type": "Feature",
                         "properties": {
-                            "mode": leg.mode.value if leg.mode.value != "UNKNOW" else "WALK",
+                            "mode": leg.mode.value,
                             **(
                                 {"lineColor": sec.display_informations.color}
                                 if sec.display_informations
