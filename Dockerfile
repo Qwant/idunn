@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 RUN apt-get update && apt-get -y install git gcc
 
@@ -8,7 +8,7 @@ RUN chown app_user /app/
 WORKDIR /app
 
 # Installing packages
-RUN pip install pipenv==2018.11.26
+RUN pip install pipenv
 
 ADD --chown=app_user app.py Pipfile* /app/
 RUN pipenv install --system --deploy
