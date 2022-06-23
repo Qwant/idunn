@@ -50,7 +50,7 @@ class IdunnTransportMode(Enum):
 
         print("UNKNOWN MODE:", mode)
 
-    def to_navitia(self) -> str:
+    def to_hove(self) -> str:
         if self == self.CAR:
             return "car_no_park"
         return self.value

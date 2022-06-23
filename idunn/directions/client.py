@@ -10,7 +10,7 @@ from typing import Optional
 
 
 from idunn import settings
-from idunn.datasources.navitia.models import NavitiaResponse
+from idunn.datasources.hove.models import HoveResponse
 from idunn.directions.models import DirectionsResponse, IdunnTransportMode
 from idunn.utils.geometry import city_surrounds_polygons
 from idunn.places.base import BasePlace
@@ -119,7 +119,7 @@ class DirectionsClient:
         res["data"]["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
         return DirectionsResponse(**res)
 
-    def directions_navitia(self, start, end, mode: IdunnTransportMode, lang, extra=None):
+    def directions_hove(self, start, end, mode: IdunnTransportMode, lang, extra=None):
         url = settings["HOVE_API_BASE_URL"]
         start = start.get_coord()
         end = end.get_coord()
@@ -141,7 +141,7 @@ class DirectionsClient:
         else:
             params.update(
                 {
-                    "direct_path_mode[]": mode.to_navitia(),
+                    "direct_path_mode[]": mode.to_hove(),
                     "direct_path": "only",
                 }
             )
@@ -153,7 +153,7 @@ class DirectionsClient:
         )
 
         response.raise_for_status()
-        return NavitiaResponse(**response.json())
+        return HoveResponse(**response.json())
 
     @staticmethod
     def place_to_combigo_location(place, lang):
@@ -225,7 +225,7 @@ class DirectionsClient:
             raise HTTPException(status_code=400, detail=f"unknown mode {mode}")
 
         idunn_mode = IdunnTransportMode.parse(mode)
-        res = self.directions_navitia(from_place, to_place, idunn_mode, lang)
+        res = self.directions_hove(from_place, to_place, idunn_mode, lang)
         return res.as_api_response()
 
         #  method_name = method.__name__

@@ -14,7 +14,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import Field
 from pydantic import BaseModel
 
-import idunn.directions.models as mapbox
+import idunn.directions.models as api
 from idunn.directions.models import IdunnTransportMode
 
 
@@ -45,8 +45,8 @@ class Instruction(BaseModel):
     length: int
     name: str
 
-    def get_mapbox_modifier(self) -> str:
-        # See https://docs.mapbox.com/api/navigation/directions/#step-maneuver-object
+    def get_api_modifier(self) -> str:
+        # See https://docs.api.com/api/navigation/directions/#step-maneuver-object
         mapping = {
             -135: "sharp left",
             -90: "left",
@@ -67,9 +67,21 @@ class Instruction(BaseModel):
 
 
 class DisplayInformations(BaseModel):
-    color: Optional[str]
-    text_color: Optional[str]
+    code: Optional[str]
     label: Optional[str]
+    color: Optional[str]
+    text_color: Optional[str]  # TODO: would be great to include in result
+    network: Optional[str]
+    direction: Optional[str]
+    physical_mode: Optional[str]
+
+    def as_api_transport_info(self) -> api.TransportInfo:
+        return api.TransportInfo(
+            num=self.code or self.label,
+            direction=self.direction,
+            lineColor=self.color,
+            network=self.network,
+        )
 
 
 class Section(BaseModel):
@@ -119,19 +131,42 @@ class Section(BaseModel):
         if last_inst and len(all_coords) >= 2:
             yield (last_inst, LineString(coordinates=all_coords))
 
-    def as_api_route_leg(self) -> mapbox.RouteLeg:
+    def get_api_mode(self) -> api.TransportMode:
+        if self.mode:
+            return self.mode.to_mapbox()
+
+        # TODO: should we just return the api-provided name?
+        if self.display_informations:
+            if self.display_informations.physical_mode == "Métro":
+                return api.TransportMode.subway
+            if self.display_informations.physical_mode == "RER":
+                return api.TransportMode.suburban_train
+            if self.display_informations.physical_mode == "Bus":
+                return api.TransportMode.bus
+
+        return api.TransportMode.tram
+
+    def as_api_route_summary_part(self) -> api.RouteSummaryPart:
+        return api.RouteSummaryPart(
+            mode=self.get_api_mode(),
+            info=(
+                self.display_informations.as_api_transport_info()
+                if self.display_informations
+                else None
+            ),
+            distance=42,
+            duration=self.duration,
+        )
+
+    def as_api_route_leg(self) -> api.RouteLeg:
         default_location = (0, 0)  # TODO
         insts = list(self.cut_linestring())
-
-        if self.mode:
-            mode = self.mode.to_mapbox()
-        else:
-            mode = mapbox.TransportMode.tram
+        mode = self.get_api_mode()
 
         if not insts:
             steps = [
-                mapbox.RouteStep(
-                    maneuver=mapbox.RouteManeuver(
+                api.RouteStep(
+                    maneuver=api.RouteManeuver(
                         instruction="no instruction", location=default_location
                     ),
                     duration=self.duration,
@@ -143,11 +178,11 @@ class Section(BaseModel):
             ]
         else:
             steps = [
-                mapbox.RouteStep(
-                    maneuver=mapbox.RouteManeuver(
+                api.RouteStep(
+                    maneuver=api.RouteManeuver(
                         location=inst.instruction_start_coordinate.to_position(),
                         instruction=inst.instruction or inst.name,
-                        modifier=inst.get_mapbox_modifier(),
+                        modifier=inst.get_api_modifier(),
                     ),
                     duration=inst.duration,
                     distance=inst.length,
@@ -158,12 +193,12 @@ class Section(BaseModel):
                 for (inst, geo) in insts
             ]
 
-        return mapbox.RouteLeg(
+        return api.RouteLeg(
             duration=self.duration,
             summary="todo",
             steps=steps,
-            from_=mapbox.TransportStop(location=self.geojson.coordinates[0]),
-            to=mapbox.TransportStop(location=self.geojson.coordinates[-1]),
+            from_=api.TransportStop(location=self.geojson.coordinates[0]),
+            to=api.TransportStop(location=self.geojson.coordinates[-1]),
         )
 
 
@@ -178,14 +213,14 @@ class Journey(BaseModel):
     def parse_date(cls, v):
         return datetime.strptime(v, "%Y%m%dT%H%M%S")
 
-    def as_api_route(self) -> mapbox.DirectionsRoute:
+    def as_api_route(self) -> api.DirectionsRoute:
         legs = [
             sec.as_api_route_leg()
             for sec in self.sections
             if sec.sec_type != "waiting" and sec.sec_type != "tram"
         ]
 
-        return mapbox.DirectionsRoute(
+        return api.DirectionsRoute(
             duration=self.duration,
             distance=self.distances.overall(),
             start_time=datetime.isoformat(self.departure_date_time),
@@ -214,45 +249,18 @@ class Journey(BaseModel):
                 ],
             },
             summary=[
-                mapbox.RouteSummaryPart(
-                    mode=mapbox.TransportMode.bike,
-                    info=mapbox.TransportInfo(
-                        num="42",
-                        direction="todo",
-                        lineColor="ff0000",
-                        network="RATP",
-                    ),
-                    distance=1337,
-                    duration=42,
-                ),
-                mapbox.RouteSummaryPart(
-                    mode=mapbox.TransportMode.walk,
-                    info=None,
-                    distance=1337,
-                    duration=42,
-                ),
-                mapbox.RouteSummaryPart(
-                    mode=mapbox.TransportMode.bike,
-                    info=mapbox.TransportInfo(
-                        num="0",
-                        direction="todo",
-                        lineColor="00ff00",
-                        network="RATP",
-                    ),
-                    distance=1337,
-                    duration=42,
-                ),
+                summary
+                for sec in self.sections
+                if (summary := sec.as_api_route_summary_part()).info is not None
             ],
         )
 
 
-class NavitiaResponse(BaseModel):
+class HoveResponse(BaseModel):
     journeys: List[Journey] = []
 
-    def as_api_response(self) -> mapbox.DirectionsResponse:
-        return mapbox.DirectionsResponse(
+    def as_api_response(self) -> api.DirectionsResponse:
+        return api.DirectionsResponse(
             status="ok",  # TODO,
-            data=mapbox.DirectionsData(
-                routes=[journey.as_api_route() for journey in self.journeys]
-            ),
+            data=api.DirectionsData(routes=[journey.as_api_route() for journey in self.journeys]),
         )
