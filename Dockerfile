@@ -1,25 +1,43 @@
-# ---
-# --- Builder image
-# ---
+FROM python:3.10-alpine
 
-FROM python:3.10-alpine as builder
+ENV PYTHONPATH="/usr/local/src/idunn/src"
+ENV PYTHONUNBUFFERED=1
 
-WORKDIR /home/idunn
+# create the user idunn
+RUN mkdir /usr/local/src \
+ && addgroup --gid 1000 idunn \
+ && adduser \
+      --disabled-password \
+      --home /usr/local/src/idunn \
+      --ingroup idunn \
+      --shell /bin/sh \
+      --uid 1000 \
+      idunn
 
-# Install build dependancies
-RUN apk update && apk add --upgrade --no-cache g++ make
+RUN apk update \
+    && apk add --upgrade --no-cache \
+        bash openssh curl ca-certificates openssl less htop gcc git \
+		g++ make wget rsync \
+        build-base libpng-dev freetype-dev libexecinfo-dev openblas-dev libgomp lapack-dev \
+		libgcc libquadmath musl  \
+		libgfortran \
+		lapack-dev \
+	&&  pip install --no-cache-dir --upgrade pip
 
-# Install pipenv
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install pipenv
+WORKDIR /usr/local/src/idunn/src
 
-# Build a venv with dependancies in current directory
-ADD Pipfile.lock Pipfile* /home/idunn/
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv sync
+# Installing packages
+RUN pip install pipenv==2022.6.7
 
-# ---
-# --- Application image
-# ---
+ADD --chown=idunn app.py Pipfile* /usr/local/src/idunn/src/
+RUN pipenv install --system --deploy
+
+RUN mkdir /usr/local/src/idunn/src/prometheus_multiproc
+
+USER idunn
+
+# the sources are copied as late as possible since they are likely to change often
+ADD --chown=idunn idunn /usr/local/src/idunn/src/
 
 FROM python:3.10-alpine
 
@@ -27,24 +45,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Set the multiprocess mode for gunicorn
 ENV IDUNN_PROMETHEUS_MULTIPROC=1
-ENV PROMETHEUS_MULTIPROC_DIR=/home/idunn/prometheus_multiproc
-RUN mkdir -p /home/idunn/prometheus_multiproc
-
-# Install lib dependancies
-RUN apk update && apk add --upgrade --no-cache geos
-
-# Create the user idunn
-RUN addgroup --gid 1000 idunn
-RUN adduser --disabled-password --home /home/idunn --ingroup idunn \
-            --uid 1000 idunn
-
-USER idunn
-WORKDIR /home/idunn
-
-# Add files into images
-ADD --chown=idunn app.py /home/idunn
-ADD --chown=idunn idunn /home/idunn/idunn
-COPY --chown=idunn --from=builder /home/idunn/.venv /home/idunn/.venv
+ENV PROMETHEUS_MULTIPROC_DIR=/usr/local/src/idunn/src/prometheus_multiproc
 
 EXPOSE 5000
 
