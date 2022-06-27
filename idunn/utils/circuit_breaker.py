@@ -60,7 +60,7 @@ class IdunnCircuitBreaker(pybreaker.CircuitBreaker):
             # behaviour of `f`.
             try:
                 res = await f(*args, **kwargs)
-                callback = lambda: res  # pylint: disable = unnecessary-lambda-assignment
+                callback = lambda: res
             except Exception as err:
                 callback = raise_err_callback(err)
 

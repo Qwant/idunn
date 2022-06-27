@@ -7,7 +7,6 @@ from fastapi.responses import ORJSONResponse
 from ..geocoder.bragi_client import bragi_client
 from ..geocoder.models.geocodejson import Intention
 from ..geocoder.nlu_client import nlu_client, NluClientException
-
 from ..geocoder.models import QueryParams, ExtraParams, IdunnAutocomplete
 
 from idunn import settings

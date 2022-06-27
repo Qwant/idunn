@@ -93,90 +93,6 @@ def test_direction_car_with_ids(mock_directions_car):
     assert "2.34023,48.89007;2.32658,48.85992" in mocked_request_url
 
 
-def test_direction_public_transport(mock_directions_public_transport):
-    client = TestClient(app)
-    response = client.get(
-        "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
-        params={"language": "fr", "type": "publictransport"},
-    )
-
-    assert response.status_code == 200
-
-    response_data = response.json()
-    assert response_data["status"] == "success"
-    assert all(r["geometry"] for r in response_data["data"]["routes"])
-
-    route = response_data["data"]["routes"][0]
-    assert route["start_time"] == "2020-01-01T01:00:00+01:00"
-    assert route["end_time"] == "2020-01-01T01:30:00+01:00"
-
-    geometry = route["geometry"]
-    assert geometry["type"] == "FeatureCollection"
-    assert geometry["features"][1]["properties"] == {
-        "leg_index": 1,
-        "direction": "Mairie d'Issy (Issy-les-Moulineaux)",
-        "lineColor": "007852",
-        "mode": "SUBWAY",
-        "num": "12",
-        "network": "RATP",
-    }
-
-    summary = route["summary"]
-    assert list(map(lambda part: part["mode"], summary)) == [
-        "WALK",
-        "SUBWAY",
-        "WALK",
-        "SUBWAY",
-        "WALK",
-    ]
-
-    # Walk summary
-    assert summary[0]["info"] is None
-    assert summary[0]["distance"] > 0
-    assert summary[0]["duration"] > 0
-
-    # Subway summary
-    assert summary[1]["info"]["num"] == "12"
-    assert summary[1]["info"]["direction"] == "Mairie d'Issy (Issy-les-Moulineaux)"
-    assert summary[1]["info"]["lineColor"] == "007852"
-    assert summary[1]["info"]["network"] == "RATP"
-
-    # Subway leg
-    leg = route["legs"][1]
-    assert leg["from"] == {
-        "id": "1:4:43789",
-        "name": "Lamarck-Caulaincourt",
-        "location": [2.339149, 48.889738],
-    }
-    assert leg["to"] == {"id": "1:4:43790", "name": "Concorde", "location": [2.321412, 48.865489]}
-    assert len(leg["stops"]) == 7
-
-
-def test_directions_public_transport_restricted_areas():
-    client = TestClient(app)
-
-    # Paris - South Africa
-    response = client.get(
-        "http://localhost/v1/directions/2.3211757,48.8604893;22.1741215,-33.1565800",
-        params={"language": "fr", "type": "publictransport"},
-    )
-    assert response.status_code == 422
-
-    # Pekin
-    response = client.get(
-        "http://localhost/v1/directions/116.2945000,39.9148800;116.4998847,39.9091405",
-        params={"language": "fr", "type": "publictransport"},
-    )
-    assert response.status_code == 422
-
-    #  Washington - New York
-    response = client.get(
-        "http://localhost/v1/directions/-74.0308525,40.7697215;-77.0427329,38.8581794",
-        params={"language": "fr", "type": "publictransport"},
-    )
-    assert response.status_code == 422
-
-
 def test_directions_not_configured():
     with override_settings(
         {
@@ -185,7 +101,7 @@ def test_directions_not_configured():
     ):
         client = TestClient(app)
         response = client.get(
-            "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+            "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
             params={"language": "fr", "type": "driving"},
         )
         assert response.status_code == 501
@@ -196,7 +112,7 @@ def test_directions_rate_limiter(limiter_test_normal, mock_directions_car_with_r
     # rate limiter is triggered after 30 req/min by default
     for _ in range(40):
         response = client.get(
-            "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+            "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
             params={"language": "fr", "type": "driving"},
             headers={"x-client-hash": "test-client-hash-value"},
         )
