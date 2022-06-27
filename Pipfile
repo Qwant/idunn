@@ -17,14 +17,14 @@ lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
 
 [dev-packages]
 pytest = "*"
-pytest-asyncio = "*"
 lovely-pytest-docker = "*"
 freezegun = "*"
+ipython = "*"
 responses = "*"
-ipython = "8.4.0 "
-black = ">=22.3.0"
+black = "22.3.0"
 respx = "*"
 pylint = "*"
+pympler = "*"
 
 [packages]
 fastapi="==0.65.*"
@@ -44,7 +44,7 @@ phonenumbers = "*"
 deepmerge = "*"
 prometheus-client = "*"
 unidecode = "*"
-httpx = ">=0.23.0"
+httpx = ">=0.12.0"
 geopy = "*"
 py-mini-racer = "*"
 geojson-pydantic = "*"
