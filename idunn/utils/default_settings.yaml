@@ -120,14 +120,11 @@ DIRECTIONS_RL_MAX_REQUESTS: 30 # per client
 DIRECTIONS_RL_EXPIRE: 60 # seconds
 DIRECTIONS_TIMEOUT: 8 # seconds
 DIRECTIONS_CLIENT_CACHE: 60 # seconds
-QWANT_DIRECTIONS_API_BASE_URL:
 MAPBOX_DIRECTIONS_API_BASE_URL: "https://api.mapbox.com/directions/v5/mapbox"
 MAPBOX_DIRECTIONS_ACCESS_TOKEN:
 COMBIGO_API_BASE_URL: "https://maps.combigo.com/v1.1"
 COMBIGO_API_KEY:
 PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allow any itinerary
-HOVE_API_BASE_URL: "https://api.navitia.io/v1/coverage/fr-idf/journeys"
-HOVE_API_TOKEN:
 
 #######################
 ## Geocoding
