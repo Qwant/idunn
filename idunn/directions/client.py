@@ -134,7 +134,7 @@ class DirectionsClient:
         res["data"]["context"] = {"start_tz": start.get_tz(), "end_tz": end.get_tz()}
         return DirectionsResponse(**res)
 
-    def directions_hove(self, start, end, mode: IdunnTransportMode, lang, extra=None):
+    def directions_hove(self, start, end, mode: IdunnTransportMode, _lang, _extra=None):
         url = settings["HOVE_API_BASE_URL"]
         start = start.get_coord()
         end = end.get_coord()
@@ -222,10 +222,11 @@ class DirectionsClient:
                 detail="requested path is not inside an allowed area",
             )
 
-        method = self.directions_qwant
-        kwargs = {"extra": params}
+        _method = self.directions_qwant
+        _kwargs = {"extra": params}
+
         if self.MAPBOX_API_ENABLED:
-            method = self.directions_mapbox
+            _method = self.directions_mapbox
 
         if mode in ("driving-traffic", "driving", "car"):
             mode = "driving-traffic"
@@ -234,8 +235,8 @@ class DirectionsClient:
         elif mode in ("walking", "walk"):
             mode = "walking"
         elif mode in ("publictransport", "taxi", "vtc", "carpool"):
-            method = self.directions_combigo
-            kwargs = {}
+            _method = self.directions_combigo
+            _kwargs = {}
         else:
             raise HTTPException(status_code=400, detail=f"unknown mode {mode}")
 
