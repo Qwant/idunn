@@ -176,7 +176,7 @@ class Section(BaseModel):
         )
 
     def as_api_route_leg(self) -> api.RouteLeg:
-        default_location = (0, 0)  # TODO
+        default_location = self.geojson["coordinates"][0]  # assuming this is a LineString
         insts = list(self.cut_linestring())
         mode = self.get_api_mode()
 
