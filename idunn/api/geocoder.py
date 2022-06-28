@@ -92,11 +92,4 @@ async def get_autocomplete(
 
 
 async def get_autocomplete_response(autocomplete: IdunnAutocomplete = Depends(get_autocomplete)):
-    # This is only used in dev environment, which is why this import is not put at toplevel
-    # pylint: disable = import-outside-toplevel
-    from pympler.tracker import SummaryTracker
-
-    tracker = SummaryTracker()
-    res = ORJSONResponse(autocomplete.dict(exclude_unset=True))
-    tracker.print_diff()
-    return res
+    return ORJSONResponse(autocomplete.dict(exclude_unset=True))
