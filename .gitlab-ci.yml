@@ -117,7 +117,7 @@ build idunn:
     - .build
   variables:
     TARGET_IMAGE: "$CI_REGISTRY_IMAGE/idunn:${CI_COMMIT_REF_SLUG}"
-    SOURCE_IMAGE: "qwantresearch/idunn:latest"
+    SOURCE_IMAGE: "qwantresearch/idunn:navitia-poc"
   script:
     - docker pull "$SOURCE_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
