@@ -148,7 +148,7 @@ class DirectionsClient:
             "max_bike_direct_path_duration": 86400,
             "max_car_no_park_direct_path_duration": 86400,
             "min_nb_journeys": 2,
-            "max_nb_journeys": 5,
+            "max_nb_journeys": 3,
         }
 
         if mode == IdunnTransportMode.PUBLICTRANSPORT:
