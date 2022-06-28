@@ -39,14 +39,15 @@ class IdunnTransportMode(Enum):
 
     @classmethod
     def parse(cls, mode: str):
-        if mode in ("driving-traffic", "driving", "car", "car_no_park"):
-            return cls.CAR
-        if mode in ("cycling",):
-            return cls.BIKE
-        if mode in ("walking", "walk"):
-            return cls.WALKING
-        if mode in ("publictransport", "taxi", "vtc", "carpool"):
-            return cls.PUBLICTRANSPORT
+        match mode:
+            case "driving-traffic" | "driving" | "car" | "car_no_park":
+                return cls.CAR
+            case "cycling":
+                return cls.BIKE
+            case "walking" | "walk":
+                return cls.WALKING
+            case "publictransport" | "taxi" | "vtc" | "carpool":
+                return cls.PUBLICTRANSPORT
 
     def to_hove(self) -> str:
         if self == self.CAR:
@@ -54,15 +55,15 @@ class IdunnTransportMode(Enum):
         return self.value
 
     def to_mapbox(self) -> TransportMode:
-        # NOTE: switch to Python 3.10 for more eleguant matching ?
-        if self == self.CAR:
-            return TransportMode.car
-        if self == self.BIKE:
-            return TransportMode.bicycle
-        if self == self.WALKING:
-            return TransportMode.walk
-        if self == self.PUBLICTRANSPORT:
-            return TransportMode.tram
+        match self:
+            case self.CAR:
+                return TransportMode.car
+            case self.BIKE:
+                return TransportMode.bicycle
+            case self.WALKING:
+                return TransportMode.walk
+            case self.PUBLICTRANSPORT:
+                return TransportMode.tram
 
 
 class RouteManeuver(BaseModel):
