@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Query, Depends, Path, Request, Response
+from fastapi import HTTPException, Query, Path, Request, Response, Depends
 from pydantic import confloat
 
 from idunn import settings
