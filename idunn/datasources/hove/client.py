@@ -10,6 +10,7 @@ from idunn.places.base import BasePlace
 DIRECT_PATH_MAX_DURATION = 86400  # 24h
 MIN_NB_JOURNEYS = 2
 MAX_NB_JOURNEYS = 5
+FREE_RADIUS = 50  # meters
 
 
 class HoveClient:
@@ -32,6 +33,8 @@ class HoveClient:
         params = {
             "from": f"{start['lon']};{start['lat']}",
             "to": f"{end['lon']};{end['lat']}",
+            "free_radius_from": FREE_RADIUS,
+            "free_radius_to": FREE_RADIUS,
             "max_walking_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "max_bike_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "max_car_no_park_direct_path_duration": DIRECT_PATH_MAX_DURATION,
