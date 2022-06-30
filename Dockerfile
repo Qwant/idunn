@@ -32,15 +32,15 @@ ENV IDUNN_PROMETHEUS_MULTIPROC=1
 ENV PROMETHEUS_MULTIPROC_DIR=/usr/local/idunn/prometheus_multiproc
 RUN mkdir -p /usr/local/idunn/prometheus_multiproc
 
+# Install lib dependancies
+RUN apk update && apk add --upgrade --no-cache geos
+
 # Create the user idunn
 RUN addgroup --gid 1000 idunn
 RUN adduser --disabled-password --home /usr/local/idunn --ingroup idunn \
             --uid 1000 idunn
 
 USER idunn
-
-# Install lib dependancies
-RUN apk update && apk add --upgrade --no-cache geos
 
 # Add files into images
 ADD --chown=idunn app.py /usr/local/idunn
