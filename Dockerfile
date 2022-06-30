@@ -1,43 +1,58 @@
-FROM python:3.10-alpine
+# ---
+# --- Builder image
+# ---
 
-ENV PYTHONPATH="/usr/local/idunn"
-ENV PYTHONUNBUFFERED=1
-
-# create the user idunn
-RUN addgroup --gid 1000 idunn \
- && adduser \
-      --disabled-password \
-      --home /usr/local/idunn \
-      --ingroup idunn \
-      --uid 1000 \
-      idunn
-
-RUN apk update && apk add --upgrade --no-cache g++ make geos
-
-RUN pip install --no-cache-dir --upgrade pip
+FROM python:3.10-alpine as builder
 
 WORKDIR /usr/local/idunn
 
-# Installing packages
-RUN pip install pipenv==2022.6.7
+# Install build dependancies
+RUN apk update && apk add --upgrade --no-cache g++ make
 
-ADD --chown=idunn app.py Pipfile* /usr/local/idunn/
-RUN pipenv install --system --deploy
+# Install pipenv
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install pipenv
 
+# Build a venv with dependancies in current directory
+ADD Pipfile.lock Pipfile /usr/local/idunn/
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv sync
 
-USER idunn
+# ---
+# --- Application image
+# ---
 
-# The sources are copied as late as possible since they are likely to change often
-ADD --chown=idunn idunn /usr/local/idunn/idunn
-RUN mkdir /usr/local/idunn/prometheus_multiproc
+FROM python:3.10-alpine
+
+WORKDIR /usr/local/idunn
+
+ENV PYTHONUNBUFFERED=1
 
 # Set the multiprocess mode for gunicorn
 ENV IDUNN_PROMETHEUS_MULTIPROC=1
 ENV PROMETHEUS_MULTIPROC_DIR=/usr/local/idunn/prometheus_multiproc
+RUN mkdir -p /usr/local/idunn/prometheus_multiproc
+
+# Create the user idunn
+RUN addgroup --gid 1000 idunn
+RUN adduser --home /usr/local/idunn --ingroup idunn --uid 1000 idunn
+USER idunn
+
+# Install lib dependancies
+RUN apk update && apk add --upgrade --no-cache geos
+
+# Add files into images
+ADD --chown=idunn app.py /usr/local/idunn
+ADD --chown=idunn idunn /usr/local/idunn/idunn
+COPY --chown=idunn --from=builder /usr/local/idunn/.venv /usr/local/idunn/.venv
 
 EXPOSE 5000
 
 # You can set the number of workers by passing --workers=${NB_WORKER} to the docker run command.
 # For some reason, an array is required here to accept other params on run.
-ENTRYPOINT ["gunicorn", "app:app", "--bind=0.0.0.0:5000", "--pid=/tmp/gunicorn.pid", \
-    "-k", "uvicorn.workers.UvicornWorker", "--preload"]
+ENTRYPOINT [                                           \
+    "./.venv/bin/python", "-m", "gunicorn", "app:app", \
+    "--bind=0.0.0.0:5000",                             \
+    "--pid=/tmp/gunicorn.pid",                         \
+    "-k", "uvicorn.workers.UvicornWorker",             \
+    "--preload"                                        \
+]
