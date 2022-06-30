@@ -34,7 +34,9 @@ RUN mkdir -p /usr/local/idunn/prometheus_multiproc
 
 # Create the user idunn
 RUN addgroup --gid 1000 idunn
-RUN adduser --home /usr/local/idunn --ingroup idunn --uid 1000 idunn
+RUN adduser --disabled-password --home /usr/local/idunn --ingroup idunn \
+            --uid 1000 idunn
+
 USER idunn
 
 # Install lib dependancies
