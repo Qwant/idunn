@@ -1,16 +1,14 @@
 FROM python:3.10-alpine
 
-ENV PYTHONPATH="/usr/local/src/idunn/src"
+ENV PYTHONPATH="/usr/local/idunn"
 ENV PYTHONUNBUFFERED=1
 
 # create the user idunn
-RUN mkdir /usr/local/src \
- && addgroup --gid 1000 idunn \
+RUN addgroup --gid 1000 idunn \
  && adduser \
       --disabled-password \
-      --home /usr/local/src/idunn \
+      --home /usr/local/idunn \
       --ingroup idunn \
-      --shell /bin/sh \
       --uid 1000 \
       idunn
 
@@ -22,30 +20,29 @@ RUN apk update \
 		libgcc libquadmath musl  \
 		libgfortran \
 		lapack-dev \
+        geos \
 	&&  pip install --no-cache-dir --upgrade pip
 
-WORKDIR /usr/local/src/idunn/src
+# for run only: geos
+
+WORKDIR /usr/local/idunn
 
 # Installing packages
 RUN pip install pipenv==2022.6.7
 
-ADD --chown=idunn app.py Pipfile* /usr/local/src/idunn/src/
+ADD --chown=idunn app.py Pipfile* /usr/local/idunn/
 RUN pipenv install --system --deploy
 
-RUN mkdir /usr/local/src/idunn/src/prometheus_multiproc
 
 USER idunn
 
-# the sources are copied as late as possible since they are likely to change often
-ADD --chown=idunn idunn /usr/local/src/idunn/src/
-
-FROM python:3.10-alpine
-
-ENV PYTHONUNBUFFERED=1
+# The sources are copied as late as possible since they are likely to change often
+ADD --chown=idunn idunn /usr/local/idunn/idunn
+RUN mkdir /usr/local/idunn/prometheus_multiproc
 
 # Set the multiprocess mode for gunicorn
 ENV IDUNN_PROMETHEUS_MULTIPROC=1
-ENV PROMETHEUS_MULTIPROC_DIR=/usr/local/src/idunn/src/prometheus_multiproc
+ENV PROMETHEUS_MULTIPROC_DIR=/usr/local/idunn/prometheus_multiproc
 
 EXPOSE 5000
 
