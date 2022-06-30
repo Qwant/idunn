@@ -12,18 +12,9 @@ RUN addgroup --gid 1000 idunn \
       --uid 1000 \
       idunn
 
-RUN apk update \
-    && apk add --upgrade --no-cache \
-        bash openssh curl ca-certificates openssl less htop gcc git \
-		g++ make wget rsync \
-        build-base libpng-dev freetype-dev libexecinfo-dev openblas-dev libgomp lapack-dev \
-		libgcc libquadmath musl  \
-		libgfortran \
-		lapack-dev \
-        geos \
-	&&  pip install --no-cache-dir --upgrade pip
+RUN apk update && apk add --upgrade --no-cache g++ make geos
 
-# for run only: geos
+RUN pip install --no-cache-dir --upgrade pip
 
 WORKDIR /usr/local/idunn
 
