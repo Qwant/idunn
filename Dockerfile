@@ -42,8 +42,8 @@ USER idunn
 WORKDIR /home/idunn
 
 # Add files into images
-ADD --chown=idunn app.py /home/idunn
-ADD --chown=idunn idunn /home/idunn/idunn
+ADD app.py /home/idunn
+ADD idunn /home/idunn/idunn
 COPY --chown=idunn --from=builder /usr/local/src/.venv /home/idunn/.venv
 
 EXPOSE 5000
