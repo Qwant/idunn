@@ -37,15 +37,16 @@ RUN apk update && apk add --upgrade --no-cache geos
 
 # Create the user idunn
 RUN addgroup --gid 1000 idunn
-RUN adduser --disabled-password --home /usr/local/idunn --ingroup idunn \
+RUN adduser --disabled-password --home /home/idunn --ingroup idunn \
             --uid 1000 idunn
 
 USER idunn
+WORKDIR /home/idunn
 
 # Add files into images
-ADD --chown=idunn app.py /usr/local/idunn
-ADD --chown=idunn idunn /usr/local/idunn/idunn
-COPY --chown=idunn --from=builder /usr/local/idunn/.venv /usr/local/idunn/.venv
+ADD --chown=idunn app.py /home/idunn
+ADD --chown=idunn idunn /home/idunn/idunn
+COPY --chown=idunn --from=builder /home/idunn/.venv /home/idunn/.venv
 
 EXPOSE 5000
 
