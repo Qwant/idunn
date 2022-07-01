@@ -23,6 +23,7 @@ RUN PIPENV_VENV_IN_PROJECT=1 pipenv sync
 
 FROM python:3.10-alpine
 
+WORKDIR /usr/local/idunn
 ENV PYTHONUNBUFFERED=1
 
 # Set the multiprocess mode for gunicorn
@@ -45,6 +46,15 @@ WORKDIR /home/idunn
 ADD --chown=idunn app.py /home/idunn
 ADD --chown=idunn idunn /home/idunn/idunn
 COPY --chown=idunn --from=builder /home/idunn/.venv /home/idunn/.venv
+RUN adduser --disabled-password --home /usr/local/idunn --ingroup idunn \
+            --uid 1000 idunn
+
+USER idunn
+
+# Add files into images
+ADD --chown=idunn app.py /usr/local/idunn
+ADD --chown=idunn idunn /usr/local/idunn/idunn
+COPY --chown=idunn --from=builder /usr/local/idunn/.venv /usr/local/idunn/.venv
 
 EXPOSE 5000
 
