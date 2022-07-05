@@ -1,5 +1,5 @@
 """
-Derialize Hove's responses and conversion primitives following the following equivalence:
+Derialize Hove's responses and conversion primitives following the next equivalence:
  - route <-> journey
  - leg <-> section
  - step <-> single element of section ? Can be re-cut later ?
@@ -20,6 +20,11 @@ import idunn.directions.models as api
 from idunn.directions.models import IdunnTransportMode
 
 logger = logging.getLogger(__name__)
+
+# Precision considered in coordinates when cutting linestrings at stop positions.
+# The error margin in meters that it corresponds to is at most:
+#   40e6 * 1e-6 / 180 ~= 0.22m (considering the equator is 40e6 meters long)
+COORD_PRECISION = 1e-6
 
 
 class Distances(BaseModel):
@@ -49,28 +54,19 @@ class Instruction(BaseModel):
     length: int
     name: str
 
-    def get_api_modifier(self) -> str:
-        # See https://docs.api.com/api/navigation/directions/#step-maneuver-object
-        mapping = [
-            (-135, "sharp left"),
-            (-90, "left"),
-            (-45, "slight left"),
-            (0, "straight"),
-            (45, "slight right"),
-            (90, "right"),
-            (135, "sharp right"),
-            (180, "uturn"),
-        ]
+    def get_api_modifier(self) -> api.ManeuverModifier:
+        # Get the best modifier value that fits with the angle. For example, an
+        # angle of 40° is a slight right turn and -130° would be a sharp left turn.
+        #
+        # See https://docs.mapbox.com/api/navigation/directions/#step-maneuver-object
 
-        _, closest = min(
-            (
-                min(abs(self.direction - angle), abs(360 - self.direction - angle)),
-                modifier,
-            )
-            for angle, modifier in mapping
+        return min(
+            list(api.ManeuverModifier),
+            key=lambda modifier: min(
+                abs(self.direction - modifier.angle),
+                abs(360 - self.direction - modifier.angle),
+            ),
         )
-
-        return closest
 
 
 class DisplayInformations(BaseModel):
@@ -152,7 +148,8 @@ class Section(BaseModel):
                 end_index = next(
                     i
                     for i, coord in enumerate(all_coords)
-                    if abs(coord[0] - end_coord[0]) < 1e-6 and abs(coord[1] - end_coord[1]) < 1e-6
+                    if abs(coord[0] - end_coord[0]) < COORD_PRECISION
+                    and abs(coord[1] - end_coord[1]) < COORD_PRECISION
                 )
             except StopIteration:
                 continue
@@ -313,7 +310,6 @@ class Journey(BaseModel):
                     },
                 }
                 for sec, leg in zip(secs, legs)
-                for step in leg.steps
             ],
         }
 

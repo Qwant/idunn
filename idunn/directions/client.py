@@ -51,7 +51,6 @@ class DirectionsClient:
 
     @staticmethod
     def is_in_allowed_zone(mode: str, from_place: BasePlace, to_place: BasePlace):
-        print(settings["PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES"])
         if mode == "publictransport" and settings["PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES"]:
             from_coord = from_place.get_coord()
             to_coord = to_place.get_coord()

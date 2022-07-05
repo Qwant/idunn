@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from enum import Enum
+from functools import cached_property
 from pydantic import BaseModel, Field, validator
 from pytz import utc
 from typing import List, Optional, Tuple
@@ -77,9 +78,44 @@ class IdunnTransportMode(Enum):
                 raise Exception(f"Invalid mode {self} for mapbox")
 
 
+class ManeuverModifier(Enum):
+    """
+    See https://docs.mapbox.com/api/navigation/directions/#step-maneuver-object
+    """
+
+    SHARP_LEFT = "sharp left"
+    LEFT = "left"
+    SLIGHT_LEFT = "slight left"
+    STRAIGHT = "straight"
+    SLIGHT_RIGHT = "slight right"
+    RIGHT = "right"
+    SHARP_RIGHT = "sharp right"
+    UTURN = "uturn"
+
+    @cached_property
+    def angle(self):
+        match self:
+            case self.SHARP_LEFT:
+                return -135
+            case self.LEFT:
+                return -90
+            case self.SLIGHT_LEFT:
+                return -45
+            case self.STRAIGHT:
+                return 0
+            case self.SLIGHT_RIGHT:
+                return 45
+            case self.RIGHT:
+                return 90
+            case self.SHARP_RIGHT:
+                return 135
+            case self.UTURN:
+                return 180
+
+
 class RouteManeuver(BaseModel):
     location: Tuple[float, float] = Field(..., description="[lon, lat]")
-    modifier: Optional[str]
+    modifier: Optional[ManeuverModifier]
     type: str = ""
     instruction: str
 
