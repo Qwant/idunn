@@ -6,7 +6,7 @@ from .status import get_status
 from .places_list import get_places_bbox, PlacesBboxResponse
 from .categories import AllCategoriesResponse, get_all_categories
 from .closest import closest_address
-from ..directions.models import DirectionsResponse
+from ..datasources.directions.mapbox.models import DirectionsResponse
 from .geocoder import get_autocomplete_response
 from ..geocoder.models import IdunnAutocomplete
 from .directions import get_directions_with_coordinates, get_directions

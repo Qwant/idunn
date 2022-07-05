@@ -16,8 +16,8 @@ from pydantic.class_validators import validator
 from pydantic.fields import Field
 from pydantic import BaseModel
 
-import idunn.directions.models as api
-from idunn.directions.models import IdunnTransportMode
+import idunn.datasources.directions.mapbox.models as api
+from idunn.datasources.directions.mapbox.models import IdunnTransportMode
 
 logger = logging.getLogger(__name__)
 

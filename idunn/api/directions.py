@@ -4,7 +4,7 @@ from pydantic import confloat
 from idunn import settings
 from idunn.places import Latlon
 from idunn.places.exceptions import IdunnPlaceError
-from ..directions.client import directions_client
+from ..datasources.directions import directions_client
 from ..utils.place import place_from_id
 
 
@@ -35,7 +35,7 @@ async def get_directions_with_coordinates(
     if not type:
         raise HTTPException(status_code=400, detail='"type" query param is required')
     return await directions_client.get_directions(
-        from_place, to_place, type, language, params=request.query_params
+        from_place, to_place, type, language, extra=request.query_params
     )
 
 
@@ -56,5 +56,5 @@ async def get_directions(
         raise HTTPException(status_code=404, detail=exc.message) from exc
 
     return await directions_client.get_directions(
-        from_place, to_place, type, language, params=request.query_params
+        from_place, to_place, type, language, extra=request.query_params
     )

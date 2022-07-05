@@ -3,9 +3,11 @@ from fastapi import HTTPException
 from typing import Optional
 
 from idunn import settings
-from idunn.datasources.hove.models import HoveResponse
-from idunn.directions.models import IdunnTransportMode
+from idunn.datasources.directions import AbsDirectionsClient
+from idunn.datasources.directions.mapbox.models import IdunnTransportMode
+from idunn.geocoder.models.params import QueryParams
 from idunn.places.base import BasePlace
+from .models import HoveResponse
 
 
 DIRECT_PATH_MAX_DURATION = 86400  # 24h
@@ -14,23 +16,27 @@ MAX_NB_JOURNEYS = 5
 FREE_RADIUS = 50  # meters
 
 
-class HoveClient:
+class HoveClient(AbsDirectionsClient):
     def __init__(self):
         self.api_url = settings["HOVE_API_BASE_URL"]
         self.session = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
         self.session.headers["User-Agent"] = settings["USER_AGENT"]
 
+    @staticmethod
+    def client_name() -> str:
+        return "hove"
+
     @property
     def API_ENABLED(self):  # pylint: disable = invalid-name
         return bool(settings["HOVE_API_TOKEN"])
 
-    async def directions(
+    async def get_directions(
         self,
-        start: BasePlace,
-        end: BasePlace,
+        from_place: BasePlace,
+        to_place: BasePlace,
         mode: IdunnTransportMode,
         _lang: str,
-        _extra: Optional[dict] = None,
+        _extra: Optional[QueryParams] = None,
     ) -> HoveResponse:
         if not self.API_ENABLED:
             raise HTTPException(
@@ -38,12 +44,12 @@ class HoveClient:
                 detail=f"Directions API is currently unavailable for mode {mode}",
             )
 
-        start = start.get_coord()
-        end = end.get_coord()
+        from_place = from_place.get_coord()
+        to_place = to_place.get_coord()
 
         params = {
-            "from": f"{start['lon']};{start['lat']}",
-            "to": f"{end['lon']};{end['lat']}",
+            "from": f"{from_place['lon']};{from_place['lat']}",
+            "to": f"{to_place['lon']};{to_place['lat']}",
             "free_radius_from": FREE_RADIUS,
             "free_radius_to": FREE_RADIUS,
             "max_walking_direct_path_duration": DIRECT_PATH_MAX_DURATION,
@@ -70,10 +76,4 @@ class HoveClient:
         )
 
         response.raise_for_status()
-        return HoveResponse(**response.json())
-
-    async def directions_hove(self, *args, **kwargs):
-        return (await self.directions(*args, **kwargs)).as_api_response()
-
-
-client = HoveClient()
+        return HoveResponse(**response.json()).as_api_response()
