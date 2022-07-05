@@ -1,4 +1,5 @@
 import httpx
+from fastapi import HTTPException
 from typing import Optional
 
 from idunn import settings
@@ -19,6 +20,10 @@ class HoveClient:
         self.session = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
         self.session.headers["User-Agent"] = settings["USER_AGENT"]
 
+    @property
+    def API_ENABLED(self):  # pylint: disable = invalid-name
+        return bool(settings["HOVE_API_TOKEN"])
+
     async def directions(
         self,
         start: BasePlace,
@@ -27,6 +32,12 @@ class HoveClient:
         _lang: str,
         _extra: Optional[dict] = None,
     ) -> HoveResponse:
+        if not self.API_ENABLED:
+            raise HTTPException(
+                status_code=501,
+                detail=f"Directions API is currently unavailable for mode {mode}",
+            )
+
         start = start.get_coord()
         end = end.get_coord()
 

@@ -33,6 +33,10 @@ class DirectionsClient:
         self.session.headers["User-Agent"] = settings["USER_AGENT"]
         self.request_timeout = float(settings["DIRECTIONS_TIMEOUT"])
 
+    @property
+    def MAPBOX_API_ENABLED(self):  # pylint: disable = invalid-name
+        return bool(settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"])
+
     def get_method_for_mode(self, mode: IdunnTransportMode) -> Callable:
         methods = {
             "mapbox": self.directions_mapbox,
@@ -73,6 +77,12 @@ class DirectionsClient:
         return (f"{lon:.5f}", f"{lat:.5f}")
 
     async def directions_mapbox(self, start, end, mode: IdunnTransportMode, lang, extra=None):
+        if not self.MAPBOX_API_ENABLED:
+            raise HTTPException(
+                status_code=501,
+                detail=f"Directions API is currently unavailable for mode {mode}",
+            )
+
         mode = mode.to_mapbox_query_param()
 
         if extra is None:

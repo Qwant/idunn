@@ -15,25 +15,14 @@ from .utils import override_settings
 
 
 @pytest.fixture
-def mock_directions_car():
-    with override_settings(
-        {
-            "MAPBOX_DIRECTIONS_ACCESS_TOKEN": "test",
-        }
-    ):
+def mock_directions_car(httpx_mock):
+    with override_settings({"MAPBOX_DIRECTIONS_ACCESS_TOKEN": "test"}):
         fixture_path = os.path.join(
-            os.path.dirname(__file__),
-            "fixtures/directions",
-            "qwant_directions_car.json",
+            os.path.dirname(__file__), "fixtures/directions/qwant_directions_car.json"
         )
-        with responses.RequestsMock() as rsps:
-            rsps.add(
-                "GET",
-                re.compile(r"^https://api.mapbox.com/"),
-                status=200,
-                json=json.load(open(fixture_path)),
-            )
-            yield rsps
+
+        fixture = json.load(open(fixture_path))
+        yield httpx_mock.get(re.compile(r"^https://api.mapbox.com/")).respond(json=fixture)
 
 
 @pytest.fixture
@@ -66,7 +55,7 @@ def test_direction_car(mock_directions_car):
     assert len(response_data["data"]["routes"][0]["legs"]) == 1
     assert len(response_data["data"]["routes"][0]["legs"][0]["steps"]) == 10
     assert response_data["data"]["routes"][0]["legs"][0]["mode"] == "CAR"
-    assert "exclude=ferry" in mock_directions_car.calls[0].request.url
+    assert "exclude=ferry" in str(mock_directions_car.calls[0].request.url)
 
 
 def test_direction_car_with_ids(mock_directions_car):
@@ -88,12 +77,12 @@ def test_direction_car_with_ids(mock_directions_car):
     assert response_data["status"] == "success"
     assert len(response_data["data"]["routes"]) == 3
     assert response_data["data"]["routes"][0]["legs"][0]["mode"] == "CAR"
-    mocked_request_url = mock_directions_car.calls[0].request.url
+    mocked_request_url = str(mock_directions_car.calls[0].request.url)
     assert "exclude=ferry" in mocked_request_url
     assert "2.34023,48.89007;2.32658,48.85992" in mocked_request_url
 
 
-def test_directions_not_configured():
+def test_mapbox_directions_not_configured():
     with override_settings(
         {
             "MAPBOX_DIRECTIONS_ACCESS_TOKEN": None,
