@@ -37,9 +37,9 @@ ENV PROMETHEUS_MULTIPROC_DIR=/home/idunn/prometheus_multiproc
 # Install lib dependancies
 RUN apk update && apk add --upgrade --no-cache geos
 
-RUN mkdir -p /home/idunn/prometheus_multiproc
 USER idunn
 WORKDIR /home/idunn
+RUN mkdir -p /home/idunn/prometheus_multiproc
 
 # Add files into images
 ADD app.py /home/idunn
