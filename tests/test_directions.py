@@ -101,7 +101,7 @@ def test_directions_not_configured():
     ):
         client = TestClient(app)
         response = client.get(
-            "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+            "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
             params={"language": "fr", "type": "driving"},
         )
         assert response.status_code == 501
@@ -112,7 +112,7 @@ def test_directions_rate_limiter(limiter_test_normal, mock_directions_car_with_r
     # rate limiter is triggered after 30 req/min by default
     for _ in range(40):
         response = client.get(
-            "http://localhost/v1/directions/" "2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+            "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
             params={"language": "fr", "type": "driving"},
             headers={"x-client-hash": "test-client-hash-value"},
         )
