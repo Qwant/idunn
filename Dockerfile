@@ -14,7 +14,7 @@ RUN pip install pipenv
 WORKDIR /usr/local/src
 
 # Build a venv with dependancies in current directory
-ADD Pipfile.lock Pipfile* /usr/local/src/
+COPY Pipfile.lock Pipfile* /usr/local/src/
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv sync
 
 # ---
@@ -42,8 +42,8 @@ WORKDIR /home/idunn
 RUN mkdir -p /home/idunn/prometheus_multiproc
 
 # Add files into images
-ADD app.py /home/idunn
-ADD idunn /home/idunn/idunn
+COPY app.py /home/idunn
+COPY idunn /home/idunn/idunn
 COPY --from=builder /usr/local/src/.venv /home/idunn/.venv
 
 EXPOSE 5000
