@@ -19,7 +19,6 @@ lint-tests = """pipenv run pylint tests --disable='consider-using-with, \
 pytest = "*"
 lovely-pytest-docker = "*"
 freezegun = "*"
-ipython = "*"
 responses = "*"
 black = "22.3.0"
 respx = "*"
