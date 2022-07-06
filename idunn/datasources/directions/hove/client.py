@@ -3,11 +3,11 @@ from fastapi import HTTPException
 from typing import Optional
 
 from idunn import settings
-from idunn.datasources.directions import AbsDirectionsClient
-from idunn.datasources.directions.mapbox.models import IdunnTransportMode
 from idunn.geocoder.models.params import QueryParams
 from idunn.places.base import BasePlace
 from .models import HoveResponse
+from ..abs_client import AbsDirectionsClient
+from ..mapbox.models import IdunnTransportMode
 
 
 DIRECT_PATH_MAX_DURATION = 86400  # 24h

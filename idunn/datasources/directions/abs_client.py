@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod, abstractstaticmethod
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from idunn.datasources.directions.mapbox.models import DirectionsResponse, IdunnTransportMode
 from idunn.geocoder.models.params import QueryParams
 from idunn.places.base import BasePlace
+from .mapbox.models import DirectionsResponse, IdunnTransportMode
 
 
 class AbsDirectionsClient(ABC):

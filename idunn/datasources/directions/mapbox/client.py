@@ -7,9 +7,9 @@ from typing import Optional, Tuple
 
 from idunn import settings
 from idunn.geocoder.models.params import QueryParams
-from .. import AbsDirectionsClient
-from ..mapbox.models import DirectionsResponse, IdunnTransportMode
 from idunn.places.base import BasePlace
+from ..abs_client import AbsDirectionsClient
+from ..mapbox.models import DirectionsResponse, IdunnTransportMode
 
 logger = logging.getLogger(__name__)
 
