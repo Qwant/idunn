@@ -272,7 +272,7 @@ class RouteSummaryPart(BaseModel):
 
 class RoutePrice(BaseModel):
     currency: str
-    value: str
+    value: str = ""
     group: bool = False
 
 
@@ -287,12 +287,15 @@ class DirectionsRoute(BaseModel):
     start_time: str
     end_time: str
 
+    @validator("price")
+    def check_price(cls, v: Optional[RoutePrice]) -> Optional[RoutePrice]:
+        if v and not v.value:
+            return None
+
+        return v
+
     def __init__(self, **data):
         context = data.get("context")
-        price = data.get("price")
-
-        if price is not None and price.get("value") is None:
-            data.pop("price")
 
         if "geometry" not in data:
             features_list = []

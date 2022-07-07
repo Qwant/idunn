@@ -89,6 +89,7 @@ class DisplayInformations(BaseModel):
 
 
 class StopPoint(BaseModel):
+    id: str
     name: str
     coord: Coordinate
 
@@ -215,6 +216,7 @@ class Section(BaseModel):
 
         stops = [
             api.TransportStop(
+                id=dt.stop_point.id,
                 name=dt.stop_point.name,
                 location=(dt.stop_point.coord.lon, dt.stop_point.coord.lat),
             )
@@ -288,6 +290,25 @@ class Section(BaseModel):
         )
 
 
+class FareTotal(BaseModel):
+    currency: str
+    value: float
+
+
+class Fare(BaseModel):
+    found: bool
+    total: Optional[FareTotal]
+
+    def as_api_price(self) -> Optional[api.RoutePrice]:
+        if not self.total:
+            return None
+
+        return api.RoutePrice(
+            currency=self.total.currency,
+            value=f"{self.total.value:.2f}",
+        )
+
+
 class CarbonEmissions(BaseModel):
     unit: str
     value: float
@@ -304,6 +325,7 @@ class Journey(BaseModel):
     arrival_date_time: datetime
     departure_date_time: datetime
     duration: int
+    fare: Fare
     co2_emission: CarbonEmissions
     distances: Distances
     sections: List[Section]
@@ -351,6 +373,7 @@ class Journey(BaseModel):
             distance=self.distances.overall(),
             duration=self.duration,
             carbon=self.co2_emission.as_gec(),
+            price=self.fare.as_api_price(),
             start_time=datetime.isoformat(self.departure_date_time),
             end_time=datetime.isoformat(self.arrival_date_time),
             legs=legs,
