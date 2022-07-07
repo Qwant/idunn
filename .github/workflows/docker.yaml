@@ -53,9 +53,12 @@ jobs:
           fi
           echo "DOCKER_IMAGE=$DOCKER_IMAGE_BASENAME:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - run: docker build --label "org.label-schema.vcs-ref=$GITHUB_SHA" -t $DOCKER_IMAGE .
-
-      - name: Docker push
-        if: github.event_name == 'push' || github.event_name == 'pull_request'
-        run: |
-          docker push $DOCKER_IMAGE
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+          tags: ${{ env.DOCKER_IMAGE }}
+          labels: org.label-schema.vcs-ref=${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE }}
+          cache-to: type=inline
