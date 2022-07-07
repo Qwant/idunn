@@ -291,7 +291,7 @@ class Section(BaseModel):
 
 
 class FareTotal(BaseModel):
-    currency: str
+    currency: str = ""
     value: float
 
 
