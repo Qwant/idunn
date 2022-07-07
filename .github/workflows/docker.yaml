@@ -60,5 +60,5 @@ jobs:
           push: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
           tags: ${{ env.DOCKER_IMAGE }}
           labels: org.label-schema.vcs-ref=${{ github.sha }}
-          cache-from: type=registry,branch=${{ github.branch }}
+          cache-from: type=registry,ref=${{ github.branch }}
           cache-to: type=inline
