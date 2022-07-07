@@ -14,6 +14,8 @@ directions, POIs details, ...
 - Why [Idunn](https://fr.wikipedia.org/wiki/Idunn) ? Because she is the wife of [Bragi](https://fr.wikipedia.org/wiki/Bragi) that is also [the main](https://github.com/CanalTP/mimirsbrunn/tree/master/libs/bragi) mimir API.
 - A simple workflow schema of Idunn is presented below.
 
+Note: this diagram may be outdated:
+
 ![Idunn workflow](./doc/diagram.png)
 
 ## API
