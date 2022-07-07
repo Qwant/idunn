@@ -387,6 +387,6 @@ class HoveResponse(BaseModel):
 
     def as_api_response(self) -> api.DirectionsResponse:
         return api.DirectionsResponse(
-            status="ok",
+            status="success",
             data=api.DirectionsData(routes=[journey.as_api_route() for journey in self.journeys]),
         )

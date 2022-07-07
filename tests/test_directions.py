@@ -1,6 +1,5 @@
 import os
 import json
-import responses
 import re
 import pytest
 from app import app

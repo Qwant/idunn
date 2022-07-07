@@ -28,6 +28,7 @@ class HoveClient(AbsDirectionsClient):
 
     @property
     def API_ENABLED(self):  # pylint: disable = invalid-name
+        print("HOVE API ENABLED:", bool(settings["HOVE_API_TOKEN"]))
         return bool(settings["HOVE_API_TOKEN"])
 
     async def get_directions(
@@ -57,17 +58,15 @@ class HoveClient(AbsDirectionsClient):
             "max_car_no_park_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "min_nb_journeys": MIN_NB_JOURNEYS,
             "max_nb_journeys": MAX_NB_JOURNEYS,
-        }
-
-        if mode == IdunnTransportMode.PUBLICTRANSPORT:
-            params.update({"direct_path": "none"})
-        else:
-            params.update(
-                {
+            **(
+                {"direct_path": "none"}
+                if mode == IdunnTransportMode.PUBLICTRANSPORT
+                else {
                     "direct_path_mode[]": mode.to_hove(),
                     "direct_path": "only",
                 }
-            )
+            ),
+        }
 
         response = await self.session.get(
             self.api_url,

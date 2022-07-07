@@ -78,7 +78,7 @@ class IdunnTransportMode(Enum):
                 raise Exception(f"Invalid mode {self} for mapbox")
 
 
-class ManeuverModifier(Enum):
+class ManeuverModifier(str, Enum):
     """
     See https://docs.mapbox.com/api/navigation/directions/#step-maneuver-object
     """
