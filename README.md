@@ -15,7 +15,7 @@
 ## API
 
 - The API provides its OpenAPI schema with:
-`GET /schema`
+`GET /openapi.json`
 
 The main endpoints are:
 * `/v1/places/{place_id}?lang={lang}&type={type}&verbosity={verbosity}` to get the details of a place
