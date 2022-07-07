@@ -113,11 +113,23 @@ class ManeuverModifier(Enum):
                 return 180
 
 
+class ManeuverDetail(BaseModel):
+    """
+    This is an extension to Mapbox's return format.
+    """
+
+    name: str
+    direction: int = Field(description="Turn angle, Degrees")
+    duration: int = Field(description="Seconds")
+    length: int = Field(description="Meters")
+
+
 class RouteManeuver(BaseModel):
     location: Tuple[float, float] = Field(..., description="[lon, lat]")
     modifier: Optional[ManeuverModifier]
     type: str = ""
     instruction: str
+    detail: Optional[ManeuverDetail]  # extended from mapbox
 
 
 class TransportInfo(BaseModel):

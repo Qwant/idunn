@@ -135,36 +135,43 @@ class Section(BaseModel):
         Split path geometry at each instruction and wrap them together
         """
         all_coords = self.geojson["coordinates"]
-        first_pass = True
         last_inst = None
 
         for inst in self.path:
             if not inst.instruction_start_coordinate:
+                if last_inst is not None:
+                    yield (last_inst, self.geojson)
+
+                last_inst = inst
                 continue
 
             end_coord = inst.instruction_start_coordinate.to_position()
 
-            try:
-                end_index = next(
-                    i
-                    for i, coord in enumerate(all_coords)
-                    if abs(coord[0] - end_coord[0]) < COORD_PRECISION
-                    and abs(coord[1] - end_coord[1]) < COORD_PRECISION
-                )
-            except StopIteration:
-                continue
+            if last_inst is not None:
+                try:
+                    end_index = next(
+                        i
+                        for i, coord in enumerate(all_coords)
+                        if abs(coord[0] - end_coord[0]) < COORD_PRECISION
+                        and abs(coord[1] - end_coord[1]) < COORD_PRECISION
+                    )
 
-            if first_pass:
-                first_pass = False
-                last_inst = inst
-                continue
+                    geometry = LineString(coordinates=all_coords[: end_index + 1])
+                    all_coords = all_coords[end_index:]
+                except StopIteration:
+                    geometry = self.geojson
 
-            yield (last_inst, LineString(coordinates=all_coords[: end_index + 1]))
-            all_coords = all_coords[end_index:]
+                yield (last_inst, geometry)
+
             last_inst = inst
 
-        if last_inst and len(all_coords) >= 2:
-            yield (last_inst, LineString(coordinates=all_coords))
+        if last_inst is not None:
+            if len(all_coords) >= 2:
+                geometry = LineString(coordinates=all_coords)
+            else:
+                geometry = self.geojson
+
+            yield (last_inst, geometry)
 
     def get_api_mode(self) -> api.TransportMode:
         if self.mode:
@@ -232,9 +239,19 @@ class Section(BaseModel):
             steps = [
                 api.RouteStep(
                     maneuver=api.RouteManeuver(
-                        location=inst.instruction_start_coordinate.to_position(),
-                        instruction=inst.instruction or inst.name,
+                        location=(
+                            inst.instruction_start_coordinate.to_position()
+                            if inst.instruction_start_coordinate
+                            else self.geojson["coordinates"][0]
+                        ),
+                        instruction=inst.instruction or "",
                         modifier=inst.get_api_modifier(),
+                        detail=api.ManeuverDetail(
+                            name=inst.name,
+                            direction=inst.direction,
+                            duration=inst.duration,
+                            length=inst.length,
+                        ),
                     ),
                     duration=inst.duration,
                     distance=inst.length,
