@@ -122,8 +122,6 @@ DIRECTIONS_TIMEOUT: 8 # seconds
 DIRECTIONS_CLIENT_CACHE: 60 # seconds
 MAPBOX_DIRECTIONS_API_BASE_URL: "https://api.mapbox.com/directions/v5/mapbox"
 MAPBOX_DIRECTIONS_ACCESS_TOKEN:
-COMBIGO_API_BASE_URL: "https://maps.combigo.com/v1.1"
-COMBIGO_API_KEY:
 HOVE_API_BASE_URL: "https://api.navitia.io/v1/journeys"
 HOVE_API_TOKEN:
 
