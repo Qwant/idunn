@@ -44,7 +44,7 @@ The main endpoints are:
 
 ### Requirements
 
-   - Python 3.8
+   - Python 3.10
    - [Pipenv](https://github.com/pypa/pipenv), to manage dependencies and virtualenv
 
 ### Installation
