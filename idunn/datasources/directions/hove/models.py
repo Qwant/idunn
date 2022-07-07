@@ -288,10 +288,23 @@ class Section(BaseModel):
         )
 
 
+class CarbonEmissions(BaseModel):
+    unit: str
+    value: float
+
+    def as_gec(self) -> Optional[float]:
+        if self.unit != "gEC":
+            logger.warning("Only supported carbon unit is gEC, got %s", self.unit)
+            return None
+
+        return self.value
+
+
 class Journey(BaseModel):
     arrival_date_time: datetime
     departure_date_time: datetime
     duration: int
+    co2_emission: CarbonEmissions
     distances: Distances
     sections: List[Section]
 
@@ -335,8 +348,9 @@ class Journey(BaseModel):
         }
 
         return api.DirectionsRoute(
-            duration=self.duration,
             distance=self.distances.overall(),
+            duration=self.duration,
+            carbon=self.co2_emission.as_gec(),
             start_time=datetime.isoformat(self.departure_date_time),
             end_time=datetime.isoformat(self.arrival_date_time),
             legs=legs,
