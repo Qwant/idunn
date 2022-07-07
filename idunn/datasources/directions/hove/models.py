@@ -235,6 +235,8 @@ class Section(BaseModel):
                     mode=mode,
                 )
             ]
+
+            summary = ""
         else:
             steps = [
                 api.RouteStep(
@@ -262,10 +264,12 @@ class Section(BaseModel):
                 for (inst, geo) in insts
             ]
 
+            _, summary = max((step.distance, step.maneuver.detail.name) for step in steps)
+
         return api.RouteLeg(
             duration=self.duration,
             distance=self.geojson["properties"][0]["length"],
-            summary="todo",
+            summary=summary,
             steps=steps,
             info=(
                 self.display_informations.as_api_transport_info()
