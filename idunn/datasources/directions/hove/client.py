@@ -28,7 +28,6 @@ class HoveClient(AbsDirectionsClient):
 
     @property
     def API_ENABLED(self):  # pylint: disable = invalid-name
-        print("HOVE API ENABLED:", bool(settings["HOVE_API_TOKEN"]))
         return bool(settings["HOVE_API_TOKEN"])
 
     async def get_directions(
