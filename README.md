@@ -4,18 +4,24 @@
 
 # Idunn
 
-- Idunn is an API to get [points-of-interest](https://en.wikipedia.org/wiki/Point_of_interest) information for QwantMaps.
+Idunn is the main back-end API of Qwant Maps, it acts a the entrypoint in front
+of many other APIs and is in charge of aggregating data for geocoding,
+directions, POIs details, ...
+
+- historicaly, Idunn was only an API to get [points-of-interest](https://en.wikipedia.org/wiki/Point_of_interest) information for QwantMaps.
 - The POIs are taken from the [mimir](https://github.com/CanalTP/mimirsbrunn) ElasticSearch database.
 - It also fetches POI data from Wikipedia API and a custom Wikidata Elasticsearch source.
 - Why [Idunn](https://fr.wikipedia.org/wiki/Idunn) ? Because she is the wife of [Bragi](https://fr.wikipedia.org/wiki/Bragi) that is also [the main](https://github.com/CanalTP/mimirsbrunn/tree/master/libs/bragi) mimir API.
 - A simple workflow schema of Idunn is presented below.
+
+Note: this diagram may be outdated:
 
 ![Idunn workflow](./doc/diagram.png)
 
 ## API
 
 - The API provides its OpenAPI schema with:
-`GET /schema`
+`GET /openapi.json`
 
 The main endpoints are:
 * `/v1/places/{place_id}?lang={lang}&type={type}&verbosity={verbosity}` to get the details of a place
@@ -44,7 +50,7 @@ The main endpoints are:
 
 ### Requirements
 
-   - Python 3.8
+   - Python 3.10
    - [Pipenv](https://github.com/pypa/pipenv), to manage dependencies and virtualenv
 
 ### Installation
