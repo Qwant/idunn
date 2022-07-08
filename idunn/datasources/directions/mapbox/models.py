@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from enum import Enum
+from functools import cached_property
 from pydantic import BaseModel, Field, validator
 from pytz import utc
 from typing import List, Optional, Tuple
@@ -31,17 +32,111 @@ class TransportMode(str, Enum):
     wait = "WAIT"
 
 
+class IdunnTransportMode(Enum):
+    CAR = "car"
+    BIKE = "bike"
+    WALKING = "walking"
+    PUBLICTRANSPORT = "publictransport"
+
+    @classmethod
+    def parse(cls, mode: str):
+        match mode:
+            case "driving-traffic" | "driving" | "car" | "car_no_park":
+                return cls.CAR
+            case "cycling":
+                return cls.BIKE
+            case "walking" | "walk":
+                return cls.WALKING
+            case "publictransport" | "taxi" | "vtc" | "carpool":
+                return cls.PUBLICTRANSPORT
+
+    def to_hove(self) -> str:
+        if self == self.CAR:
+            return "car_no_park"
+        return self.value
+
+    def to_mapbox(self) -> TransportMode:
+        match self:
+            case self.CAR:
+                return TransportMode.car
+            case self.BIKE:
+                return TransportMode.bicycle
+            case self.WALKING:
+                return TransportMode.walk
+            case self.PUBLICTRANSPORT:
+                return TransportMode.tram
+
+    def to_mapbox_query_param(self) -> str:
+        match self:
+            case self.CAR:
+                return "driving-traffic"
+            case self.BIKE:
+                return "cycling"
+            case self.WALKING:
+                return "walking"
+            case _:
+                raise Exception(f"Invalid mode {self} for mapbox")
+
+
+class ManeuverModifier(str, Enum):
+    """
+    See https://docs.mapbox.com/api/navigation/directions/#step-maneuver-object
+    """
+
+    SHARP_LEFT = "sharp left"
+    LEFT = "left"
+    SLIGHT_LEFT = "slight left"
+    STRAIGHT = "straight"
+    SLIGHT_RIGHT = "slight right"
+    RIGHT = "right"
+    SHARP_RIGHT = "sharp right"
+    UTURN = "uturn"
+
+    @cached_property
+    def angle(self):
+        match self:
+            case self.SHARP_LEFT:
+                return -135
+            case self.LEFT:
+                return -90
+            case self.SLIGHT_LEFT:
+                return -45
+            case self.STRAIGHT:
+                return 0
+            case self.SLIGHT_RIGHT:
+                return 45
+            case self.RIGHT:
+                return 90
+            case self.SHARP_RIGHT:
+                return 135
+            case self.UTURN:
+                return 180
+
+
+class ManeuverDetail(BaseModel):
+    """
+    This is an extension to Mapbox's return format.
+    """
+
+    name: str
+    direction: int = Field(description="Turn angle, Degrees")
+    duration: int = Field(description="Seconds")
+    length: int = Field(description="Meters")
+
+
 class RouteManeuver(BaseModel):
     location: Tuple[float, float] = Field(..., description="[lon, lat]")
-    modifier: Optional[str]
+    modifier: Optional[ManeuverModifier]
     type: str = ""
     instruction: str
+    detail: Optional[ManeuverDetail]  # extended from mapbox
 
 
 class TransportInfo(BaseModel):
     num: Optional[str]
     direction: Optional[str]
     lineColor: Optional[str]
+    lineTextColor: Optional[str]  # extended from mapbox
     network: Optional[str]
 
     def __init__(self, **data):
@@ -85,18 +180,24 @@ class RouteStep(BaseModel):
     duration: int
     distance: int
     geometry: dict = Field(..., description="GeoJSON")
+    properties: dict = {}
     mode: TransportMode
 
     def __init__(self, **data):
         if "shapes" in data:
             data["geometry"] = {"coordinates": data["shapes"], "type": "LineString"}
+
         if "type" in data:
             data["mode"] = data.pop("type")
-        if "instruction" not in data["maneuver"]:
-            data["maneuver"]["instruction"] = data.get("instruction")
-        if "location" not in data["maneuver"]:
-            if len(data.get("shapes", [])) > 0:
-                data["maneuver"]["location"] = tuple(data["shapes"][0])
+
+        if isinstance(data["maneuver"], dict):
+            if "instruction" not in data["maneuver"]:
+                data["maneuver"]["instruction"] = data.get("instruction")
+
+            if "location" not in data["maneuver"]:
+                if len(data.get("shapes", [])) > 0:
+                    data["maneuver"]["location"] = tuple(data["shapes"][0])
+
         super().__init__(**data)
 
     @validator("mode", pre=True)
@@ -171,7 +272,7 @@ class RouteSummaryPart(BaseModel):
 
 class RoutePrice(BaseModel):
     currency: str
-    value: str
+    value: str = ""
     group: bool = False
 
 
@@ -186,12 +287,15 @@ class DirectionsRoute(BaseModel):
     start_time: str
     end_time: str
 
+    @validator("price")
+    def check_price(cls, v: Optional[RoutePrice]) -> Optional[RoutePrice]:
+        if v and not v.value:
+            return None
+
+        return v
+
     def __init__(self, **data):
         context = data.get("context")
-        price = data.get("price")
-
-        if price is not None and price.get("value") is None:
-            data.pop("price")
 
         if "geometry" not in data:
             features_list = []
@@ -200,7 +304,7 @@ class DirectionsRoute(BaseModel):
                     feature = {
                         "type": "Feature",
                         "geometry": {"coordinates": leg["shapes"], "type": "LineString"},
-                        "properties": {"leg_index": idx},
+                        "properties": {"leg_index": idx, "mode": "WALK"},
                     }
                     features_list.append(feature)
             data["geometry"] = {"type": "FeatureCollection", "features": features_list}
@@ -247,7 +351,8 @@ class DirectionsData(BaseModel):
             data["routes"] = data.pop("results")
 
         for route in data["routes"]:
-            route["context"] = context
+            if isinstance(route, dict):
+                route["context"] = context
 
         super().__init__(**data)
 
