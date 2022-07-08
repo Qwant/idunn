@@ -1,7 +1,6 @@
 stages:
   - build
   - configure
-  - argo:sync
   - development
   - prelive
   - production
@@ -40,7 +39,7 @@ workflow:
     - k8s
 
 .argocd:review:
-  stage: argo:sync
+  stage: development
   variables:
     KUBE_NAMESPACE: "dev-maps"
     ARGOCD_APP_NAME: "review-${COMPONENT_NAME}-${CI_COMMIT_REF_SLUG}"
@@ -54,7 +53,7 @@ workflow:
     - when: manual
 
 .argocd:integration:
-  stage: argo:sync
+  stage: prelive
   variables:
     KUBE_NAMESPACE: "int-maps"
     ARGOCD_APP_NAME: "integration-${COMPONENT_NAME}"
@@ -62,7 +61,7 @@ workflow:
     - when: manual
 
 .argocd:production:
-  stage: argo:sync
+  stage: production
   variables:
     ARGOCD_AUTH_TOKEN: $ARGOCD_AUTH_TOKEN_PRODUCTION
     ARGOCD_SERVER: $ARGOCD_SERVER_PROD
@@ -309,17 +308,33 @@ argo deploy idunn production:
     - .idunn
     - .argocd
     - .argocd:production
+  needs:
+    - configure
   script:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
     - ci/bootstrap/bin/sync-version-argocd
-      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${CI_COMMIT_REF_SLUG}"
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${IMAGE_DIGEST}"
       --image-version-object-path-app ".webapp.image.name"
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
+
+argo deploy idunn integration RELEASE:
+  extends:
+    - argo deploy idunn integration
+  script:
+    - ci/bootstrap/bin/sync-version-argocd
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${CI_COMMIT_REF_SLUG}"
+      --image-version-object-path-app ".webapp.image.name"
+    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
+  rules:
+    - if: '$CI_COMMIT_TAG !~ "/^$/"'
+      when: manual
+    - when: never
 
 argo deploy idunn production RELEASE:
   extends:
