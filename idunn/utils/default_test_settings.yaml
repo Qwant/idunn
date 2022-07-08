@@ -122,9 +122,6 @@ DIRECTIONS_TIMEOUT: 8 # seconds
 DIRECTIONS_CLIENT_CACHE: 60 # seconds
 MAPBOX_DIRECTIONS_API_BASE_URL: "https://api.mapbox.com/directions/v5/mapbox"
 MAPBOX_DIRECTIONS_ACCESS_TOKEN:
-COMBIGO_API_BASE_URL: "https://maps.combigo.com/v1.1"
-COMBIGO_API_KEY:
-PUBLIC_TRANSPORTS_RESTRICT_TO_CITIES: "paris,lyon" # use an empty string to allow any itinerary
 
 #######################
 ## Geocoding
