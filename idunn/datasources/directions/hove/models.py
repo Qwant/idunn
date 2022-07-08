@@ -115,15 +115,27 @@ class SectionType(Enum):
     RIDESHARING = "ridesharing"
 
 
+class LineStringExtProperties(BaseModel):
+    length: int
+
+
+class LineStringExt(LineString):
+    """
+    Extend linestring with extra properties.
+    """
+
+    properties: List[LineStringExtProperties]
+
+    def as_linestring(self) -> LineString:
+        return LineString(coordinates=self.coordinates)
+
+
 class Section(BaseModel):
     sec_type: SectionType = Field(..., alias="type")
     mode: Optional[IdunnTransportMode]
     duration: int
     path: List[Instruction] = []
-    # NOTE: this is always set when not waiting
-    # NOTE: this is not a purely valid geojson because of the properties field which is present in
-    #       a LineString geometry and which contains a list of objects instead of an object
-    geojson: Optional[dict]
+    geojson: Optional[LineStringExt]  # NOTE: this is always set when not waiting
     display_informations: Optional[DisplayInformations]
     stop_date_times: List[StopDateTime] = []
 
@@ -135,13 +147,13 @@ class Section(BaseModel):
         """
         Split path geometry at each instruction and wrap them together
         """
-        all_coords = self.geojson["coordinates"]
+        all_coords = self.geojson.coordinates
         last_inst = None
 
         for inst in self.path:
             if not inst.instruction_start_coordinate:
                 if last_inst is not None:
-                    yield (last_inst, self.geojson)
+                    yield (last_inst, self.geojson.as_linestring())
 
                 last_inst = inst
                 continue
@@ -160,7 +172,7 @@ class Section(BaseModel):
                     geometry = LineString(coordinates=all_coords[: end_index + 1])
                     all_coords = all_coords[end_index:]
                 except StopIteration:
-                    geometry = self.geojson
+                    geometry = self.geojson.as_linestring()
 
                 yield (last_inst, geometry)
 
@@ -170,7 +182,7 @@ class Section(BaseModel):
             if len(all_coords) >= 2:
                 geometry = LineString(coordinates=all_coords)
             else:
-                geometry = self.geojson
+                geometry = self.geojson.as_linestring()
 
             yield (last_inst, geometry)
 
@@ -210,7 +222,7 @@ class Section(BaseModel):
         )
 
     def as_api_route_leg(self) -> api.RouteLeg:
-        default_location = self.geojson["coordinates"][0][::-1]  # assuming this is a LineString
+        default_location = self.geojson.coordinates[0][::-1]  # assuming this is a LineString
         insts = list(self.cut_linestring())
         mode = self.get_api_mode()
 
@@ -231,8 +243,8 @@ class Section(BaseModel):
                         location=default_location,
                     ),
                     duration=self.duration,
-                    distance=self.geojson["properties"][0]["length"],
-                    geometry=self.geojson,
+                    distance=self.geojson.properties[0].length,
+                    geometry=self.geojson.as_linestring(),
                     properties={"mode": self.mode.value if self.mode else "tram"},
                     mode=mode,
                 )
@@ -246,7 +258,7 @@ class Section(BaseModel):
                         location=(
                             inst.instruction_start_coordinate.to_position()
                             if inst.instruction_start_coordinate
-                            else self.geojson["coordinates"][0]
+                            else self.geojson.coordinates[0]
                         ),
                         instruction=inst.instruction or "",
                         modifier=inst.get_api_modifier(),
@@ -270,7 +282,7 @@ class Section(BaseModel):
 
         return api.RouteLeg(
             duration=self.duration,
-            distance=self.geojson["properties"][0]["length"],
+            distance=self.geojson.properties[0].length,
             summary=summary,
             steps=steps,
             info=(
@@ -314,11 +326,15 @@ class CarbonEmissions(BaseModel):
     value: float
 
     def as_gec(self) -> Optional[float]:
-        if self.unit != "gEC":
-            logger.warning("Only supported carbon unit is gEC, got %s", self.unit)
-            return None
+        match self.unit:
+            case "gEC":
+                return self.value
+            case "":
+                pass
+            case _:
+                logger.warning("Only supported carbon unit is gEC, got %s", self.unit)
 
-        return self.value
+        return None
 
 
 class Journey(BaseModel):
