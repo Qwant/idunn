@@ -86,7 +86,7 @@ async def get_autocomplete(
     if intention is not None and query.nlu:
         if autocomplete_nlu_filter_intentions:
             intention = filter_wrong_brand_intention(intention, autocomplete_response, query.limit)
-        autocomplete_response["intention"] = intention
+        autocomplete_response["intentions"] = intention
     autocomplete_response["geocoding"]["query"] = query.q
     return IdunnAutocomplete(**autocomplete_response)
 

@@ -1,5 +1,6 @@
 import logging
 from abc import ABC, abstractmethod, abstractproperty
+from datetime import datetime
 from fastapi import HTTPException
 from pydantic import BaseModel
 from typing import Callable, Optional
@@ -58,6 +59,8 @@ class DirectionsClient(AbsDirectionsClient):
         to_place: BasePlace,
         mode: IdunnTransportMode,
         lang: str,
+        arrive_by: Optional[datetime],
+        depart_at: Optional[datetime],
         extra: Optional[QueryParams] = None,
     ) -> DirectionsResponse:
         idunn_mode = IdunnTransportMode.parse(mode)
@@ -80,7 +83,9 @@ class DirectionsClient(AbsDirectionsClient):
         )
 
         # pylint: disable = not-callable
-        return await method.get_directions(from_place, to_place, idunn_mode, lang, extra)
+        return await method.get_directions(
+            from_place, to_place, idunn_mode, lang, arrive_by, depart_at, extra
+        )
 
 
 directions_client = DirectionsClient()

@@ -1,5 +1,6 @@
 import httpx
 import logging
+from datetime import datetime
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -48,6 +49,8 @@ class MapboxClient(AbsDirectionsClient):
         to_place: BasePlace,
         mode: IdunnTransportMode,
         lang: str,
+        arrive_by: Optional[datetime],
+        depart_at: Optional[datetime],
         extra: Optional[QueryParams] = None,
     ) -> DirectionsResponse:
         if not self.API_ENABLED:
@@ -70,6 +73,8 @@ class MapboxClient(AbsDirectionsClient):
             params={
                 "language": lang,
                 "access_token": settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"],
+                "arrive_by": arrive_by.isoformat() if arrive_by else None,
+                "depart_at": depart_at.isoformat() if depart_at else None,
                 **MapboxAPIExtraParams(**extra).dict(exclude_none=True),
             },
             timeout=self.request_timeout,

@@ -1,4 +1,5 @@
 import httpx
+from datetime import datetime
 from fastapi import HTTPException
 from typing import Optional
 
@@ -36,6 +37,8 @@ class HoveClient(AbsDirectionsClient):
         to_place: BasePlace,
         mode: IdunnTransportMode,
         _lang: str,
+        arrive_by: Optional[datetime],
+        depart_at: Optional[datetime],
         _extra: Optional[QueryParams] = None,
     ) -> HoveResponse:
         if not self.API_ENABLED:
@@ -46,6 +49,7 @@ class HoveClient(AbsDirectionsClient):
 
         from_place = from_place.get_coord()
         to_place = to_place.get_coord()
+        datetime = arrive_by or depart_at
 
         params = {
             "from": f"{from_place['lon']};{from_place['lat']}",
@@ -57,6 +61,8 @@ class HoveClient(AbsDirectionsClient):
             "max_car_no_park_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "min_nb_journeys": MIN_NB_JOURNEYS,
             "max_nb_journeys": MAX_NB_JOURNEYS,
+            "datetime": datetime.isoformat() if datetime else None,
+            "datetime_represents": "arrival" if arrive_by else "departure",
             **(
                 {"direct_path": "none"}
                 if mode == IdunnTransportMode.PUBLICTRANSPORT
