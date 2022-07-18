@@ -73,8 +73,8 @@ class MapboxClient(AbsDirectionsClient):
             params={
                 "language": lang,
                 "access_token": settings["MAPBOX_DIRECTIONS_ACCESS_TOKEN"],
-                "arrive_by": arrive_by.isoformat() if arrive_by else None,
-                "depart_at": depart_at.isoformat() if depart_at else None,
+                **({"arrive_by": arrive_by.isoformat()} if arrive_by else {}),
+                **({"depart_at": depart_at.isoformat()} if depart_at else {}),
                 **MapboxAPIExtraParams(**extra).dict(exclude_none=True),
             },
             timeout=self.request_timeout,

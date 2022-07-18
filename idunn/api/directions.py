@@ -58,6 +58,9 @@ async def get_directions(
     destination: str = Query(..., description="Destination place id."),
     type: str = Query(..., description="Transport mode."),
     language: str = Query("en", description="User language."),
+    # Time parameters
+    arrive_by: Optional[datetime] = Query(None, title="Local arrival time"),
+    depart_at: Optional[datetime] = Query(None, title="Local departure time"),
     # Request
     request: Request = Depends(directions_request),
 ):
@@ -68,6 +71,12 @@ async def get_directions(
     except IdunnPlaceError as exc:
         raise HTTPException(status_code=404, detail=exc.message) from exc
 
+    if arrive_by and depart_at:
+        raise HTTPException(
+            status_code=400,
+            detail="`arrive_by` and `depart_at` can't both be specified",
+        )
+
     return await directions_client.get_directions(
-        from_place, to_place, type, language, extra=request.query_params
+        from_place, to_place, type, language, arrive_by, depart_at, extra=request.query_params
     )

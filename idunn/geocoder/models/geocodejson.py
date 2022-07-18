@@ -209,7 +209,7 @@ class Geocoding(BaseModel):
 class IdunnAutocomplete(BaseModel):
     type: str = "FeatureCollection"
     geocoding: Geocoding = Geocoding()
-    intentions: Optional[Intention] = Field(None, description="Intentions detected by NLU.")
+    intention: Optional[Intention] = Field(None, description="Intentions detected by NLU.")
     features: List[Feature] = Field([], description="Geographic places matching the query.")
 
 

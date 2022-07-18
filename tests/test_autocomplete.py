@@ -47,15 +47,15 @@ def assert_intention(client, params, expected_intention=None, expected_intention
     data = response.json()
     assert response.status_code == 200
     assert len(data.get("features")) > 0
-    intentions = data.get("intentions", None)
-    assert intentions == expected_intention
+    intention = data.get("intention", None)
+    assert intention == expected_intention
 
-    if intentions:
+    if intention:
         if expected_intention_place is None:
-            assert intentions["description"].get("place") is None
+            assert intention["description"].get("place") is None
         else:
             assert (
-                intentions["description"]["place"]["properties"]["geocoding"]["label"]
+                intention["description"]["place"]["properties"]["geocoding"]["label"]
                 == expected_intention_place
             )
 
