@@ -49,7 +49,7 @@ class HoveClient(AbsDirectionsClient):
 
         from_place = from_place.get_coord()
         to_place = to_place.get_coord()
-        datetime = arrive_by or depart_at
+        date_time = arrive_by or depart_at
 
         params = {
             "from": f"{from_place['lon']};{from_place['lat']}",
@@ -71,10 +71,10 @@ class HoveClient(AbsDirectionsClient):
             ),
             **(
                 {
-                    "datetime": datetime.isoformat(),
+                    "datetime": date_time.isoformat(),
                     "datetime_represents": "arrival" if arrive_by else "departure",
                 }
-                if datetime
+                if date_time
                 else {}
             ),
         }
