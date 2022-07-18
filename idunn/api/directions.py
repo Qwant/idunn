@@ -29,8 +29,8 @@ async def get_directions_with_coordinates(
     type: str = Query(..., description="Transport mode"),
     language: str = "en",
     # Time parameters
-    arrive_by: Optional[datetime] = Path(None, title="Local arrival time"),
-    depart_at: Optional[datetime] = Path(None, title="Local departure time"),
+    arrive_by: Optional[datetime] = Query(None, title="Local arrival time"),
+    depart_at: Optional[datetime] = Query(None, title="Local departure time"),
     # Request
     request: Request = Depends(directions_request),
 ):

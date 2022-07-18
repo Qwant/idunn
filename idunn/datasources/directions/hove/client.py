@@ -61,8 +61,6 @@ class HoveClient(AbsDirectionsClient):
             "max_car_no_park_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "min_nb_journeys": MIN_NB_JOURNEYS,
             "max_nb_journeys": MAX_NB_JOURNEYS,
-            "datetime": datetime.isoformat() if datetime else None,
-            "datetime_represents": "arrival" if arrive_by else "departure",
             **(
                 {"direct_path": "none"}
                 if mode == IdunnTransportMode.PUBLICTRANSPORT
@@ -70,6 +68,14 @@ class HoveClient(AbsDirectionsClient):
                     "direct_path_mode[]": mode.to_hove(),
                     "direct_path": "only",
                 }
+            ),
+            **(
+                {
+                    "datetime": datetime.isoformat(),
+                    "datetime_represents": "arrival" if arrive_by else "departure",
+                }
+                if datetime
+                else {}
             ),
         }
 
