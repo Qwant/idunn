@@ -64,6 +64,7 @@ def test_directions_pt(mock_directions_pt):
     assert "from=2.34024;48.89007" in mocked_url
     assert "to=2.36886;48.85299" in mocked_url
     assert "direct_path=none" in mocked_url
+    assert "datetime" not in mocked_url
 
 
 def test_directions_hove_not_configured():
@@ -74,3 +75,33 @@ def test_directions_hove_not_configured():
             params={"type": "publictransport"},
         )
         assert response.status_code == 501
+
+
+def test_direction_hove_arrive_by(mock_directions_pt):
+    client = TestClient(app)
+    client.get(
+        "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+        params={
+            "type": "publictransport",
+            "arrive_by": "2018-06-14T10:30:00",
+        },
+    )
+
+    mocked_request_url = str(mock_directions_pt.calls[0].request.url)
+    assert "datetime" in mocked_request_url
+    assert "datetime_represents=arrival" in mocked_request_url
+
+
+def test_direction_hove_depart_at(mock_directions_pt):
+    client = TestClient(app)
+    client.get(
+        "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+        params={
+            "type": "publictransport",
+            "depart_at": "2018-06-14T10:30:00",
+        },
+    )
+
+    mocked_request_url = str(mock_directions_pt.calls[0].request.url)
+    assert "datetime" in mocked_request_url
+    assert "datetime_represents=departure" in mocked_request_url

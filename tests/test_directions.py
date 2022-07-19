@@ -54,7 +54,48 @@ def test_direction_car(mock_directions_car):
     assert len(response_data["data"]["routes"][0]["legs"]) == 1
     assert len(response_data["data"]["routes"][0]["legs"][0]["steps"]) == 10
     assert response_data["data"]["routes"][0]["legs"][0]["mode"] == "CAR"
-    assert "exclude=ferry" in str(mock_directions_car.calls[0].request.url)
+    mocked_request_url = str(mock_directions_car.calls[0].request.url)
+    assert "exclude=ferry" in mocked_request_url
+
+    # Check that we leave these at defaults
+    assert "arrive_by" not in mocked_request_url
+    assert "depart_at" not in mocked_request_url
+
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=0)
+def test_direction_car_arrive_by(mock_directions_car):
+    client = TestClient(app)
+    client.get(
+        "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+        params={
+            "language": "fr",
+            "type": "driving",
+            "exclude": "ferry",
+            "arrive_by": "2018-06-14T10:30:00",
+        },
+    )
+
+    mocked_request_url = str(mock_directions_car.calls[0].request.url)
+    assert "arrive_by" in mocked_request_url
+    assert "depart_at" not in mocked_request_url
+
+
+@freeze_time("2018-06-14 8:30:00", tz_offset=0)
+def test_direction_car_depart_at(mock_directions_car):
+    client = TestClient(app)
+    client.get(
+        "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
+        params={
+            "language": "fr",
+            "type": "driving",
+            "exclude": "ferry",
+            "depart_at": "2018-06-14T10:30:00",
+        },
+    )
+
+    mocked_request_url = str(mock_directions_car.calls[0].request.url)
+    assert "arrive_by" not in mocked_request_url
+    assert "depart_at" in mocked_request_url
 
 
 def test_direction_car_with_ids(mock_directions_car):

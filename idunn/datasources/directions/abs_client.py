@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Optional
 
 from idunn.geocoder.models.params import QueryParams
@@ -19,6 +20,8 @@ class AbsDirectionsClient(ABC):
         to_place: BasePlace,
         mode: IdunnTransportMode,
         lang: str,
+        arrive_by: Optional[datetime],
+        depart_at: Optional[datetime],
         extra: Optional[QueryParams] = None,
     ) -> DirectionsResponse:
         ...
