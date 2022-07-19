@@ -1,4 +1,5 @@
 import httpx
+from datetime import datetime
 from fastapi import HTTPException
 from typing import Optional
 
@@ -36,6 +37,8 @@ class HoveClient(AbsDirectionsClient):
         to_place: BasePlace,
         mode: IdunnTransportMode,
         _lang: str,
+        arrive_by: Optional[datetime],
+        depart_at: Optional[datetime],
         _extra: Optional[QueryParams] = None,
     ) -> HoveResponse:
         if not self.API_ENABLED:
@@ -46,6 +49,7 @@ class HoveClient(AbsDirectionsClient):
 
         from_place = from_place.get_coord()
         to_place = to_place.get_coord()
+        date_time = arrive_by or depart_at
 
         params = {
             "from": f"{from_place['lon']};{from_place['lat']}",
@@ -64,6 +68,14 @@ class HoveClient(AbsDirectionsClient):
                     "direct_path_mode[]": mode.to_hove(),
                     "direct_path": "only",
                 }
+            ),
+            **(
+                {
+                    "datetime": date_time.isoformat(),
+                    "datetime_represents": "arrival" if arrive_by else "departure",
+                }
+                if date_time
+                else {}
             ),
         }
 
