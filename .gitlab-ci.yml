@@ -119,18 +119,6 @@ build idunn:
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
     - docker push "$TARGET_IMAGE"
 
-build bragi:
-  extends:
-    - .build
-  variables:
-    COMPOSE_IMAGE: "$CI_REGISTRY_IMAGE/bragi:${CI_COMMIT_REF_SLUG}"
-  script:
-    - export RUST_VERSION=$(xargs <bragi/rust-toolchain)
-    - export GITHUB_SHA=$(git rev-parse HEAD:bragi)
-    - docker-compose build
-    - docker-compose push
-  when: manual
-
 configure:
   stage: configure
   variables:
@@ -209,27 +197,6 @@ argo deploy idunn dev:
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
   variables:
     ARGOCD_APP_NAME: "dev-${COMPONENT_NAME}"
-    IMAGE_VERSION_FILE: "version.yaml"
-    ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
-  rules:
-    - when: manual
-
-argo deploy bragi dev:
-  extends:
-    - .argocd
-    - .argocd:review
-  needs:
-    - configure
-  script:
-    - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
-    - export IMAGE_DIGEST="$BRAGI_DEV_IMAGE_DIGEST"
-    - ci/bootstrap/bin/sync-version-argocd
-      --docker-image-app "${CI_REGISTRY_IMAGE}/bragi@${IMAGE_DIGEST}"
-      --image-version-object-path-app ".webapp.image.name"
-    - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
-    - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
-  variables:
-    ARGOCD_APP_NAME: "dev-bragi"
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
   rules:
@@ -314,7 +281,7 @@ argo deploy idunn production:
     - export $(xargs <ci/templates/docker-idunn-dev-digest.env)
     - export IMAGE_DIGEST="$IDUNN_DEV_IMAGE_DIGEST"
     - ci/bootstrap/bin/sync-version-argocd
-      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn:${IMAGE_DIGEST}"
+      --docker-image-app "${CI_REGISTRY_IMAGE}/idunn@${IMAGE_DIGEST}"
       --image-version-object-path-app ".webapp.image.name"
     - argocd app sync $ARGOCD_APP_NAME $ARGOCD_OPTS --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
     - argocd app get $ARGOCD_APP_NAME $ARGOCD_OPTS --refresh --auth-token $ARGOCD_AUTH_TOKEN  --server $ARGOCD_SERVER
