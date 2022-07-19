@@ -79,7 +79,7 @@ def test_directions_hove_not_configured():
 
 def test_direction_hove_arrive_by(mock_directions_pt):
     client = TestClient(app)
-    response = client.get(
+    client.get(
         "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
         params={
             "type": "publictransport",
@@ -94,7 +94,7 @@ def test_direction_hove_arrive_by(mock_directions_pt):
 
 def test_direction_hove_depart_at(mock_directions_pt):
     client = TestClient(app)
-    response = client.get(
+    client.get(
         "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
         params={
             "type": "publictransport",

@@ -65,7 +65,7 @@ def test_direction_car(mock_directions_car):
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)
 def test_direction_car_arrive_by(mock_directions_car):
     client = TestClient(app)
-    response = client.get(
+    client.get(
         "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
         params={
             "language": "fr",
@@ -83,7 +83,7 @@ def test_direction_car_arrive_by(mock_directions_car):
 @freeze_time("2018-06-14 8:30:00", tz_offset=0)
 def test_direction_car_depart_at(mock_directions_car):
     client = TestClient(app)
-    response = client.get(
+    client.get(
         "http://localhost/v1/directions/2.3402355%2C48.8900732%3B2.3688579%2C48.8529869",
         params={
             "language": "fr",
