@@ -1,3 +1,4 @@
+import logging
 import httpx
 from datetime import datetime
 from fastapi import HTTPException
@@ -15,6 +16,8 @@ DIRECT_PATH_MAX_DURATION = 86400  # 24h
 MIN_NB_JOURNEYS = 2
 MAX_NB_JOURNEYS = 5
 FREE_RADIUS = 50  # meters
+
+logger = logging.getLogger(__name__)
 
 
 class HoveClient(AbsDirectionsClient):
@@ -84,6 +87,14 @@ class HoveClient(AbsDirectionsClient):
             params=params,
             headers={"Authorization": settings["HOVE_API_TOKEN"]},
         )
+
+        if 400 <= response.status_code < 500:
+            logger.info(
+                "Got error from Hove API. Status: %s, Body: %s",
+                response.status_code,
+                response.text,
+            )
+            raise HTTPException(response.status_code, detail=response.json())
 
         response.raise_for_status()
         return HoveResponse(**response.json()).as_api_response()
