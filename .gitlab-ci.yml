@@ -113,7 +113,7 @@ build idunn:
     - .build
   variables:
     TARGET_IMAGE: "$CI_REGISTRY_IMAGE/idunn:${CI_COMMIT_REF_SLUG}"
-    SOURCE_IMAGE: "qwantresearch/idunn:rm-search-endpoint"
+    SOURCE_IMAGE: "qwantresearch/idunn:rm-search-endpoint@sha256:473813454322465958af756914aa97b09d0d1d046b249bbbe48ca0b36c7f3a68"
   script:
     - docker pull "$SOURCE_IMAGE"
     - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
