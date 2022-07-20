@@ -35,9 +35,14 @@ def test_directions_pt(mock_directions_pt):
     assert response_data["status"] == "success"
     assert len(response_data["data"]["routes"]) == 4
 
-    legs = response_data["data"]["routes"][0]["legs"]
-    steps = legs[0]["steps"]
-    assert [leg["mode"] for leg in legs] == ["WALK", "SUBWAY", "WALK", "SUBWAY", "WALK"]
+    route = response_data["data"]["routes"][0]
+    steps = route["legs"][0]["steps"]
+
+    assert (
+        [s["mode"] for s in route["summary"]]
+        == [leg["mode"] for leg in route["legs"]]
+        == ["WALK", "SUBWAY", "WALK", "SUBWAY", "WALK"]
+    )
 
     assert [step["maneuver"]["modifier"] for step in steps] == [
         "straight",
@@ -45,6 +50,13 @@ def test_directions_pt(mock_directions_pt):
         "right",
         "left",
     ]
+
+    assert route["summary"][0] == {
+        "distance": 169,
+        "duration": 151,
+        "info": None,
+        "mode": "WALK",
+    }
 
     assert steps[0]["maneuver"] == {
         "location": [2.3402355, 48.8900732],

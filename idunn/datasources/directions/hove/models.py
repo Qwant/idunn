@@ -217,7 +217,11 @@ class Section(BaseModel):
                 if self.display_informations
                 else None
             ),
-            distance=42,
+            distance=(
+                self.geojson.properties[0].length
+                if self.geojson
+                else sum(inst.length for inst in self.path)
+            ),
             duration=self.duration,
         )
 
@@ -353,12 +357,7 @@ class Journey(BaseModel):
     def as_api_route(self) -> api.DirectionsRoute:
         secs = [sec for sec in self.sections if sec.sec_type != SectionType.WAITING]
         legs = [sec.as_api_route_leg() for sec in secs]
-
-        summary = [
-            summary
-            for sec in self.sections
-            if (summary := sec.as_api_route_summary_part()).info is not None
-        ]
+        summary = [sec.as_api_route_summary_part() for sec in secs]
 
         geometry = {
             "type": "FeatureCollection",
