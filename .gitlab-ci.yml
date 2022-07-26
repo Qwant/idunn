@@ -223,6 +223,8 @@ argo deploy idunn integration:
 
 .deploy-kube:
   image: registry.qwant.ninja/docker/kubectl:master
+  needs:
+    - configure
   tags:
     - docker
   before_script:
