@@ -1,6 +1,0 @@
-replicas: 1
-
-service:
-  type: "LoadBalancer"
-  IP: 10.108.3.63
-  externalTrafficPolicy: "Cluster"

@@ -97,17 +97,6 @@ workflow:
   tags:
     - shell
 
-build classifier:
-  extends:
-    - .build
-  variables:
-    TARGET_IMAGE: &target-nlu-image "$CI_REGISTRY_IMAGE/classifier/maps:1.4.2"
-    SOURCE_IMAGE: "$CI_REGISTRY/product/nlp/katanoisi/maps:latest"
-  script:
-    - docker pull "$SOURCE_IMAGE"
-    - docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
-    - docker push "$TARGET_IMAGE"
-
 build idunn:
   extends:
     - .build
@@ -123,11 +112,9 @@ configure:
   stage: configure
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    TARGET_NLU_IMAGE: *target-nlu-image
   before_script:
     - source ci/bootstrap.sh
   script:
-    - configure-values ci/values/
     - subst -i ci/templates/docker-idunn-dev-digest.env
   artifacts:
     paths:
@@ -135,7 +122,6 @@ configure:
       - docker-compose.yml
   needs:
     - build idunn
-    - build classifier
   tags:
     - shell
 
@@ -220,55 +206,6 @@ argo deploy idunn integration:
   variables:
     IMAGE_VERSION_FILE: "version.yaml"
     ARGOAPP_REPO_BASEDIR: "$ARGOAPP_REPO_PATH"
-
-.deploy-kube:
-  image: registry.qwant.ninja/docker/kubectl:master
-  tags:
-    - docker
-  before_script:
-    - source ci/bootstrap.sh
-    - helm registry login
-      --username "$CI_REGISTRY_USER"
-      --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
-  script:
-    - kubeconfig
-    - helm chart pull "$HELM_CHART_REF"
-    - helm chart export "$HELM_CHART_REF" -d ci/
-    - helm-deploy
-  variables:
-    HELM_EXPERIMENTAL_OCI: 1
-    HELM_VALUE_FILES: "ci/values/$COMPONENT_NAME/common.yaml:ci/values/$COMPONENT_NAME/$CI_JOB_STAGE.yaml"
-    # https://git.qwant.ninja/helm/text-classifier/-/commit/1f3bc2514052476e008bf1c8c9e5bb7f5b81c125
-    HELM_CHART_REF: "$CI_REGISTRY/helm/text-classifier@sha256:b57cd48a1a9e9443a697320b38b4e3694fd345bdbc94ad2f126690bd32ad6d85"
-    COMPONENT_NAME: classifier
-    HELM_RELEASE: "classifier"
-    HELM_CHART: "ci/text-classifier"
-  resource_group: $CI_PROJECT_ID:$CI_ENVIRONMENT_SLUG
-  when: manual
-
-deploy classifier development:
-  extends: .deploy-kube
-  stage: development
-  environment:
-    name: "development/classifier"
-  variables:
-    KUBE_ENV: development
-
-deploy classifier prelive:
-  extends: .deploy-kube
-  stage: prelive
-  environment:
-    name: "prelive/classifier"
-  variables:
-    KUBE_ENV: integration
-
-deploy classifier production:
-  extends: .deploy-kube
-  stage: production
-  environment:
-    name: "production/classifier"
-  variables:
-    KUBE_ENV: production
 
 argo deploy idunn production:
   extends:
