@@ -24,6 +24,7 @@ NLU_POI_TAGS = ["POI", "other"]
 NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
+NLU_ADMIN_TAGS = ["city", "country", "state"]
 NLU_STREET_TAGS = ["street"]
 
 
@@ -238,8 +239,8 @@ class NLU_Helper:  # pylint: disable = invalid-name
         return next(iter(tags), None)
 
     @classmethod
-    def build_place_query(cls, tags_list):
-        tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_PLACE_TAGS]
+    def build_admin_query(cls, tags_list):
+        tags = [t["phrase"] for t in tags_list if t.get("tag") in NLU_ADMIN_TAGS]
 
         if not tags:
             return None
@@ -288,7 +289,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
         tags_list = [t for t in response_nlu.json()["NLU"] if t["tag"] != "O"]
 
         try:
-            place_query = self.build_place_query(tags_list)
+            admin_query = self.build_admin_query(tags_list)
             brand_query = self.build_brand_query(tags_list)
             cat_query = self.build_category_query(tags_list)
 
@@ -303,6 +304,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
                     description={"query": text},
                 )
 
+                #
                 intention.description._place_in_query = any(
                     t.get("tag") in NLU_PLACE_TAGS for t in tags_list
                 )
@@ -317,11 +319,11 @@ class NLU_Helper:  # pylint: disable = invalid-name
 
                 intention = await self.build_intention_category(cat_or_brand_query)
 
-                self.add_extra_logs(brand_query, cat_query, intention, logs_extra, place_query)
+                self.add_extra_logs(brand_query, cat_query, intention, logs_extra, admin_query)
                 logger.info("Detected intentions for '%s'", text, extra=logs_extra)
-            if place_query:
-                bbox, place = await self.get_place_and_bbox_from_query(
-                    extra_geocoder_params, lang, place_query
+            if admin_query:
+                bbox, place = await self.get_place_and_bbox_from_admin_query(
+                    extra_geocoder_params, lang, admin_query
                 )
                 intention.filter.bbox = bbox
                 intention.description.place = place
@@ -334,14 +336,15 @@ class NLU_Helper:  # pylint: disable = invalid-name
             exp.extra.update(logs_extra)
             raise exp
 
-    async def get_place_and_bbox_from_query(self, extra_geocoder_params, lang, place_query):
+    async def get_place_and_bbox_from_admin_query(self, extra_geocoder_params, lang, place_query):
         bragi_params = GeocoderParams.build(
             q=place_query,
             lang=lang,
             limit=1,
+            types=["admin"],
             **(extra_geocoder_params or {}),
         )
-        bragi_result = await bragi_client.autocomplete(bragi_params)
+        bragi_result = await bragi_client.search(bragi_params)
         return await self.get_bbox_place(bragi_result, place_query)
 
     @staticmethod
