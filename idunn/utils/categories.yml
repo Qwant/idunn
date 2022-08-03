@@ -1048,3 +1048,7 @@ categories:
     charging_station:
       raw_filters:
         - class: "charging_station"
+
+    airport:
+      raw_filters:
+        - class: "aerodrome"
