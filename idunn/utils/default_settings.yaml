@@ -2,6 +2,7 @@ USER_AGENT: "Idunn/0.1"
 
 BASE_URL: http://localhost:5000/ # Base URL of Idunn's endpoint
 MAPS_BASE_URL: https://www.qwant.com/maps/
+URL_PATH_PREFIX: "/v1" # URL prefix the HTTP client listens to
 
 SECRET: "CHANGE_ME"
 
