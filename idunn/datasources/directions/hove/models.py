@@ -280,6 +280,7 @@ class Section(BaseModel):
                     mode=mode,
                 )
                 for (inst, geo) in insts
+                if inst.name or inst.length != 0
             ]
 
             _, summary = max((step.distance, step.maneuver.detail.name) for step in steps)
