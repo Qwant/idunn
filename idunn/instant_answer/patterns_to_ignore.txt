@@ -18,10 +18,12 @@ quartier de
 ville de
 code postale?
 (google )?street ?view
-itin(e|é)raires?
 lieu dit
 localisation
 o(ù|u) (se|ce) (trouve|situe)( (le|la))?
 where is
 booking$
+mappy (plan|itin(e|é)rair(e|es))
+itin(e|é)rair(e|es) mappy
+itin(e|é)rair(e|es)?
 mappy
