@@ -14,7 +14,7 @@ services:
   wiki_redis:
     image: redis:4-alpine
     ports:
-    - "6379"
+      - "6379:6379"
 
   mimir_es7:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
