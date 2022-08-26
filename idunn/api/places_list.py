@@ -224,7 +224,7 @@ async def _fetch_extended_bbox(bbox_extended, params, places_list):
     original_bbox_width = original_bbox[2] - original_bbox[0]
     original_bbox_height = original_bbox[3] - original_bbox[1]
     original_bbox_size = max(original_bbox_height, original_bbox_width)
-    if params.category[0] == Category.airport:
+    if len(params.category) > 0 and params.category[0] == Category.airport:
         bbox_extended, places_list = await _fetch_and_extend_bbox(
             EXTENDED_BBOX_MAX_SIZE_AIRPORT,
             bbox_extended,
