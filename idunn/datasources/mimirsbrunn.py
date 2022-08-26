@@ -15,20 +15,11 @@ PLACE_STREET_INDEX = settings["PLACE_STREET_INDEX"]
 
 
 class MimirPoiFilter:
-    def __init__(self, poi_class=None, poi_subclass=None, extra=None):
-        self.poi_class = poi_class
-        self.poi_subclass = poi_subclass
-        self.extra = extra or {}
+    def __init__(self, properties=None):
+        self.properties = properties or {}
 
     def get_terms_filters(self):
-        terms = []
-        if self.poi_class:
-            terms.append(f"class_{self.poi_class}")
-        if self.poi_subclass:
-            terms.append(f"subclass_{self.poi_subclass}")
-        for key, value in self.extra.items():
-            terms.append(f"{key}:{value}")
-        return terms
+        return self.properties.items()
 
     @classmethod
     def from_url_raw_filter(cls, raw_filter):
@@ -37,7 +28,7 @@ class MimirPoiFilter:
             poi_class = None
         if poi_subclass == "*":
             poi_subclass = None
-        return cls(poi_class, poi_subclass)
+        return cls({'class': poi_class, 'subclass': poi_subclass})
 
 
 def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) -> list:
@@ -51,7 +42,7 @@ def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) ->
             should_terms.append({"match_all": {}})
         else:
             should_terms.append(
-                {"bool": {"must": [{"term": {"poi_type.name": term}} for term in terms]}}
+                {"bool": {"must": [{"term": {f"properties.{key}": value}} for (key, value) in terms]}}
             )
 
     # pylint: disable = unexpected-keyword-arg

@@ -28,9 +28,7 @@ class CategoryEnum(str):
         filters = []
         for f in raw_filters:
             f = f.copy()
-            poi_class = f.pop("class", None)
-            poi_subclass = f.pop("subclass", None)
-            filters.append(MimirPoiFilter(poi_class, poi_subclass, extra=f))
+            filters.append(MimirPoiFilter(properties=f))
         return filters
 
     def regex(self):
