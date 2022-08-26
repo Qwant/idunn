@@ -1052,3 +1052,4 @@ categories:
     airport:
       raw_filters:
         - class: "aerodrome"
+          aerodrome: "international"
