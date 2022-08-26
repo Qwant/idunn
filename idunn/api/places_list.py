@@ -26,6 +26,7 @@ MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 EXTENDED_BBOX_MAX_SIZE = float(
     settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
 )  # max bbox width and height after second extended query
+EXTENDED_BBOX_MAX_SIZE_AIRPORT = 1
 TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE = ["hotel", "leisure", "attraction", "restaurant"]
 TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE = ["hotel", "leisure", "attraction"]
 
@@ -138,20 +139,20 @@ class PlacesBboxResponse(BaseModel):
 # TODO: using `Depends` could probably help since `locals()` seems quite dirty
 # pylint: disable = unused-argument
 async def get_places_bbox(
-    bbox: str = Query(
-        ...,
-        title="Bounding box",
-        description="Format: left_lon,bottom_lat,right_lon,top_lat",
-        example="-4.56,48.35,-4.42,48.46",
-    ),
-    category: List[Category] = Query([]),
-    raw_filter: Optional[List[str]] = Query(None),
-    source: Optional[str] = Query(None),
-    q: Optional[str] = Query(None, title="Query", description="Full text query"),
-    size: Optional[int] = Query(None),
-    lang: Optional[str] = Query(None),
-    verbosity: Verbosity = Verbosity.default_list(),
-    extend_bbox: bool = Query(False),
+        bbox: str = Query(
+            ...,
+            title="Bounding box",
+            description="Format: left_lon,bottom_lat,right_lon,top_lat",
+            example="-4.56,48.35,-4.42,48.46",
+        ),
+        category: List[Category] = Query([]),
+        raw_filter: Optional[List[str]] = Query(None),
+        source: Optional[str] = Query(None),
+        q: Optional[str] = Query(None, title="Query", description="Full text query"),
+        size: Optional[int] = Query(None),
+        lang: Optional[str] = Query(None),
+        verbosity: Verbosity = Verbosity.default_list(),
+        extend_bbox: bool = Query(False),
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
@@ -159,8 +160,8 @@ async def get_places_bbox(
 
 
 async def get_places_bbox_impl(
-    params: PlacesQueryParam,
-    sort_by_distance: Optional[Point] = None,
+        params: PlacesQueryParam,
+        sort_by_distance: Optional[Point] = None,
 ) -> PlacesBboxResponse:
     if params.source is None:
         select_datasource(params)
@@ -223,9 +224,21 @@ async def _fetch_extended_bbox(bbox_extended, params, places_list):
     original_bbox_width = original_bbox[2] - original_bbox[0]
     original_bbox_height = original_bbox[3] - original_bbox[1]
     original_bbox_size = max(original_bbox_height, original_bbox_width)
-    if original_bbox_size < EXTENDED_BBOX_MAX_SIZE:
-        # Compute extended bbox and fetch results a second time
-        scale_factor = EXTENDED_BBOX_MAX_SIZE / original_bbox_size
+    if params.category[0] == Category.airport:
+        bbox_extended, places_list = await _fetch_and_extend_bbox(EXTENDED_BBOX_MAX_SIZE_AIRPORT, bbox_extended,
+                                                                  original_bbox, original_bbox_size,
+                                                                  params, places_list)
+    else:
+        bbox_extended, places_list = await _fetch_and_extend_bbox(EXTENDED_BBOX_MAX_SIZE, bbox_extended,
+                                                                  original_bbox, original_bbox_size,
+                                                                  params, places_list)
+    return bbox_extended, places_list
+
+
+async def _fetch_and_extend_bbox(max_bbox_size, bbox_extended, original_bbox, original_bbox_size, params, places_list):
+    # Compute extended bbox and fetch results a second time
+    if original_bbox_size < max_bbox_size:
+        scale_factor = max_bbox_size / original_bbox_size
         new_box = scale(box(*original_bbox), xfact=scale_factor, yfact=scale_factor)
         params.bbox = new_box.bounds
         bbox_extended = True
