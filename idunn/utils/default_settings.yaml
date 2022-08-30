@@ -132,6 +132,9 @@ DIRECTIONS_PROVIDER_CYCLE: "mapbox"
 DIRECTIONS_PROVIDER_DRIVE: "mapbox"
 DIRECTIONS_PROVIDER_PUBLICTRANSPORT: "hove"
 
+# Disable public transports in some comma separated cities
+HOVE_PT_DISABLE_CITIES: "nice"
+
 #######################
 ## Geocoding
 BRAGI_BASE_URL: "http://bragi:4000"
