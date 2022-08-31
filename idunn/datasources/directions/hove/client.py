@@ -2,11 +2,13 @@ import logging
 import httpx
 from datetime import datetime
 from fastapi import HTTPException
+from shapely.geometry import Point
 from typing import Optional
 
 from idunn import settings
 from idunn.geocoder.models.params import QueryParams
 from idunn.places.base import BasePlace
+from idunn.utils.geometry import city_surrounds_polygons
 from .models import HoveResponse
 from ..abs_client import AbsDirectionsClient
 from ..mapbox.models import IdunnTransportMode
@@ -23,6 +25,7 @@ logger = logging.getLogger(__name__)
 class HoveClient(AbsDirectionsClient):
     def __init__(self):
         self.api_url = settings["HOVE_API_BASE_URL"]
+        self.disabled_cities = settings["HOVE_PT_DISABLE_CITIES"].split(",")
         self.session = httpx.AsyncClient(verify=settings["VERIFY_HTTPS"])
         self.session.headers["User-Agent"] = settings["USER_AGENT"]
 
@@ -33,6 +36,13 @@ class HoveClient(AbsDirectionsClient):
     @property
     def API_ENABLED(self):  # pylint: disable = invalid-name
         return bool(settings["HOVE_API_TOKEN"])
+
+    def pt_enabled_for_coord(self, place: dict) -> bool:
+        point = Point(place["lat"], place["lon"])
+
+        return not any(
+            city_surrounds_polygons[city].contains(point) for city in self.disabled_cities
+        )
 
     async def get_directions(
         self,
@@ -53,6 +63,19 @@ class HoveClient(AbsDirectionsClient):
         from_place = from_place.get_coord()
         to_place = to_place.get_coord()
         date_time = arrive_by or depart_at
+
+        pt_disabled_for_coords = mode == IdunnTransportMode.PUBLICTRANSPORT and (
+            not self.pt_enabled_for_coord(from_place) or not self.pt_enabled_for_coord(to_place)
+        )
+
+        if pt_disabled_for_coords:
+            logger.info(
+                "Invalid coordinates for public transports with Hove: %s %s",
+                from_place,
+                to_place,
+            )
+
+            raise HTTPException(404, detail="public transports are disabled in this city")
 
         params = {
             "from": f"{from_place['lon']};{from_place['lat']}",
