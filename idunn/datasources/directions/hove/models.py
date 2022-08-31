@@ -358,8 +358,6 @@ class Journey(BaseModel):
     def as_api_route(self) -> DirectionsRoute | None:
         secs = [sec for sec in self.sections if sec.sec_type != SectionType.WAITING]
         legs = [sec.as_api_route_leg() for sec in secs]
-        if is_walking_legs_invalid(legs):
-            return None
         summary = [sec.as_api_route_summary_part() for sec in secs]
 
         geometry = {
@@ -410,21 +408,22 @@ class HoveResponse(BaseModel):
                 routes=[
                     journey.as_api_route()
                     for journey in self.journeys
-                    if journey.as_api_route() is not None
+                    if is_walking_section_invalid(journey.sections) is False
                 ]
             ),
         )
 
 
-def is_walking_legs_invalid(legs):
+def is_walking_section_invalid(sections):
     """
     If a walking section is too fast : > 5 meter/ second, the journey is not taking into account
     """
-    for leg in legs:
+    for section in sections:
         if (
-            leg.duration != 0
-            and leg.distance != 0
-            and leg.distance / leg.duration > 5
-            and leg.mode is api.TransportMode.walk
+            section.duration != 0
+            and section.sec_type is SectionType.TRANSFER
+            and section.geojson.properties[0].length != 0
+            and section.geojson.properties[0].length / section.duration > 5
         ):
             return True
+    return False
