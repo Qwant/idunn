@@ -27,3 +27,5 @@ mappy (plan|itin(e|é)rair(e|es))
 itin(e|é)rair(e|es) mappy
 itin(e|é)rair(e|es)?
 mappy
+viamichelin.*
+via michelin.*
