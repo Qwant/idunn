@@ -92,7 +92,7 @@ class HoveClient(AbsDirectionsClient):
                 if mode == IdunnTransportMode.PUBLICTRANSPORT
                 else {
                     "direct_path_mode[]": mode.to_hove(),
-                    "direct_path": "only",
+                    "direct_path": "only_with_alternatives",
                 }
             ),
             **(
