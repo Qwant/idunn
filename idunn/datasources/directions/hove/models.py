@@ -17,7 +17,7 @@ from pydantic.fields import Field
 from pydantic import BaseModel
 
 import idunn.datasources.directions.mapbox.models as api
-from idunn.datasources.directions.mapbox.models import IdunnTransportMode
+from idunn.datasources.directions.mapbox.models import IdunnTransportMode, DirectionsRoute
 
 logger = logging.getLogger(__name__)
 
@@ -355,9 +355,11 @@ class Journey(BaseModel):
     def parse_date(cls, v):
         return datetime.strptime(v, "%Y%m%dT%H%M%S")
 
-    def as_api_route(self) -> api.DirectionsRoute:
+    def as_api_route(self) -> DirectionsRoute | None:
         secs = [sec for sec in self.sections if sec.sec_type != SectionType.WAITING]
         legs = [sec.as_api_route_leg() for sec in secs]
+        if is_walking_legs_invalid(legs):
+            return None
         summary = [sec.as_api_route_summary_part() for sec in secs]
 
         geometry = {
@@ -404,5 +406,25 @@ class HoveResponse(BaseModel):
     def as_api_response(self) -> api.DirectionsResponse:
         return api.DirectionsResponse(
             status="success",
-            data=api.DirectionsData(routes=[journey.as_api_route() for journey in self.journeys]),
+            data=api.DirectionsData(
+                routes=[
+                    journey.as_api_route()
+                    for journey in self.journeys
+                    if journey.as_api_route() is not None
+                ]
+            ),
         )
+
+
+def is_walking_legs_invalid(legs):
+    """
+    If a walking section is too fast : > 5 meter/ second, the journey is not taking into account
+    """
+    for leg in legs:
+        if (
+            leg.duration != 0
+            and leg.distance != 0
+            and leg.distance / leg.duration > 5
+            and leg.mode is api.TransportMode.walk
+        ):
+            return True
