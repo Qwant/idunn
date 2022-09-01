@@ -29,3 +29,4 @@ itin(e|é)rair(e|es)?
 mappy
 viamichelin.*
 via michelin.*
+capitale( de)?
