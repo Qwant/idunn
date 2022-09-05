@@ -168,7 +168,7 @@ async def get_places_bbox_impl(
 
     places_list = await _fetch_places_list(params)
     bbox_extended = False
-    if (params.extend_bbox or params.category == 'airport') and len(places_list) == 0:
+    if (params.extend_bbox or params.category == "airport") and len(places_list) == 0:
         bbox_extended, places_list = await _fetch_extended_bbox(bbox_extended, params, places_list)
 
     if len(places_list) == 0:
