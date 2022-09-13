@@ -323,6 +323,9 @@ class DirectionsRoute(BaseModel):
 
         super().__init__(**data)
 
+    def __eq__(self, other):
+        return self.summary == other.summary
+
     @validator("geometry", always=True)
     def build_geometry(cls, geometry, values):
         if "legs" not in values:
