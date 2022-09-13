@@ -402,15 +402,19 @@ class HoveResponse(BaseModel):
     journeys: List[Journey] = []
 
     def as_api_response(self) -> api.DirectionsResponse:
+        routes = []
+
+        for journey in self.journeys:
+            if is_walking_section_invalid(journey.sections) is False:
+                route = journey.as_api_route()
+
+                # Deduplicate already existing routes
+                if route not in routes:
+                    routes.append(route)
+
         return api.DirectionsResponse(
             status="success",
-            data=api.DirectionsData(
-                routes=[
-                    journey.as_api_route()
-                    for journey in self.journeys
-                    if is_walking_section_invalid(journey.sections) is False
-                ]
-            ),
+            data=api.DirectionsData(routes=routes),
         )
 
 
