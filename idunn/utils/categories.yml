@@ -1053,3 +1053,24 @@ categories:
       raw_filters:
         - class: "aerodrome"
           aerodrome: "international"
+
+    metro_station:
+      raw_filters:
+        - class: "railway"
+          subclass: "subway"
+
+    bus_station:
+      raw_filters:
+        - subclass: "bus_station"
+        - subclass: "bus_stop"
+
+    tram_station:
+      raw_filters:
+        - subclass: "tram_stop"
+
+    public_transport_station:
+      raw_filters:
+        - subclass: "bus_station"
+        - subclass: "tram_stop"
+        - class: "railway"
+          subclass: "subway"
