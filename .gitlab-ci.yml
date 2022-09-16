@@ -96,8 +96,10 @@ build:
 
 .deploy:
   image: registry.qwant.ninja/docker/kubectl:1.19.1
+  dependencies:
+    - build
   variables:
-    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_STRATEGY: none
     ARGOAPP_REPO_BASEDIR: "deployments"
     ARGOAPP_REPO_URL_SSH: "git@git.qwant.ninja:teams/search-apps/argo_apps.git"
     ARGOCD_APP_ENVIRONMENT: "$CI_ENVIRONMENT_NAME"
