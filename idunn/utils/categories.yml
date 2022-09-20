@@ -1077,3 +1077,8 @@ categories:
         - subclass: "tram_stop"
         - class: "railway"
           subclass: "subway"
+
+    place_water:
+      raw_filters:
+        - class: "water"
+          subclass: "water"
