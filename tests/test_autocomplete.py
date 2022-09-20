@@ -148,7 +148,7 @@ def test_autocomplete_with_nlu_cat(mock_autocomplete_get, mock_NLU_with_cat):
         params={"q": "pharmacie", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention={
             "type": "category",
-            "filter": {"category": "pharmacy"},
+            "filter": {"q": "pharmacie", "category": "pharmacy"},
             "description": {"category": "pharmacy"},
         },
         expected_intention_place=None,
@@ -163,7 +163,7 @@ def test_autocomplete_with_nlu_regex_cat(mock_autocomplete_get, mock_NLU_with_ca
         params={"q": "bank", "lang": "fr", "limit": 7, "nlu": True},
         expected_intention={
             "type": "category",
-            "filter": {"category": "bank"},
+            "filter": {"q": "bank", "category": "bank"},
             "description": {"category": "bank"},
         },
         expected_intention_place=None,
@@ -178,6 +178,7 @@ def test_autocomplete_with_nlu_country(mock_autocomplete_get, mock_NLU_with_cat_
         expected_intention={
             "type": "category",
             "filter": {
+                "q": "pharmacie",
                 "category": "pharmacy",
                 "bbox": [2.224122, 48.8155755, 2.4697602, 48.902156],
             },

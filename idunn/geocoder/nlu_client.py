@@ -204,7 +204,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
         if category:
             return Intention(
                 type=IntentionType.CATEGORY,
-                filter={"category": category},
+                filter={"q": cat_query, "category": category},
                 description={"category": category},
             )
 
