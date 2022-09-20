@@ -135,16 +135,12 @@ class PagesJaunes(Datasource):
         self, categories: List[CategoryEnum], bbox, size=10, query=""
     ) -> List[PjApiPOI]:
         query_params = {
-            "what": " ".join(c.pj_what() for c in categories),
+            "what": (query or " ".join(c.pj_what() for c in categories)).strip(),
             "where": self.format_where(bbox),
             # The API may return less than 'max' items per page, so let's use 'size + 5'
             # as a margin to avoid requesting a second page unnecessarily.
             "max": min(self.PJ_RESULT_MAX_SIZE, size + 5),
         }
-
-        if query:
-            query_params["what"] += " " + query
-            query_params["what"] = query_params["what"].strip()
 
         api_places = self.get_places_from_url(self.PJ_FIND_API_URL, query_params, size)
 
