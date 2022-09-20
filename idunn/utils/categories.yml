@@ -534,7 +534,6 @@ categories:
         raw_filters:
           - class: "library"
             subclass: "library"
-        pj_what: "bibliothèque"
 
     police:
         regex: "(^| )(police|gendar)"
@@ -611,9 +610,8 @@ categories:
     swimming:
         raw_filters:
           - class: "swimming"
-          - class: "sports_center"
+          - class: "sports_centre"
             subclass: "swimming"
-        pj_what: "piscine"
 
     shop_furniture:
         raw_filters:
