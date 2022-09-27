@@ -216,7 +216,7 @@ def select_datasource_outside_france(params):
 
 
 def is_brand_detected_or_pj_category_cover(params):
-    return not params.category or all(c.pj_what() for c in params.category)
+    return all(c.pj_what() for c in params.category)
 
 
 async def _fetch_extended_bbox(bbox_extended, params, places_list):
