@@ -143,9 +143,7 @@ def test_extend_bbox():
     )
     assert response.status_code == 200
     data = response.json()
-    assert len(data["places"]) == 1
-    assert data["bbox_extended"] is True
-    assert data["bbox"] == [2.338028, 48.861147, 2.338028, 48.861147]
+    assert len(data["places"]) == 4
 
 
 def test_invalid_bbox():
