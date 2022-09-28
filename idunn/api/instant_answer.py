@@ -151,7 +151,6 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
             category=[category] if category else [],
             bbox=intention.filter.bbox,
             q=intention.filter.q,
-            raw_filter=None,
             source=None,
             size=10,
             lang=lang,

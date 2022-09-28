@@ -35,7 +35,7 @@ The main endpoints are:
     * `verbosity`: default verbosity is `list` (equivalent to `long`, except "information" and "wiki" blocks are not returned)
     * `source`: (optional) to force a data source (instead of automated selection based on coverage). Accepted values: `osm`, `pages_jaunes`
     * `q`: full-text query (optional, experimental)
-* `/v1/places?bbox={bbox}&raw_filter=class,subclass&size={size}` to get a list of all points of interest matching the given bbox (=left,bot,right,top e.g. `bbox=2,48,3,49`) and the raw filters (e.g. `raw_filter=*,restaurant&raw_filter=shop,*&raw_filter=bakery,bakery`)
+* `/v1/places?bbox={bbox}` to get a list of all points of interest matching the given bbox (=left,bot,right,top e.g. `bbox=2,48,3,49`)
 * `/v1/categories` to get the list of all the categories you can filter on.
 * `/v1/directions` See [directions.md](./doc/directions.md) for details
 * `/v1/events?bbox={bbox}&category=<category_name>&size={size}` to get a list of all events matching the given bbox and outing_category

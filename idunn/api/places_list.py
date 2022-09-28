@@ -65,7 +65,6 @@ class CommonQueryParam(BaseModel):
 
 class PlacesQueryParam(CommonQueryParam):
     category: List[Category] = []
-    raw_filter: Optional[List[str]]
     source: Optional[str]
     q: Optional[str]
     extend_bbox: bool = False
@@ -84,30 +83,12 @@ class PlacesQueryParam(CommonQueryParam):
             raise ValueError(f"unknown source: '{v}'")
         return v
 
-    @validator("raw_filter", pre=True, always=True)
-    def valid_raw_filter(cls, v):
-        if not v:
-            return []
-        for x in v:
-            if "," not in x:
-                raise ValueError(f"raw_filter '{x}' is invalid from '{v}'")
-        return v
-
-    @root_validator(skip_on_failure=True)
-    def categories_or_raw_filters(cls, values):
-        if values.get("raw_filter") and values.get("category"):
-            raise HTTPException(
-                status_code=400,
-                detail="Both 'raw_filter' and 'category' parameters cannot be provided together",
-            )
-        return values
-
     @root_validator(skip_on_failure=True)
     def any_query_present(cls, values):
-        if not any((values.get("raw_filter"), values.get("category"), values.get("q"))):
+        if not any((values.get("category"), values.get("q"))):
             raise HTTPException(
                 status_code=400,
-                detail="One of 'category', 'raw_filter' or 'q' parameter is required",
+                detail="One of 'category' or 'q' parameter is required",
             )
         return values
 
@@ -146,7 +127,6 @@ async def get_places_bbox(
         example="-4.56,48.35,-4.42,48.46",
     ),
     category: List[Category] = Query([]),
-    raw_filter: Optional[List[str]] = Query(None),
     source: Optional[str] = Query(None),
     q: Optional[str] = Query(None, title="Query", description="Full text query"),
     size: Optional[int] = Query(None),

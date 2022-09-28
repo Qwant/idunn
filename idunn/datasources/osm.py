@@ -4,7 +4,7 @@ from starlette.concurrency import run_in_threadpool
 
 from idunn.api.constants import PoiSource
 from idunn.datasources import Datasource
-from idunn.datasources.mimirsbrunn import fetch_es_pois, MimirPoiFilter
+from idunn.datasources.mimirsbrunn import fetch_es_pois
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models.params import QueryParams
 from idunn.places.poi import BragiPOI, OsmPOI
@@ -52,11 +52,8 @@ class Osm(Datasource):
 
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
-        if params.raw_filter or params.category:
-            if params.raw_filter:
-                filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
-            else:
-                filters = [f for c in params.category for f in c.raw_filters()]
+        if params.category:
+            filters = [f for c in params.category for f in c.raw_filters()]
             bbox_places = await run_in_threadpool(
                 fetch_es_pois,
                 "poi",

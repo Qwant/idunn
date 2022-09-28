@@ -24,7 +24,7 @@ def test_bbox_should_trigger_osm_sources_when_raw_filter_specified():
     client = TestClient(app)
 
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship"
+        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=bakery&category=museum&category=place_of_worship"
     )
 
     assert response.status_code == 200
@@ -329,7 +329,7 @@ def test_size_list():
     client = TestClient(app)
 
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship&size=1"
+        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=bakery&category=museum&category=place_of_worship&size=1"
     )
 
     assert response.status_code == 200
@@ -395,167 +395,16 @@ def test_size_list():
     }
 
 
-@freeze_time("2018-06-14 8:30:00", tz_offset=2)
-def test_single_raw_filter():
-    """
-    Test the category filter.
-
-    Query just one category (place_of_worship) in fixtures with bbox that excludes patisserie POI.
-    The result should contain only one POI: blancs_manteaux.
-    """
-    client = TestClient(app)
-    response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=*,place_of_worship"
-    )
-
-    assert response.status_code == 200
-
-    resp = response.json()
-
-    assert resp == {
-        "source": "osm",
-        "places": [
-            {
-                "type": "poi",
-                "id": "osm:way:55984117",
-                "name": "Église Notre-Dame-des-Blancs-Manteaux",
-                "local_name": "Église Notre-Dame-des-Blancs-Manteaux",
-                "class_name": "place_of_worship",
-                "subclass_name": "place_of_worship",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [2.3577366716253647, 48.858955519212905],
-                    "center": [2.3577366716253647, 48.858955519212905],
-                },
-                "address": {
-                    "id": "4574400",
-                    "name": "Rue Aubriot",
-                    "housenumber": None,
-                    "postcode": "75004",
-                    "label": "Rue Aubriot (Paris)",
-                    "admin": None,
-                    "street": {
-                        "id": "4574400",
-                        "name": "Rue Aubriot",
-                        "label": "Rue Aubriot (Paris)",
-                        "postcodes": ["75004"],
-                    },
-                    "admins": [
-                        {
-                            "id": "admin:osm:relation:2172741",
-                            "label": "Quartier Saint-Gervais (75004), Paris 4e Arrondissement, Paris, Île-de-France, France",
-                            "name": "Quartier Saint-Gervais",
-                            "class_name": "suburb",
-                            "postcodes": ["75004"],
-                        },
-                        {
-                            "id": "admin:osm:relation:7444",
-                            "label": "Paris (75000-75116), Île-de-France, France",
-                            "name": "Paris",
-                            "class_name": "city",
-                            "postcodes": [
-                                "75000",
-                                "75001",
-                                "75002",
-                                "75003",
-                                "75004",
-                                "75005",
-                                "75006",
-                                "75007",
-                                "75008",
-                                "75009",
-                                "75010",
-                                "75011",
-                                "75012",
-                                "75013",
-                                "75014",
-                                "75015",
-                                "75016",
-                                "75017",
-                                "75018",
-                                "75019",
-                                "75020",
-                                "75116",
-                            ],
-                        },
-                        {
-                            "id": "admin:osm:relation:71525",
-                            "label": "Paris, Île-de-France, France",
-                            "name": "Paris",
-                            "class_name": "state_district",
-                            "postcodes": [],
-                        },
-                        {
-                            "id": "admin:osm:relation:8649",
-                            "label": "Île-de-France, France",
-                            "name": "Île-de-France",
-                            "class_name": "state",
-                            "postcodes": [],
-                        },
-                        {
-                            "id": "admin:osm:relation:9597",
-                            "label": "Paris 4e Arrondissement (75004), Paris, Île-de-France, France",
-                            "name": "Paris 4e Arrondissement",
-                            "class_name": "city_district",
-                            "postcodes": ["75004"],
-                        },
-                        {
-                            "id": "admin:osm:relation:2202162",
-                            "label": "France",
-                            "name": "France",
-                            "class_name": "country",
-                            "postcodes": [],
-                        },
-                    ],
-                    "country_code": "FR",
-                },
-                "blocks": [
-                    {
-                        "international_format": "+33 1 42 72 09 37",
-                        "local_format": "01 42 72 09 37",
-                        "type": "phone",
-                        "url": "tel:+33142720937",
-                    },
-                    {
-                        "type": "website",
-                        "url": "http://www.paris.catholique.fr/-Notre-Dame-des-Blancs-Manteaux,1290-.html",
-                        "label": "www.paris.catholique.fr",
-                    },
-                ],
-                "meta": ANY,
-            }
-        ],
-        "bbox": ANY,
-        "bbox_extended": False,
-    }
-
-
-def test_raw_filter_with_class_subclass():
-    client = TestClient(app)
-    response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=museum,museum"
-    )
-
-    assert response.status_code == 200
-
-    resp = response.json()
-
-    assert len(resp["places"]) == 1
-    assert resp["places"][0]["name"] == "Louvre Museum"
-
-
 def test_extend_bbox():
     client = TestClient(app)
     small_bbox = "2.350,48.850,2.351,48.851"
 
-    response = client.get(
-        url=f"http://localhost/v1/places?bbox={small_bbox}&raw_filter=museum,museum"
-    )
+    response = client.get(url=f"http://localhost/v1/places?bbox={small_bbox}&category=museum")
     assert response.status_code == 200
     assert len(response.json()["places"]) == 0
 
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={small_bbox}&raw_filter=museum,museum&extend_bbox=true"
+        url=f"http://localhost/v1/places?bbox={small_bbox}&category=museum&extend_bbox=true"
     )
     assert response.status_code == 200
     data = response.json()
@@ -571,7 +420,7 @@ def test_invalid_bbox():
     client = TestClient(app)
 
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={INVALID_BBOX_PARIS_LEFT_PERM_RIGHT}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship"
+        url=f"http://localhost/v1/places?bbox={INVALID_BBOX_PARIS_LEFT_PERM_RIGHT}&category=place_of_worship"
     )
 
     assert response.status_code == 400
@@ -583,7 +432,7 @@ def test_invalid_bbox():
     }
 
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={INVALID_BBOX_PARIS_MISSING}&raw_filter=*,bakery&raw_filter=museum,*&raw_filter=*,place_of_worship"
+        url=f"http://localhost/v1/places?bbox={INVALID_BBOX_PARIS_MISSING}&category=place_of_worship"
     )
 
     assert response.status_code == 400
@@ -595,26 +444,9 @@ def test_invalid_bbox():
     }
 
 
-def test_category_and_raw_filter():
+def test_category_or_q():
     """
-    Test we get a 400 if category and raw_filter are both present:
-    """
-    client = TestClient(app)
-
-    response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&raw_filter=*,bakery&category=supermarket"
-    )
-
-    assert response.status_code == 400
-    resp = response.json()
-    assert resp == {
-        "detail": "Both 'raw_filter' and 'category' parameters cannot be provided together"
-    }
-
-
-def test_category_or_raw_filter():
-    """
-    Test we get a 400 if none of category or raw_filter is present:
+    Test we get a 400 if none of category or q is present:
     """
     client = TestClient(app)
 
@@ -622,7 +454,7 @@ def test_category_or_raw_filter():
 
     assert response.status_code == 400
     resp = response.json()
-    assert resp == {"detail": "One of 'category', 'raw_filter' or 'q' parameter is required"}
+    assert resp == {"detail": "One of 'category' or 'q' parameter is required"}
 
 
 def test_valid_category_that_trigger_tripadvisor_over_osm():
