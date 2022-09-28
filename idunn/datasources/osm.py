@@ -65,9 +65,8 @@ class Osm(Datasource):
                 max_size=params.size,
             )
             return [OsmPOI(p["_source"]) for p in bbox_places]
-        else:
-            # if brand
-            bragi_response = await bragi_client.pois_query_in_bbox(
-                query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
-            )
-            return [BragiPOI(PoiSource.OSM, f) for f in bragi_response.get("features", [])]
+        # if brand
+        bragi_response = await bragi_client.pois_query_in_bbox(
+            query=params.q, bbox=params.bbox, lang=params.lang, limit=params.size
+        )
+        return [BragiPOI(PoiSource.OSM, f) for f in bragi_response.get("features", [])]
