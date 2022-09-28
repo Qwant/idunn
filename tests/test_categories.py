@@ -64,7 +64,7 @@ def test_size_list():
     client = TestClient(app)
 
     response = client.get(
-        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=bakery&size=1"
+        url=f"http://localhost/v1/places?bbox={BBOX_PARIS}&category=museum&size=1"
     )
 
     assert response.status_code == 200
