@@ -26,7 +26,7 @@ MAX_HEIGHT = 1.0  # max bbox latitude in degrees
 EXTENDED_BBOX_MAX_SIZE = float(
     settings["LIST_PLACES_EXTENDED_BBOX_MAX_SIZE"]
 )  # max bbox width and height after second extended query
-EXTENDED_BBOX_MAX_SIZE_AIRPORT = 1
+EXTENDED_BBOX_MAX_SIZE_AIRPORT = 0.8
 TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE = ["hotel", "leisure", "attraction", "restaurant"]
 TRIPADVISOR_CATEGORIES_COVERED_IN_FRANCE = ["hotel", "leisure", "attraction"]
 
