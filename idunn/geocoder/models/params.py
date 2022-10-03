@@ -140,8 +140,8 @@ class QueryParams:
                 if self.zoom >= req_zoom
             )
 
-            params["lon"] = f"{with_precision(self.lon, precision):.2f}"
-            params["lat"] = f"{with_precision(self.lat, precision):.2f}"
+            params["lon"] = f"{with_precision(self.lon, precision):.4f}"
+            params["lat"] = f"{with_precision(self.lat, precision):.4f}"
 
             # Tune the shape of the weight applied to the results based on the
             # proximity, note that mimir uses an exponential decay:

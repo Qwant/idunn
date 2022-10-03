@@ -147,9 +147,15 @@ NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
 # List of [zoom level, typical search radius, coordinates precision]
 FOCUS_ZOOM_TO_RADIUS: "[
-    [11, 150, 0.1],
-    [9, 450, 0.3],
-    [7, 1300, 1],
+    [16, 9, 0.001],
+    [15, 17, 0.001],
+    [14, 28, 0.001],
+    [13, 56, 0.01],
+    [12, 100, 0.01],
+    [11, 150, 0.01],
+    [10, 300, 0.01],
+    [9, 450, 0.1],
+    [7, 1300, 0.1],
     [5, 4500, 3],
     [3, 13000, 10]
 ]"
