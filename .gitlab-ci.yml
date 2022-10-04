@@ -114,17 +114,24 @@ build tag:
     GIT_STRATEGY: none
     ARGOAPP_REPO_BASEDIR: "deployments"
     ARGOAPP_REPO_URL_SSH: "git@git.qwant.ninja:teams/search-apps/argo_apps.git"
-    ARGOCD_APP_ENVIRONMENT: "$CI_ENVIRONMENT_NAME"
+    ARGOCD_SERVER: "${ARGOCD_SERVER_C2}"
+    ARGOCD_APP_NAME: "idunn-${CI_JOB_STAGE}"
+    ARGOCD_APP_ENVIRONMENT: "${CI_ENVIRONMENT_NAME}"
+    ARGOCD_OPTS: "--insecure"
+    ARGOCD_AUTH_TOKEN: "${ARGOCD_AUTH_TOKEN_C2}"
     ARGOAPP_REPO_PATH: "maps/idunn"
     ARGOAPP_REPO_BRANCH: "master"
     IMAGE_VERSION_FILE: "versions/${CI_JOB_STAGE}.yaml"
-  resource_group: "idunn-$CI_JOB_STAGE"
+  resource_group: "idunn-${CI_JOB_STAGE}"
   before_script:
     - source ci/bootstrap.sh
   script:
     - sync-version-argocd 
       --docker-image "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
       --image-version-object-path ".image"
+    - argocd app sync ${ARGOCD_APP_NAME} --async
+    - argocd app wait ${ARGOCD_APP_NAME} --health --sync --timeout $ARGOCD_TIMEOUT
+
   when: manual
   tags:
     - docker
@@ -141,5 +148,8 @@ deploy integration:
 
 deploy production:
   stage: production
+  variables:
+    ARGOCD_SERVER: "${ARGOCD_SERVER_C4}"
+    ARGOCD_AUTH_TOKEN: "${ARGOCD_AUTH_TOKEN_C4}"
   extends:
     - .deploy
