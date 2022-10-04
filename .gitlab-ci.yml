@@ -130,7 +130,7 @@ build tag:
       --docker-image "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
       --image-version-object-path ".image"
     - argocd app sync ${ARGOCD_APP_NAME} --async
-    - argocd app wait ${ARGOCD_APP_NAME} --health --sync --timeout $ARGOCD_TIMEOUT
+    - argocd app wait ${ARGOCD_APP_NAME} --health --sync --timeout 180
 
   when: manual
   tags:
