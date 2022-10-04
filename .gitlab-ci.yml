@@ -90,8 +90,17 @@ build:
   artifacts:
     paths:
       - "ci/"
+  except:
+    - tags
   tags:
     - shell
+
+build tag:
+  extends: build
+  variables:
+    IMAGE_TAG: "$CI_COMMIT_TAG"
+  only:
+    - tags
 
 .deploy:
   image: registry.qwant.ninja/docker/kubectl:1.19.1
