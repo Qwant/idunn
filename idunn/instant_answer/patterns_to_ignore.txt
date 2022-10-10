@@ -1,8 +1,6 @@
-qwant ?maps?
-maps? qwant
+qwant ?maps?( carto(graphie)?)?
 google ?maps?
-maps? google
-maps?( of)?
+maps?( (google|qwant|of|carto(graphie)?))?
 carte( des?| du)?
 plan( de| du)?
 add?resse?
