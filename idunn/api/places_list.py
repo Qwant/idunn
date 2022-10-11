@@ -66,6 +66,7 @@ class CommonQueryParam(BaseModel):
 class PlacesQueryParam(CommonQueryParam):
     category: List[Category] = []
     source: Optional[str]
+    place: Optional[dict]
     q: Optional[str]
     extend_bbox: bool = False
 
