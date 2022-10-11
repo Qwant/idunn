@@ -177,8 +177,8 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
         places=places,
         source=places_bbox_response.source,
         intention_bbox=intention.filter.bbox,
-        maps_url=maps_urls.get_places_url(intention),
-        maps_frame_url=maps_urls.get_places_url(intention, no_ui=True),
+        maps_url=maps_urls.get_places_url(intention.filter),
+        maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
     )
 
     return build_response(result, query=query, lang=lang)
