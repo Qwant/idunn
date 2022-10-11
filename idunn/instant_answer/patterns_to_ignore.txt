@@ -21,7 +21,7 @@ localisation
 o(ù|u) (se|ce) (trouve|situe)( (le|la))?
 where is
 booking$
-mappy(\.fr)?( plan|itin(e|é)rair(e|es))?
+mappy(\.fr)?( plan| itin(e|é)rair(es|e))?
 itin(e|é)rair(e|es) mappy
 itin(e|é)rair(e|es)?
 viamichelin.*
