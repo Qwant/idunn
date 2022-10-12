@@ -127,16 +127,17 @@ class PagesJaunes(Datasource):
             self.fetch_places_bbox,
             params.category,
             params.bbox,
-            params.place,
+            params.place_name,
+            params.place_code,
             size=params.size,
             query=params.q,
         )
 
     def fetch_places_bbox(
-        self, categories: List[CategoryEnum], bbox, place, size=10, query=""
+        self, categories: List[CategoryEnum], bbox, place_name, place_code, size=10, query=""
     ) -> List[PjApiPOI]:
-        if place is not None:
-            where = f"{place['name']} {place['citycode']}'"
+        if place_name is not None:
+            where = f"{place_name} {place_code}'"
         else:
             where = self.format_where(bbox)
 
