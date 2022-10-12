@@ -150,7 +150,12 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
         PlacesQueryParam(
             category=[category] if category else [],
             bbox=intention.filter.bbox,
-            place=intention.description.place["properties"]["geocoding"],
+            place_name=intention.description.place["properties"]["geocoding"]["description"][
+                "name"
+            ],
+            place_code=intention.description.place["properties"]["geocoding"]["description"][
+                "citycode"
+            ],
             q=intention.filter.q,
             source=None,
             size=10,
