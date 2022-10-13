@@ -196,10 +196,10 @@ class NLU_Helper:  # pylint: disable = invalid-name
             if geometry.get("type") == "Point":
                 lon, lat = geometry.get("coordinates")
                 bbox = [
-                    lon - DEFAULT_BBOX_WIDTH / 4,
-                    lat - DEFAULT_BBOX_HEIGHT / 4,
-                    lon + DEFAULT_BBOX_WIDTH / 4,
-                    lat + DEFAULT_BBOX_HEIGHT / 4,
+                    lon - DEFAULT_BBOX_WIDTH / 2,
+                    lat - DEFAULT_BBOX_HEIGHT / 2,
+                    lon + DEFAULT_BBOX_WIDTH / 2,
+                    lat + DEFAULT_BBOX_HEIGHT / 2,
                 ]
             else:
                 raise NluClientException("matching place has no coordinates")
