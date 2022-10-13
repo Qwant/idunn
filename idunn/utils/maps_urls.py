@@ -1,7 +1,6 @@
 from urllib.parse import urlencode
 from idunn import settings
-from idunn.geocoder.models.geocodejson import IntentionFilter
-
+from idunn.geocoder.models.geocodejson import IntentionFilter, Intention
 
 MAPS_BASE_URL = settings["MAPS_BASE_URL"]
 
@@ -20,16 +19,20 @@ def get_place_url(place_id, no_ui=False):
     return url
 
 
-def get_places_url(filter: IntentionFilter, no_ui=False):
+def get_places_url(intention: Intention, no_ui=False):
     query_dict = {}
-    if filter.q:
-        query_dict["q"] = filter.q
-    if filter.category:
-        query_dict["type"] = filter.category
-    if filter.source:
-        query_dict["source"] = filter.source
-    if filter.bbox:
-        query_dict["bbox"] = ",".join(map(lambda x: f"{x:.6f}", filter.bbox))
+    if intention.filter.q:
+        query_dict["q"] = intention.filter.q
+    if intention.filter.category:
+        query_dict["type"] = intention.filter.category
+    if intention.filter.source:
+        query_dict["source"] = intention.filter.source
+    if intention.filter.bbox:
+        query_dict["bbox"] = ",".join(map(lambda x: f"{x:.6f}", intention.filter.bbox))
+    if intention.description.place["properties"]["geocoding"]["citycode"]:
+        query_dict["city_code"] = intention.description.place["properties"]["geocoding"]["citycode"]
+    if intention.description.place["properties"]["geocoding"]["name"]:
+        query_dict["city_name"] = intention.description.place["properties"]["geocoding"]["name"]
     if no_ui:
         query_dict["no_ui"] = 1
     return f"{MAPS_BASE_URL}places/?{urlencode(query_dict)}"
