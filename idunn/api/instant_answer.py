@@ -150,12 +150,8 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
         PlacesQueryParam(
             category=[category] if category else [],
             bbox=intention.filter.bbox,
-            place_name=intention.description.place["properties"]["geocoding"]["description"][
-                "name"
-            ],
-            place_code=intention.description.place["properties"]["geocoding"]["description"][
-                "citycode"
-            ],
+            place_name=intention.description.place["properties"]["geocoding"]["name"],
+            place_code=intention.description.place["properties"]["geocoding"]["citycode"],
             q=intention.filter.q,
             source=None,
             size=10,
@@ -177,8 +173,8 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
         places=places,
         source=places_bbox_response.source,
         intention_bbox=intention.filter.bbox,
-        maps_url=maps_urls.get_places_url(intention.filter),
-        maps_frame_url=maps_urls.get_places_url(intention.filter, no_ui=True),
+        maps_url=maps_urls.get_places_url(intention),
+        maps_frame_url=maps_urls.get_places_url(intention, no_ui=True),
     )
 
     return build_response(result, query=query, lang=lang)
