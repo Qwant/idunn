@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 from idunn import settings
-from idunn.geocoder.models.geocodejson import IntentionFilter, Intention
+from idunn.geocoder.models.geocodejson import Intention
 
 MAPS_BASE_URL = settings["MAPS_BASE_URL"]
 
