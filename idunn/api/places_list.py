@@ -68,6 +68,7 @@ class PlacesQueryParam(CommonQueryParam):
     source: Optional[str]
     q: Optional[str]
     extend_bbox: bool = False
+    only_osm: bool = False
 
     def __init__(self, **data: Any):
         try:
@@ -133,6 +134,7 @@ async def get_places_bbox(
     lang: Optional[str] = Query(None),
     verbosity: Verbosity = Verbosity.default_list(),
     extend_bbox: bool = Query(False),
+    only_osm: bool = Query(False),
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
     params = PlacesQueryParam(**locals())
@@ -186,12 +188,16 @@ def select_datasource_for_france(params):
         params.source = PoiSource.PAGESJAUNES
     else:
         params.source = PoiSource.OSM
+    if params.only_osm:
+        params.source = PoiSource.OSM
 
 
 def select_datasource_outside_france(params):
     if any(cat in params.category for cat in TRIPADVISOR_CATEGORIES_COVERED_WORLDWIDE):
         params.source = PoiSource.TRIPADVISOR
     else:
+        params.source = PoiSource.OSM
+    if params.only_osm:
         params.source = PoiSource.OSM
 
 
