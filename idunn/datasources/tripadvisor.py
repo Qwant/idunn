@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 TA_API_BASE_URL = "https://api.tripadvisor.com/api/partner/3.0/synmeta-pricing"
 
 SUBCLASS_HOTEL_TRIPADVISOR = [
-    "subclass_hotel",
-    "subclass_specialty_lodging",
-    "subclass_bed_and_breakfast",
+    "class_hotel:subclass_hotel",
+    "class_hotel:subclass_specialty_lodging",
+    "class_hotel:subclass_bed_and_breakfast",
 ]
 
 
