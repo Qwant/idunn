@@ -30,9 +30,9 @@ def get_places_url(intention: Intention, no_ui=False):
     if intention.filter.bbox:
         query_dict["bbox"] = ",".join(map(lambda x: f"{x:.6f}", intention.filter.bbox))
     if intention.description.place["properties"]["geocoding"]["citycode"]:
-        query_dict["city_code"] = intention.description.place["properties"]["geocoding"]["citycode"]
+        query_dict["place_code"] = intention.description.place["properties"]["geocoding"]["citycode"]
     if intention.description.place["properties"]["geocoding"]["name"]:
-        query_dict["city_name"] = intention.description.place["properties"]["geocoding"]["name"]
+        query_dict["place_name"] = intention.description.place["properties"]["geocoding"]["name"]
     if no_ui:
         query_dict["no_ui"] = 1
     return f"{MAPS_BASE_URL}places/?{urlencode(query_dict)}"
