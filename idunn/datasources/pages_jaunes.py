@@ -136,7 +136,7 @@ class PagesJaunes(Datasource):
     def fetch_places_bbox(
         self, categories: List[CategoryEnum], bbox, place_name, place_code, size=10, query=""
     ) -> List[PjApiPOI]:
-        if place_name is not None:
+        if place_name is not None and place_name != "undefined":
             where = f"{place_name}"
         else:
             where = self.format_where(bbox)
