@@ -1,6 +1,9 @@
 import re
 import logging
 from urllib.parse import quote
+
+import httpx
+import requests
 from pydantic import BaseModel, validator
 from typing import List, Literal
 
@@ -8,7 +11,7 @@ from idunn import settings
 from idunn.api.constants import PoiSource
 from idunn.utils.thumbr import thumbr
 from .base import BaseBlock
-
+from ..datasources.mapillary import mapillary_client
 
 logger = logging.getLogger(__name__)
 
@@ -101,11 +104,10 @@ class ImagesBlock(BaseBlock):
     @classmethod
     def get_mapillary_image(cls, image_key):
         image_key = quote(image_key)
-        image_url = f"https://images.mapillary.com/{image_key}/thumb-1024.jpg"
-        source_url = f"https://www.mapillary.com/app/?focus=photo&pKey={image_key}"
+        thumb_1024_url, thumb_original_url = mapillary_client.fetch_mapillary_place(image_key)
         return cls.build_image(
-            image_url,
-            source_url=source_url,
+            thumb_1024_url,
+            source_url=thumb_original_url,
             alt="Mapillary",
             credits="From Mapillary, licensed under CC-BY-SA",
         )
