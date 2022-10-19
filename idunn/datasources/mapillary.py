@@ -23,27 +23,26 @@ class MapillaryClient:
     def enabled(self):
         return bool(self.mapillary_api_url and self.mapillary_token)
 
-    def fetch_mapillary_place(self, image_id):
+    def fetch_mapillary_place(self, image_id) -> str:
         if not self.enabled:
-            return "", ""
+            return ""
         url = self.mapillary_api_url + image_id
         self.session.headers["Authorization"] = "OAuth " + self.mapillary_token
-        params = {"fields": "thumb_1024_url,thumb_original_url"}
-        reponse = self.session.get(
+        params = {"fields": "thumb_1024_url"}
+        response = self.session.get(
             url, params=params, timeout=settings.get("MAPILLARY_API_TIMEOUT")
         )
         try:
-            thumb_1024_url = reponse.json()["thumb_1024_url"]
-            thumb_original_url = reponse.json()["thumb_original_url"]
+            thumb_1024_url = response.json()["thumb_1024_url"]
         except Exception as exc:
             logger.error(
                 "Error with mapillary API JSON with request to ",
                 url,
                 exc_info=True,
             )
-            return "", ""
+            return ""
 
-        return thumb_1024_url, thumb_original_url
+        return thumb_1024_url
 
 
 mapillary_client = MapillaryClient()
