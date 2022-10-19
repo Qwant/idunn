@@ -2,8 +2,6 @@ import re
 import logging
 from urllib.parse import quote
 
-import httpx
-import requests
 from pydantic import BaseModel, validator
 from typing import List, Literal
 
