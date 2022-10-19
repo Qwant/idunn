@@ -34,9 +34,9 @@ class MapillaryClient:
         )
         try:
             thumb_1024_url = response.json()["thumb_1024_url"]
-        except Exception as exc:
+        except Exception:
             logger.error(
-                "Error with mapillary API JSON with request to ",
+                "Error with mapillary API JSON with request to %s",
                 url,
                 exc_info=True,
             )
