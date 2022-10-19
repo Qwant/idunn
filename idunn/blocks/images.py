@@ -104,10 +104,10 @@ class ImagesBlock(BaseBlock):
     @classmethod
     def get_mapillary_image(cls, image_key):
         image_key = quote(image_key)
-        thumb_1024_url, thumb_original_url = mapillary_client.fetch_mapillary_place(image_key)
+        thumb_1024_url = mapillary_client.fetch_mapillary_place(image_key)
         return cls.build_image(
             thumb_1024_url,
-            source_url=thumb_original_url,
+            source_url=thumb_1024_url,
             alt="Mapillary",
             credits="From Mapillary, licensed under CC-BY-SA",
         )
