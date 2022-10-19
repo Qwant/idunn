@@ -104,11 +104,6 @@ OSM_CONTRIBUTION_HASHTAGS: "QwantMaps" # separated by ",". Used in osm.org/edit 
 
 BLOCK_AIR_QUALITY_ENABLED: True
 
-# weather API
-WEATHER_API_URL: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&APPID={appid}"
-WEATHER_API_KEY:
-WEATHER_REQUEST_TIMEOUT: "0.5" #seconds
-WEATHER_CACHE_TIMEOUT: 300 # seconds
 
 #######################
 ## CORS

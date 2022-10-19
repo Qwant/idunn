@@ -1,7 +1,6 @@
 from enum import Enum
 
 from idunn.blocks import (
-    Weather,
     ContactBlock,
     DescriptionEvent,
     GradesBlock,
@@ -42,7 +41,6 @@ class Verbosity(str, Enum):
 
 BLOCKS_BY_VERBOSITY = {
     Verbosity.LONG: [
-        Weather,
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
