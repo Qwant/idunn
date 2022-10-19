@@ -124,7 +124,7 @@ DIRECTIONS_CLIENT_CACHE: 60 # seconds
 MAPBOX_DIRECTIONS_API_BASE_URL: "https://api.mapbox.com/directions/v5/mapbox"
 MAPBOX_DIRECTIONS_ACCESS_TOKEN:
 HOVE_API_BASE_URL: "https://api.navitia.io/v1/journeys"
-HOVE_API_TOKEN: 825f5295-51a1-44e0-bf16-4b2824994510
+HOVE_API_TOKEN:
 
 # Which provider to use for each kind of directions, between "mapbox" and "hove".
 DIRECTIONS_PROVIDER_WALK: "mapbox"
@@ -134,17 +134,17 @@ DIRECTIONS_PROVIDER_PUBLICTRANSPORT: "hove"
 
 #######################
 ## Geocoding
-BRAGI_BASE_URL: "https://bragi.dev-maps.c2.par1.kube.qwant.ninja/api/v1"
+BRAGI_BASE_URL: "http://bragi:4000"
 BRAGI_MAX_CONNECTIONS: 100
 AUTOCOMPLETE_NLU_DEFAULT: False
 AUTOCOMPLETE_NLU_FILTER_INTENTIONS: True # Exclude full-text intentions when the query does not match enough results among returned features
 NLU_CLIENT_TIMEOUT: 0.3 # timeout for calls to NLU services, in seconds
 NLU_ALLOWED_LANGUAGES: "en,fr"
-NLU_TAGGER_URL: "https://nlu.int-maps.c2.par1.kube.qwant.ninja/nlu"
-NLU_TAGGER_DOMAIN: "MAPS"
+NLU_TAGGER_URL: "http://tagger:9009"
+NLU_TAGGER_DOMAIN: "poi"
 NLU_TAGGER_LOWERCASE: True
-NLU_CLASSIFIER_URL: "https://maps-classifier.int-maps.c2.par1.kube.qwant.ninja/classify"
-NLU_CLASSIFIER_DOMAIN: "maps"
+NLU_CLASSIFIER_URL: "http://classifier:8080"
+NLU_CLASSIFIER_DOMAIN: "poi"
 
 # Classifier parameters
 NLU_CLASSIFIER_MIN_UNK_IGNORED: 0.1 # Minimum value for "unk" to consider query as unclassified
