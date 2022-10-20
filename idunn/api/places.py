@@ -2,7 +2,7 @@ import logging
 import urllib.parse
 from enum import Enum
 from starlette.datastructures import URL
-from fastapi import HTTPException, BackgroundTasks, Request, Query
+from fastapi import HTTPException, Request, Query
 from fastapi.responses import JSONResponse
 from typing import Optional
 from pydantic import confloat
@@ -11,7 +11,6 @@ from pydantic import confloat
 from idunn import settings
 
 from idunn.utils.es_wrapper import get_mimir_elasticsearch
-from idunn.utils.covid19_dataset import covid19_osm_task
 from idunn.places import Place, Latlon
 from idunn.places.base import BasePlace
 from idunn.places.exceptions import PlaceNotFound
@@ -81,7 +80,6 @@ def log_place_request(place: BasePlace, headers):
 def get_place(
     id: str,
     request: Request,
-    background_tasks: BackgroundTasks,
     lang: str = None,
     type: Optional[PlaceType] = Query(
         None, description="Restrict the type of documents to search in."
@@ -106,8 +104,6 @@ def get_place(
             content={"id": e.target_id},
         )
     log_place_request(place, request.headers)
-    if settings["BLOCK_COVID_ENABLED"] and settings["COVID19_USE_REDIS_DATASET"]:
-        background_tasks.add_task(covid19_osm_task)
     return place.load_place(lang, verbosity)
 
 

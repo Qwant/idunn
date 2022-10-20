@@ -1,7 +1,6 @@
 from typing import Union
 
 from .opening_hour import OpeningHourBlock
-from .covid19 import Covid19Block
 from .phone import PhoneBlock
 from .information import InformationBlock
 from .reviews import ReviewsBlock
@@ -26,7 +25,6 @@ from .stars import StarsBlock
 
 AnyBlock = Union[
     OpeningHourBlock,
-    Covid19Block,
     PhoneBlock,
     InformationBlock,
     WebSiteBlock,

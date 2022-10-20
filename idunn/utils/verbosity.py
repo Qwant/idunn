@@ -9,7 +9,6 @@ from idunn.blocks import (
     InformationBlock,
     OpeningDayEvent,
     OpeningHourBlock,
-    Covid19Block,
     PhoneBlock,
     RecyclingBlock,
     WebSiteBlock,
@@ -44,7 +43,6 @@ BLOCKS_BY_VERBOSITY = {
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
-        Covid19Block,
         PhoneBlock,
         InformationBlock,
         WebSiteBlock,
@@ -63,7 +61,6 @@ BLOCKS_BY_VERBOSITY = {
         OpeningDayEvent,
         DescriptionEvent,
         OpeningHourBlock,
-        Covid19Block,
         PhoneBlock,
         WebSiteBlock,
         ImagesBlock,
@@ -75,7 +72,7 @@ BLOCKS_BY_VERBOSITY = {
         DeliveryBlock,
         StarsBlock,
     ],
-    Verbosity.SHORT: [OpeningHourBlock, Covid19Block],
+    Verbosity.SHORT: [OpeningHourBlock],
 }
 
 
