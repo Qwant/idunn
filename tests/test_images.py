@@ -95,24 +95,6 @@ def test_tag_image_unamed_poi():
     }
 
 
-def test_tag_mapillary():
-    block = ImagesBlock.from_es(
-        OsmPOI({"properties": {"mapillary": "vwf6B4zuu8WPW5K2bqHMVg"}, "id": "osm:way:154422021"}),
-        lang="en",
-    )
-    assert block.dict() == {
-        "type": "images",
-        "images": [
-            {
-                "url": ANY,
-                "alt": "Mapillary",
-                "credits": "From Mapillary, licensed under CC-BY-SA",
-                "source_url": "https://www.mapillary.com/app/?focus=photo&pKey=vwf6B4zuu8WPW5K2bqHMVg",
-            }
-        ],
-    }
-
-
 def test_pj_poi_no_image():
     block = ImagesBlock.from_es(PjApiPOI(Listing()), lang="fr")
     assert block is None
