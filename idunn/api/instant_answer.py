@@ -151,7 +151,6 @@ async def get_instant_answer_intention(intention, query: str, lang: str):
             category=[category] if category else [],
             bbox=intention.filter.bbox,
             place_name=intention.description.place["properties"]["geocoding"]["name"],
-            place_code=intention.description.place["properties"]["geocoding"]["citycode"],
             q=intention.filter.q,
             source=None,
             size=10,

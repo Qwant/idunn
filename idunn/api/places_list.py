@@ -67,7 +67,6 @@ class PlacesQueryParam(CommonQueryParam):
     category: List[Category] = []
     source: Optional[str]
     place_name: Optional[str]
-    place_code: Optional[str]
     q: Optional[str]
     extend_bbox: bool = False
     only_osm: bool = False
@@ -137,7 +136,6 @@ async def get_places_bbox(
     verbosity: Verbosity = Verbosity.default_list(),
     extend_bbox: bool = Query(False),
     place_name: Optional[str] = Query(None),
-    place_code: Optional[str] = Query(None),
     only_osm: bool = Query(False),
 ) -> PlacesBboxResponse:
     """Get all places in a bounding box."""
