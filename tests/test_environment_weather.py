@@ -6,7 +6,6 @@ or suburd) is called.
 from pydantic import ValidationError
 from pytest import raises
 
-from idunn.blocks.environment import Weather
 from idunn.places import Admin
 import json
 import os
