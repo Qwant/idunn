@@ -119,11 +119,3 @@ class RedisWrapper:
     def enable(cls):
         cls._connection = None
         cls.init_cache()
-
-
-class RedisWrapperWeather(RedisWrapper):
-    _redis = RedisWrapper
-
-    @classmethod
-    def cache_it(cls, key, f, expire=settings["WEATHER_CACHE_TIMEOUT"]):
-        return cls._redis.cache_it(key, f, expire)
