@@ -137,7 +137,7 @@ class PagesJaunes(Datasource):
         self, categories: List[CategoryEnum], bbox, place_name, place_code, size=10, query=""
     ) -> List[PjApiPOI]:
         if place_name is not None:
-            where = f"{place_name} {place_code}'"
+            where = f"{place_name}"
         else:
             where = self.format_where(bbox)
 
