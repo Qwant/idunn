@@ -165,7 +165,7 @@ class PagesJaunes(Datasource):
                 )
             )
         except RequestsHTTPError as e:
-            if e.response.status_code in (404, 400):
+            if 400 <= e.response.status_code < 500:
                 logger.debug(
                     "Got HTTP %s from PagesJaunes API", e.response.status_code, exc_info=True
                 )
