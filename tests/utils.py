@@ -54,41 +54,5 @@ def init_pj_source(source_type):
         places_list.pj_source = old_source
 
 
-@contextmanager
-def enable_weather_api():
-    """
-    We define here settings specific to tests.
-    """
-    with override_settings(
-        {
-            "WEATHER_API_URL": "http://api.openweathermap.org/data/2.5/weather?lat=48.5&lon=2.5&mode=json&appid=key&lang=fr",
-            "WEATHER_API_KEY": "key",
-        }
-    ):
-        yield
-
-
-@contextmanager
-def enable_recycling():
-    """
-    We define here settings specific to tests.
-    We define the recycling server address and port
-    """
-    with override_settings({"RECYCLING_SERVER_URL": "http://recycling.test"}):
-        # No need to authenticate and fetch a token during tests
-        recycling_client.session.token_expires_at = 1e60
-        yield
-
-
-@contextmanager
-def inaccessible_recycling():
-    """
-    We define here settings specific to tests.
-    We define the recycling server address and port
-    """
-    with override_settings({"RECYCLING_SERVER_URL": "http://non-existent.test"}):
-        yield
-
-
 def read_fixture(fixture_path):
     return json.load(open(os.path.join(os.path.dirname(__file__), fixture_path), encoding="utf-8"))

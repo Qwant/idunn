@@ -16,7 +16,6 @@ from .services_and_information import (
 )
 from .grades import GradesBlock
 from .events import OpeningDayEvent, DescriptionEvent
-from .recycling import RecyclingBlock
 from .transactional import TransactionalBlock
 from .social import SocialBlock
 from .description import DescriptionBlock
@@ -38,7 +37,6 @@ AnyBlock = Union[
     OpeningDayEvent,
     DescriptionEvent,
     CuisineBlock,
-    RecyclingBlock,
     TransactionalBlock,
     SocialBlock,
     DescriptionBlock,
