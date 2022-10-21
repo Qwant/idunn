@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 # Setup docs settings
 base_url = settings["BASE_URL"]
-path_prefix = settings["URL_PATH_PREFIX"]
+# path_prefix = settings["URL_PATH_PREFIX"]
 root_path = urlparse(base_url).path.rstrip("/")
 docs_settings = {}
 if not settings["DOCS_ENABLED"]:
@@ -22,10 +22,10 @@ else:
 
 # Setup FastAPI app
 app = FastAPI(
-    title="Idunn", version="0.2", debug=__name__ == "__main__", root_path=root_path, **docs_settings
+    title="Idunn", version="0.2", debug=__name__ == "__main__", root_path="/maps/detail/v1", **docs_settings
 )
 v1_routes = get_api_urls(settings)
-app.include_router(APIRouter(routes=v1_routes), prefix=path_prefix)
+app.include_router(APIRouter(routes=v1_routes)) #, prefix=path_prefix)
 
 # Configure CORS
 app.add_middleware(
