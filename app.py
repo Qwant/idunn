@@ -17,7 +17,11 @@ if not settings["DOCS_ENABLED"]:
     docs_settings.update({"openapi_url": None, "redoc_url": None, "docs_url": None})
 else:
     docs_settings.update(
-        {"openapi_url": "/openapi.json", "redoc_url": "/maps/detail/redoc", "docs_url": "/maps/detail/docs"}
+        {
+            "openapi_url": "/openapi.json",
+            "redoc_url": "/maps/detail/redoc",
+            "docs_url": "/maps/detail/docs",
+        }
     )
 
 # Setup FastAPI app
