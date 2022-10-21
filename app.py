@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 # Setup docs settings
 base_url = settings["BASE_URL"]
 # path_prefix = settings["URL_PATH_PREFIX"]
-#root_path = urlparse(base_url).path.rstrip("/")
+# root_path = urlparse(base_url).path.rstrip("/")
 root_path = "/maps/detail/v1"
 docs_settings = {}
 if not settings["DOCS_ENABLED"]:
