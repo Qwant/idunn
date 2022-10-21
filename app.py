@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 base_url = settings["BASE_URL"]
 # path_prefix = settings["URL_PATH_PREFIX"]
 # root_path = urlparse(base_url).path.rstrip("/")
-root_path = "/maps/detail/v1"
+root_path = "/maps/detail"
 docs_settings = {}
 if not settings["DOCS_ENABLED"]:
     docs_settings.update({"openapi_url": None, "redoc_url": None, "docs_url": None})
