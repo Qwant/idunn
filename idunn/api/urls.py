@@ -13,7 +13,6 @@ from .directions import get_directions_with_coordinates, get_directions
 from .urlsolver import follow_redirection
 from .instant_answer import get_instant_answer, InstantAnswerResponse
 from ..places.place import Address, Place
-from .search import search
 from ..utils.prometheus import (
     expose_metrics,
     expose_metrics_multiprocess,
@@ -110,16 +109,6 @@ def get_api_urls(settings):
             get_autocomplete_response,
             methods=["GET", "POST"],
             response_model=IdunnAutocomplete,
-        ),
-        api_route(
-            "/search",
-            search,
-            methods=["GET", "POST"],
-            response_model=IdunnAutocomplete,
-            responses={
-                204: {"description": "Empty search provided"},
-            },
-            response_model_exclude_unset=True,
         ),
         # Solve URLs
         api_route(

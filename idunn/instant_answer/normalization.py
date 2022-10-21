@@ -15,10 +15,3 @@ def normalize_instant_answer_param(query, user_country) -> (str, str):
     if user_country is not None:
         user_country = user_country.lower()
     return query, user_country
-
-
-def normalize_search(query) -> str:
-    query = query.strip().lower()
-    query = ignore_pattern_start.sub("", query)
-    query = ignore_pattern_end.sub("", query)
-    return query
