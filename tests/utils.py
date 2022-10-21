@@ -6,7 +6,6 @@ from copy import deepcopy
 import idunn
 from idunn import settings
 from idunn.api import places_list, instant_answer
-from idunn.datasources.recycling import recycling_client
 from idunn.datasources.wiki_es import WikiEs
 from idunn.utils import place as places_utils
 
