@@ -16,7 +16,7 @@ DIRECT_PATH_MAX_DURATION = 86400  # 24h
 MIN_NB_JOURNEYS = 2
 MAX_NB_JOURNEYS = 5
 FREE_RADIUS = 50  # meters
-WALKING_SPEED = 1.45  # meters
+WALKING_SPEED = 1.45  # m/s
 
 logger = logging.getLogger(__name__)
 
