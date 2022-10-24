@@ -16,6 +16,7 @@ DIRECT_PATH_MAX_DURATION = 86400  # 24h
 MIN_NB_JOURNEYS = 2
 MAX_NB_JOURNEYS = 5
 FREE_RADIUS = 50  # meters
+WALKING_SPEED = 1.45  # meters
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,7 @@ class HoveClient(AbsDirectionsClient):
             "max_walking_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "max_bike_direct_path_duration": DIRECT_PATH_MAX_DURATION,
             "max_car_no_park_direct_path_duration": DIRECT_PATH_MAX_DURATION,
+            "walking_speed": WALKING_SPEED,
             "min_nb_journeys": MIN_NB_JOURNEYS,
             "max_nb_journeys": MAX_NB_JOURNEYS,
             **(
