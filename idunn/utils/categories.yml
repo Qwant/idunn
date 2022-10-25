@@ -1080,3 +1080,7 @@ categories:
       raw_filters:
         - class: "water"
           subclass: "water"
+
+    public_bookcase:
+      raw_filters:
+        - class: "public_bookcase"
