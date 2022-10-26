@@ -283,7 +283,11 @@ class Section(BaseModel):
                 if inst.name or inst.length != 0
             ]
 
-            _, summary = max((step.distance, step.maneuver.detail.name) for step in steps)
+            _, summary = max(
+                (step.distance, step.maneuver.detail.name)
+                for step in steps
+                if step.maneuver.detail.name != ""
+            )
 
         return api.RouteLeg(
             duration=self.duration,

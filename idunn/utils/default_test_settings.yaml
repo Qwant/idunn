@@ -147,9 +147,15 @@ NLU_BREAKER_MAXFAIL: 5 # consecutive failures before breaking
 
 # List of [zoom level, typical search radius, coordinates precision]
 FOCUS_ZOOM_TO_RADIUS: "[
-    [11, 150, 0.1],
-    [9, 450, 0.3],
-    [7, 1300, 1],
+    [16, 9, 0.001],
+    [15, 17, 0.001],
+    [14, 28, 0.001],
+    [13, 56, 0.01],
+    [12, 100, 0.01],
+    [11, 150, 0.01],
+    [10, 300, 0.01],
+    [9, 450, 0.1],
+    [7, 1300, 0.1],
     [5, 4500, 3],
     [3, 13000, 10]
 ]"
@@ -167,20 +173,6 @@ COVID19_OSM_DATASET_EXPIRE: 7200 # seconds
 COVID19_POI_EXPIRE: 86400 # seconds
 COVID19_BLOCK_COUNTRIES: "FR" # comma separated list
 COVID19_BLOCK_KEEP_STATUS_UNKNOWN: False # Whether covid19 block is returned when no specific data is available
-
-########################
-## Recycling data
-RECYCLING_SERVER_URL:
-RECYCLING_SERVER_USERNAME:
-RECYCLING_SERVER_PASSWORD:
-RECYCLING_REQUEST_TIMEOUT: "5.0" # seconds
-RECYCLING_DATA_INDEX: "waste"
-RECYCLING_DATA_COLLECTION: "measures"
-RECYCLING_DATA_TIMESTAMP_FIELD: "timestamp"
-RECYCLING_MAX_DISTANCE_AROUND_POI: 100 # meters
-RECYCLING_DATA_STORE_IN_CACHE: True # Recycling data will be cached if Redis is configured
-RECYCLING_DATA_EXPIRE: 1800 # seconds
-RECYCLING_MEASURES_MAX_AGE_IN_HOURS: 168 # 7 days (Older measures will be ignored)
 
 ##########################
 ## Instant Answer

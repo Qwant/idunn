@@ -25,6 +25,7 @@ NLU_BRAND_TAGS = ["brand"]
 NLU_CATEGORY_TAGS = ["cat"]
 NLU_PLACE_TAGS = ["city", "country", "state", "street"]
 NLU_STREET_TAGS = ["street"]
+NLU_NB_PLACES_QUERY = 3  # number of places that are requested to the geocoder and then filtered
 
 
 class NluClientException(Exception):
@@ -177,9 +178,15 @@ class NLU_Helper:  # pylint: disable = invalid-name
     async def get_bbox_place(self, bragi_result, place_query):
         if not bragi_result["features"]:
             raise NluClientException("no matching place")
-        place = bragi_result["features"][0]
-        if not self.fuzzy_match(place_query, place):
+
+        place = next(
+            (place for place in bragi_result["features"] if self.fuzzy_match(place_query, place)),
+            None,
+        )
+
+        if not place:
             raise NluClientException("matching place too different from query")
+
         bbox = place["properties"]["geocoding"].get("bbox")
         if bbox:
             if bbox[2] - bbox[0] > MAX_WIDTH or bbox[3] - bbox[1] > MAX_HEIGHT:
@@ -338,7 +345,7 @@ class NLU_Helper:  # pylint: disable = invalid-name
         bragi_params = GeocoderParams.build(
             q=place_query,
             lang=lang,
-            limit=1,
+            limit=NLU_NB_PLACES_QUERY,
             **(extra_geocoder_params or {}),
         )
         bragi_result = await bragi_client.autocomplete(bragi_params)

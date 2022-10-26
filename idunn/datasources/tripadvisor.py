@@ -9,7 +9,7 @@ from starlette.concurrency import run_in_threadpool
 
 from idunn import settings
 from idunn.datasources import Datasource
-from idunn.datasources.mimirsbrunn import MimirPoiFilter, fetch_es_pois
+from idunn.datasources.mimirsbrunn import fetch_es_pois
 from idunn.geocoder.bragi_client import bragi_client
 from idunn.geocoder.models.params import QueryParams
 from idunn.places.poi import TripadvisorPOI
@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 TA_API_BASE_URL = "https://api.tripadvisor.com/api/partner/3.0/synmeta-pricing"
 
 SUBCLASS_HOTEL_TRIPADVISOR = [
-    "subclass_hotel",
-    "subclass_specialty_lodging",
-    "subclass_bed_and_breakfast",
+    "class_hotel:subclass_hotel",
+    "class_hotel:subclass_specialty_lodging",
+    "class_hotel:subclass_bed_and_breakfast",
 ]
 
 
@@ -54,10 +54,7 @@ class Tripadvisor(Datasource):
     async def get_places_bbox(self, params) -> list:
         """Get places within a given Bbox"""
         # Default source (OSM) with category or class/subclass filters
-        if params.raw_filter:
-            filters = [MimirPoiFilter.from_url_raw_filter(f) for f in params.raw_filter]
-        else:
-            filters = [f for c in params.category for f in c.raw_filters()]
+        filters = [f for c in params.category for f in c.raw_filters()]
         bbox_places = await run_in_threadpool(
             fetch_es_pois,
             "poi_tripadvisor",

@@ -1,8 +1,6 @@
-qwant ?maps?
-maps? qwant
+qwant ?maps?( carto(graphie)?)?
 google ?maps?
-maps? google
-maps?( of)?
+maps?( (google|qwant|of|carto(graphie)?))?
 carte( des?| du)?
 plan( de| du)?
 add?resse?
@@ -23,7 +21,7 @@ localisation
 o(ù|u) (se|ce) (trouve|situe)( (le|la))?
 where is
 booking$
-mappy(\.fr)?( plan|itin(e|é)rair(e|es))?
+mappy(\.fr)?( plan| itin(e|é)rair(es|e))?
 itin(e|é)rair(e|es) mappy
 itin(e|é)rair(e|es)?
 viamichelin.*

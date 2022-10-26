@@ -75,7 +75,11 @@ async def get_autocomplete(
             return None
 
         try:
-            return await nlu_client.get_intention(text=query.q, lang=query.lang)
+            return await nlu_client.get_intention(
+                text=query.q,
+                lang=query.lang,
+                extra_geocoder_params={"lat": query.lat, "lon": query.lon, "zoom": query.zoom},
+            )
         except NluClientException as exp:
             logger.info("Ignored NLU for '%s': %s", query.q, exp.reason(), extra=exp.extra)
             return None

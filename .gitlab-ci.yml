@@ -1,0 +1,132 @@
+stages:
+  - lint
+  - test
+  - build
+  - development
+  - integration
+  - production
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  WORKON_HOME: .pipenv/venvs
+  PIPENV_CACHE_DIR: .pipenv/pipcache
+
+format:
+  stage: lint
+  image: cimg/python:3.10
+  before_script:
+    - source ci/bootstrap.sh
+  script:
+    - pipenv install --dev --deploy
+    - pipenv run black --diff --check .
+  cache:
+    key: $CI_PROJECT_NAME-pipcache
+    paths:
+      - .pipenv/pipcache
+  tags:
+   - k8s
+
+lint:
+  stage: lint
+  image: cimg/python:3.10
+  before_script:
+    - source ci/bootstrap.sh
+  script:
+    - pipenv install --dev --deploy
+    - pipenv run lint-src
+  cache:
+    key: $CI_PROJECT_NAME-pipcache
+    paths:
+      - .pipenv/pipcache
+  tags:
+   - k8s
+
+test:
+  stage: test
+  services:
+    - name: "redis:4-alpine"
+      alias: "redis"
+    - name: "docker.elastic.co/elasticsearch/elasticsearch:7.15.1"
+      alias: "mimir"
+      command: ["bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node", "-Ehttp.port=9201"]
+    - name: "elasticsearch:2-alpine"
+      alias: "wiki"
+  image: cimg/python:3.10
+  before_script:
+    - source ci/bootstrap.sh
+  script:
+    - export no_proxy="$no_proxy,mimir,redis,wiki"
+    - export NO_PROXY="$no_proxy"
+    - pipenv install --dev --deploy
+    - pipenv run pytest -vv -x
+  variables:
+    MIMIR_ES_URL: "http://mimir:9201"
+    WIKI_ES_URL: "http://wiki:9200"
+    WIKI_REDIS_URL: "redis:6379"
+  cache:
+    key: $CI_PROJECT_NAME-pipcache
+    paths:
+      - .pipenv/pipcache
+  tags:
+    - k8s
+
+build:
+  stage: build
+  before_script:
+    - source ci/bootstrap.sh
+    - docker login
+        --username "$CI_REGISTRY_USER"
+        --password-stdin "$CI_REGISTRY" <<< "$CI_REGISTRY_PASSWORD"
+  script:
+    - docker-compose build
+    - docker-compose push
+  variables:
+    COMPOSE_DOCKER_CLI_BUILD: "1"
+    COMPOSE_FILE: "ci/docker-compose.build.yml"
+    DOCKER_BUILDKIT: "1"
+    DOCKER_CONFIG: "$CI_PROJECT_DIR/.docker"
+    GIT_SUBMODULE_STRATEGY: recursive
+    IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
+  artifacts:
+    paths:
+      - "ci/"
+  tags:
+    - shell
+
+.deploy:
+  image: registry.qwant.ninja/docker/kubectl:1.19.1
+  dependencies:
+    - build
+  variables:
+    GIT_STRATEGY: none
+    ARGOAPP_REPO_BASEDIR: "deployments"
+    ARGOAPP_REPO_URL_SSH: "git@git.qwant.ninja:teams/search-apps/argo_apps.git"
+    ARGOCD_APP_ENVIRONMENT: "$CI_ENVIRONMENT_NAME"
+    ARGOAPP_REPO_PATH: "maps/idunn"
+    ARGOAPP_REPO_BRANCH: "master"
+    IMAGE_VERSION_FILE: "versions/${CI_JOB_STAGE}.yaml"
+  resource_group: "idunn-$CI_JOB_STAGE"
+  before_script:
+    - source ci/bootstrap.sh
+  script:
+    - sync-version-argocd 
+      --docker-image "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+      --image-version-object-path ".image"
+  when: manual
+  tags:
+    - docker
+
+deploy development:
+  stage: development
+  extends:
+    - .deploy
+
+deploy integration:
+  stage: integration
+  extends:
+    - .deploy
+
+deploy production:
+  stage: production
+  extends:
+    - .deploy

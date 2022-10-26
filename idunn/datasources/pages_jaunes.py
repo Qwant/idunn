@@ -127,16 +127,22 @@ class PagesJaunes(Datasource):
             self.fetch_places_bbox,
             params.category,
             params.bbox,
+            params.place_name,
             size=params.size,
             query=params.q,
         )
 
     def fetch_places_bbox(
-        self, categories: List[CategoryEnum], bbox, size=10, query=""
+        self, categories: List[CategoryEnum], bbox, place_name, size=10, query=""
     ) -> List[PjApiPOI]:
+        if place_name is not None and place_name != "undefined":
+            where = f"{place_name}"
+        else:
+            where = self.format_where(bbox)
+
         query_params = {
             "what": (query or " ".join(c.pj_what() for c in categories)).strip(),
-            "where": self.format_where(bbox),
+            "where": where,
             # The API may return less than 'max' items per page, so let's use 'size + 5'
             # as a margin to avoid requesting a second page unnecessarily.
             "max": min(self.PJ_RESULT_MAX_SIZE, size + 5),
@@ -165,7 +171,7 @@ class PagesJaunes(Datasource):
                 )
             )
         except RequestsHTTPError as e:
-            if e.response.status_code in (404, 400):
+            if 400 <= e.response.status_code < 500:
                 logger.debug(
                     "Got HTTP %s from PagesJaunes API", e.response.status_code, exc_info=True
                 )

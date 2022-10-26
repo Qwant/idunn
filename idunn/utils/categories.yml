@@ -5,6 +5,7 @@ categories:
         raw_filters:
           - class: "cinema"
           - class: "theatre"
+          - class: "attraction"
           - subclass: "nightclub"
           - subclass: "escape_game"
           - subclass: "miniature_golf"
@@ -1080,3 +1081,7 @@ categories:
       raw_filters:
         - class: "water"
           subclass: "water"
+
+    public_bookcase:
+      raw_filters:
+        - class: "public_bookcase"

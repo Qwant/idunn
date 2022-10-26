@@ -30,15 +30,6 @@ class MimirPoiFilter:
             terms.append(f"{key}:{value}")
         return terms
 
-    @classmethod
-    def from_url_raw_filter(cls, raw_filter):
-        poi_class, poi_subclass = raw_filter.split(",", maxsplit=1)
-        if poi_class == "*":
-            poi_class = None
-        if poi_subclass == "*":
-            poi_subclass = None
-        return cls(poi_class, poi_subclass)
-
 
 def fetch_es_pois(index_name: str, filters: [MimirPoiFilter], bbox, max_size) -> list:
     es = get_mimir_elasticsearch()

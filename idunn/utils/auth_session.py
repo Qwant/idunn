@@ -6,7 +6,7 @@ import requests
 
 class AuthSession:
     """
-    Helper class for HTTP sessions that need to keep an authentification token.
+    Helper class for HTTP sessions that need to keep an authentication token.
     Default behavior corresponds to an OAuth2 API.
 
     Note that at least `get_authorization_url` and `get_authorization_params`
